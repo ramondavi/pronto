@@ -1,0 +1,14 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useId, useState } from "react";
+import type { KnowledgeItem } from "@/lib/knowledge-base";
+import { AppIcon } from "./app-icon";
+import { useInterfaceLanguage } from "./interface-language";
+import { helpCopy, helpCategoryLabel, helpKindLabel } from "@/lib/help-copy";
+export function HelpSearch({ compact = false, context, onAnswerSelect, openArticlesInNewTab = false }: { compact?: boolean; context?: string; onAnswerSelect?: (item: KnowledgeItem) => void; openArticlesInNewTab?: boolean }) {
+  const { language } = useInterfaceLanguage(); const t = helpCopy[language];
+  const [query, setQuery] = useState(""); const [results, setResults] = useState<KnowledgeItem[]>([]); const id = useId();
+  useEffect(() => { const term = query.trim(); if (term.length < 2) { setResults([]); return; } const timer = window.setTimeout(async () => { const params = new URLSearchParams({ q: term }); if (context) params.set("context", context); const response = await fetch(`/api/central-de-duvidas?${params}`); if (response.ok) setResults((await response.json()).results); }, 180); return () => window.clearTimeout(timer); }, [context, query]);
+  const href = (item: KnowledgeItem) => item.slug ? `/ajuda/artigos/${item.slug}` : "/ajuda";
+  return <section className={`help-search${compact ? " help-search--compact" : " container"}`} aria-labelledby={`busca-${id}`}><label id={`busca-${id}`} htmlFor={`busca-input-${id}`}>{compact ? t.compactSearch : t.search}</label><div className="help-search__field"><input id={`busca-input-${id}`} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.placeholder} autoComplete="off" aria-autocomplete="list" aria-controls={query.trim().length >= 2 ? `sugestoes-${id}` : undefined} /><span aria-hidden="true">⌕</span></div>{query.trim().length >= 2 && <div className="help-search__suggestions" id={`sugestoes-${id}`} role="region" aria-live="polite">{results.length ? <ul>{results.map((item) => onAnswerSelect && !item.slug ? <li key={`${item.kind}-${item.id}`}><button type="button" onClick={() => onAnswerSelect(item)}><small>{helpKindLabel(language, item.kind)} · {helpCategoryLabel(language, item.category)}</small><strong>{item.title}</strong><span>{item.summary}</span></button></li> : <li key={`${item.kind}-${item.id}`}><Link href={href(item)} onClick={() => setQuery("")} target={item.slug && openArticlesInNewTab ? "_blank" : undefined} rel={item.slug && openArticlesInNewTab ? "noreferrer" : undefined}><small>{helpKindLabel(language, item.kind)} · {helpCategoryLabel(language, item.category)}</small><strong>{item.title}{item.slug && openArticlesInNewTab && <AppIcon name="external" />}</strong><span>{item.summary}</span></Link></li>)}</ul> : <p>{t.noResults}</p>}</div>}</section>;
+}

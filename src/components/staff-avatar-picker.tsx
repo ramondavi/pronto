@@ -1,0 +1,59 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { NEUTRAL_AVATARS, LiteraryAvatar, avatarChoiceFor } from "./literary-avatar";
+import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
+import { AppIcon } from "@/components/app-icon";
+import { useInterfaceLanguage } from "@/components/interface-language";
+import { uiText } from "@/lib/ui-text";
+
+export function StaffAvatarPicker({ userId, fullName, currentChoice }: { userId: string; fullName: string; currentChoice: number | null }) {
+  const { language } = useInterfaceLanguage();
+  const t = (source: string) => uiText(language, source);
+  const router = useRouter();
+  const [supabase] = useState(createClient);
+  const [selected, setSelected] = useState(() => avatarChoiceFor(userId, currentChoice));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const avatar = NEUTRAL_AVATARS.find((item) => item.slot * 3 === selected) ?? NEUTRAL_AVATARS[0];
+
+  async function choose(choice: number) {
+    if (saving || choice === selected) return;
+    const previous = selected;
+    setSelected(choice);
+    setSaving(true);
+    setError("");
+    const { error: updateError } = await supabase.rpc("choose_staff_avatar", { target_choice: choice });
+    setSaving(false);
+    if (updateError) {
+      setSelected(previous);
+      setError(t("Não foi possível salvar o avatar. Tente novamente."));
+      showPanelChangeError(t("Avatar não salvo"), t("Confira a conexão e tente novamente."));
+      return;
+    }
+    showPanelChange(t("Avatar salvo"), currentChoice === null ? undefined : async () => {
+      const { error: undoError } = await supabase.rpc("choose_staff_avatar", { target_choice: previous });
+      if (undoError) throw undoError;
+      setSelected(previous);
+      router.refresh();
+    });
+    router.refresh();
+  }
+
+  return <section className="panel staff-avatar-picker" aria-labelledby="staff-avatar-picker-title">
+    <div className="staff-avatar-picker__heading"><div><h2 id="staff-avatar-picker-title"><AppIcon name="person" />{t("Escolher avatar")}</h2><p>{t("Escolha uma combinação de formas e cores para sua conta.")}</p></div>{saving && <span className="staff-avatar-picker__status" role="status">{t("Salvando…")}</span>}</div>
+    <div className="staff-avatar-picker__featured" aria-live="polite">
+      <LiteraryAvatar id={userId} label={fullName} choice={selected} />
+      <div className="staff-avatar-picker__bio"><p className="eyebrow">{t("Seu avatar")}</p><h3>{t("Avatar")} {avatar.number}</h3></div>
+    </div>
+    {error && <p className="form-error" role="alert">{error}</p>}
+    <div className="staff-avatar-picker__gallery" aria-label={t("Avatares disponíveis")}>
+      {NEUTRAL_AVATARS.map((item) => {
+        const choice = item.slot * 3;
+        return <button key={item.slot} type="button" className={selected === choice ? "is-selected" : ""} aria-label={`${t("Escolher")} ${t("Avatar")} ${item.number}${selected === choice ? `, ${t("selecionado")}` : ""}`} aria-pressed={selected === choice} disabled={saving} onClick={() => void choose(choice)}><LiteraryAvatar id={userId} label={`${t("Avatar")} ${item.number}`} choice={choice} /><span>{t("Avatar")} {item.number}</span></button>;
+      })}
+    </div>
+  </section>;
+}

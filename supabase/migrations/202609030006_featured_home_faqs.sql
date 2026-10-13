@@ -1,0 +1,3 @@
+alter table public.frequently_asked_questions add column featured_position integer;
+alter table public.frequently_asked_questions add constraint frequently_asked_questions_featured_position_check check (featured_position between 1 and 3);
+create unique index frequently_asked_questions_featured_position_unique on public.frequently_asked_questions(featured_position) where featured_position is not null;

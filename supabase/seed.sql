@@ -1,0 +1,1 @@
+-- Sem dados de ensaio incorporados à base.

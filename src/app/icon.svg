@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="376 34 180 296">
+  <style>
+    rect { fill: #080808; stroke: #fff; stroke-width: 8; paint-order: stroke; }
+    @media (prefers-color-scheme: dark) { rect { fill: #fff; stroke: #080808; } }
+  </style>
+  <rect x="492" y="43" width="53" height="55" rx="3"/>
+  <rect x="386" y="96" width="33" height="33" rx="2"/>
+  <rect x="459" y="114" width="32" height="32" rx="2"/>
+  <rect x="409" y="161" width="51" height="51" rx="3"/>
+  <rect x="495" y="171" width="36" height="38" rx="2"/>
+  <rect x="460" y="224" width="31" height="31" rx="2"/>
+  <rect x="386" y="225" width="28" height="27" rx="2"/>
+  <rect x="426" y="259" width="21" height="21" rx="1"/>
+  <rect x="487" y="272" width="48" height="49" rx="3"/>
+</svg>

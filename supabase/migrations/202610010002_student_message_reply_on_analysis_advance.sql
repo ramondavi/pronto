@@ -1,0 +1,55 @@
+alter table public.request_analyses
+  add column student_message_reply text check (char_length(student_message_reply) <= 2000),
+  add column student_message_reply_sent_at timestamptz;
+
+alter table public.email_outbox drop constraint if exists email_outbox_event_type_check;
+alter table public.email_outbox add constraint email_outbox_event_type_check check
+  (event_type in ('request_opened', 'request_opened_coordination', 'changes_requested', 'request_released', 'request_completed', 'request_completed_coordination', 'feedback_reminder', 'request_canceled', 'student_message_reply'));
+
+create function public.save_student_message_reply(target_request_id uuid, reply_text text)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce(public.current_user_role() in ('cataloger', 'administrator'), false) is not true then raise exception 'active_staff_required'; end if;
+  if char_length(btrim(coalesce(reply_text, ''))) > 2000 then raise exception 'reply_too_long'; end if;
+  perform 1 from public.cataloging_requests
+    where id = target_request_id and assigned_to = auth.uid() and status = 'in_review' and nullif(btrim(library_note), '') is not null
+    for update;
+  if not found then raise exception 'request_locked_or_no_student_message'; end if;
+  insert into public.request_analyses(request_id, analysis_notes, internal_note, last_edited_by, student_message_reply, updated_at)
+    values(target_request_id, '', '', auth.uid(), nullif(btrim(reply_text), ''), now())
+    on conflict(request_id) do update set student_message_reply = excluded.student_message_reply,
+      last_edited_by = auth.uid(), updated_at = now();
+end;
+$$;
+
+create or replace function public.complete_request_analysis(target_request_id uuid)
+returns timestamptz language plpgsql security definer set search_path = '' as $$
+declare completed_at_value timestamptz := now(); reply_text text; recipient_email text; student_name text; protocol_value text;
+begin
+  if coalesce(public.current_user_role() in ('cataloger', 'administrator'), false) is not true then raise exception 'active_staff_required'; end if;
+  select p.email, p.full_name, r.protocol into recipient_email, student_name, protocol_value
+    from public.cataloging_requests r
+    join public.student_profiles sp on sp.id = r.student_profile_id
+    join public.profiles p on p.id = sp.profile_id
+    where r.id = target_request_id and r.assigned_to = auth.uid() and r.status = 'in_review' for update of r;
+  if not found then raise exception 'request_locked_by_another_staff'; end if;
+  insert into public.request_analyses (request_id, analysis_notes, internal_note, last_edited_by, review_completed_at, review_completed_by, updated_at)
+    values (target_request_id, '', '', auth.uid(), completed_at_value, auth.uid(), completed_at_value)
+    on conflict (request_id) do update set review_completed_at = completed_at_value, review_completed_by = auth.uid(), updated_at = completed_at_value;
+  select student_message_reply into reply_text from public.request_analyses where request_id = target_request_id;
+  if nullif(btrim(reply_text), '') is not null then
+    insert into public.email_outbox(request_id, event_type, idempotency_key, recipient, subject, text_body)
+      values(target_request_id, 'student_message_reply', 'student_message_reply:' || target_request_id::text, recipient_email,
+        'Pronto! | Resposta sobre o protocolo ' || protocol_value,
+        'Olá, ' || split_part(btrim(student_name), ' ', 1) || '.' || E'\n\nA biblioteca respondeu à mensagem que você enviou no protocolo ' || protocol_value || ':' || E'\n\n' || reply_text || E'\n\nAcompanhe o andamento no Pronto!.')
+      on conflict(idempotency_key) do nothing;
+    update public.request_analyses set student_message_reply_sent_at = completed_at_value where request_id = target_request_id;
+  end if;
+  insert into public.audit_logs (actor_id, action, entity_type, entity_id, metadata)
+    values (auth.uid(), 'request_analysis_completed', 'cataloging_request', target_request_id::text, '{}'::jsonb);
+  return completed_at_value;
+end;
+$$;
+
+revoke all on function public.save_student_message_reply(uuid, text) from public, anon, authenticated;
+grant execute on function public.save_student_message_reply(uuid, text) to authenticated;
