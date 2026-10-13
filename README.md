@@ -76,6 +76,6 @@ Para a verificação integrada, execute `npm run verify`. Os testes de navegador
 
 ## Manutenção e autoria
 
-O desenvolvimento é conduzido por **Ramon Davi Santana**, bibliotecário da BIB/FAUFBA, com decisões de serviço documentadas para a equipe e a instituição. A descrição do projeto e seu histórico de funcionalidades não dependem do histórico de commits do repositório anterior.
+**Ramon Davi Santana**, bibliotecário da BIB/FAUFBA, idealiza o Pronto! e toma as decisões, conduz e coordena o projeto. O **Codex (OpenAI)** escreve o código sob sua direção. As decisões de serviço são documentadas para a equipe e a instituição. A descrição do projeto e seu histórico de funcionalidades não dependem do histórico de commits do repositório anterior.
 
-O código do Pronto! está preparado para publicação sob a [GNU Affero General Public License, versão 3](LICENSE). A licença do código não concede uso das [marcas e imagens institucionais](ASSETS.md). Cada novo pull request deve acrescentar ao [changelog](CHANGELOG.md) uma nota datada que explique o que mudou para as pessoas usuárias ou para a operação. As condições de contribuição institucional seguem as decisões registradas no Documento-Mestre.
+O código do Pronto! é publicado sob a [GNU Affero General Public License, versão 3](LICENSE). A licença do código não concede uso das [marcas e imagens institucionais](ASSETS.md). Cada novo pull request deve acrescentar ao [changelog](CHANGELOG.md) uma nota datada que explique o que mudou para as pessoas usuárias ou para a operação. As condições de contribuição institucional seguem as decisões registradas no Documento-Mestre.

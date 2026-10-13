@@ -11,6 +11,6 @@ Os seguintes arquivos em `public/` contêm identidade institucional e devem ser 
 | FAUFBA | `logo-faufba.png` |
 | BIB/FAUFBA | `logo-biblioteca-faufba.png`, `logo-biblioteca-faufba-pronto.png`, `logo-biblioteca-faufba-pronto-cinza.png`, `logo-biblioteca-faufba-light.png`, `logo-biblioteca-faufba-dark.png` |
 
-Os retratos usados anteriormente em `public/avatars/` foram criados a partir de imagens encontradas na internet e enviadas ao ChatGPT. Como a origem e as permissões dessas referências não estão documentadas, os retratos foram removidos da versão atual e substituídos por avatares geométricos desenhados em código. Os arquivos antigos ainda existem no histórico Git privado; remover os arquivos da versão atual não autoriza tornar esse histórico público.
+Os 18 avatares em `public/avatars/` são composições geométricas neutras, desenhadas em código, sem retratos de pessoas.
 
 Outras marcas, nomes e conteúdos de terceiros citados na documentação ou exibidos pela aplicação permanecem sujeitos aos direitos e às condições de seus respectivos titulares.
