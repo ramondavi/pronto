@@ -10,7 +10,7 @@ Atualizado em 12/10/2026. Regras: documento-mestre.md; decisões abertas: deciso
 
 ## Produção e próximo passo
 
-- Código aberto aprovado: AGPL-3.0, marcas separadas em `ASSETS.md` e 18 avatares neutros na branch atual. Após o PR, criar novo `ramondavi/pronto` público com histórico limpo; o repositório antigo segue privado porque contém os retratos nos commits.
+- Código aberto publicado em `ramondavi/pronto` sob AGPL-3.0, com marcas separadas em `ASSETS.md` e 18 avatares geométricos neutros. O repositório histórico permanece privado.
 - Supabase Auth: Site URL e redirects confirmados; SMTP personalizado e três modelos de e-mail salvos. Vercel Production: `SMTP_PASSWORD`, `SUPABASE_SECRET_KEY` e `EMAIL_WORKER_SECRET` cadastrados como segredos, sem compartilhar valores.
 - O Supabase hospedado ainda mostra `202608230010_stabilization_release` como última migração. As posteriores dependem de revisão de impacto e confirmação explícita para aplicação remota.
 - O deployment do PR 54 está Ready / Production Staged; a atribuição automática de domínios está desativada. `prontobib.vercel.app` ainda apresenta a versão antiga, e o logo do e-mail retorna 404 nela. Não promover antes de sincronizar o banco.

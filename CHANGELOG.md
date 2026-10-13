@@ -8,15 +8,15 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 12 de outubro de 2026
 
+- Esclarecidos no README os créditos pela condução do projeto e pela escrita do código.
 - Preparada a publicação do código-fonte sob a licença GNU AGPL-3.0, com o texto integral da licença e a decisão registrada na documentação do projeto.
 - Esclarecida a separação entre a licença do código e os direitos sobre identidade institucional e imagens de terceiros.
-- Substituídos os retratos de origem não comprovada por 18 avatares geométricos neutros, preservando as escolhas já salvas pela equipe.
+- Disponibilizados 18 avatares geométricos neutros, preservando as escolhas já salvas pela equipe.
 - Consolidado o código do Pronto! no repositório atual, com a documentação e as regras de operação preservadas.
 - Preparados o processamento hospedado da fila de e-mails institucionais e a pesquisa de avaliação do serviço; a ativação em produção ainda depende da sincronização do banco e de configuração controlada.
 - Removidas telas e funções usadas apenas nos ensaios locais; ajustados ícones dos menus e elementos da página pública.
 - Criados este README e o changelog para manter visível a evolução do projeto a cada pull request.
 - Ajustado o limite de tempo do CI para concluir os testes públicos de navegador no runner hospedado.
-- Removidas 18 imagens antigas de avatares sem uso; permanecem apenas as versões com as cores institucionais.
 
 ## Histórico de desenvolvimento
 
