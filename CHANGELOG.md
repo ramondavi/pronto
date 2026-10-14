@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 14 de outubro de 2026
 
+- Ampliado o tempo da verificação de acessibilidade da página inicial no CI para acomodar sua renderização e análise completas.
 - A concessão ou o bloqueio de acesso mais recente agora prevalece de forma consistente, mesmo quando duas alterações ocorrem na mesma transação.
 - Corrigida a validação de permissões nas mudanças de status de ficha, Nada Consta e solicitação, preservando os fluxos existentes e a proteção por perfil.
 - O servidor local usa Webpack para evitar reinicializações repetidas durante a edição e aceita os endereços `localhost` e `127.0.0.1` em desenvolvimento.
