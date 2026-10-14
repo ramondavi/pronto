@@ -9,7 +9,9 @@ import { CduCatalogAdmin } from "./cdu-catalog-admin";
 import { ControlledTermsAdmin } from "./controlled-terms-admin";
 import { AppIcon } from "./app-icon";
 import { ModalCloseButton } from "./modal-close-button";
-import { isLibraryClosureAnnouncement, serviceDayKey } from "@/lib/service-announcements";
+import { formatLibraryHour, isLibraryClosureAnnouncement, serviceDayKey } from "@/lib/service-announcements";
+import { StaffPermissionsAdmin, type PermissionDefinition, type PermissionOverride, type InheritedRole } from "./staff-permissions-admin";
+import { DailyClosingControl } from "./daily-closing-control";
 
 type User = {
   id: string;
@@ -18,9 +20,13 @@ type User = {
   role: string;
   status: string;
   created_at: string;
-  staff_profiles: { professional_name: string; crb: string }[];
+  staff_profiles: StaffProfile[] | StaffProfile | null;
   student_profiles: { birth_date: string | null }[];
 };
+type StaffProfile = { professional_name: string; crb: string };
+function firstStaffProfile(value: User["staff_profiles"]): StaffProfile | null {
+  return Array.isArray(value) ? value[0] ?? null : value;
+}
 type StaffCandidate = { user_id: string; email: string };
 type Program = {
   id: string;
@@ -42,6 +48,7 @@ type Announcement = {
   calendar_source?: "manual" | "federal_mgi";
   source_reference?: string | null;
 };
+type DailyHours = { service_date: string; closing_time: string };
 type Template = {
   id: string;
   code: string;
@@ -89,6 +96,7 @@ const actionLabels: Record<string, string> = {
   account_administration_changed: "Conta alterada",
   program_operation_configuration_changed: "Programa configurado",
   library_announcement_saved: "Mural atualizado",
+  library_daily_closing_changed: "Fechamento diário alterado",
   issue_template_changed: "Template alterado",
   frequently_asked_question_saved: "Pergunta frequente alterada",
   nada_consta_purged: "Nada Consta expurgado",
@@ -121,11 +129,17 @@ export function AdminOperations(props: {
   staffCandidates: StaffCandidate[];
   programs: Program[];
   announcements: Announcement[];
+  dailyHours: DailyHours[];
   templates: Template[];
   logs: Log[];
   purgeDocuments: Purge[];
   knowledge: KnowledgeEntry[];
   cduEntries: ComponentProps<typeof CduCatalogAdmin>["entries"];
+  permissionDefinitions: PermissionDefinition[];
+  permissionOverrides: PermissionOverride[];
+  inheritedRoles: InheritedRole[];
+  canViewCalendar: boolean;
+  delegatedCalendarOnly?: boolean;
 }) {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState("");
@@ -133,6 +147,8 @@ export function AdminOperations(props: {
   const [users, setUsers] = useState(props.users);
   const [purge, setPurge] = useState(props.purgeDocuments);
   const [announcements, setAnnouncements] = useState(props.announcements);
+  const [dailyHours, setDailyHours] = useState(props.dailyHours);
+  const [closingDate, setClosingDate] = useState(() => serviceDayKey(new Date()));
   const [editingAnnouncement, setEditingAnnouncement] =
     useState<Announcement | null>(null);
   const [announcementToDelete, setAnnouncementToDelete] = useState<Announcement | null>(null);
@@ -175,7 +191,7 @@ export function AdminOperations(props: {
     const role = String(form.get("role"));
     const status = String(form.get("status"));
     const professionalName = user.full_name;
-    const crb = String(form.get("crb") ?? "");
+    const crb = String(form.get("crb") ?? "").trim();
     setBusy(`u-${user.id}`);
     setMessage("");
     const { error } = await supabase.rpc("admin_manage_account", {
@@ -192,7 +208,7 @@ export function AdminOperations(props: {
           .select("role,status,staff_profiles(professional_name,crb)")
           .eq("id", user.id)
           .single();
-    const staff = saved?.staff_profiles?.[0];
+    const staff = firstStaffProfile(saved?.staff_profiles ?? null);
     const confirmed =
       !readError &&
       saved?.role === role &&
@@ -220,7 +236,7 @@ export function AdminOperations(props: {
         ),
       );
       showPanelChange("Alterações da conta salvas", async () => {
-        const previousStaff = user.staff_profiles?.[0];
+        const previousStaff = firstStaffProfile(user.staff_profiles);
         const { error: undoError } = await supabase.rpc("admin_manage_account", {
           target_profile_id: user.id,
           target_role: user.role,
@@ -280,7 +296,7 @@ export function AdminOperations(props: {
           .select("full_name,role,status,staff_profiles(professional_name,crb)")
           .eq("id", id)
           .single();
-        const staff = data?.staff_profiles?.[0];
+        const staff = firstStaffProfile(data?.staff_profiles ?? null);
         return (
           !error &&
           data?.full_name === fullName &&
@@ -429,6 +445,8 @@ export function AdminOperations(props: {
   };
   function addClosure(day: number) {
     setSelectedCalendarDay(day);
+    const date = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    setClosingDate(date);
     const existing = eventsForDay(day)[0];
     if (existing) { setEditingAnnouncement(existing); return; }
     const value = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T00:00`;
@@ -555,13 +573,13 @@ export function AdminOperations(props: {
           : user.role !== "student")) &&
       (userStatus === "all" || user.status === userStatus),
   );
-  const adminTabs = adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs;
+  const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => props.delegatedCalendarOnly ? tab.id === "library" : tab.id !== "library" || props.canViewCalendar);
   useEffect(() => {
     setActiveTab(props.tab);
   }, [props.tab]);
   return (
-    <div className="admin-operations" data-active-tab={activeTab}>
-      {message && (message.startsWith("Não ") || !/salv|alterad|corrigid|atualizad|excluíd|registrad|criad|removid|confirmad/i.test(message)) && (
+    <div className="admin-operations" data-active-tab={activeTab} data-delegated-calendar={props.delegatedCalendarOnly ? "true" : undefined}>
+      {message && !message.startsWith("Não ") && !/salv|alterad|corrigid|atualizad|excluíd|registrad|criad|removid|confirmad/i.test(message) && (
         <p className="auth-feedback admin-toast" role="status">
           {message}
         </p>
@@ -670,6 +688,7 @@ export function AdminOperations(props: {
             />
           ))}
         </div>
+        <StaffPermissionsAdmin users={users} definitions={props.permissionDefinitions} initialOverrides={props.permissionOverrides} initialRoles={props.inheritedRoles} />
       </section>
       <section className="panel admin-section">
         <p className="eyebrow">Programas</p>
@@ -763,11 +782,14 @@ export function AdminOperations(props: {
               const featured = events.find((item) => isLibraryClosureAnnouncement(item)) ?? events[0];
               const source = featured ? announcementColorCategory(featured) : "notice";
               const type = source === "holiday" ? "Feriado federal" : source === "optional" ? "Ponto facultativo federal" : source === "manual" ? "Fechamento da biblioteca" : "Comunicado sem fechamento";
-              return <button type="button" key={day} aria-label={`${day} de ${monthNames[calendarMonth]} de ${calendarYear}${events.length ? `, ${events.length} ocorrência${events.length === 1 ? "" : "s"}` : ""}`} aria-pressed={selectedCalendarDay === day} className={`${weekend ? "is-weekend " : ""}${events.length ? `has-event is-${source}` : ""}${selectedCalendarDay === day ? " is-selected" : ""}`} onClick={() => addClosure(day)}><b>{day}</b>{featured && <span className="calendar-event"><em>{type}</em><small>{featured.title}{events.length > 1 ? ` +${events.length - 1}` : ""}</small></span>}</button>;
+              const dayKey = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+              const specialClose = dailyHours.find((item) => item.service_date === dayKey);
+              return <button type="button" key={day} aria-label={`${day} de ${monthNames[calendarMonth]} de ${calendarYear}${events.length ? `, ${events.length} ocorrência${events.length === 1 ? "" : "s"}` : ""}${specialClose ? `, fechamento às ${formatLibraryHour(specialClose.closing_time)}` : ""}`} aria-pressed={selectedCalendarDay === day} className={`${weekend ? "is-weekend " : ""}${events.length ? `has-event is-${source}` : ""}${selectedCalendarDay === day ? " is-selected" : ""}`} onClick={() => addClosure(day)}><b>{day}</b>{featured && <span className="calendar-event"><em>{type}</em><small>{featured.title}{events.length > 1 ? ` +${events.length - 1}` : ""}</small></span>}{specialClose && <span className="calendar-event"><em>Até {formatLibraryHour(specialClose.closing_time)}</em></span>}</button>;
             })}
             {Array.from({ length: (7 - ((firstWeekday + daysInMonth) % 7)) % 7 }, (_, index) => <span key={`after-${index}`} />)}
           </div>
         </div>
+        <DailyClosingControl key={closingDate} initialHours={dailyHours} selectedDate={closingDate} onSaved={setDailyHours} />
         <div className="calendar-editor__heading"><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Normal” para comunicados sem fechamento. As ocorrências de fechamento entram no cálculo dos dias úteis.</p></div></div>
         <form
           className="admin-grid calendar-editor"
@@ -1055,7 +1077,7 @@ function UserRow({
 }) {
   const [role, setRole] = useState(user.role);
   const staff = role !== "student";
-  const details = user.staff_profiles?.[0];
+  const details = firstStaffProfile(user.staff_profiles);
   const birthDate = user.student_profiles?.[0]?.birth_date;
   return (
     <div className="admin-user-entry">

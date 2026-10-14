@@ -27,7 +27,7 @@
 .meta a svg { width: 12px; height: 12px; flex: 0 0 auto; }
 .meta a:hover { text-decoration: underline; }
 @media (min-width: 901px) {
-  :global(body:has(.dashboard-shell)) .footer { margin-left: 76px; }
+  :global(body:has(.dashboard-shell)) .footer { z-index: 61; width: 100%; margin-left: 0; }
   :global(body:has(.dashboard-shell)) .inner { width: min(1120px, calc(100% - 64px)); }
   :global(body:has(.dashboard-shell)) .inner { padding-block: 24px 20px; }
 }

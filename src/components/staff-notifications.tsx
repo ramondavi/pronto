@@ -33,7 +33,7 @@ function noticeDestination(notice: Notice) {
   return notice.href;
 }
 
-export function StaffNotifications({ userId, onUnreadChange }: { userId: string; onUnreadChange: (count: number) => void }) {
+export function StaffNotifications({ userId, onUnreadChange, previewCount }: { userId: string; onUnreadChange: (count: number) => void; previewCount?: number }) {
   const router = useRouter();
   const [supabase] = useState(createClient);
   const [open, setOpen] = useState(false);
@@ -229,9 +229,10 @@ export function StaffNotifications({ userId, onUnreadChange }: { userId: string;
 
   function selectFilter(next: Filter) { setItems([]); setTotal(0); setFilter(next); setVisible(PAGE_SIZE); }
 
+  const visibleUnread = previewCount ?? unread;
   return <div className="staff-notifications" ref={containerRef}>
-    <button ref={triggerRef} className={`staff-notifications__trigger${ringing && !open ? " is-ringing" : ""}${toastNotice && toastAnchor.visible ? " is-emitting" : ""}`} type="button" aria-label={`Notificações${unread ? `, ${unread} não lidas` : ""}`} aria-expanded={open} aria-controls="staff-notifications-panel" onClick={() => { if (!open) selectFilter("all"); setNow(Date.now()); setOpen((value) => !value); setRinging(false); setToastNotice(null); }} title="Notificações">
-      <span className="staff-notifications__symbol"><AppIcon name="bell" />{unread > 0 && <span className="staff-notifications__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}</span>
+    <button ref={triggerRef} className={`staff-notifications__trigger${ringing && !open ? " is-ringing" : ""}${toastNotice && toastAnchor.visible ? " is-emitting" : ""}`} type="button" aria-label={`Notificações${visibleUnread ? `, ${visibleUnread} não lidas` : ""}`} aria-expanded={open} aria-controls="staff-notifications-panel" onClick={() => { if (!open) selectFilter("all"); setNow(Date.now()); setOpen((value) => !value); setRinging(false); setToastNotice(null); }} title="Notificações">
+      <span className="staff-notifications__symbol"><AppIcon name="bell" />{visibleUnread > 0 && <span className="staff-notifications__badge" aria-hidden="true">{visibleUnread > 99 ? "99+" : visibleUnread}</span>}</span>
     </button>
     {toastNotice && !open && <button key={toastNotice.id} className={`staff-notifications__toast${toastAnchor.visible ? "" : " is-detached"}`} style={toastAnchor.visible ? undefined : { left: toastAnchor.left }} type="button" onClick={() => { setToastNotice(null); void openNotice(toastNotice); }}><span>Nova notificação</span><strong>{toastNotice.title}</strong><small>{noticeMessage(toastNotice)}</small></button>}
     {open && <section className="staff-notifications__panel" id="staff-notifications-panel" aria-label="Central de notificações">

@@ -6,6 +6,31 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 14 de outubro de 2026
+
+- Ampliado o tempo da verificação de acessibilidade da página inicial no CI para acomodar sua renderização e análise completas.
+- A concessão ou o bloqueio de acesso mais recente agora prevalece de forma consistente, mesmo quando duas alterações ocorrem na mesma transação.
+- Corrigida a validação de permissões nas mudanças de status de ficha, Nada Consta e solicitação, preservando os fluxos existentes e a proteção por perfil.
+- O servidor local usa Webpack para evitar reinicializações repetidas durante a edição e aceita os endereços `localhost` e `127.0.0.1` em desenvolvimento.
+- A autoria do projeto no README e os créditos do rodapé foram ajustados sem citar ferramentas específicas.
+
+### 13 de outubro de 2026
+
+- As quatro etapas de “Como funciona” avançam automaticamente enquanto estão na tela, com pausa durante a interação e para quem prefere movimento reduzido; seus detalhes agora trocam por fade, sem deslocamento vertical e com altura estável. O título de vantagens recebe um caminho tracejado em L, afastado do texto e percorrido por uma bolinha, e o de dúvidas frequentes anima a passagem de pergunta a resposta.
+- Na seção “Como funciona”, os efeitos do título começam quando pelo menos metade da seção está visível: “repetição” ganha ecos breves, “Menos repetição” recebe um sublinhado permanente e “Mais clareza”, desfocado desde o início, torna-se nítido com um reflexo breve após uma pausa.
+- O fundo geométrico da hero se estende por trás do logotipo e da navegação pública; no título principal, códigos CDU se transformam em “Fichas Catalográficas” e um marcador de texto destaca a expressão nos temas claro e escuro, respeitando a preferência por movimento reduzido.
+- O favicon passa a usar o mesmo pictograma de quadrados do menu lateral; o cabeçalho público alinha visualmente o logotipo, ganha mais espaço vertical e perde a linha inferior.
+- A janela de ciência da política no primeiro acesso exige rolar o texto até o fim antes de habilitar o botão; a orientação fica no próprio botão e a janela recebe o visual do painel, com ícone, rolagem e degradês.
+- Corrigido o link de alteração de senha para abrir em outro navegador ou dispositivo; novos e-mails usam verificação direta do link.
+- O rascunho estudantil e os preenchimentos provisórios da análise passam a ser salvos automaticamente no banco, com acesso restrito às contas correspondentes. A catalogação restaura prioritariamente a versão do banco.
+- A barra lateral do painel de todos os perfis passa a expandir ao passar o mouse, com nomes animados, pictograma compacto de quadrados sem fundo, itens centralizados, destaque arredondado e submenus animados sem divisórias. O pictograma é identificado como “Pronto!”, o fundo acompanha a área de conteúdo, a sombra aparece apenas quando há sobreposição, as barras superiores se alinham ao conteúdo até a borda direita, e o rodapé cobre a barra. A barra de acessibilidade ganha respiro; o avatar da saudação recebe uma borda fina; fila, notificações e mensagens exibem o mesmo contador vermelho redondo.
+- Preparado um controle individual de acessos da equipe, com concessões, bloqueios, herança da visão de estudante para demonstração, validade programada ou indeterminada, revogação e auditoria. Operações como alterar o fechamento diário, assumir ou reatribuir atendimentos, homologar fichas e validar o Nada Consta passam a respeitar essas decisões também no banco local; a publicação depende da migração correspondente.
+- Corrigido o aviso de funcionamento para indicar biblioteca fechada fora do expediente de segunda a sexta, das 8h às 21h, com atualização automática ao abrir e fechar; as solicitações continuam disponíveis e os prazos seguem em dias úteis.
+- Nos cabeçalhos, o aviso aberto passa a mostrar o fechamento previsto sem caixa de detalhes; no estado fechado, a caixa mostra data, hora local e horário da biblioteca e permanece aberta ao mover o mouse pelo espaço até ela. No aviso principal da página inicial, data e hora atuais substituem o título do topo, o funcionamento ocupa o canto oposto e a orientação aparece maior em uma linha. A Administração poderá ajustar o fechamento de uma data específica no calendário, após a migração do banco.
+- Eliminada a troca visível da saudação ao recarregar o painel; a escolha de avatar da equipe ocupa uma grade compacta, sem cartão de destaque nem biografias.
+- Substituído o catálogo por dez símbolos nomeados de livros e arquitetura, com o nome sob cada opção e ao lado de “Seu avatar”; o avatar no botão Meu painel usa o raio do design system. No detalhe do aviso fechado, o horário passa a ter ícone e o texto “Funcionamento”.
+- Corrigida a leitura e a confirmação do CRB nas contas da equipe; erros de salvamento na Administração passam a aparecer em uma única notificação.
+
 ### 12 de outubro de 2026
 
 - Esclarecidos no README os créditos pela condução do projeto e pela escrita do código.

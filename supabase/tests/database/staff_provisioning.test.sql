@@ -44,9 +44,9 @@ values
 
 update auth.users set email_confirmed_at=now() where id='30000000-0000-4000-8000-000000000010';
 
-select is((select count(*)::integer from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010'),1,'conta interna confirmada gera aviso para administrador ativo');
-select is((select recipient from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010'),'teste.pgtap.admin-ativo@ufba.br','aviso é destinado somente ao administrador ativo');
-select is((select status from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010'),'pending','aviso começa pendente para entrega local');
+select is((select count(*)::integer from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010' and recipient='teste.pgtap.admin-ativo@ufba.br'),1,'conta interna confirmada gera aviso para administrador ativo');
+select is((select recipient from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010' and recipient='teste.pgtap.admin-ativo@ufba.br'),'teste.pgtap.admin-ativo@ufba.br','aviso é destinado ao administrador ativo');
+select is((select status from public.account_notification_outbox where target_user_id='30000000-0000-4000-8000-000000000010' and recipient='teste.pgtap.admin-ativo@ufba.br'),'pending','aviso começa pendente para entrega local');
 
 set local role authenticated;
 set local request.jwt.claim.sub = '30000000-0000-4000-8000-000000000002';

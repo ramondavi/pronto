@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="376 34 180 296">
   <style>
-    rect { fill: #080808; stroke: #fff; stroke-width: 8; paint-order: stroke; }
-    @media (prefers-color-scheme: dark) { rect { fill: #fff; stroke: #080808; } }
+    rect { fill: #080808; }
+    @media (prefers-color-scheme: dark) { rect { fill: #fff; } }
   </style>
   <rect x="492" y="43" width="53" height="55" rx="3"/>
   <rect x="386" y="96" width="33" height="33" rx="2"/>

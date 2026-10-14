@@ -29,6 +29,9 @@ export function dashboardTrail(language: keyof typeof breadcrumbCopy, pathname: 
     if (pathname.endsWith("/nova")) items.push({ label: t[10] });
     if (pathname.endsWith("/corrigir")) items.push({ label: t[11] });
   } else if (pathname === "/painel/autodeposito") items.push({ label: t[12] });
+  else if (pathname === "/painel/calendario") items.push({ label: "Calendário da biblioteca" });
+  else if (pathname === "/painel/horarios") items.push({ label: "Horários da biblioteca" });
+  else if (pathname === "/painel/visao-estudante") items.push({ label: "Visão de estudante" });
   else if (pathname === "/painel/admin/programas") items.push({ label: t[13], href: "/painel/admin" }, { label: t[14] });
   else if (pathname === "/painel/admin/avaliacoes") items.push({ label: t[13], href: "/painel/admin" }, { label: t[18] });
   else if (pathname === "/painel/admin") {

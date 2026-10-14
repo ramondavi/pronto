@@ -7,7 +7,7 @@ export const formGuidance = {
     keywordOrder: "À esquerda, um termo no idioma original do trabalho. À direita, o mesmo termo em português; se o original for português, use inglês à direita. Cada linha representa um único par equivalente.",
     originalChange: "Confira o título, o subtítulo e as palavras-chave após mudar o idioma original. Os textos já digitados não são traduzidos automaticamente.",
     cancel: "Cancelar", moveUp: "Mover para cima", moveDown: "Mover para baixo", filled: "Preenchido",
-    savingError: "Não foi possível salvar neste navegador. Mantenha a página aberta para preservar o preenchimento.",
+    savingError: "Não foi possível salvar no banco. Confira a conexão e mantenha a página aberta para preservar o preenchimento.",
   },
   en: {
     duplicateTerm: "This term already appears in this column. Enter a different term.", memberPosition: "Committee member {number}",
@@ -16,7 +16,7 @@ export const formGuidance = {
     keywordOrder: "On the left, enter one term in the work’s original language. On the right, enter its Portuguese equivalent; if the original is Portuguese, use English on the right. Each row is one equivalent pair.",
     originalChange: "Check the title, subtitle, and keywords after changing the original language. Existing text is not translated automatically.",
     cancel: "Cancel", moveUp: "Move up", moveDown: "Move down", filled: "Filled in",
-    savingError: "Unable to save in this browser. Keep this page open to preserve your entries.",
+    savingError: "Unable to save to the database. Check your connection and keep this page open to preserve your entries.",
   },
   es: {
     duplicateTerm: "Este término ya aparece en esta columna. Introduzca otro término.", memberPosition: "Miembro del tribunal {number}",
@@ -25,7 +25,7 @@ export const formGuidance = {
     keywordOrder: "A la izquierda, un término en el idioma original del trabajo. A la derecha, su equivalente en portugués; si el original es portugués, use inglés a la derecha. Cada fila representa un par equivalente.",
     originalChange: "Revise el título, el subtítulo y las palabras clave después de cambiar el idioma original. Los textos existentes no se traducen automáticamente.",
     cancel: "Cancelar", moveUp: "Subir", moveDown: "Bajar", filled: "Completado",
-    savingError: "No se pudo guardar en este navegador. Mantenga la página abierta para conservar los datos.",
+    savingError: "No se pudo guardar en la base de datos. Compruebe la conexión y mantenga la página abierta para conservar los datos.",
   },
   de: {
     duplicateTerm: "Dieser Begriff steht bereits in dieser Spalte. Geben Sie einen anderen Begriff ein.", memberPosition: "Kommissionsmitglied {number}",
@@ -34,7 +34,7 @@ export const formGuidance = {
     keywordOrder: "Links steht ein Begriff in der Originalsprache der Arbeit, rechts seine portugiesische Entsprechung. Bei einem portugiesischen Original steht rechts Englisch. Jede Zeile enthält ein entsprechendes Begriffspaar.",
     originalChange: "Prüfen Sie nach einem Sprachwechsel Titel, Untertitel und Schlagwörter. Vorhandene Texte werden nicht automatisch übersetzt.",
     cancel: "Abbrechen", moveUp: "Nach oben", moveDown: "Nach unten", filled: "Ausgefüllt",
-    savingError: "Speichern in diesem Browser fehlgeschlagen. Lassen Sie die Seite geöffnet, um Ihre Eingaben zu erhalten.",
+    savingError: "Speichern in der Datenbank fehlgeschlagen. Prüfen Sie die Verbindung und lassen Sie die Seite geöffnet.",
   },
   fr: {
     duplicateTerm: "Ce terme figure déjà dans cette colonne. Saisissez un autre terme.", memberPosition: "Membre du jury {number}",
@@ -43,7 +43,7 @@ export const formGuidance = {
     keywordOrder: "À gauche, un terme dans la langue originale du travail. À droite, son équivalent portugais ; si l’original est portugais, utilisez l’anglais à droite. Chaque ligne correspond à une paire équivalente.",
     originalChange: "Vérifiez le titre, le sous-titre et les mots-clés après avoir changé la langue originale. Les textes existants ne sont pas traduits automatiquement.",
     cancel: "Annuler", moveUp: "Monter", moveDown: "Descendre", filled: "Renseigné",
-    savingError: "Impossible d’enregistrer dans ce navigateur. Gardez cette page ouverte pour conserver vos données.",
+    savingError: "Impossible d’enregistrer dans la base de données. Vérifiez la connexion et gardez cette page ouverte.",
   },
   it: {
     duplicateTerm: "Questo termine è già presente in questa colonna. Inserite un altro termine.", memberPosition: "Membro della commissione {number}",
@@ -52,6 +52,6 @@ export const formGuidance = {
     keywordOrder: "A sinistra, un termine nella lingua originale dell’opera. A destra, il suo equivalente in portoghese; se l’originale è portoghese, usate l’inglese a destra. Ogni riga rappresenta una coppia equivalente.",
     originalChange: "Controllate titolo, sottotitolo e parole chiave dopo aver cambiato la lingua originale. I testi esistenti non vengono tradotti automaticamente.",
     cancel: "Annulla", moveUp: "Sposta su", moveDown: "Sposta giù", filled: "Compilato",
-    savingError: "Impossibile salvare in questo browser. Tenete aperta la pagina per conservare i dati.",
+    savingError: "Impossibile salvare nel database. Controllate la connessione e tenete aperta la pagina.",
   },
 };

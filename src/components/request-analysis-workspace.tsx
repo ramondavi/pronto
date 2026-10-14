@@ -15,6 +15,7 @@ type IssueTemplate = { id: string; code: string; label: string; message: string 
 export type ReviewField = { key: string; label: string; value: string; multiline?: boolean };
 type IssueDetail = { templateId: string; freeJustification: string };
 type StudentCorrection = { field_key: string; previous_value: unknown; corrected_value: unknown; submitted_at: string };
+type AnalysisDraft = { sourceValues: Record<string, string>; values: Record<string, string>; validated: string[]; selectedFields: string[]; issueDetails: Record<string, IssueDetail>; citation: string; studentReply: string };
 
 const generalIssueCodes = new Set(["required_missing", "work_mismatch", "incomplete_information", "format_standardization"]);
 const personIssueFields = new Set(["author", "advisor", "coadvisor"]);
@@ -45,23 +46,27 @@ function valueForInput(value: unknown) {
   return String(value);
 }
 
-export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, initialInternalNote, initialReviewCompletedAt, initialCorrectionBaselines, studentCorrections, suggestedCitation, initialCitation, citationValidatedAt, citationCurrent, editable, citationEditable = editable, templates, fields, studentMessage, initialStudentReply, studentReplySentAt }: { requestId: string; initialAnalysisNotes: string; initialInternalNote: string; initialSavedAt: string | null; initialReviewCompletedAt: string | null; initialCorrectionBaselines: Record<string, unknown>; studentCorrections: StudentCorrection[]; suggestedCitation: string | null; initialCitation: string | null; citationValidatedAt: string | null; citationCurrent: boolean; editable: boolean; citationEditable?: boolean; templates: IssueTemplate[]; fields: ReviewField[]; studentMessage?: string | null; initialStudentReply?: string | null; studentReplySentAt?: string | null }) {
+export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, initialInternalNote, initialReviewCompletedAt, initialCorrectionBaselines, initialDraft, studentCorrections, suggestedCitation, initialCitation, citationValidatedAt, citationCurrent, editable, citationEditable = editable, templates, fields, studentMessage, initialStudentReply, studentReplySentAt }: { requestId: string; initialAnalysisNotes: string; initialInternalNote: string; initialSavedAt: string | null; initialReviewCompletedAt: string | null; initialCorrectionBaselines: Record<string, unknown>; initialDraft: unknown; studentCorrections: StudentCorrection[]; suggestedCitation: string | null; initialCitation: string | null; citationValidatedAt: string | null; citationCurrent: boolean; editable: boolean; citationEditable?: boolean; templates: IssueTemplate[]; fields: ReviewField[]; studentMessage?: string | null; initialStudentReply?: string | null; studentReplySentAt?: string | null }) {
   const router = useRouter();
+  const draft = !initialReviewCompletedAt && initialDraft && typeof initialDraft === "object" ? initialDraft as Partial<AnalysisDraft> : null;
+  const sourceValues = Object.fromEntries(fields.map((field) => [field.key, field.value]));
+  const restorableKeys = new Set(fields.filter((field) => draft?.sourceValues?.[field.key] === field.value || draft?.values?.[field.key] === field.value).map((field) => field.key));
+  const draftSourceCurrent = fields.every((field) => restorableKeys.has(field.key));
   const [analysisNotes, setAnalysisNotes] = useState(initialAnalysisNotes);
   const internalNote = initialInternalNote;
-  const [values, setValues] = useState(() => Object.fromEntries(fields.map((field) => [field.key, field.value])));
-  const [validated, setValidated] = useState<string[]>([]);
+  const [values, setValues] = useState(() => ({ ...sourceValues, ...Object.fromEntries(Object.entries(draft?.values ?? {}).filter(([key, value]) => restorableKeys.has(key) && typeof value === "string")) }));
+  const [validated, setValidated] = useState<string[]>(() => Array.isArray(draft?.validated) ? draft.validated.filter((key) => restorableKeys.has(key)) : []);
   const [corrected, setCorrected] = useState<string[]>(() => Object.keys(initialCorrectionBaselines));
   const [originalValues, setOriginalValues] = useState<Record<string, unknown>>(initialCorrectionBaselines);
   const [editing, setEditing] = useState<string[]>([]);
-  const [selectedFields, setSelectedFields] = useState<string[]>([]);
-  const [issueDetails, setIssueDetails] = useState<Record<string, IssueDetail>>({});
+  const [selectedFields, setSelectedFields] = useState<string[]>(() => Array.isArray(draft?.selectedFields) ? draft.selectedFields.filter((key) => restorableKeys.has(key)) : []);
+  const [issueDetails, setIssueDetails] = useState<Record<string, IssueDetail>>(() => Object.fromEntries(Object.entries(draft?.issueDetails ?? {}).filter(([key]) => restorableKeys.has(key))));
   const [ready, setReady] = useState(false);
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [returning, setReturning] = useState(false);
   const [adjustmentsSent, setAdjustmentsSent] = useState(false);
   const [reviewCompletedAt, setReviewCompletedAt] = useState<string | null>(initialReviewCompletedAt);
-  const [citation, setCitation] = useState(initialCitation && citationCurrent ? initialCitation : suggestedCitation ?? "");
+  const [citation, setCitation] = useState(initialCitation && citationCurrent ? initialCitation : draftSourceCurrent ? draft?.citation ?? suggestedCitation ?? "" : suggestedCitation ?? "");
   const [citationApproved, setCitationApproved] = useState(Boolean(citationValidatedAt && citationCurrent));
   useEffect(() => { const invalidate = () => setCitationApproved(false); window.addEventListener("request-analysis:citation-invalidate", invalidate); return () => window.removeEventListener("request-analysis:citation-invalidate", invalidate); }, []);
   useEffect(() => { const update = (event: Event) => { const suggested = (event as CustomEvent<{ suggested: string | null }>).detail?.suggested; setCitationApproved(false); if (suggested) setCitation(suggested); }; window.addEventListener("request-analysis:citation-source-changed", update); return () => window.removeEventListener("request-analysis:citation-source-changed", update); }, []);
@@ -79,7 +84,7 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
   const [summaryTarget, setSummaryTarget] = useState<Element | null>(null);
   const [citationTarget, setCitationTarget] = useState<Element | null>(null);
   const [studentMessageTarget, setStudentMessageTarget] = useState<Element | null>(null);
-  const [studentReply, setStudentReply] = useState(initialStudentReply ?? "");
+  const [studentReply, setStudentReply] = useState(initialStudentReply ?? (draftSourceCurrent ? draft?.studentReply : null) ?? "");
   const [savedStudentReply, setSavedStudentReply] = useState(initialStudentReply ?? "");
   const [replySaving, setReplySaving] = useState(false);
   const [replyError, setReplyError] = useState("");
@@ -89,8 +94,28 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
   const noteEditStart = useRef<string | null>(null);
   const pendingNoteNotice = useRef<{ previous: string; saved: string } | null>(null);
   const [undoingAutoSave, setUndoingAutoSave] = useState(false);
+  const analysisDraftSnapshot = JSON.stringify({ sourceValues, values, validated, selectedFields, issueDetails, citation, studentReply });
+  const savedAnalysisDraft = useRef(initialDraft ? JSON.stringify(initialDraft) : "");
+  const analysisDraftQueue = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => setReady(true), []);
+  useEffect(() => {
+    if (!ready || !editable || reviewCompletedAt || savedAnalysisDraft.current === analysisDraftSnapshot) return;
+    const timer = window.setTimeout(() => {
+      const snapshot = analysisDraftSnapshot;
+      analysisDraftQueue.current = analysisDraftQueue.current.catch(() => undefined).then(async () => {
+        const { error } = await createClient().rpc("save_request_analysis_draft", { target_request_id: requestId, draft_payload: JSON.parse(snapshot) });
+        if (error) { showPanelChangeError("Análise não salva", "Não foi possível salvar os campos no banco. Confira a conexão e tente novamente."); return; }
+        savedAnalysisDraft.current = snapshot;
+      });
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [analysisDraftSnapshot, editable, ready, requestId, reviewCompletedAt]);
+  useEffect(() => {
+    if (!ready || !editable || reviewCompletedAt || studentReply === savedStudentReply || studentReply.length > 8000) return;
+    const timer = window.setTimeout(() => { void saveStudentReply(true); }, 700);
+    return () => window.clearTimeout(timer);
+  }, [studentReply, savedStudentReply, ready, editable, reviewCompletedAt]);
   useEffect(() => setActionsTarget(document.getElementById("request-analysis-actions-end")), []);
   useEffect(() => { window.dispatchEvent(new CustomEvent("request-analysis:pending-adjustments", { detail: { pending: editable && selectedFields.length > 0 } })); }, [editable, selectedFields]);
   useEffect(() => { const openNotes = () => setNotesOpen(true); window.addEventListener("request-analysis:open-notes", openNotes); return () => window.removeEventListener("request-analysis:open-notes", openNotes); }, []);
@@ -102,7 +127,7 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
         return;
       }
       if (studentReply !== savedStudentReply) {
-        showPanelChangeError("Resposta ainda não guardada", "Guarde a resposta ao estudante antes de validar os metadados.");
+        showPanelChangeError("Resposta ainda não guardada", "Aguarde o salvamento automático da resposta antes de validar os metadados.");
         return;
       }
       setConfirmingCompletion(true);
@@ -217,13 +242,13 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
     else { setCitationApproved(true); showPanelChange("Referência validada"); }
     setCitationSaving(false);
   }
-  async function saveStudentReply() {
+  async function saveStudentReply(quiet = false) {
     if (studentReply.length > 8000) { setReplyError("A resposta está longa demais. Reduza o texto antes de guardar."); return; }
     setReplySaving(true); setReplyError("");
     const replyContent = studentReply.replace(/<[^>]+>/g, "").trim() ? studentReply : "";
     const { error } = await createClient().rpc("save_student_message_reply", { target_request_id: requestId, reply_text: replyContent });
     if (error) { setReplyError("Não foi possível guardar a resposta. Tente novamente."); showPanelChangeError("Resposta não guardada", "Confira a conexão e tente novamente antes de avançar."); }
-    else { setSavedStudentReply(studentReply); setReplySaved(true); showPanelChange("Resposta guardada"); window.dispatchEvent(new CustomEvent("request-analysis:reply-pending", { detail: { pending: false } })); }
+    else { setSavedStudentReply(studentReply); setReplySaved(true); if (!quiet) showPanelChange("Resposta guardada"); window.dispatchEvent(new CustomEvent("request-analysis:reply-pending", { detail: { pending: false } })); }
     setReplySaving(false);
   }
   async function completeReview() {
@@ -306,5 +331,5 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
       {editable && corrected.length > 0 && <div className="analysis-workspace__correction-tools"><div><strong>Correções diretas</strong><small>Restaure os valores enviados pelo estudante para os campos alterados nesta análise.</small></div><button className="button button--secondary button--small" type="button" disabled={resetting || completing} onClick={() => setConfirmingReset(true)}><AppIcon name="close" />Limpar correções diretas</button></div>}
       <div id="request-analysis-actions-end" /></div>
     </aside></div>
-  </section>{notesOpen && createPortal(<div className="analysis-notes-dialog pronto-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="analysis-notes-title"><div className="analysis-notes-dialog__card pronto-modal-surface"><ModalCloseButton onClick={() => setNotesOpen(false)} /><p className="eyebrow">Visível somente à equipe</p><h2 id="analysis-notes-title">Anotações da análise</h2><p className="field-help">Registre os critérios, decisões e pendências desta revisão.</p><label className="analysis-workspace__notes">Registro<textarea rows={8} maxLength={20000} value={analysisNotes} onFocus={() => { noteEditStart.current = analysisNotes; pendingNoteNotice.current = null; }} onBlur={() => { const previous = noteEditStart.current; noteEditStart.current = null; if (previous === null || previous === analysisNotes) return; pendingNoteNotice.current = { previous, saved: analysisNotes }; if (savedText.current.analysisNotes === analysisNotes) { pendingNoteNotice.current = null; showPanelChange("Registro salvo automaticamente", () => undoAutoSave({ analysisNotes: previous, internalNote }, { analysisNotes, internalNote })); } }} onChange={(event) => { currentAnalysisNotes.current = event.target.value; pendingNoteNotice.current = null; dismissPanelChange(); setAnalysisNotes(event.target.value); }} disabled={!editable || undoingAutoSave} placeholder="Critérios e decisões desta revisão" /></label>{internalNote.trim() && <aside className="legacy-internal-note"><strong>Recado interno anterior</strong><p>{internalNote}</p></aside>}<button className="button button--secondary" type="button" onClick={() => setNotesOpen(false)}>Fechar</button></div></div>, document.body)}{studentMessage?.trim() && studentMessageTarget ? createPortal(<details className="student-message-note"><summary><AppIcon name="message" /><span><strong>Mensagem do estudante</strong><small>{replySaved ? "Resposta guardada" : "Ver mensagem e responder"}</small></span></summary><div className="student-message-note__body"><p className="student-message-note__original">{studentMessage}</p><div className="student-message-note__reply"><strong>Resposta ao estudante</strong><RichTextEditor variant="reply" value={studentReply} editable={editable && !reviewCompletedAt && !studentReplySentAt} onChange={(html) => { setStudentReply(html); setReplySaved(false); setReplyError(""); window.dispatchEvent(new CustomEvent("request-analysis:reply-pending", { detail: { pending: html !== savedStudentReply } })); }} /><p className="field-help">{studentReplySentAt ? "Resposta enviada por e-mail." : reviewCompletedAt ? "A etapa de resposta foi encerrada com a validação dos metadados." : "A resposta guardada será enviada por e-mail quando os metadados forem validados e o protocolo avançar."}</p>{editable && !reviewCompletedAt && !studentReplySentAt && <button className="button button--secondary button--small" type="button" disabled={replySaving || studentReply === savedStudentReply} onClick={saveStudentReply}><AppIcon name="check" />{replySaving ? "Guardando…" : "Guardar resposta"}</button>}{replySaved && !replyError && <p className="student-message-note__saved" role="status"><AppIcon name="check" /> Resposta guardada. O estudante receberá o e-mail quando a análise avançar.</p>}{studentReply !== savedStudentReply && <p className="field-help">Guarde a resposta antes de avançar.</p>}{replyError && <p className="form-error" role="alert">{replyError}</p>}</div></div></details>, studentMessageTarget) : null}{citationTarget ? createPortal(citationBlock, citationTarget) : null}{actionsTarget && actions ? createPortal(actions, actionsTarget) : null}{summaryTarget ? createPortal(metadataSummary, summaryTarget) : null}{confirmingRestoreField && <FinalDecisionDialog title="Restaurar informação do estudante?" description={`O campo ${fields.find((field) => field.key === confirmingRestoreField)?.label ?? "selecionado"} voltará ao valor informado pelo estudante. A restauração ficará registrada no histórico.`} confirmLabel="Restaurar campo" busy={restoringField !== null} onCancel={() => setConfirmingRestoreField(null)} onConfirm={() => void restoreCorrection(confirmingRestoreField)} />}</>;
+  </section>{notesOpen && createPortal(<div className="analysis-notes-dialog pronto-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="analysis-notes-title"><div className="analysis-notes-dialog__card pronto-modal-surface"><ModalCloseButton onClick={() => setNotesOpen(false)} /><p className="eyebrow">Visível somente à equipe</p><h2 id="analysis-notes-title">Anotações da análise</h2><p className="field-help">Registre os critérios, decisões e pendências desta revisão.</p><label className="analysis-workspace__notes">Registro<textarea rows={8} maxLength={20000} value={analysisNotes} onFocus={() => { noteEditStart.current = analysisNotes; pendingNoteNotice.current = null; }} onBlur={() => { const previous = noteEditStart.current; noteEditStart.current = null; if (previous === null || previous === analysisNotes) return; pendingNoteNotice.current = { previous, saved: analysisNotes }; if (savedText.current.analysisNotes === analysisNotes) { pendingNoteNotice.current = null; showPanelChange("Registro salvo automaticamente", () => undoAutoSave({ analysisNotes: previous, internalNote }, { analysisNotes, internalNote })); } }} onChange={(event) => { currentAnalysisNotes.current = event.target.value; pendingNoteNotice.current = null; dismissPanelChange(); setAnalysisNotes(event.target.value); }} disabled={!editable || undoingAutoSave} placeholder="Critérios e decisões desta revisão" /></label>{internalNote.trim() && <aside className="legacy-internal-note"><strong>Recado interno anterior</strong><p>{internalNote}</p></aside>}<button className="button button--secondary" type="button" onClick={() => setNotesOpen(false)}>Fechar</button></div></div>, document.body)}{studentMessage?.trim() && studentMessageTarget ? createPortal(<details className="student-message-note"><summary><AppIcon name="message" /><span><strong>Mensagem do estudante</strong><small>{replySaved ? "Resposta guardada" : "Ver mensagem e responder"}</small></span></summary><div className="student-message-note__body"><p className="student-message-note__original">{studentMessage}</p><div className="student-message-note__reply"><strong>Resposta ao estudante</strong><RichTextEditor variant="reply" value={studentReply} editable={editable && !reviewCompletedAt && !studentReplySentAt} onChange={(html) => { setStudentReply(html); setReplySaved(false); setReplyError(""); window.dispatchEvent(new CustomEvent("request-analysis:reply-pending", { detail: { pending: html !== savedStudentReply } })); }} /><p className="field-help">{studentReplySentAt ? "Resposta enviada por e-mail." : reviewCompletedAt ? "A etapa de resposta foi encerrada com a validação dos metadados." : "A resposta é salva automaticamente e será enviada por e-mail quando os metadados forem validados e o protocolo avançar."}</p>{editable && !reviewCompletedAt && !studentReplySentAt && replyError && <button className="button button--secondary button--small" type="button" disabled={replySaving || studentReply === savedStudentReply} onClick={() => void saveStudentReply()}><AppIcon name="check" />{replySaving ? "Salvando…" : "Tentar salvar agora"}</button>}{replySaved && !replyError && <p className="student-message-note__saved" role="status"><AppIcon name="check" /> Resposta guardada. O estudante receberá o e-mail quando a análise avançar.</p>}{studentReply !== savedStudentReply && <p className="field-help">Salvando a resposta automaticamente. Aguarde antes de avançar.</p>}{replyError && <p className="form-error" role="alert">{replyError}</p>}</div></div></details>, studentMessageTarget) : null}{citationTarget ? createPortal(citationBlock, citationTarget) : null}{actionsTarget && actions ? createPortal(actions, actionsTarget) : null}{summaryTarget ? createPortal(metadataSummary, summaryTarget) : null}{confirmingRestoreField && <FinalDecisionDialog title="Restaurar informação do estudante?" description={`O campo ${fields.find((field) => field.key === confirmingRestoreField)?.label ?? "selecionado"} voltará ao valor informado pelo estudante. A restauração ficará registrada no histórico.`} confirmLabel="Restaurar campo" busy={restoringField !== null} onCancel={() => setConfirmingRestoreField(null)} onConfirm={() => void restoreCorrection(confirmingRestoreField)} />}</>;
 }

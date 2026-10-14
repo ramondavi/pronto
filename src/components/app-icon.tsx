@@ -1,6 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 
-export type AppIconName = "account" | "admin" | "archive" | "arrowRight" | "bell" | "book" | "calendar" | "check" | "close" | "compass" | "contrast" | "copy" | "document" | "download" | "edit" | "external" | "eye" | "eyeOff" | "github" | "globe" | "help" | "hierarchy" | "home" | "idCard" | "inbox" | "keyboard" | "link" | "lock" | "logout" | "message" | "panelCollapse" | "panelExpand" | "person" | "print" | "queue" | "request" | "review" | "search" | "settings" | "share" | "shield" | "sparkles" | "star" | "tag" | "upload" | "work";
+export type AppIconName = "account" | "admin" | "archive" | "arrowRight" | "bell" | "book" | "calendar" | "check" | "clock" | "close" | "compass" | "contrast" | "copy" | "document" | "download" | "edit" | "external" | "eye" | "eyeOff" | "github" | "globe" | "help" | "hierarchy" | "home" | "idCard" | "inbox" | "keyboard" | "link" | "lock" | "logout" | "message" | "panelCollapse" | "panelExpand" | "person" | "print" | "queue" | "request" | "review" | "search" | "settings" | "share" | "shield" | "sparkles" | "star" | "tag" | "upload" | "work";
 
 const paths: Record<AppIconName, ReactNode> = {
   account: <><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.7-3.7 3-5.5 7-5.5s6.3 1.8 7 5.5" /></>,
@@ -11,6 +11,7 @@ const paths: Record<AppIconName, ReactNode> = {
   message: <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v10a2.5 2.5 0 0 1-2.5 2.5H9l-5 3v-5.5zM8 8h8M8 12h5" />,
   book: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z" /><path d="M4 5.5v16M8 7h8M8 11h8" /></>,
   calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 17h6" /></>,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 6v6l4 2" /></>,
   check: <path d="m5 12 4 4L19 6" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   compass: <><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2.3 4.7-4.7 2.3 2.3-4.7z" /></>,

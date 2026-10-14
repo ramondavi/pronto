@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 
 for (const path of ["/", "/entrar", "/cadastro", "/recuperar-senha", "/ajuda"]) {
   test(`${path} não tem violações críticas ou sérias`, async ({ page }) => {
+    if (path === "/") test.slow();
     await page.goto(path);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === "critical" || impact === "serious")).toEqual([]);
