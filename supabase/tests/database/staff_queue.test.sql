@@ -70,7 +70,7 @@ select throws_ok(
 );
 select throws_ok(
   $$select public.reassign_cataloging_request((select id from public.cataloging_requests limit 1), '50000000-0000-4000-8000-000000000003')$$,
-  'P0001', 'active_administrator_required', 'Catalogador não reatribui atendimento'
+  'P0001', 'permission_denied', 'Catalogador não reatribui atendimento'
 );
 
 set local request.jwt.claim.sub = '50000000-0000-4000-8000-000000000004';
@@ -108,7 +108,7 @@ select is(
 set local request.jwt.claim.sub = '50000000-0000-4000-8000-000000000005';
 select throws_ok(
   $$select public.assume_cataloging_request((select id from public.cataloging_requests limit 1))$$,
-  'P0001', 'active_staff_required', 'conta bloqueada não assume atendimento'
+  'P0001', 'permission_denied', 'conta bloqueada não assume atendimento'
 );
 
 select * from finish();

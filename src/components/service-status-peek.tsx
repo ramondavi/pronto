@@ -1,8 +1,14 @@
-import { AppIcon } from "@/components/app-icon";
+"use client";
 
-export function ServiceStatusPeek({ title, date, reason, message, closed, hint, detailsLabel, className = "" }: {
+import { useEffect, useState } from "react";
+import { AppIcon } from "@/components/app-icon";
+import { formatServiceTime } from "@/lib/service-announcements";
+
+export function ServiceStatusPeek({ title, date, now, hoursLabel, reason, message, closed, hint, detailsLabel, className = "" }: {
   title: string;
   date: { value: string; label: string };
+  now: string;
+  hoursLabel: string;
   reason?: string | null;
   message?: string | null;
   closed: boolean;
@@ -10,8 +16,20 @@ export function ServiceStatusPeek({ title, date, reason, message, closed, hint, 
   detailsLabel: string;
   className?: string;
 }) {
+  const [clock, setClock] = useState({ value: now, label: formatServiceTime(now) });
+  useEffect(() => {
+    if (!closed) return;
+    const update = () => {
+      const value = new Date().toISOString();
+      setClock({ value, label: formatServiceTime(value) });
+    };
+    update();
+    const timer = window.setInterval(update, 60_000);
+    document.addEventListener("visibilitychange", update);
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", update); };
+  }, [closed, now]);
   return <div className={`service-status-peek${closed ? " service-status-peek--closed" : ""} ${className}`}>
-    <div className="service-status-peek__trigger" role="group" tabIndex={0} aria-label={`${title}. ${detailsLabel}`}><span className="service-status-peek__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : reason || message ? "calendar" : "check"} /></span><span className="service-status-peek__copy"><strong>{title}</strong><small>{hint}</small></span></div>
-    <div className="service-status-peek__panel"><time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time>{reason && <strong>{reason}</strong>}{message && <p>{message}</p>}</div>
+    <div className="service-status-peek__trigger" role="group" tabIndex={closed ? 0 : undefined} aria-label={`${title}. ${closed ? detailsLabel : hint}`}><span className="service-status-peek__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : reason || message ? "calendar" : "check"} /></span><span className="service-status-peek__copy"><strong>{title}</strong><small>{hint}</small></span></div>
+    {closed && <div className="service-status-peek__panel"><div className="service-status-peek__time-row"><time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time><time dateTime={clock.value}>{clock.label}</time></div><p className="service-status-peek__hours"><AppIcon name="clock" />{hoursLabel}</p>{reason && <strong>{reason}</strong>}{message && <p>{message}</p>}</div>}
   </div>;
 }

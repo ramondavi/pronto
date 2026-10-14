@@ -18,6 +18,8 @@ import { authorWikipediaUrl, quoteForDay } from "@/lib/daily-literary-quotes";
 import { uiText } from "@/lib/ui-text";
 import { PanelChangeToast } from "@/components/panel-change-toast";
 import { ServiceStatusPeek } from "@/components/service-status-peek";
+import { formatLibraryHour } from "@/lib/service-announcements";
+import { createClient } from "@/lib/supabase/client";
 import { adminSections, adminTabHref, resolveAdminLocation, type AdminArea } from "@/lib/admin-navigation";
 
 const shellCopy = {
@@ -86,7 +88,7 @@ const commemorativeDates: Record<string, string> = {
   "12-15": "Dia do(a) Arquiteto(a) e Urbanista",
 };
 
-export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, showNotifications = true }: { children: React.ReactNode; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean }; showNotifications?: boolean }) {
+export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, canChangeHours = false, canViewOverview = true, canViewQueue = true, canViewCalendar = true, canManageCalendar = false, canPreviewStudent = false, showNotifications = true }: { children: React.ReactNode; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean; closingTime: string; specialHours: boolean; now: string }; canChangeHours?: boolean; canViewOverview?: boolean; canViewQueue?: boolean; canViewCalendar?: boolean; canManageCalendar?: boolean; canPreviewStudent?: boolean; showNotifications?: boolean }) {
   const isStaff = role === "cataloger" || role === "administrator";
   const pathname = usePathname();
   const { language } = useInterfaceLanguage();
@@ -103,6 +105,9 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const [birthdayClosing, setBirthdayClosing] = useState(false);
   const [today, setToday] = useState(() => brasiliaDate(new Date()));
   const [greetingClock, setGreetingClock] = useState<{ day: string; hour: number } | null>(null);
+  const [newQueueCount, setNewQueueCount] = useState(0);
+  const previewBadges = process.env.NODE_ENV === "development" && searchParams.get("ver-contadores") === "1";
+  const visibleQueueCount = previewBadges ? 4 : newQueueCount;
   const specialDateKey = today.slice(5);
   const specialDate = commemorativeDates[specialDateKey];
   const logoutDialogRef = useRef<HTMLDialogElement>(null);
@@ -133,6 +138,22 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   }, [birthday, today, userId, closeBirthday]);
   useEffect(() => () => { if (birthdayCloseTimer.current !== null) window.clearTimeout(birthdayCloseTimer.current); }, []);
   useEffect(() => {
+    if (!isStaff || !canViewQueue || !showNotifications) return;
+    const supabase = createClient();
+    let active = true;
+    const refreshQueueCount = async () => {
+      const { count, error } = await supabase.from("cataloging_requests").select("id", { count: "exact", head: true }).eq("status", "submitted").is("assigned_to", null);
+      if (active && !error) setNewQueueCount(count ?? 0);
+    };
+    void refreshQueueCount();
+    const channel = supabase.channel(`dashboard-queue-count-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "cataloging_requests" }, () => { void refreshQueueCount(); })
+      .subscribe();
+    const interval = window.setInterval(() => { void refreshQueueCount(); }, 15_000);
+    window.addEventListener("focus", refreshQueueCount);
+    return () => { active = false; window.clearInterval(interval); window.removeEventListener("focus", refreshQueueCount); void supabase.removeChannel(channel); };
+  }, [isStaff, canViewQueue, showNotifications, userId]);
+  useEffect(() => {
     const dialog = logoutDialogRef.current;
     if (logoutDialogOpen && dialog && !dialog.open) dialog.showModal();
     if (!logoutDialogOpen && dialog?.open) dialog.close();
@@ -147,32 +168,41 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return [...query.entries()].every(([key, value]) => searchParams.get(key) === value) ? "is-active" : undefined;
   };
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
-  const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : t.greeting;
+  const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
   return (
     <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff ? "true" : undefined}>
-      {!isStaff && <ServiceDayRefresh />}
+      {!isStaff && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
       <aside className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
         <div className="dashboard-nav__top">
-          <Link href="/" className="dashboard-nav__logo-link" aria-label={t.public} title={t.public}><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol"><Image src="/logo-pronto-v3-symbol-dark.png" alt="" width={512} height={512} priority /><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v3-light.png" alt="" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v3-dark.png" alt="" width={1570} height={368} priority /><BrandPixels /></span></Link>
+          <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v3-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v3-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
           <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => setMobileMenuOpen((open) => !open)}><span /><span /><span /></button>
         </div>
         {isStaff ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/fila")} href="/painel/fila" aria-label={t.queue} title={t.queue}><SidebarIcon name="queue" /><span className="dashboard-nav__label">{t.queue}</span></Link>
+          {canViewOverview && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>}
+          {canViewQueue && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/fila")} href="/painel/fila" aria-label={`${t.queue}${visibleQueueCount ? `, ${visibleQueueCount} ${visibleQueueCount === 1 ? "atendimento novo" : "atendimentos novos"}` : ""}`} title={t.queue}><span className="dashboard-nav__queue-symbol"><SidebarIcon name="queue" />{visibleQueueCount > 0 && <span className="dashboard-nav__queue-badge" aria-hidden="true">{visibleQueueCount > 99 ? "99+" : visibleQueueCount}</span>}</span><span className="dashboard-nav__label">{t.queue}</span></Link>}
+          {canViewCalendar && role !== "administrator" && (canManageCalendar
+            ? <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/admin?area=operacao&aba=library")} href="/painel/admin?area=operacao&aba=library" aria-label="Calendário e mural" title="Calendário e mural"><AppIcon className="dashboard-nav__icon" name="calendar" /><span className="dashboard-nav__label">Calendário e mural</span></Link>
+            : <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/calendario")} href="/painel/calendario" aria-label="Calendário da biblioteca" title="Calendário da biblioteca"><AppIcon className="dashboard-nav__icon" name="calendar" /><span className="dashboard-nav__label">Calendário da biblioteca</span></Link>)}
+          {canChangeHours && (role !== "administrator" || !canViewCalendar) && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/horarios")} href="/painel/horarios" aria-label="Horários da biblioteca" title="Horários da biblioteca"><AppIcon className="dashboard-nav__icon" name="clock" /><span className="dashboard-nav__label">Horários da biblioteca</span></Link>}
+          {canPreviewStudent && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/visao-estudante")} href="/painel/visao-estudante" aria-label="Visão de estudante" title="Visão de estudante"><AppIcon className="dashboard-nav__icon" name="person" /><span className="dashboard-nav__label">Visão de estudante</span></Link>}
           {role === "administrator" && <div className="dashboard-nav__admin">
             <button className={`dashboard-nav__admin-trigger${pathname.startsWith("/painel/admin") ? " is-active" : ""}`} type="button" onClick={() => setAdminMenuOpen((open) => !open)} aria-expanded={adminMenuVisible} aria-controls="submenu-administracao" aria-label="Abrir ou fechar subseções de Administração" title={t.admin}><SidebarIcon name="admin" /><span className="dashboard-nav__label">{t.admin}</span></button>
-            <div className={`dashboard-nav__admin-menu${adminMenuVisible ? " is-visible" : ""}`} id="submenu-administracao" aria-label={t.adminSections}>
+            <div className={`dashboard-nav__admin-menu${adminMenuVisible ? " is-visible" : ""}`} id="submenu-administracao" aria-label={t.adminSections} inert={!adminMenuVisible}>
+              <div className="dashboard-nav__admin-menu-inner">
               {adminSections.map((section) => <div className="dashboard-nav__admin-group" key={section.area}>
                 <button type="button" className={`dashboard-nav__admin-group-trigger${pathname === "/painel/admin" && adminLocation.area === section.area ? " is-current" : ""}`} aria-expanded={adminGroupOpen === section.area} aria-controls={`submenu-admin-${section.area}`} onClick={() => setAdminGroupOpen((open) => open === section.area ? null : section.area)}>
                   <AppIcon name={section.icon} />
                   <span>{section.area === "operacao" ? t.operation : section.area === "conteudo" ? t.content : t.control}</span>
                   <span className="dashboard-nav__admin-chevron" aria-hidden="true" />
                 </button>
-                <div className={`dashboard-nav__admin-submenu${adminGroupOpen === section.area ? " is-visible" : ""}`} id={`submenu-admin-${section.area}`}>
-                  {section.tabs.map((tab) => <Link key={tab.id} href={adminTabHref(section.area, tab.id)} className={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "is-active" : undefined} aria-current={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "page" : undefined} onClick={() => setMobileMenuOpen(false)}>{tab.label}</Link>)}
+                <div className={`dashboard-nav__admin-submenu${adminGroupOpen === section.area ? " is-visible" : ""}`} id={`submenu-admin-${section.area}`} inert={adminGroupOpen !== section.area}>
+                  <div className="dashboard-nav__admin-submenu-inner">
+                  {section.tabs.filter((tab) => tab.id !== "library" || canViewCalendar).map((tab) => <Link key={tab.id} href={adminTabHref(section.area, tab.id)} className={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "is-active" : undefined} aria-current={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "page" : undefined} onClick={() => setMobileMenuOpen(false)}>{tab.label}</Link>)}
+                  </div>
                 </div>
               </div>)}
               <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/admin/avaliacoes")} href="/painel/admin/avaliacoes"><AppIcon name="review" />Avaliações</Link>
+              </div>
             </div>
           </div>}
           <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/conta")} href="/painel/conta" aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
@@ -186,10 +216,10 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
       <div className="dashboard-content">
         <header className={`dashboard-header${isStaff ? " dashboard-header--staff" : ""}`}>
           <div className="dashboard-header__inner">
-          {isStaff && showNotifications && <StaffCommunications userId={userId} />}
-          {!isStaff && pathname !== "/painel" && pathname !== "/painel/" && serviceStatus && <ServiceStatusPeek className="dashboard-header__service-peek" title={serviceStatus.title} date={serviceStatus.date} reason={serviceStatus.reason} message={serviceStatus.message} closed={serviceStatus.closed} hint={translate("Passe o mouse para saber mais")} detailsLabel={translate("Detalhes do funcionamento da biblioteca")} />}
+          {isStaff && showNotifications && <StaffCommunications userId={userId} previewBadges={previewBadges} />}
+          {!isStaff && pathname !== "/painel" && pathname !== "/painel/" && serviceStatus && <ServiceStatusPeek className="dashboard-header__service-peek" title={serviceStatus.title} date={serviceStatus.date} now={serviceStatus.now} reason={serviceStatus.reason} message={serviceStatus.message} closed={serviceStatus.closed} hint={serviceStatus.closed ? translate("Passe o mouse para saber mais") : translate("Fechamento previsto às {time}", { time: formatLibraryHour(serviceStatus.closingTime) })} hoursLabel={serviceStatus.specialHours ? translate("Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(serviceStatus.closingTime) }) : translate("Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={translate("Detalhes do funcionamento da biblioteca")} />}
           <div className="dashboard-header__actions">
-            <div className="user-identity">{isStaff && <span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span>}<span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account}>{greeting}, {firstName}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
+            <div className="user-identity">{isStaff && <span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span>}<span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
             <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>
           </div>
           </div>

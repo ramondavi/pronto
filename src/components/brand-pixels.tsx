@@ -5,7 +5,7 @@ const squares = [
 ] as const;
 
 export function BrandPixels({ symbol = false }: { symbol?: boolean }) {
-  return <svg className={`brand-pixels${symbol ? " brand-pixels--symbol" : ""}`} viewBox={symbol ? "350 0 570 356" : "300 -6 1570 368"} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  return <svg className={`brand-pixels${symbol ? " brand-pixels--symbol" : ""}`} viewBox={symbol ? "376 34 180 296" : "300 -6 1570 368"} preserveAspectRatio={symbol ? "xMidYMid meet" : "none"} aria-hidden="true" focusable="false">
     {squares.map(([x, y, width, height], index) => <rect key={`${x}-${y}`} x={x} y={y} width={width} height={height} rx={Math.min(width, height) * .06} style={{ animationDelay: `${index * -.34}s` }} />)}
   </svg>;
 }

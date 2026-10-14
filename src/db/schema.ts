@@ -1,4 +1,4 @@
-import { bigint, boolean, date, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { bigint, boolean, date, integer, jsonb, pgEnum, pgTable, text, time, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", ["student", "cataloger", "administrator"]);
 export const accountStatus = pgEnum("account_status", ["active", "blocked", "inactive"]);
@@ -24,6 +24,40 @@ export const profiles = pgTable("profiles", {
   avatarChoice: integer("avatar_choice"),
   lastSignInAt: timestamp("last_sign_in_at", { withTimezone: true }),
   ...timestamps,
+});
+
+export const permissionDefinitions = pgTable("permission_definitions", {
+  code: text("code").primaryKey(),
+  area: text("area").notNull(),
+  screen: text("screen").notNull(),
+  action: text("action").notNull(),
+  description: text("description").notNull(),
+  defaultRoles: userRole("default_roles").array().default([]).notNull(),
+  professionalOnly: boolean("professional_only").default(false).notNull(),
+  delegable: boolean("delegable").default(true).notNull(),
+});
+
+export const staffPermissionOverrides = pgTable("staff_permission_overrides", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  profileId: uuid("profile_id").references(() => profiles.id, { onDelete: "cascade" }).notNull(),
+  permissionCode: text("permission_code").references(() => permissionDefinitions.code).notNull(),
+  effect: text("effect").notNull(),
+  validFrom: timestamp("valid_from", { withTimezone: true }).defaultNow().notNull(),
+  validUntil: timestamp("valid_until", { withTimezone: true }),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  grantedBy: uuid("granted_by").references(() => profiles.id).notNull(),
+});
+
+export const staffInheritedRoles = pgTable("staff_inherited_roles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  profileId: uuid("profile_id").references(() => profiles.id, { onDelete: "cascade" }).notNull(),
+  inheritedRole: userRole("inherited_role").notNull(),
+  validFrom: timestamp("valid_from", { withTimezone: true }).defaultNow().notNull(),
+  validUntil: timestamp("valid_until", { withTimezone: true }),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  grantedBy: uuid("granted_by").references(() => profiles.id).notNull(),
 });
 
 export const studentProfiles = pgTable("student_profiles", {
@@ -347,6 +381,25 @@ export const libraryAnnouncements = pgTable("library_announcements", {
   calendarSource: text("calendar_source").default("manual").notNull(),
   sourceReference: text("source_reference"),
   ...timestamps,
+});
+
+export const libraryDailyHours = pgTable("library_daily_hours", {
+  serviceDate: date("service_date").primaryKey(),
+  closingTime: time("closing_time").notNull(),
+  updatedBy: uuid("updated_by").references(() => profiles.id).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const studentRequestDrafts = pgTable("student_request_drafts", {
+  userId: uuid("user_id").primaryKey().references(() => profiles.id, { onDelete: "cascade" }),
+  payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const requestAnalysisDrafts = pgTable("request_analysis_drafts", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "cascade" }),
+  payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const slaSettings = pgTable("sla_settings", {

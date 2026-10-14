@@ -12,19 +12,24 @@ import { StaffAnnouncementsCalendar } from "@/components/staff-announcements-cal
 import { formatWorkTitle } from "@/lib/work-title";
 import { studentRequestProgress } from "@/lib/student-request-progress";
 import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
-import { formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosureAnnouncement, isLibraryWeekend, serviceDayKey } from "@/lib/service-announcements";
+import { formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
 import { monographDisplayName, programDisplayName } from "@/domain/staff-queue/program-labels";
 import { RelativeDateTime } from "@/components/relative-date-time";
 import { ServiceStatusBanner } from "@/components/service-status-banner";
+import { userHasPermission } from "@/lib/staff-permissions";
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("full_name, role").eq("id", user.id).single() : { data: null };
   if (!profile || !user) redirect("/entrar");
-  if (profile.role === "cataloger" || profile.role === "administrator") return <StaffOverview role={profile.role} userId={user.id} />;
+  if (profile.role === "cataloger" || profile.role === "administrator") {
+    const allowed = await userHasPermission(supabase, "staff.overview.view", profile.role);
+    if (!allowed) redirect("/painel/conta");
+    return <StaffOverview role={profile.role} userId={user.id} />;
+  }
   const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, academic_enrollments(academic_programs(code,name,work_type))").in("status", ["submitted", "in_review", "changes_requested", "approved"]).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   const activeEnrollment = activeRequest && (Array.isArray(activeRequest.academic_enrollments) ? activeRequest.academic_enrollments[0] : activeRequest.academic_enrollments);
   const activeProgram = activeEnrollment && (Array.isArray(activeEnrollment.academic_programs) ? activeEnrollment.academic_programs[0] : activeEnrollment.academic_programs);
@@ -41,11 +46,13 @@ export default async function StudentDashboardPage() {
   const hasPendingFeedback = (feedbackInvitations ?? []).some((invitation) => !invitation.responded && Date.now() < new Date(invitation.invited_at).getTime() + 30 * 86_400_000);
   const { data: announcements } = await supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);
   const now = new Date().toISOString();
+  const { data: dailyHours } = await supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle();
+  const closingTime = libraryClosingTime(dailyHours?.closing_time);
   const currentAnnouncement = announcements?.find((item) => item.type !== "normal" && item.starts_at <= now && (!item.ends_at || item.ends_at >= now) && isCurrentServiceAnnouncement(item, now));
   const closureAnnouncement = announcements?.find((item) => item.type !== "normal" && item.starts_at <= now && isCurrentServiceAnnouncement(item, now) && isLibraryClosureAnnouncement(item));
-  const closed = isLibraryWeekend(now) || Boolean(closureAnnouncement);
+  const closed = isLibraryClosedNow(now, closingTime) || Boolean(closureAnnouncement);
   const serviceStatus = closed ? uiText(language, "Biblioteca fechada agora") : currentAnnouncement ? `${uiText(language, "Prazos impactados:")} ${currentAnnouncement.title}` : uiText(language, "Atendimento normal");
-  const closedMessage = uiText(language, "Você pode solicitar a ficha hoje. O prazo começa no próximo dia útil.");
+  const closedMessage = uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.");
   return (
     <main className="dashboard-main dashboard-main--student-overview">
       <StudentRequestLiveRefresh active />

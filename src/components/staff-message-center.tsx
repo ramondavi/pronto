@@ -7,7 +7,7 @@ import { StaffMessages } from "./staff-messages";
 
 type MessageNotice = { id: string; title: string; message: string; created_at: string };
 
-export function StaffMessageCenter({ userId, onUnreadChange }: { userId: string; onUnreadChange: (count: number) => void }) {
+export function StaffMessageCenter({ userId, onUnreadChange, previewCount }: { userId: string; onUnreadChange: (count: number) => void; previewCount?: number }) {
   const [supabase] = useState(createClient);
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -107,9 +107,10 @@ export function StaffMessageCenter({ userId, onUnreadChange }: { userId: string;
     return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open]);
 
+  const visibleUnread = previewCount ?? unread;
   return <div className="staff-notifications staff-message-center" ref={containerRef}>
-    <button ref={triggerRef} type="button" className={`staff-notifications__trigger${ringing && !open ? " is-ringing" : ""}${toast && anchor.visible ? " is-emitting" : ""}`} aria-label={`Mensagens${unread ? `, ${unread} não lidas` : ""}`} aria-expanded={open} aria-controls="staff-message-center-panel" title="Mensagens" onClick={() => { setOpen((value) => !value); setRinging(false); setToast(null); }}>
-      <span className="staff-notifications__symbol"><AppIcon name="message" />{unread > 0 && <span className="staff-notifications__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}</span>
+    <button ref={triggerRef} type="button" className={`staff-notifications__trigger${ringing && !open ? " is-ringing" : ""}${toast && anchor.visible ? " is-emitting" : ""}`} aria-label={`Mensagens${visibleUnread ? `, ${visibleUnread} não lidas` : ""}`} aria-expanded={open} aria-controls="staff-message-center-panel" title="Mensagens" onClick={() => { setOpen((value) => !value); setRinging(false); setToast(null); }}>
+      <span className="staff-notifications__symbol"><AppIcon name="message" />{visibleUnread > 0 && <span className="staff-notifications__badge" aria-hidden="true">{visibleUnread > 99 ? "99+" : visibleUnread}</span>}</span>
     </button>
     {toast && !open && <button key={toast.id} type="button" className={`staff-notifications__toast${anchor.visible ? "" : " is-detached"}`} style={anchor.visible ? undefined : { left: anchor.left }} onClick={() => { setOpen(true); setToast(null); }}><span>Nova mensagem</span><strong>{toast.title}</strong><small>{toast.message}</small></button>}
     {open && <section className="staff-notifications__panel" id="staff-message-center-panel" aria-label="Central de mensagens">

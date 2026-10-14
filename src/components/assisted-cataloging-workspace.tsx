@@ -233,8 +233,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   useEffect(() => {
     if (editable) {
       try {
-        const stored = window.localStorage.getItem(draftKey);
-        const draft = (stored ? JSON.parse(stored) : initialDraft) as Partial<CatalogingDraft> | null;
+        const draft = initialDraft as Partial<CatalogingDraft> | null;
         if (draft) {
           if (Array.isArray(draft.people) && Array.isArray(draft.terms) && draft.cardDetails) {
             setPeople(draft.people); setTerms(withMinimumTerms(draft.terms));
@@ -243,7 +242,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
             setFreeNotes(Array.isArray(draft.freeNotes) ? draft.freeNotes : initialFreeNotes);
           }
         }
-      } catch { /* A ficha salva no banco continua disponível se o rascunho local estiver inválido. */ }
+      } catch { /* A ficha validada continua disponível se o rascunho estiver inválido. */ }
     }
     setReady(true);
   }, [draftKey, editable, initialDraft, initialFreeNotes]);
@@ -293,9 +292,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
       window.localStorage.setItem(draftKey, catalogingSnapshot);
       setDraftStored(true);
     } catch {
-      setDraftStored(false);
-      setSaveState("error");
-      showPanelChangeError("Rascunho não salvo", "O armazenamento deste navegador está indisponível. Libere espaço ou permita o armazenamento para continuar.");
+      /* A cópia local é opcional; o banco segue como fonte do rascunho. */
     }
   }, [catalogingSnapshot, draftKey, editable, ready]);
   useEffect(() => {

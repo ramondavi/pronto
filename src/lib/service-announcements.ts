@@ -10,6 +10,27 @@ type ServiceAnnouncement = {
 
 const oneDayTypes = new Set(["holiday", "optional_day"]);
 const closureTypes = new Set(["holiday", "optional_day", "recess", "strike"]);
+export const DEFAULT_LIBRARY_CLOSING_TIME = "21:00";
+
+export function libraryClosingTime(value?: string | null) {
+  const time = value?.slice(0, 5);
+  return time && /^\d{2}:[0-5]\d$/.test(time) ? time : DEFAULT_LIBRARY_CLOSING_TIME;
+}
+
+export function formatLibraryHour(value: string) {
+  const [hour, minute] = libraryClosingTime(value).split(":");
+  return `${Number(hour)}h${minute === "00" ? "" : minute}`;
+}
+
+export function formatServiceTime(value: string | Date) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(date);
+  const hour = parts.find((part) => part.type === "hour")?.value ?? "00";
+  const minute = parts.find((part) => part.type === "minute")?.value ?? "00";
+  return `${hour}h${minute}`;
+}
 
 export function isLibraryClosureAnnouncement(announcement: ServiceAnnouncement) {
   return closureTypes.has(announcement.type) || announcement.type === "other" && /biblioteca (sem funcionamento|fechada)/i.test(`${announcement.title ?? ""} ${announcement.message ?? ""}`);
@@ -18,6 +39,21 @@ export function isLibraryClosureAnnouncement(announcement: ServiceAnnouncement) 
 export function isLibraryWeekend(now: string) {
   const weekday = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "America/Sao_Paulo" }).format(new Date(now));
   return weekday === "Sat" || weekday === "Sun";
+}
+
+export function isLibraryClosedNow(now: string, closingTime = DEFAULT_LIBRARY_CLOSING_TIME) {
+  if (isLibraryWeekend(now)) return true;
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(now));
+  const hour = Number(parts.find((part) => part.type === "hour")?.value);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value);
+  const minutes = hour * 60 + minute;
+  const [closingHour, closingMinute] = libraryClosingTime(closingTime).split(":").map(Number);
+  return minutes < 8 * 60 || minutes >= closingHour * 60 + closingMinute;
 }
 
 function brazilianCalendarDay(value: string) {

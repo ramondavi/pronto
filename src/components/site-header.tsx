@@ -8,7 +8,7 @@ import { AppIcon, type AppIconName } from "./app-icon";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { LiteraryAvatar } from "./literary-avatar";
 import { SiteHeaderGreeting } from "./site-header-greeting";
-import { formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosureAnnouncement, isLibraryWeekend, serviceDayKey } from "@/lib/service-announcements";
+import { formatLibraryHour, formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { uiText } from "@/lib/ui-text";
 import { homeCopy } from "@/lib/home-copy";
 import { ServiceDayRefresh } from "@/components/service-day-refresh";
@@ -24,15 +24,19 @@ const copy = {
   it: ["La mia area", "Ciao", "Panoramica", "La mia richiesta", "Autodeposito", "Il mio account", "Richieste", "I miei casi", "Amministrazione", "Navigazione principale", "Come funziona", "Centro assistenza", "Esci", "Accedi", "Esplora", "Vantaggi"],
 };
 
-export async function SiteHeader({ articleTitle, showServiceStatus = true }: { articleTitle?: string; showServiceStatus?: boolean } = {}) {
+export async function SiteHeader({ articleTitle, showServiceStatus = true, closingTimeOverride }: { articleTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string } = {}) {
   const language = await getInterfaceLanguage();
   const t = copy[language];
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const { data: announcements } = showServiceStatus ? await supabase.from("library_announcements").select("title,message,type,starts_at,ends_at").eq("active", true).neq("type", "normal").lte("starts_at", now).order("starts_at", { ascending: false }).limit(100) : { data: null };
+  const [{ data: announcements }, { data: dailyHours }] = await Promise.all([
+    showServiceStatus ? supabase.from("library_announcements").select("title,message,type,starts_at,ends_at").eq("active", true).neq("type", "normal").lte("starts_at", now).order("starts_at", { ascending: false }).limit(100) : Promise.resolve({ data: null }),
+    showServiceStatus ? supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  const closingTime = libraryClosingTime(closingTimeOverride ?? dailyHours?.closing_time);
   const currentAnnouncement = announcements?.find((item) => isCurrentServiceAnnouncement(item, now));
   const closureAnnouncement = announcements?.find((item) => isCurrentServiceAnnouncement(item, now) && isLibraryClosureAnnouncement(item));
-  const closed = isLibraryWeekend(now) || Boolean(closureAnnouncement);
+  const closed = isLibraryClosedNow(now, closingTime) || Boolean(closureAnnouncement);
   const status = closed ? uiText(language, "Biblioteca fechada agora") : currentAnnouncement?.title ?? homeCopy[language].notice.normal;
   const today = { value: serviceDayKey(now), label: formatServiceDate(now, language) };
   const { data: { user } } = await supabase.auth.getUser();
@@ -48,11 +52,11 @@ export async function SiteHeader({ articleTitle, showServiceStatus = true }: { a
   const panelLinks: [string, string, AppIconName][] = profile?.role === "student" ? [[t[2], "/painel", "home"], [t[3], "/painel/solicitacao", "request"], [t[4], "/painel/autodeposito", "upload"], [t[5], "/painel/conta", "account"]] : [[t[2], "/painel", "home"], [t[6], "/painel/fila", "queue"], [t[7], "/painel/fila?responsavel=me", "work"], ...(profile?.role === "administrator" ? [[t[8], "/painel/admin", "hierarchy"]] as [string, string, AppIconName][] : []), [t[5], "/painel/conta", "account"]];
   return (
     <>
-      <ServiceDayRefresh />
+      <ServiceDayRefresh closingTime={closingTime} />
       <header className="site-header">
         <div className="container site-header__inner">
         <div className="shell-brand"><Brand compact /></div>
-        {showServiceStatus && <ServiceStatusPeek className="site-header__service-peek" title={status} date={today} reason={closureAnnouncement?.title} message={closed ? uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo de atendimento começa a contar no próximo dia útil.") : currentAnnouncement?.message} closed={closed} hint={uiText(language, "Passe o mouse para saber mais")} detailsLabel={uiText(language, "Detalhes do funcionamento da biblioteca")} />}
+        {showServiceStatus && <ServiceStatusPeek className="site-header__service-peek" title={status} date={today} now={now} reason={closureAnnouncement?.title} message={closed ? uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.") : currentAnnouncement?.message} closed={closed} hint={closed ? uiText(language, "Passe o mouse para saber mais") : uiText(language, "Fechamento previsto às {time}", { time: formatLibraryHour(closingTime) })} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={uiText(language, "Detalhes do funcionamento da biblioteca")} />}
         <nav id="menu-principal" aria-label={t[9]} className="site-header__nav" tabIndex={-1}>
           <HeaderExploreMenu labels={{ trigger: t[14], how: t[10], benefits: t[15], questions: homeCopy[language].faq }} />
           <Link className="site-header__help-link" href="/ajuda" aria-label={t[11]}><AppIcon name="help" /><span>{t[11]}</span></Link>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { StaffNotifications } from "./staff-notifications";
 import { StaffMessageCenter } from "./staff-message-center";
 
-export function StaffCommunications({ userId }: { userId: string }) {
+export function StaffCommunications({ userId, previewBadges = false }: { userId: string; previewBadges?: boolean }) {
   const [noticeCount, setNoticeCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const updateNotices = useCallback((count: number) => setNoticeCount(count), []);
@@ -39,5 +39,5 @@ export function StaffCommunications({ userId }: { userId: string }) {
     return () => { active = false; icon.remove(); };
   }, [noticeCount, messageCount]);
 
-  return <div className="staff-communications"><StaffNotifications userId={userId} onUnreadChange={updateNotices} /><StaffMessageCenter userId={userId} onUnreadChange={updateMessages} /></div>;
+  return <div className="staff-communications"><StaffNotifications userId={userId} onUnreadChange={updateNotices} previewCount={previewBadges ? 2 : undefined} /><StaffMessageCenter userId={userId} onUnreadChange={updateMessages} previewCount={previewBadges ? 3 : undefined} /></div>;
 }

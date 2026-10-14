@@ -5,6 +5,7 @@ import type { QueueRequest, StaffOption } from "@/domain/staff-queue/types";
 import { describeRequestProgress } from "@/domain/request-progress";
 import { panelMetadata } from "@/lib/panel-metadata";
 import { monographDisplayName, programDisplayName } from "@/domain/staff-queue/program-labels";
+import { userHasPermission } from "@/lib/staff-permissions";
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ responsavel?: string }> }) {
   return panelMetadata("/painel/fila", { responsible: (await searchParams).responsavel });
@@ -30,6 +31,15 @@ export default async function StaffQueuePage() {
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).single() : { data: null };
   if (!user || !profile || !["cataloger", "administrator"].includes(profile.role)) redirect("/painel");
+  const canViewQueue = await userHasPermission(supabase, "staff.queue.view", profile.role);
+  if (!canViewQueue) redirect("/painel");
+  const [caseAccess, assumeAccess, releaseAccess, reassignAccess, priorityAccess] = await Promise.all([
+    userHasPermission(supabase, "staff.case.view", profile.role),
+    userHasPermission(supabase, "staff.queue.assume", profile.role),
+    userHasPermission(supabase, "staff.queue.release", profile.role),
+    userHasPermission(supabase, "staff.queue.reassign", profile.role),
+    userHasPermission(supabase, "staff.queue.priority", profile.role),
+  ]);
 
   const { data: staffData } = await supabase.from("profiles").select("id, full_name").in("role", ["cataloger", "administrator"]).eq("status", "active").order("full_name");
   const data: RawQueueRequest[] = [];
@@ -88,5 +98,5 @@ export default async function StaffQueuePage() {
     };
   });
   const staff: StaffOption[] = (staffData ?? []).map((item) => ({ id: item.id, fullName: item.full_name }));
-  return <main className="dashboard-main dashboard-main--queue"><StaffQueue initialRequests={requests} staff={staff} currentUserId={user.id} isAdministrator={profile.role === "administrator"} /></main>;
+  return <main className="dashboard-main dashboard-main--queue"><StaffQueue initialRequests={requests} staff={staff} currentUserId={user.id} canViewCase={caseAccess} canAssume={assumeAccess} canRelease={releaseAccess} canReassign={reassignAccess} canPriority={priorityAccess} /></main>;
 }

@@ -14,7 +14,7 @@ export async function panelMetadata(pathname: string, options: { responsible?: s
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
       if (profile?.role === "cataloger" || profile?.role === "administrator") language = "pt";
     }
-  } else if (pathname.startsWith("/painel/fila") || pathname.startsWith("/painel/atendimento") || pathname.startsWith("/painel/admin")) language = "pt";
+  } else if (pathname.startsWith("/painel/fila") || pathname.startsWith("/painel/atendimento") || pathname.startsWith("/painel/admin") || pathname === "/painel/calendario" || pathname === "/painel/horarios" || pathname === "/painel/visao-estudante") language = "pt";
   const trail = dashboardTrail(language, pathname, options);
   return { title: { absolute: `${trail.map((item) => item.label).reverse().join(" › ")} | Pronto!` }, robots: { index: false, follow: false } };
 }

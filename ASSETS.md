@@ -11,6 +11,6 @@ Os seguintes arquivos em `public/` contêm identidade institucional e devem ser 
 | FAUFBA | `logo-faufba.png` |
 | BIB/FAUFBA | `logo-biblioteca-faufba.png`, `logo-biblioteca-faufba-pronto.png`, `logo-biblioteca-faufba-pronto-cinza.png`, `logo-biblioteca-faufba-light.png`, `logo-biblioteca-faufba-dark.png` |
 
-Os 18 avatares em `public/avatars/` são composições geométricas neutras, desenhadas em código, sem retratos de pessoas.
+Os dez avatares do catálogo atual são símbolos vetoriais originais, desenhados em `src/components/literary-avatar.tsx`, que combinam livros e arquitetura sem retratos de pessoas nem imagens externas.
 
 Outras marcas, nomes e conteúdos de terceiros citados na documentação ou exibidos pela aplicação permanecem sujeitos aos direitos e às condições de seus respectivos titulares.

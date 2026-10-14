@@ -9,7 +9,7 @@ import { AppIcon } from "@/components/app-icon";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import { uiText } from "@/lib/ui-text";
 
-export function StaffAvatarPicker({ userId, fullName, currentChoice }: { userId: string; fullName: string; currentChoice: number | null }) {
+export function StaffAvatarPicker({ userId, currentChoice }: { userId: string; currentChoice: number | null }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const router = useRouter();
@@ -43,16 +43,12 @@ export function StaffAvatarPicker({ userId, fullName, currentChoice }: { userId:
   }
 
   return <section className="panel staff-avatar-picker" aria-labelledby="staff-avatar-picker-title">
-    <div className="staff-avatar-picker__heading"><div><h2 id="staff-avatar-picker-title"><AppIcon name="person" />{t("Escolher avatar")}</h2><p>{t("Escolha uma combinação de formas e cores para sua conta.")}</p></div>{saving && <span className="staff-avatar-picker__status" role="status">{t("Salvando…")}</span>}</div>
-    <div className="staff-avatar-picker__featured" aria-live="polite">
-      <LiteraryAvatar id={userId} label={fullName} choice={selected} />
-      <div className="staff-avatar-picker__bio"><p className="eyebrow">{t("Seu avatar")}</p><h3>{t("Avatar")} {avatar.number}</h3></div>
-    </div>
+    <div className="staff-avatar-picker__heading"><div><h2 id="staff-avatar-picker-title"><AppIcon name="person" />{t("Escolher avatar")}</h2><p>{t("Escolha um símbolo que una livros e arquitetura.")}</p></div><p className="staff-avatar-picker__selection" aria-live="polite">{t("Seu avatar")}: <strong>{avatar.name}</strong>{saving && <span className="staff-avatar-picker__status" role="status"> {t("Salvando…")}</span>}</p></div>
     {error && <p className="form-error" role="alert">{error}</p>}
     <div className="staff-avatar-picker__gallery" aria-label={t("Avatares disponíveis")}>
       {NEUTRAL_AVATARS.map((item) => {
         const choice = item.slot * 3;
-        return <button key={item.slot} type="button" className={selected === choice ? "is-selected" : ""} aria-label={`${t("Escolher")} ${t("Avatar")} ${item.number}${selected === choice ? `, ${t("selecionado")}` : ""}`} aria-pressed={selected === choice} disabled={saving} onClick={() => void choose(choice)}><LiteraryAvatar id={userId} label={`${t("Avatar")} ${item.number}`} choice={choice} /><span>{t("Avatar")} {item.number}</span></button>;
+        return <button key={item.slot} type="button" className={selected === choice ? "is-selected" : ""} aria-label={`${t("Escolher")} ${item.name}${selected === choice ? `, ${t("selecionado")}` : ""}`} aria-pressed={selected === choice} disabled={saving} onClick={() => void choose(choice)}><LiteraryAvatar id={userId} label={item.name} choice={choice} /><span>{item.name}</span></button>;
       })}
     </div>
   </section>;
