@@ -28,5 +28,5 @@ test("local Auth accepts both supported development origins", () => {
 test("recovery email sends the token hash expected by the confirmation route", () => {
   assert.match(recoveryEmail, /\{\{ \.RedirectTo \}\}\?token_hash=\{\{ \.TokenHash \}\}&amp;type=recovery/);
   assert.doesNotMatch(recoveryEmail, /\{\{ \.ConfirmationURL \}\}/);
-  assert.doesNotMatch(recoveryEmail, /background:#fff;border:1px solid/);
+  assert.match(recoveryEmail, /background:#fff;border:1px solid #cfcfcf/);
 });
