@@ -7,9 +7,10 @@ import { AppIcon } from "@/components/app-icon";
 type Labels = { send: string; sending: string; resend: string; sent: string; spam: string; error: string };
 const initialState: PasswordLinkState = { status: "idle", sentAt: 0 };
 const cooldownSeconds = 90;
+const previewPasswordChange = async (_previousState: PasswordLinkState): Promise<PasswordLinkState> => ({ status: "sent", sentAt: Date.now() });
 
-export function AccountPasswordLinkForm({ userId, email, labels }: { userId: string; email: string; labels: Labels }) {
-  const [state, formAction, pending] = useActionState(requestAuthenticatedPasswordChange, initialState);
+export function AccountPasswordLinkForm({ userId, email, labels, preview = false }: { userId: string; email: string; labels: Labels; preview?: boolean }) {
+  const [state, formAction, pending] = useActionState(preview ? previewPasswordChange : requestAuthenticatedPasswordChange, initialState);
   const [remaining, setRemaining] = useState(0);
   const [wasSent, setWasSent] = useState(false);
 

@@ -8,7 +8,7 @@ import { uiText } from "@/lib/ui-text";
 
 type Answers = Record<string, string>;
 
-export function FeedbackQuestionnaire({ requestId, protocol, postgraduate }: { requestId: string; protocol: string; postgraduate: boolean }) {
+export function FeedbackQuestionnaire({ requestId, protocol, postgraduate, preview = false }: { requestId: string; protocol: string; postgraduate: boolean; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string, values?: Record<string, string | number>) => uiText(language, source, values);
   const [answers, setAnswers] = useState<Answers>({});
@@ -30,6 +30,7 @@ export function FeedbackQuestionnaire({ requestId, protocol, postgraduate }: { r
       delete responseAnswers.comparison;
       delete responseAnswers.comparison_note;
     }
+    if (preview) { setSaving(false); setDone(true); return; }
     const { error: saveError } = await createClient().rpc("submit_request_feedback", { target_request_id: requestId, response_answers: responseAnswers });
     setSaving(false);
     if (saveError) { setError(t("Não foi possível enviar sua avaliação. Suas respostas continuam nesta tela para você tentar novamente.")); return; }

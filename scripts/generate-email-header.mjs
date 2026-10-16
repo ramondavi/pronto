@@ -23,7 +23,7 @@ const background = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="$
   <rect y="294" width="1200" height="6" fill="#1a3b70"/>
 </svg>`);
 
-const logo = await sharp(path.join(root, "public", "logo-pronto-v2-light.png"))
+const logo = await sharp(path.join(root, "public", "logo-pronto-v9-complete-light.png"))
   .resize({ width: 430 })
   .png()
   .toBuffer();

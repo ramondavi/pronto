@@ -2,16 +2,17 @@
 import { useEffect, useState, type ComponentProps } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { adminSections, adminTabHref, type AdminArea } from "@/lib/admin-navigation";
+import { adminSections, adminTabHref, canOpenAdminTab, type AdminArea } from "@/lib/admin-navigation";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 import { KnowledgeBaseAdmin, type KnowledgeEntry } from "./knowledge-base-admin";
 import { CduCatalogAdmin } from "./cdu-catalog-admin";
 import { ControlledTermsAdmin } from "./controlled-terms-admin";
-import { AppIcon } from "./app-icon";
+import { AppIcon, type AppIconName } from "./app-icon";
 import { ModalCloseButton } from "./modal-close-button";
 import { formatLibraryHour, isLibraryClosureAnnouncement, serviceDayKey } from "@/lib/service-announcements";
 import { StaffPermissionsAdmin, type PermissionDefinition, type PermissionOverride, type InheritedRole } from "./staff-permissions-admin";
 import { DailyClosingControl } from "./daily-closing-control";
+import { issueTemplateFields } from "@/lib/issue-template-fields";
 
 type User = {
   id: string;
@@ -56,7 +57,11 @@ type Template = {
   message: string;
   active: boolean;
   position: number;
+  field_keys: string[];
 };
+function TemplateFieldChoices({ selected, disabled = false }: { selected: string[]; disabled?: boolean }) {
+  return <fieldset className="admin-template__field-choices" disabled={disabled}><legend>Campos de metadados associados</legend><p className="field-help">O modelo aparecerá apenas ao pedir ajuste nestes campos.</p><div>{issueTemplateFields.map((field) => <label key={field.key}><input type="checkbox" name="field_keys" value={field.key} defaultChecked={selected.includes(field.key)} />{field.label}</label>)}</div></fieldset>;
+}
 type Relation<T> = T[] & Partial<T>;
 type Log = {
   id: string;
@@ -92,15 +97,62 @@ const statusLabels: Record<string, string> = {
   blocked: "Bloqueada",
   inactive: "Inativa",
 };
-const actionLabels: Record<string, string> = {
-  account_administration_changed: "Conta alterada",
-  program_operation_configuration_changed: "Programa configurado",
-  library_announcement_saved: "Mural atualizado",
-  library_daily_closing_changed: "Fechamento diário alterado",
-  issue_template_changed: "Template alterado",
-  frequently_asked_question_saved: "Pergunta frequente alterada",
-  nada_consta_purged: "Nada Consta expurgado",
+const indicatorStatusLabels: Record<string, string> = {
+  submitted: "Aguardando responsável", in_review: "Em análise", changes_requested: "Correção solicitada",
+  approved: "Aprovadas", completed: "Encerradas", canceled: "Canceladas",
 };
+const indicatorDateLabel = (day: string) => day ? day.split("-").reverse().join("/") : "";
+const actionLabels: Record<string, string> = {
+  account_administration_changed: "Alterou uma conta",
+  author_birth_year_validation_revoked: "Revogou a validação do ano de nascimento",
+  card_equivalent_title_decided: "Definiu o uso do título equivalente na ficha",
+  card_notes_saved: "Salvou notas da ficha",
+  cataloging_card_homologated: "Homologou a ficha catalográfica",
+  cataloging_request_assumed: "Assumiu o atendimento",
+  cataloging_request_completed: "Encerrou o protocolo",
+  cataloging_request_reassigned: "Mudou o responsável pelo atendimento",
+  cataloging_request_released: "Devolveu o atendimento à fila",
+  cdu_code_description_created: "Cadastrou uma descrição CDU",
+  cdu_code_description_saved: "Atualizou uma descrição CDU",
+  controlled_term_admin_changed: "Alterou um assunto controlado",
+  coordination_configuration_changed: "Alterou a configuração da coordenação",
+  coordination_magic_link_invalidated: "Invalidou o acesso da coordenação",
+  coordination_magic_link_issued: "Emitiu o acesso da coordenação",
+  feedback_campaign_activated: "Ativou a pesquisa de avaliação",
+  frequently_asked_question_saved: "Salvou uma pergunta frequente",
+  issue_template_changed: "Alterou um modelo de resposta",
+  knowledge_base_entry_saved: "Salvou conteúdo da Central de ajuda",
+  library_announcement_saved: "Atualizou o mural da biblioteca",
+  library_daily_closing_changed: "Alterou o horário de fechamento",
+  local_test_protocol_deleted: "Excluiu um protocolo de teste local",
+  nada_consta_approved: "Aprovou o Nada Consta",
+  nada_consta_purged: "Expurgou o arquivo do Nada Consta",
+  nada_consta_rejected: "Devolveu o Nada Consta",
+  nada_consta_uploaded: "Enviou o Nada Consta",
+  program_operation_configuration_changed: "Alterou o programa e o SLA",
+  public_work_link_checked: "Conferiu o link público do trabalho",
+  repository_deposit_configuration_changed: "Alterou a configuração do autodepósito",
+  repository_deposit_started: "Iniciou o autodepósito",
+  repository_publication_verified: "Verificou a publicação no repositório",
+  request_analysis_completed: "Concluiu a análise do protocolo",
+  request_canceled_failed_declaration: "Cancelou o protocolo após conferir declarações",
+  request_changes_requested: "Solicitou correções ao estudante",
+  request_citation_validated: "Validou a referência bibliográfica",
+  request_corrections_submitted: "Reenviou as correções",
+  request_direct_correction_restored: "Restaurou um campo corrigido",
+  request_direct_corrections_reset: "Restaurou correções da análise",
+  request_field_corrected_by_staff: "Corrigiu um campo na análise",
+  request_priority_removed: "Retirou a prioridade do protocolo",
+  request_priority_set: "Marcou o protocolo como prioritário",
+  shared_file_changed: "Alterou o arquivo compartilhado",
+  staff_access_revoked: "Revogou o acesso de uma pessoa da equipe",
+  staff_account_provisioned: "Provisionou uma conta da equipe",
+  staff_inherited_role_changed: "Alterou a visão herdada da equipe",
+  staff_permission_changed: "Alterou uma permissão individual",
+  student_birth_date_corrected: "Corrigiu a data de nascimento de um estudante",
+  unused_controlled_term_deleted: "Excluiu um assunto não utilizado",
+};
+const readableAuditAction = (code: string) => actionLabels[code] ?? "Ação registrada";
 
 const salvadorDateTime = new Intl.DateTimeFormat("en-US", { timeZone: "America/Bahia", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 function announcementInputDate(value: string | null | undefined) {
@@ -131,19 +183,26 @@ export function AdminOperations(props: {
   announcements: Announcement[];
   dailyHours: DailyHours[];
   templates: Template[];
+  templateFieldsReady?: boolean;
   logs: Log[];
   purgeDocuments: Purge[];
   knowledge: KnowledgeEntry[];
+  initialKnowledgeId?: string;
+  initialKnowledgeLanguage?: "pt" | "en" | "es" | "de" | "fr" | "it";
   cduEntries: ComponentProps<typeof CduCatalogAdmin>["entries"];
   permissionDefinitions: PermissionDefinition[];
   permissionOverrides: PermissionOverride[];
   inheritedRoles: InheritedRole[];
   canViewCalendar: boolean;
+  grantedPermissions: string[];
   delegatedCalendarOnly?: boolean;
 }) {
   const [message, setMessage] = useState("");
+  const [creatingTemplate, setCreatingTemplate] = useState(false);
   const [busy, setBusy] = useState("");
   const [stats, setStats] = useState<Stats | null>(null);
+  const [statsPeriod, setStatsPeriod] = useState({ start: "", end: "" });
+  const [appliedStatsPeriod, setAppliedStatsPeriod] = useState({ start: "", end: "" });
   const [users, setUsers] = useState(props.users);
   const [purge, setPurge] = useState(props.purgeDocuments);
   const [announcements, setAnnouncements] = useState(props.announcements);
@@ -158,10 +217,16 @@ export function AdminOperations(props: {
   const [announcementSort, setAnnouncementSort] = useState<{ column: "date" | "title" | "type" | "origin" | "status"; direction: "asc" | "desc" }>({ column: "date", direction: "asc" });
   const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState(props.tab);
+  const activeTab = props.tab;
   const router = useRouter();
   const [userType, setUserType] = useState("all");
   const [userStatus, setUserStatus] = useState("all");
+  const [userSearch, setUserSearch] = useState("");
+  const [auditSearch, setAuditSearch] = useState("");
+  const [auditAction, setAuditAction] = useState("all");
+  const [programSearch, setProgramSearch] = useState("");
+  const [programLevel, setProgramLevel] = useState("all");
+  const [programGuide, setProgramGuide] = useState("all");
   const supabase = createClient();
   const runVerified = async (
     key: string,
@@ -179,6 +244,7 @@ export function AdminOperations(props: {
         : "Não foi possível confirmar o salvamento. Confira os dados e tente novamente.",
     );
     setBusy("");
+    return saved;
   };
   useEffect(() => {
     if (!message) return;
@@ -457,46 +523,76 @@ export function AdminOperations(props: {
     const messageText = String(form.get("message"));
     const active = form.get("active") === "on";
     const position = Number(form.get("position"));
-    await runVerified(
+    const fieldKeys = form.getAll("field_keys").map(String);
+    if (props.templateFieldsReady && !fieldKeys.length) { setMessage("Selecione ao menos um campo de metadados."); return; }
+    const saved = await runVerified(
       `t-${template.id}`,
-      () =>
-        supabase.rpc("admin_update_issue_template", {
+      () => props.templateFieldsReady
+        ? supabase.rpc("admin_save_issue_template", {
           target_template_id: template.id,
           template_label: label,
           template_message: messageText,
+          template_field_keys: fieldKeys,
           enabled: active,
           template_position: position,
+        }) : supabase.rpc("admin_update_issue_template", {
+          target_template_id: template.id, template_label: label,
+          template_message: messageText, enabled: active, template_position: position,
         }),
       async () => {
         const { data, error } = await supabase
           .from("issue_templates")
-          .select("label,message,active,position")
+          .select(props.templateFieldsReady ? "label,message,active,position,field_keys" : "label,message,active,position")
           .eq("id", template.id)
           .single();
+        const savedTemplate = data as unknown as { label: string; message: string; active: boolean; position: number; field_keys?: string[] } | null;
         return (
           !error &&
-          data?.label === label &&
-          data.message === messageText &&
-          data.active === active &&
-          data.position === position
+          savedTemplate?.label === label &&
+          savedTemplate.message === messageText &&
+          savedTemplate.active === active &&
+          savedTemplate.position === position &&
+          (!props.templateFieldsReady || (fieldKeys.length === savedTemplate.field_keys?.length && fieldKeys.every((key) => savedTemplate.field_keys?.includes(key))))
         );
       },
       "Template salvo e confirmado no banco de dados.",
     );
+    if (saved) router.refresh();
+  }
+  async function createTemplate(form: FormData) {
+    const label = String(form.get("label") ?? "").trim();
+    const messageText = String(form.get("message") ?? "").trim();
+    const fieldKeys = form.getAll("field_keys").map(String);
+    if (!fieldKeys.length) { setMessage("Selecione ao menos um campo de metadados."); return; }
+    let newId = "";
+    const saved = await runVerified("t-new", async () => {
+      const result = await supabase.rpc("admin_save_issue_template", {
+        target_template_id: null, template_label: label, template_message: messageText,
+        template_field_keys: fieldKeys, enabled: true,
+        template_position: Math.max(0, ...props.templates.map((item) => item.position)) + 10,
+      });
+      newId = String(result.data ?? "");
+      return result;
+    }, async () => {
+      if (!newId) return false;
+      const { data, error } = await supabase.from("issue_templates").select("label,message,field_keys").eq("id", newId).single();
+      return !error && data?.label === label && data.message === messageText && fieldKeys.length === data.field_keys?.length && fieldKeys.every((key) => data.field_keys.includes(key));
+    }, "Modelo criado e confirmado no banco de dados.");
+    if (saved) { setCreatingTemplate(false); router.refresh(); }
   }
   async function loadStats(form: FormData) {
+    const startDay = String(form.get("start") ?? "");
+    const endDay = String(form.get("end") ?? "");
+    if (startDay && endDay && startDay > endDay) { setMessage("A data inicial deve ser anterior ou igual à final."); return; }
     setBusy("stats");
-    const start = form.get("start")
-      ? new Date(String(form.get("start"))).toISOString()
-      : null;
-    const end = form.get("end")
-      ? new Date(`${String(form.get("end"))}T23:59:59`).toISOString()
-      : null;
+    const start = startDay ? new Date(`${startDay}T00:00:00-03:00`).toISOString() : null;
+    const end = endDay ? new Date(new Date(`${endDay}T00:00:00-03:00`).getTime() + 86_400_000).toISOString() : null;
     const { data, error } = await supabase.rpc("admin_statistics", {
       period_start: start,
       period_end: end,
     });
     setStats(error ? null : (data as Stats));
+    if (!error) setAppliedStatsPeriod({ start: startDay, end: endDay });
     setMessage(
       error
         ? "Não foi possível calcular os indicadores."
@@ -572,11 +668,29 @@ export function AdminOperations(props: {
           ? user.role === "student"
           : user.role !== "student")) &&
       (userStatus === "all" || user.status === userStatus),
+  ).filter((user) => `${user.full_name} ${user.email}`.toLocaleLowerCase("pt-BR").includes(userSearch.trim().toLocaleLowerCase("pt-BR")));
+  const filteredPrograms = props.programs.filter((program) =>
+    `${program.name} ${program.level}`.toLocaleLowerCase("pt-BR").includes(programSearch.trim().toLocaleLowerCase("pt-BR")) &&
+    (programLevel === "all" || program.level === programLevel) &&
+    (programGuide === "all" || program.repository_deposit_enabled === (programGuide === "enabled"))
   );
-  const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => props.delegatedCalendarOnly ? tab.id === "library" : tab.id !== "library" || props.canViewCalendar);
+  const programLevels = [...new Set(props.programs.map((program) => program.level))];
+  const filteredLogs = props.logs.filter((log) =>
+    (auditAction === "all" || log.action === auditAction) &&
+    `${readableAuditAction(log.action)} ${log.action} ${log.profiles?.full_name ?? "Sistema"} ${log.entity_type} ${log.entity_id ?? ""}`.toLocaleLowerCase("pt-BR").includes(auditSearch.trim().toLocaleLowerCase("pt-BR"))
+  );
+  const auditActions = [...new Set(props.logs.map((log) => log.action))].sort((a, b) => readableAuditAction(a).localeCompare(readableAuditAction(b), "pt-BR"));
+  const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => canOpenAdminTab(tab.id, props.grantedPermissions));
+  const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage" };
+  const readOnly = activeTab !== "users" && Boolean(managePermission[activeTab] && !props.grantedPermissions.includes(managePermission[activeTab]) && !(activeTab === "faq" && props.grantedPermissions.includes("admin.faq.manage")));
   useEffect(() => {
-    setActiveTab(props.tab);
-  }, [props.tab]);
+    const section = [...document.querySelectorAll<HTMLElement>(`.admin-operations[data-active-tab="${activeTab}"] > .admin-section`)]
+      .find((item) => getComputedStyle(item).display !== "none");
+    if (!section) return;
+    section.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement>("form input, form button, form select, form textarea").forEach((control) => {
+      control.disabled = readOnly;
+    });
+  }, [activeTab, readOnly]);
   return (
     <div className="admin-operations" data-active-tab={activeTab} data-delegated-calendar={props.delegatedCalendarOnly ? "true" : undefined}>
       {message && !message.startsWith("Não ") && !/salv|alterad|corrigid|atualizad|excluíd|registrad|criad|removid|confirmad/i.test(message) && (
@@ -585,28 +699,27 @@ export function AdminOperations(props: {
         </p>
       )}
       <div className="admin-tabs" role="tablist" aria-label="Seções da área selecionada">
-          {adminTabs.map(({ id, label }) => (
+          {adminTabs.map(({ id, label, icon }) => (
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === id}
             className={activeTab === id ? "is-active" : ""}
-            onClick={() => { setActiveTab(id); router.push(adminTabHref(props.area, id), { scroll: false }); }}
+            onClick={() => { if (id !== activeTab) router.push(adminTabHref(props.area, id), { scroll: false }); }}
             key={id}
           >
+            <AppIcon name={icon} />
             {label}
           </button>
           ))}
       </div>
+      {readOnly && <p className="auth-feedback" role="status">Acesso de consulta: as alterações desta área exigem permissão específica.</p>}
       <section className="panel admin-section">
-        <p className="eyebrow">Usuários</p>
-        <h2>Equipe e acessos</h2>
-        <p>
-          Bloqueio e inativação interrompem a autorização imediatamente. Para
-          incluir alguém na equipe, crie e confirme primeiro a conta
-          institucional no Supabase; ela aparecerá na seleção abaixo.
-        </p>
-        <form className="admin-grid admin-provision" action={provision}>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="account" /></span><div><p className="eyebrow">Gestão de pessoas</p><h2>Diretório e provisionamento</h2><p>Consulte a situação das pessoas e ajuste o acesso. Bloqueio e inativação interrompem o acesso imediatamente.</p></div></div>
+        <SectionStats items={[{ icon: "account", value: users.length, label: "contas cadastradas" }, { icon: "book", value: users.filter((user) => user.role === "student").length, label: "estudantes" }, { icon: "shield", value: users.filter((user) => user.role !== "student").length, label: "equipe" }, { icon: "lock", value: users.filter((user) => user.status !== "active").length, label: "sem acesso", detail: "Bloqueadas ou inativas" }]} />
+        {props.grantedPermissions.includes("admin.accounts.provision") && <p className="admin-section__hint"><AppIcon name="help" />Para incluir alguém na equipe, crie e confirme primeiro a conta institucional no Supabase. Ela aparecerá na seleção abaixo.</p>}
+        {props.grantedPermissions.includes("admin.accounts.provision") && <div className="admin-section__subhead"><div><p className="eyebrow">Equipe</p><h3>Provisionar conta institucional</h3></div><span>{props.staffCandidates.length} conta{props.staffCandidates.length === 1 ? "" : "s"} disponível{props.staffCandidates.length === 1 ? "" : "eis"}</span></div>}
+        {props.grantedPermissions.includes("admin.accounts.provision") && <form className="admin-grid admin-provision" action={provision}>
           <label>
             Conta institucional
             <select name="id" required defaultValue="">
@@ -645,8 +758,10 @@ export function AdminOperations(props: {
           >
             Provisionar equipe
           </button>
-        </form>
+        </form>}
+        <div className="admin-section__subhead"><div><p className="eyebrow">Diretório</p><h3>Contas e situação de acesso</h3></div><span>{filteredUsers.length} de {users.length} contas</span></div>
         <div className="admin-user-filters">
+          <label>Buscar conta<input type="search" value={userSearch} onChange={(event) => setUserSearch(event.target.value)} placeholder="Nome ou e-mail" /></label>
           <label>
             Tipo de conta
             <select
@@ -672,9 +787,6 @@ export function AdminOperations(props: {
               ))}
             </select>
           </label>
-          <span>
-            {filteredUsers.length} conta{filteredUsers.length === 1 ? "" : "s"}
-          </span>
         </div>
         <div className="admin-list">
           {filteredUsers.map((user) => (
@@ -685,27 +797,31 @@ export function AdminOperations(props: {
               onSave={saveUser}
               birthBusy={busy === `birth-${user.id}`}
               onCorrectBirthDate={correctBirthDate}
+              canManage={props.grantedPermissions.includes("admin.accounts.manage")}
             />
           ))}
+          {filteredUsers.length === 0 && <p className="admin-empty-state"><AppIcon name="search" />Nenhuma conta corresponde aos filtros. Ajuste a busca, o tipo ou a situação.</p>}
         </div>
+      </section>
+      <section className="panel admin-section admin-section--permissions">
         <StaffPermissionsAdmin users={users} definitions={props.permissionDefinitions} initialOverrides={props.permissionOverrides} initialRoles={props.inheritedRoles} />
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Programas</p>
-        <h2>Programas, coordenações e SLA</h2>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="settings" /></span><div><p className="eyebrow">Gestão acadêmica</p><h2>Configurações por programa</h2><p>Defina o prazo em dias úteis, o guia de autodepósito e o contato de coordenação de cada programa.</p></div></div>
+        <SectionStats items={[{ icon: "book", value: props.programs.length, label: "programas ativos" }, { icon: "calendar", value: props.programs.filter((program) => program.service_level_business_days > 0).length, label: "prazos definidos" }, { icon: "upload", value: props.programs.filter((program) => program.repository_deposit_enabled).length, label: "guias RI ativos" }, { icon: "message", value: props.programs.filter((program) => program.coordination_contacts.some((contact) => contact.active)).length, label: "coordenações com contato" }]} />
+        <div className="admin-section__subhead"><div><p className="eyebrow">Configuração</p><h3>Prazo, depósito e coordenação</h3></div><span>{filteredPrograms.length} de {props.programs.length} programas</span></div>
+        <div className="admin-programs__toolbar"><label>Buscar programa<input type="search" value={programSearch} onChange={(event) => setProgramSearch(event.target.value)} placeholder="Nome ou nível" /></label><label>Nível<select value={programLevel} onChange={(event) => setProgramLevel(event.target.value)}><option value="all">Todos os níveis</option>{programLevels.map((level) => <option value={level} key={level}>{level}</option>)}</select></label><label>Guia do RI<select value={programGuide} onChange={(event) => setProgramGuide(event.target.value)}><option value="all">Todos</option><option value="enabled">Ativo</option><option value="disabled">Desativado</option></select></label>{(programSearch || programLevel !== "all" || programGuide !== "all") && <button className="button button--secondary button--small" type="button" onClick={() => { setProgramSearch(""); setProgramLevel("all"); setProgramGuide("all"); }}>Limpar filtros</button>}</div>
         <div className="admin-list">
-          {props.programs.map((p) => {
+          {filteredPrograms.map((p) => {
             const c = p.coordination_contacts.find((x) => x.active);
             return (
+              <details className="admin-program" key={p.id}>
+                <summary className="admin-program__identity"><span className="admin-section__icon"><AppIcon name="book" /></span><span><strong>{p.name}</strong><small>{p.level} · SLA atual: {p.service_level_business_days ? `${p.service_level_business_days} ${p.service_level_business_days === 1 ? "dia útil" : "dias úteis"}` : "não definido"}</small></span><AppIcon className="admin-program__chevron" name="arrowRight" /></summary>
               <form
                 className="admin-row admin-row--program"
                 action={(f) => saveProgram(p, f)}
-                key={p.id}
               >
-                <div>
-                  <strong>{p.name}</strong>
-                  <small>{p.level}</small>
-                </div>
+                <div className="admin-program__settings">
                 <label>
                   SLA (dias úteis)
                   <input
@@ -716,15 +832,16 @@ export function AdminOperations(props: {
                     defaultValue={p.service_level_business_days}
                   />
                 </label>
-                <label>
+                <div className="admin-program__switches">
+                <label className="admin-program__toggle">
                   <input
                     name="repository"
                     type="checkbox"
                     defaultChecked={p.repository_deposit_enabled}
                   />{" "}
-                  Guia RI ativo
+                  Guia do RI ativo
                 </label>
-                <label>
+                <label className="admin-program__toggle">
                   <input
                     name="coordination"
                     type="checkbox"
@@ -732,33 +849,38 @@ export function AdminOperations(props: {
                   />{" "}
                   Enviar Magic Link automaticamente à coordenação
                 </label>
+                </div>
+                </div>
+                <div className="admin-program__contact">
                 <label>
-                  Contato
+                  Nome do contato da coordenação
                   <input name="name" defaultValue={c?.name ?? ""} />
                 </label>
                 <label>
-                  E-mail
+                  E-mail da coordenação
                   <input
                     name="email"
                     type="email"
                     defaultValue={c?.email ?? ""}
                   />
                 </label>
+                </div>
                 <button
                   className="button button--secondary button--small"
                   disabled={busy === `p-${p.id}`}
                 >
-                  Salvar
+                  <AppIcon name="check" />Salvar programa
                 </button>
               </form>
+              </details>
             );
           })}
+          {filteredPrograms.length === 0 && <p className="admin-empty-state"><AppIcon name="search" />Nenhum programa corresponde aos filtros.</p>}
         </div>
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Biblioteca</p>
-        <h2>Calendário e comunicados da biblioteca</h2>
-        <p>Selecione um dia no calendário para preencher a data. Cadastre fechamentos e comunicados no formulário abaixo.</p>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="calendar" /></span><div><p className="eyebrow">Rotina da biblioteca</p><h2>Funcionamento e comunicados</h2><p>Selecione um dia para preencher o formulário e publicar fechamentos ou avisos.</p></div></div>
+        <SectionStats items={[{ icon: "calendar", value: announcements.filter((item) => item.active).length, label: "ocorrências ativas" }, { icon: "lock", value: announcements.filter((item) => item.active && isLibraryClosureAnnouncement(item)).length, label: "fechamentos" }, { icon: "message", value: announcements.filter((item) => item.active && !isLibraryClosureAnnouncement(item)).length, label: "avisos sem fechamento" }, { icon: "clock", value: dailyHours.length, label: "horários especiais" }]} />
         <div className="operational-calendar" aria-label="Calendário operacional">
           <div className="operational-calendar__header">
             <button type="button" aria-label="Mês anterior" title="Mês anterior" onClick={() => setCalendarDate(new Date(calendarYear, calendarMonth - 1, 1))}><AppIcon className="operational-calendar__previous" name="arrowRight" /></button>
@@ -790,7 +912,7 @@ export function AdminOperations(props: {
           </div>
         </div>
         <DailyClosingControl key={closingDate} initialHours={dailyHours} selectedDate={closingDate} onSaved={setDailyHours} />
-        <div className="calendar-editor__heading"><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Normal” para comunicados sem fechamento. As ocorrências de fechamento entram no cálculo dos dias úteis.</p></div></div>
+        <div className="calendar-editor__heading"><span className="admin-section__icon"><AppIcon name={isEditingAnnouncement ? "edit" : "message"} /></span><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Normal” para comunicados sem fechamento. As ocorrências de fechamento entram no cálculo dos dias úteis.</p></div></div>
         <form
           className="admin-grid calendar-editor"
           key={editingAnnouncement?.id || editingAnnouncement?.starts_at || "new"}
@@ -888,7 +1010,7 @@ export function AdminOperations(props: {
                   className="button button--secondary button--small"
                   onClick={() => setEditingAnnouncement(a)}
                 >
-                  Editar
+                  <AppIcon name="edit" />Editar
                 </button>
                 <button
                   type="button"
@@ -896,7 +1018,7 @@ export function AdminOperations(props: {
                   disabled={busy === `a-${a.id}`}
                   onClick={() => setAnnouncementToDelete(a)}
                 >
-                  Excluir
+                  <AppIcon name="close" />Excluir
                 </button>
               </div>
             </article>;
@@ -906,130 +1028,96 @@ export function AdminOperations(props: {
         {announcementToDelete && <div className="calendar-delete-confirmation pronto-modal-overlay" onKeyDown={(event) => { if (event.key === "Escape" && !busy) setAnnouncementToDelete(null); }}><section className="calendar-delete-confirmation__card pronto-modal-surface" role="alertdialog" aria-modal="true" aria-labelledby="calendar-delete-title" aria-describedby="calendar-delete-description"><ModalCloseButton onClick={() => setAnnouncementToDelete(null)} disabled={Boolean(busy)} /><p className="eyebrow">Confirmação necessária</p><h3 id="calendar-delete-title">Excluir ocorrência?</h3><p id="calendar-delete-description">“{announcementToDelete.title}” será removida do calendário e deixará de aparecer nos avisos da biblioteca.</p><div className="calendar-delete-confirmation__actions"><button type="button" className="button button--secondary" disabled={Boolean(busy)} onClick={() => setAnnouncementToDelete(null)}>Cancelar</button><button type="button" className="button button--danger button--with-icon" disabled={Boolean(busy)} onClick={() => deleteAnnouncement(announcementToDelete)}><AppIcon name="close" />{busy ? "Excluindo…" : "Excluir ocorrência"}</button></div></section></div>}
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Atendimento</p>
-        <h2>Pendências e respostas padrão</h2>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="inbox" /></span><div><p className="eyebrow">Conteúdo operacional</p><h2>Mensagens do atendimento</h2><p>Mensagens reutilizáveis para orientar correções e próximos passos dos estudantes durante o atendimento.</p></div></div>
+        <SectionStats items={[{ icon: "inbox", value: props.templates.length, label: "modelos cadastrados" }, { icon: "check", value: props.templates.filter((item) => item.active).length, label: "disponíveis à equipe" }, { icon: "lock", value: props.templates.filter((item) => !item.active).length, label: "desativados" }]} />
+        <div className="admin-section__subhead"><div><p className="eyebrow">Biblioteca de mensagens</p><h3>Textos usados no atendimento</h3></div>{props.templateFieldsReady && <button type="button" className="button button--secondary button--small button--with-icon" onClick={() => setCreatingTemplate((current) => !current)}><AppIcon name={creatingTemplate ? "close" : "edit"} />{creatingTemplate ? "Cancelar criação" : "Criar modelo"}</button>}</div>
+        {!props.templateFieldsReady && <p className="admin-section__hint"><AppIcon name="help" />Os modelos existentes continuam disponíveis. A criação e a associação aos campos serão liberadas após a migração local.</p>}
+        <p className="field-help">A ordem define a posição no menu de modelos durante a análise: números menores aparecem primeiro. Modelos associados só aparecem nos campos selecionados.</p>
+        {creatingTemplate && <form className="admin-row admin-row--template admin-row--template-new" action={createTemplate}>
+          <div className="admin-template__heading"><span className="admin-section__icon"><AppIcon name="message" /></span><div><strong>Novo modelo</strong><small>Será disponibilizado à equipe depois de salvo.</small></div></div>
+          <div className="admin-template__fields"><label>Nome do modelo<input name="label" required minLength={3} placeholder="Ex.: Conferir nome do orientador" /></label><label>Mensagem para o estudante<textarea name="message" rows={4} required minLength={3} placeholder="Explique o que precisa ser corrigido." /></label></div>
+          <TemplateFieldChoices selected={[]} /><div className="admin-template__settings"><p className="field-help">Entrará ao final da lista. A posição pode ser alterada depois.</p><button className="button button--secondary button--small button--with-icon" disabled={busy === "t-new"}><AppIcon name="check" />Criar modelo</button></div>
+        </form>}
         {props.templates.map((t) => (
-          <form
-            className="admin-row admin-row--template"
-            action={(f) => saveTemplate(t, f)}
-            key={t.id}
-          >
-            <code className="admin-template__code">{t.code}</code>
+          <details className="admin-template" key={t.id}>
+            <summary className="admin-template__summary"><span className="admin-section__icon"><AppIcon name="message" /></span><span className="admin-template__summary-text"><strong>{t.label}</strong><small>Posição {t.position} · {t.field_keys.length} {t.field_keys.length === 1 ? "campo associado" : "campos associados"}</small></span><span className={`admin-template__state${t.active ? " is-active" : ""}`}>{t.active ? "Ativo" : "Inativo"}</span><AppIcon className="admin-template__chevron" name="arrowRight" /></summary>
+            <form className="admin-row admin-row--template" action={(f) => saveTemplate(t, f)}>
             <div className="admin-template__fields">
               <label>
-                Rótulo
+                Nome do modelo
                 <input name="label" defaultValue={t.label} />
               </label>
               <label>
-                Texto
+                Mensagem para o estudante
                 <textarea name="message" rows={4} defaultValue={t.message} />
               </label>
             </div>
+            <TemplateFieldChoices selected={t.field_keys} disabled={!props.templateFieldsReady} />
             <div className="admin-template__settings">
               <label>
-                Ordem
-                <input name="position" type="number" defaultValue={t.position} />
+                Posição na lista
+                <input name="position" type="number" min={0} defaultValue={t.position} />
               </label>
               <label className="admin-template__active">
                 <input name="active" type="checkbox" defaultChecked={t.active} />
                 Ativo
               </label>
-              <button className="button button--secondary button--small">
-                Salvar
+              <button className="button button--secondary button--small button--with-icon" disabled={busy === `t-${t.id}`}>
+                <AppIcon name="check" />Salvar modelo
               </button>
             </div>
-          </form>
+            </form>
+          </details>
         ))}
+        {props.templates.length === 0 && <p className="admin-empty-state"><AppIcon name="inbox" />Nenhum modelo de resposta cadastrado.</p>}
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Indicadores</p>
-        <h2>Indicadores e exportação</h2>
-        <form className="admin-grid" action={loadStats}>
-          <label>
-            De
-            <input name="start" type="date" />
-          </label>
-          <label>
-            Até
-            <input name="end" type="date" />
-          </label>
-          <button
-            className="button button--primary button--small"
-            disabled={busy === "stats"}
-          >
-            Calcular
-          </button>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="review" /></span><div><p className="eyebrow">Acompanhamento</p><h2>Indicadores do atendimento</h2><p>Explore as solicitações por situação, programa e responsável no período escolhido.</p></div></div>
+        <form className="admin-stats__period" action={loadStats}>
+          <div className="admin-stats__period-heading"><AppIcon name="calendar" /><div><strong>Período de envio</strong><span>As datas inicial e final estão incluídas no resultado.</span></div></div>
+          <div className="admin-stats__period-fields"><label>De<input name="start" type="date" value={statsPeriod.start} onChange={(event) => setStatsPeriod((current) => ({ ...current, start: event.target.value }))} /></label><label>Até<input name="end" type="date" value={statsPeriod.end} onChange={(event) => setStatsPeriod((current) => ({ ...current, end: event.target.value }))} /></label><button className="button button--primary button--small button--with-icon" disabled={busy === "stats"}><AppIcon name="review" />{busy === "stats" ? "Consultando…" : "Consultar"}</button></div>
+          <div className="admin-stats__presets" aria-label="Atalhos de período"><button type="button" className="button button--secondary button--small" onClick={() => { const today = serviceDayKey(new Date()); setStatsPeriod({ start: `${today.slice(0, 7)}-01`, end: today }); }}>Este mês</button><button type="button" className="button button--secondary button--small" onClick={() => { const today = serviceDayKey(new Date()); const start = new Date(`${today}T00:00:00Z`); start.setUTCDate(start.getUTCDate() - 29); setStatsPeriod({ start: start.toISOString().slice(0, 10), end: today }); }}>Últimos 30 dias</button><button type="button" className="button button--secondary button--small" onClick={() => setStatsPeriod({ start: "", end: "" })}>Todo o histórico</button></div>
         </form>
         {stats && (
           <>
-            <div className="stat-grid">
-              <article>
-                <strong>{stats.total}</strong>
-                <span>solicitações</span>
-              </article>
-              {stats.by_status.map((x) => (
-                <article key={x.label}>
-                  <strong>{x.count}</strong>
-                  <span>{x.label}</span>
-                </article>
-              ))}
-            </div>
-            <div className="admin-columns">
-              <Metric title="Por curso/programa" items={stats.by_program} />
-              <Metric title="Por bibliotecário" items={stats.by_staff} />
-            </div>
-            <div className="button-row">
-              <button
-                className="button button--secondary button--small"
-                onClick={() => download("csv")}
-              >
-                Exportar CSV
-              </button>
-              <button
-                className="button button--secondary button--small"
-                onClick={() => download("json")}
-              >
-                Exportar JSON
-              </button>
-            </div>
+            <div className="admin-stats__result-heading"><div><p className="eyebrow">Resultado</p><h3>Resumo do período</h3><span>{indicatorDateLabel(appliedStatsPeriod.start) || "Início do histórico"} — {indicatorDateLabel(appliedStatsPeriod.end) || "hoje"}</span></div><div className="admin-stats__exports"><button type="button" className="button button--secondary button--small button--with-icon" onClick={() => download("csv")} disabled={!stats.total}><AppIcon name="document" />Exportar CSV</button><button type="button" className="button button--secondary button--small button--with-icon" onClick={() => download("json")} disabled={!stats.total}><AppIcon name="document" />Exportar JSON</button></div></div>
+            <div className="admin-stats__overview"><div className="admin-stats__total"><span className="admin-section__stat-icon"><AppIcon name="inbox" /></span><div><span className="eyebrow">Volume total</span><strong>{stats.total.toLocaleString("pt-BR")}</strong><small>{stats.total === 1 ? "solicitação enviada" : "solicitações enviadas"}</small></div></div><div className="admin-stats__status"><h4>Distribuição por situação</h4>{stats.total > 0 ? <div className="admin-stats__status-list">{[...stats.by_status].sort((a, b) => b.count - a.count).map((item) => <div className="admin-stats__status-row" key={item.label}><div><span>{indicatorStatusLabels[item.label] ?? item.label}</span><strong>{item.count.toLocaleString("pt-BR")}</strong></div><span className="admin-stats__bar" aria-hidden="true"><span style={{ width: `${item.count / stats.total * 100}%` }} /></span></div>)}</div> : <p>Nenhuma situação registrada neste período.</p>}</div></div>
+            {stats.total > 0 ? <div className="admin-stats__breakdown"><Metric title="Por curso ou programa" items={stats.by_program} total={stats.total} /><Metric title="Por responsável" items={stats.by_staff} total={stats.total} /></div> : <p className="admin-empty-state"><AppIcon name="inbox" />Nenhuma solicitação encontrada para esse período.</p>}
           </>
         )}
+        {!stats && <p className="admin-empty-state"><AppIcon name="calendar" />Escolha um período ou consulte todo o histórico.</p>}
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Retenção</p>
-        <h2>Arquivos e retenção</h2>
-        <p>
-          Somente documentos cujo prazo de 60 dias venceu aparecem aqui. A
-          remoção apaga o arquivo e preserva o registro textual da validação.
-        </p>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="archive" /></span><div><p className="eyebrow">Ciclo de vida dos documentos</p><h2>Arquivos com prazo vencido</h2><p>Veja os arquivos elegíveis para expurgo após 60 dias. A remoção preserva o registro textual da validação.</p></div></div>
+        <SectionStats items={[{ icon: "archive", value: purge.length, label: "arquivos com prazo vencido" }]} />
         {purge.length === 0 ? (
-          <p>Nenhum documento aguardando expurgo.</p>
+          <p className="admin-empty-state"><AppIcon name="archive" />Nenhum arquivo atingiu o prazo de retenção.</p>
         ) : (
           purge.map((d) => (
-            <div className="admin-summary" key={d.id}>
-              <strong>{d.cataloging_requests?.protocol ?? d.request_id}</strong>
-              <span>
-                Prazo: {new Date(d.purge_after).toLocaleString("pt-BR")}
-              </span>
+            <div className="admin-summary admin-retention__item" key={d.id}>
+              <span className="admin-section__stat-icon"><AppIcon name="document" /></span>
+              <div className="admin-retention__details"><small>Protocolo</small><strong>{d.cataloging_requests?.protocol ?? d.request_id}</strong><span>Retenção encerrada em {new Date(d.purge_after).toLocaleString("pt-BR")}</span></div>
               <button
                 className="button button--danger button--small"
                 disabled={busy === `x-${d.id}`}
                 onClick={() => purgeFile(d)}
               >
-                Expurgar arquivo
+                <AppIcon name="archive" />Expurgar arquivo
               </button>
             </div>
           ))
         )}
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Auditoria</p>
-        <h2>Auditoria operacional</h2>
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="document" /></span><div><p className="eyebrow">Rastreabilidade</p><h2>Histórico de ações</h2><p>Consulte quando uma ação ocorreu, quem a realizou e o registro associado.</p></div></div>
+        <SectionStats items={[{ icon: "document", value: props.logs.length, label: "Ações carregadas" }, { icon: "account", value: new Set(props.logs.map((log) => log.profiles?.full_name).filter(Boolean)).size, label: "Pessoas identificadas" }]} />
+        <div className="admin-audit-toolbar"><label className="admin-audit-search">Buscar no histórico<input type="search" value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Ação, pessoa ou registro" /></label><label>Tipo de ação<select value={auditAction} onChange={(event) => setAuditAction(event.target.value)}><option value="all">Todas as ações</option>{auditActions.map((action) => <option key={action} value={action}>{readableAuditAction(action)}{actionLabels[action] ? "" : ` (${action})`}</option>)}</select></label><span>{filteredLogs.length} de {props.logs.length} registros</span></div>
         <div className="audit-table">
-          {props.logs.map((l) => (
+          {filteredLogs.length === 0 && <p className="admin-empty-state"><AppIcon name="document" />{props.logs.length === 0 ? "Nenhuma ação registrada até agora." : "Nenhuma ação corresponde aos filtros."}</p>}
+          {filteredLogs.map((l) => (
             <article key={l.id}>
               <time>{new Date(l.occurred_at).toLocaleString("pt-BR")}</time>
-              <strong>{actionLabels[l.action] ?? l.action}</strong>
+              <div className="admin-audit__action"><strong>{readableAuditAction(l.action)}</strong><code>{l.action}</code></div>
               <span>
                 {l.profiles?.full_name ?? "Sistema"} · {l.entity_type}
                 {l.entity_id ? ` · ${l.entity_id}` : ""}
@@ -1039,28 +1127,22 @@ export function AdminOperations(props: {
         </div>
       </section>
       <section className="panel admin-section">
-        <p className="eyebrow">Conteúdo público</p>
-        <h2>Ajuda e perguntas frequentes</h2>
-        <p>Edite o conteúdo publicado, seus públicos e a forma como aparece na Central.</p>
-        <KnowledgeBaseAdmin entries={props.knowledge} />
+        <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="help" /></span><div><p className="eyebrow">Orientação ao público</p><h2>Conteúdo da Central de ajuda</h2><p>Organize perguntas frequentes, respostas rápidas e artigos por público e ordem de exibição.</p></div></div>
+        <SectionStats items={[{ icon: "help", value: props.knowledge.filter((entry) => entry.kind === "faq").length, label: "Perguntas frequentes" }, { icon: "document", value: props.knowledge.filter((entry) => entry.kind !== "faq").length, label: "Respostas e artigos" }, { icon: "review", value: props.knowledge.filter((entry) => entry.active).length, label: "Conteúdos ativos" }]} />
+        <KnowledgeBaseAdmin entries={props.knowledge} initialEntryId={props.initialKnowledgeId} initialLanguage={props.initialKnowledgeLanguage} faqOnly={!props.grantedPermissions.includes("admin.knowledge.manage")} canEdit={props.grantedPermissions.includes("admin.knowledge.manage") || props.grantedPermissions.includes("admin.faq.manage")} />
       </section>
       <CduCatalogAdmin entries={props.cduEntries} />
       <ControlledTermsAdmin />
     </div>
   );
 }
-function Metric({ title, items }: { title: string; items: StatItem[] }) {
+function Metric({ title, items, total }: { title: string; items: StatItem[]; total: number }) {
   return (
-    <div>
-      <h3>{title}</h3>
-      {items.map((x) => (
-        <div className="metric-row" key={`${x.id}-${x.label}`}>
-          <span>{x.label}</span>
-          <strong>{x.count}</strong>
-        </div>
-      ))}
-    </div>
+    <section className="admin-stats__metric"><h4>{title}</h4><div className="admin-stats__metric-list">{[...items].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "pt-BR")).map((item) => <div className="admin-stats__metric-row" key={`${item.id}-${item.label}`}><div><span>{item.label}</span><strong>{item.count.toLocaleString("pt-BR")}</strong></div><span className="admin-stats__bar" aria-hidden="true"><span style={{ width: `${total ? item.count / total * 100 : 0}%` }} /></span></div>)}</div></section>
   );
+}
+function SectionStats({ items }: { items: { icon: AppIconName; value: number | string; label: string; detail?: string }[] }) {
+  return <div className="admin-section__stats" aria-label="Resumo da seção">{items.map((item) => <div className="admin-section__stat" key={item.label}><span className="admin-section__stat-icon"><AppIcon name={item.icon} /></span><div><strong>{item.value}</strong><span>{item.label}</span>{item.detail && <small>{item.detail}</small>}</div></div>)}</div>;
 }
 function UserRow({
   user,
@@ -1068,12 +1150,14 @@ function UserRow({
   onSave,
   birthBusy,
   onCorrectBirthDate,
+  canManage,
 }: {
   user: User;
   busy: boolean;
   onSave: (user: User, form: FormData) => Promise<void>;
   birthBusy: boolean;
   onCorrectBirthDate: (user: User, form: FormData) => Promise<void>;
+  canManage: boolean;
 }) {
   const [role, setRole] = useState(user.role);
   const staff = role !== "student";
@@ -1094,6 +1178,7 @@ function UserRow({
         <select
           name="role"
           value={role}
+          disabled={!canManage}
           onChange={(event) => setRole(event.target.value)}
         >
           {Object.entries(roleLabels).map(([value, label]) => (
@@ -1105,7 +1190,7 @@ function UserRow({
       </label>
       <label>
         Situação
-        <select name="status" defaultValue={user.status}>
+        <select name="status" defaultValue={user.status} disabled={!canManage}>
           {Object.entries(statusLabels).map(([value, label]) => (
             <option value={value} key={value}>
               {label}
@@ -1117,18 +1202,18 @@ function UserRow({
         <>
           <label>
             CRB
-            <input name="crb" required defaultValue={details?.crb ?? ""} />
+            <input name="crb" required defaultValue={details?.crb ?? ""} disabled={!canManage} />
           </label>
         </>
       )}
-      <button
+      {canManage && <button
         className="button button--secondary button--small"
         disabled={busy}
       >
         Salvar
-      </button>
+      </button>}
     </form>
-    {!staff && <details className="admin-birth-date"><summary>Corrigir data de nascimento</summary>
+    {!staff && canManage && <details className="admin-birth-date"><summary>Corrigir data de nascimento</summary>
       <form action={(form) => onCorrectBirthDate(user, form)}>
         <span>Data atual: <strong>{birthDate ? birthDate.split("-").reverse().join("/") : "não informada"}</strong></span>
         <label>Nova data de nascimento<input type="date" name="birth_date" min="1900-01-01" max={new Date().toISOString().slice(0, 10)} defaultValue={birthDate ?? ""} required /></label>

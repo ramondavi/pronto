@@ -4,6 +4,7 @@ import { getInterfaceLanguage } from "@/lib/server-language";
 import { ProtectedEmail } from "@/components/protected-email";
 import { PRIVACY_NOTICE_VERSION } from "@/domain/privacy/notice";
 import { privacyCopy } from "@/lib/privacy-copy";
+import { AppIcon, type AppIconName } from "@/components/app-icon";
 
 const metadataCopy = {
   pt: ["Política de privacidade", "Entenda como o Pronto! trata e protege os dados necessários ao atendimento da BIB/FAUFBA."],
@@ -19,11 +20,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title, description, alternates: { canonical: "/politica-de-privacidade" }, openGraph: { title: `${title} | Pronto!`, description, url: "/politica-de-privacidade", images: [{ url: "/opengraph-image", alt: `${title} | Pronto!` }] }, twitter: { title: `${title} | Pronto!`, description, images: ["/opengraph-image"] } };
 }
 
-const icons = ["shield", "document", "clock"] as const;
+const icons = ["shield", "document", "clock"] as const satisfies readonly AppIconName[];
 
-function SummaryIcon({ name }: { name: string }) {
-  const paths = name === "shield" ? <path d="M12 3 5 6v5c0 4.6 3 7.7 7 10 4-2.3 7-5.4 7-10V6l-7-3Z" /> : name === "document" ? <><path d="M7 3h7l4 4v14H7z" /><path d="M14 3v5h5M10 12h5M10 16h5" /></> : <><circle cx="12" cy="12" r="8" /><path d="M12 7v5l3 2" /></>;
-  return <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">{paths}</svg>;
+function SummaryIcon({ name }: { name: AppIconName }) {
+  return <AppIcon name={name} focusable="false" />;
 }
 
 export default async function PrivacyNoticePage() {

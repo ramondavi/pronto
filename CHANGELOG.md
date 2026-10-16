@@ -6,8 +6,25 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 15 de outubro de 2026
+
+- Estudantes e integrantes da equipe que optarem pelo avatar padrão recebem um monograma azul com a inicial do nome e detalhes do pictograma; o cabeçalho público mantém o contraste do avatar ao mostrar a saudação.
+- Tooltips permanecem próximas dos respectivos controles em áreas animadas. Os botões flutuantes de acessibilidade e VLibras compartilham opacidade discreta e recuperam contraste ao receber foco ou passar o cursor.
+- A recuperação de senha usa confirmação explícita do link, e os modelos de resposta podem ser criados e associados aos campos de metadados.
+
 ### 14 de outubro de 2026
 
+- A barra lateral mantém o pictograma à vista durante a rolagem e aproxima os ícones dele sem perder o alinhamento horizontal; a equipe alterna para uma demonstração da navegação estudantil por uma chave no cabeçalho. O painel mostra páginas de livro ao carregar.
+- A busca interna da equipe sugere, durante a digitação, protocolos, classificações, pessoas e configurações conforme o acesso concedido; na visão geral, a barra recebe o foco ao entrar. A gestão de permissões aceita início e fim independentes como dia todo.
+- Os controles de acessibilidade foram reunidos em um botão flutuante, mantendo o VLibras, e o seletor de tema passou ao rodapé junto do idioma. As telas administrativas receberam cabeçalhos, cartões e textos mais consistentes; “Pendências” passou a “Modelos de resposta”.
+- Os ícones da barra lateral compacta do painel ficam centralizados verticalmente na área visível da janela.
+- A troca entre abas administrativas deixou de antecipar a aba antes da chegada dos dados; o conteúdo novo aparece com uma transição discreta, sem apagar a tela.
+- A transição dos índices administrativos troca o conteúdo como um conjunto; apenas o cartão escolhido avança discretamente na direção da seta.
+- Os índices da Administração ganharam botões de voltar e transição lateral ao entrar em uma área ou aba; os títulos dos submenus laterais agora apenas expandem ou recolhem. Corrigida a abertura da página de avaliações quando a campanha ainda não possui datas definidas.
+- O catálogo de permissões passou a incluir as ações administrativas, inclusive gestão de contas, provisionamento, expurgo e ativação ou exportação da pesquisa. A navegação e as operações no banco passam a respeitar essas concessões; a gestão das próprias permissões continua exclusiva de administradores ativos.
+- A página inicial ganhou mais respiro no cabeçalho e mantém a animação de “fichas catalográficas” nas seis línguas. A administração separa permissões individuais da aba Contas, com busca, resumo, filtros, áreas e cartões recolhidos ao abrir. Operação, Conteúdo e Controle ganharam páginas de índice acessíveis pela barra lateral e pelos breadcrumbs.
+- A marca do Pronto! foi atualizada em cabeçalhos, painel, compartilhamento e e-mail; favicon e ícone de instalação usam seus quadrados sem fundo. O logo da biblioteca foi refeito para os temas claro e escuro e ganhou no rodapé uma animação do lema “Arquitetura, Urbanismo e muito +”. O crédito de *vibe coding* voltou a ligar ao Codex.
+- O servidor de desenvolvimento verifica se está no repositório público correto antes de iniciar, prevenindo a abertura acidental de uma cópia antiga.
 - Ampliado o tempo da verificação de acessibilidade da página inicial no CI para acomodar sua renderização e análise completas.
 - A concessão ou o bloqueio de acesso mais recente agora prevalece de forma consistente, mesmo quando duas alterações ocorrem na mesma transação.
 - Corrigida a validação de permissões nas mudanças de status de ficha, Nada Consta e solicitação, preservando os fluxos existentes e a proteção por perfil.

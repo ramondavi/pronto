@@ -14,6 +14,7 @@ test("recursos de acessibilidade preservam as preferências", async ({ page }) =
   test.slow();
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
+  await page.getByRole("button", { name: "Recursos de acessibilidade" }).click();
   await page.getByRole("button", { name: "Aumentar tamanho do texto" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-text-scale", "large");
   await page.getByRole("button", { name: "Alternar alto contraste" }).click();
@@ -42,13 +43,18 @@ test("navegação por teclado alcança o conteúdo", async ({ page }) => {
   await expect(page.locator("#conteudo")).toBeFocused();
 });
 
-test("barras públicas compartilham as mesmas margens", async ({ page }) => {
+test("controles de idioma e tema ficam alinhados no rodapé público", async ({ page }) => {
   await page.goto("/");
-  const offsets = await page.evaluate(() => [".accessibility-bar__inner", ".site-header__inner", ...(document.querySelector("#barra-brasil .conteudo-barra-brasil") ? ["#barra-brasil .conteudo-barra-brasil"] : [])].map((selector) => {
-    const { left, right } = document.querySelector(selector)!.getBoundingClientRect();
-    return { left: Math.round(left), right: Math.round(right) };
-  }));
-  expect(offsets.every(({ left, right }) => left === offsets[0].left && right === offsets[0].right)).toBe(true);
+  const language = page.locator("#creditos .language-control");
+  const theme = page.locator("#creditos .theme-switcher");
+  await expect(language).toBeVisible();
+  await expect(theme).toBeVisible();
+  const languageBounds = await language.boundingBox();
+  const themeBounds = await theme.boundingBox();
+  expect(languageBounds).not.toBeNull();
+  expect(themeBounds).not.toBeNull();
+  expect(Math.abs(languageBounds!.y - themeBounds!.y)).toBeLessThanOrEqual(2);
+  expect(Math.abs(languageBounds!.height - themeBounds!.height)).toBeLessThanOrEqual(2);
 });
 
 test("links do rodapé público formam uma linha no desktop", async ({ page }) => {

@@ -20,19 +20,29 @@ export function LanguageControl() {
   const { language, deviceLanguage, hasPreference, setLanguage } = useInterfaceLanguage();
   const [dismissed, setDismissed] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => { setDismissed(sessionStorage.getItem("pronto-language-notice-dismissed") === "true"); }, []);
   useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOutside = (event: PointerEvent) => { if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false); };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [menuOpen]);
   const message = messages[language];
   const mismatch = hasPreference && language !== deviceLanguage;
   const showSuggestion = mismatch && (!dismissed || hovered);
   const dismiss = () => { setDismissed(true); setHovered(false); sessionStorage.setItem("pronto-language-notice-dismissed", "true"); };
   const stayOpen = () => { if (closeTimer.current) clearTimeout(closeTimer.current); setHovered(true); };
   const closeAfterPointerLeaves = () => { if (closeTimer.current) clearTimeout(closeTimer.current); closeTimer.current = setTimeout(() => setHovered(false), 180); };
-  const changeLanguage = (value: string) => { setLanguage(value as typeof language); setDismissed(false); };
+  const changeLanguage = (value: string) => { setLanguage(value as typeof language); setDismissed(false); setMenuOpen(false); };
   return <div className="language-control">
-    <label className="language-control__select language-control__select--desktop"><AppIcon name="globe" /><span className="sr-only">{message.label}</span><select aria-label={message.label} value={language} onChange={(event) => changeLanguage(event.target.value)}>{supportedLanguages.map((option) => <option key={option} value={option}>{languageLabels[option]}</option>)}</select></label>
-    <label className="language-control__select language-control__select--touch"><AppIcon name="globe" /><span className="sr-only">{message.label}</span><select aria-label={message.label} value={language} onChange={(event) => changeLanguage(event.target.value)}>{supportedLanguages.map((option) => <option key={option} value={option}>{languageFlags[option]}</option>)}</select></label>
+    <div ref={menuRef} className="language-control__menu" onKeyDown={(event) => { if (event.key === "Escape") { setMenuOpen(false); menuRef.current?.querySelector<HTMLButtonElement>(".language-control__trigger")?.focus(); } else if (menuOpen && (event.key === "ArrowDown" || event.key === "ArrowUp")) { event.preventDefault(); const options = [...(menuRef.current?.querySelectorAll<HTMLButtonElement>(".language-control__option") ?? [])]; const index = options.indexOf(document.activeElement as HTMLButtonElement); options[(index + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length]?.focus(); } }}>
+      <button className="language-control__trigger" type="button" aria-label={`${message.label}: ${languageLabels[language]}`} aria-expanded={menuOpen} aria-haspopup="listbox" onClick={() => setMenuOpen((current) => !current)}><AppIcon name="globe" /><span className="language-control__desktop-label">{languageLabels[language]}</span><span className="language-control__touch-label">{languageFlags[language]}</span><span className="language-control__chevron" aria-hidden="true" /></button>
+      {menuOpen && <div className="language-control__options" role="listbox" aria-label={message.label}>{supportedLanguages.map((option) => <button key={option} className="language-control__option" type="button" role="option" aria-selected={language === option} onClick={() => changeLanguage(option)}><span>{languageLabels[option]}</span>{language === option && <AppIcon name="check" />}</button>)}</div>}
+    </div>
     {mismatch && <div className="language-control__notice" onMouseEnter={stayOpen} onMouseLeave={closeAfterPointerLeaves} onFocusCapture={stayOpen} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) closeAfterPointerLeaves(); }}><button type="button" className="language-control__info" aria-label={message.detected.replace("{language}", languageLabels[deviceLanguage])} aria-expanded={showSuggestion} onClick={() => setHovered((current) => !current)}><AppIcon name="help" /></button>{showSuggestion && <div className="language-control__suggestion" role="status"><button className="language-control__close" type="button" aria-label={message.close} onClick={dismiss}><AppIcon name="close" /></button><span>{message.detected.replace("{language}", languageLabels[deviceLanguage])}</span><button type="button" onClick={() => { setLanguage(deviceLanguage); dismiss(); }}>{message.change.replace("{language}", languageLabels[deviceLanguage])}</button><button type="button" onClick={dismiss}>{message.keep}</button></div>}</div>}
   </div>;
 }

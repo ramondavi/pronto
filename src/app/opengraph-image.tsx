@@ -18,7 +18,7 @@ const copy = {
 
 export default async function OpenGraphImage() {
   const [tagline, library] = copy[await getInterfaceLanguage()];
-  const logo = await readFile(path.join(process.cwd(), "public", "logo-pronto-v2-light.png"));
+  const logo = await readFile(path.join(process.cwd(), "public", "logo-pronto-v9-complete-light.png"));
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
   return new ImageResponse(<div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 48, background: "#f4f6f9", color: "#172033", padding: "74px" }}><img src={logoSrc} alt="" width={1030} height={241} style={{ objectFit: "contain" }} /><div style={{ display: "flex", flexDirection: "column", gap: 18 }}><span style={{ fontSize: 38, lineHeight: 1.2, fontWeight: 700 }}>{tagline}</span><span style={{ fontSize: 22, color: "#45546b" }}>{library}</span></div></div>, size);
 }

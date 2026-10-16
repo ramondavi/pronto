@@ -8,10 +8,10 @@ import { getInterfaceLanguage } from "@/lib/server-language";
 import { AuthShell } from "@/components/auth-shell";
 import { AuthFeedback } from "@/components/auth-feedback";
 import Link from "next/link";
-import { formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { uiText } from "@/lib/ui-text";
 import { PanelInterfaceLanguageScope } from "@/components/interface-language";
-import { userHasPermission } from "@/lib/staff-permissions";
+import { userAdminPermissions, userHasPermission } from "@/lib/staff-permissions";
+import { studentServiceStatus } from "@/lib/student-service-status";
 
 export async function generateMetadata(): Promise<Metadata> {
   const titles = { pt: "Painel", en: "Dashboard", es: "Panel", de: "Dashboard", fr: "Tableau de bord", it: "Pannello" };
@@ -44,30 +44,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ? (birthdayProfile as { birth_date?: string | null } | null)?.birth_date?.slice(5) ?? null
     : staffBirthday?.birthday_month && staffBirthday.birthday_day
       ? `${String(staffBirthday.birthday_month).padStart(2, "0")}-${String(staffBirthday.birthday_day).padStart(2, "0")}` : null;
-  let serviceStatus;
-  if (profile.role === "student") {
-    const now = new Date().toISOString();
-    const [{ data: announcements }, { data: dailyHours }] = await Promise.all([
-      supabase.from("library_announcements").select("title,message,type,starts_at,ends_at").eq("active", true).neq("type", "normal").lte("starts_at", now).order("starts_at", { ascending: false }).limit(100),
-      supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle(),
-    ]);
-    const closingTime = libraryClosingTime(dailyHours?.closing_time);
-    const currentAnnouncement = announcements?.find((item) => isCurrentServiceAnnouncement(item, now));
-    const closureAnnouncement = announcements?.find((item) => isCurrentServiceAnnouncement(item, now) && isLibraryClosureAnnouncement(item));
-    const closed = isLibraryClosedNow(now, closingTime) || Boolean(closureAnnouncement);
-    const language = await getInterfaceLanguage();
-    serviceStatus = {
-      title: closed ? uiText(language, "Biblioteca fechada agora") : currentAnnouncement ? `${uiText(language, "Prazos impactados:")} ${currentAnnouncement.title}` : uiText(language, "Atendimento normal"),
-      message: closed ? uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.") : undefined,
-      reason: closureAnnouncement?.title,
-      date: { value: serviceDayKey(now), label: formatServiceDate(now, language) },
-      exceptional: Boolean(currentAnnouncement) || closed,
-      closed,
-      closingTime,
-      specialHours: Boolean(dailyHours),
-      now,
-    };
-  }
   const { data: acknowledgement } = await supabase.from("privacy_notice_acknowledgements").select("id").eq("profile_id", user.id).eq("notice_version", PRIVACY_NOTICE_VERSION).maybeSingle();
   const staff = profile.role === "cataloger" || profile.role === "administrator";
   const [canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar] = staff ? await Promise.all([
@@ -78,7 +54,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     userHasPermission(supabase, "library.calendar.view", profile.role),
     userHasPermission(supabase, "library.calendar.manage", profile.role),
   ]) : [false, false, false, false, false, false];
-  const access = { canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar };
+  const adminPermissions = staff ? await userAdminPermissions(supabase, profile.role) : [];
+  const serviceStatus = profile.role === "student" || canPreviewStudent ? await studentServiceStatus(supabase) : undefined;
+  const access = { canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
   if (!acknowledgement) {
     return <PanelInterfaceLanguageScope staff={staff}><DashboardShell fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access} showNotifications={false}><main className="dashboard-main dashboard-main--narrow" aria-hidden="true" /><PrivacyAcknowledgement /></DashboardShell></PanelInterfaceLanguageScope>;
   }

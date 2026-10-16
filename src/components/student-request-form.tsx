@@ -5,7 +5,7 @@ import { dismissPanelChange, showPanelChange, showPanelChangeError } from "@/com
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { additionalEquivalentLanguage, compactDraft, restoreStudentRequestDraft, emptyStudentRequestDraft, requiredEquivalentLanguages, studentRequestDraftKey, type RequestLanguage, type StudentRequestDraft } from "@/domain/student-requests/draft";
+import { additionalEquivalentLanguage, compactDraft, restoreStudentRequestDraft, emptyStudentRequestDraft, requiredEquivalentLanguages, studentPreviewDraftKey, studentRequestDraftKey, type RequestLanguage, type StudentRequestDraft } from "@/domain/student-requests/draft";
 import { isPublicWorkUrlCandidate } from "@/domain/student-requests/public-work-url";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { ModalCloseButton } from "@/components/modal-close-button";
@@ -156,7 +156,7 @@ function errorText(copy: Copy, code: string) {
   return translatedErrors[language][code] ?? translatedErrors[language].unknown_error;
 }
 
-export function StudentRequestForm({ programs, userId, requesterName, openReview = false, preview = false }: { programs: Program[]; userId: string; requesterName: string; openReview?: boolean; preview?: boolean }) {
+export function StudentRequestForm({ programs, userId, requesterName, openReview = false, preview = false, previewSuccessHref }: { programs: Program[]; userId: string; requesterName: string; openReview?: boolean; preview?: boolean; previewSuccessHref?: string }) {
   const router = useRouter();
   const draftKey = studentRequestDraftKey(userId);
   const [draft, setDraft] = useState<StudentRequestDraft>(emptyStudentRequestDraft);
@@ -225,7 +225,20 @@ export function StudentRequestForm({ programs, userId, requesterName, openReview
   }, [activeStep, furthestStep, reviewItems]);
 
   useEffect(() => {
-    if (preview) { setReady(true); return; }
+    if (preview) {
+      try {
+        const stored = sessionStorage.getItem(studentPreviewDraftKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setDraft(restoreStudentRequestDraft(parsed.draft ?? parsed));
+          const step = openReview ? 5 : Number(parsed.activeStep) || 1;
+          setActiveStep(Math.min(5, Math.max(1, step)));
+          setFurthestStep(Math.min(5, Math.max(1, Number(parsed.furthestStep) || step)));
+        }
+      } catch { /* A demonstração começa com o formulário vazio. */ }
+      setReady(true);
+      return;
+    }
     let active = true;
     async function loadDraft() {
       try {
@@ -287,7 +300,12 @@ export function StudentRequestForm({ programs, userId, requesterName, openReview
   }
 
   useEffect(() => {
-    if (preview) return;
+    if (preview) {
+      if (ready && !submitted.current && !(JSON.stringify(draft) === JSON.stringify(emptyStudentRequestDraft) && activeStep === 1)) {
+        try { sessionStorage.setItem(studentPreviewDraftKey, JSON.stringify({ draft, activeStep, furthestStep, savedAt: new Date().toISOString() })); } catch { /* A demonstração continua nesta página. */ }
+      }
+      return;
+    }
     if (!ready || submitted.current || submitting || savedSnapshot === snapshot || (JSON.stringify(draft) === JSON.stringify(emptyStudentRequestDraft) && activeStep === 1)) return;
     const timer = window.setTimeout(() => { void persistDraft(snapshot); }, 500);
     return () => window.clearTimeout(timer);
@@ -347,7 +365,16 @@ export function StudentRequestForm({ programs, userId, requesterName, openReview
   }
 
   async function submitRequest() {
-    if (preview) { showPanelChange("Demonstração: nenhum pedido foi enviado."); return; }
+    if (preview) {
+      if (activeStep !== 5) { setActiveStep(5); return; }
+      const invalid = reviewItems.find((item) => !item.valid);
+      if (invalid) { jumpToField(invalid.step, invalid.field); return; }
+      submitted.current = true;
+      try { sessionStorage.removeItem(studentPreviewDraftKey); } catch { /* Nenhum dado real foi alterado. */ }
+      showPanelChange("Demonstração: nenhum pedido foi enviado.");
+      if (previewSuccessHref) router.push(previewSuccessHref);
+      return;
+    }
     if (activeStep !== 5) { setActiveStep(5); return; }
     if (submitting) return;
     const invalid = reviewItems.find((item) => !item.valid);
@@ -645,13 +672,21 @@ export function isStudentDraftComplete(draft: StudentRequestDraft, programs: Pro
   return getReviewItems(draft, programs, uiCopy.pt).every((item) => item.valid);
 }
 
-export function StudentDraftSummary({ programs, userId, emptyMessage }: { programs: Program[]; userId: string; emptyMessage?: string }) {
+export function StudentDraftSummary({ programs, userId, emptyMessage, preview = false, previewHref = "/painel/visao-estudante?tela=solicitacao" }: { programs: Program[]; userId: string; emptyMessage?: string; preview?: boolean; previewHref?: string }) {
   const [draft, setDraft] = useState<StudentRequestDraft | null>(null);
   const draftKey = studentRequestDraftKey(userId);
   const [ready, setReady] = useState(false);
   const { language } = useInterfaceLanguage();
 
   useEffect(() => {
+    if (preview) {
+      try {
+        const stored = sessionStorage.getItem(studentPreviewDraftKey);
+        if (stored) { const parsed = JSON.parse(stored); setDraft(restoreStudentRequestDraft(parsed.draft ?? parsed)); }
+      } catch { /* O resumo fictício permanece vazio. */ }
+      setReady(true);
+      return;
+    }
     let active = true;
     const loadDraft = async () => {
       try {
@@ -669,7 +704,7 @@ export function StudentDraftSummary({ programs, userId, emptyMessage }: { progra
     window.addEventListener("storage", onStorage);
     window.addEventListener("focus", loadDraft);
     return () => { active = false; window.removeEventListener("storage", onStorage); window.removeEventListener("focus", loadDraft); };
-  }, [draftKey, userId]);
+  }, [draftKey, userId, preview]);
 
   if (!ready) return null;
   if (!draft) return emptyMessage ? <p>{emptyMessage}</p> : null;
@@ -698,7 +733,7 @@ export function StudentDraftSummary({ programs, userId, emptyMessage }: { progra
   });
   return <section className="student-draft-summary" aria-label={labels[0]}>
     <div className="student-draft-summary__heading"><AppIcon name="document" /><strong>{labels[0]}</strong></div>
-    <DraftProgress items={reviewItems} language={language} reviewHref="/painel/solicitacao/nova?revisao=1" />
+    <DraftProgress items={reviewItems} language={language} reviewHref={preview ? previewHref : "/painel/solicitacao/nova?revisao=1"} />
     {!complete && <div className="student-draft-summary__categories">{categories.map((category) => <details key={category.step} className="student-draft-summary__category">
       <summary><span>{category.label}</span><small>{category.filled} {labels[1]} · {category.pending} {labels[2]}{category.errors ? ` · ${category.errors} ${labels[3]}` : ""}</small></summary>
       <ul>{category.fields.map((item, index) => {

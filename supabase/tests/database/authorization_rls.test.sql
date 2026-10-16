@@ -121,7 +121,7 @@ select results_eq(
   'Administrador ativo lê os perfis de equipe'
 );
 select results_eq(
-  $$select count(*)::bigint from public.audit_logs$$,
+  $$select count(*)::bigint from public.audit_logs where action = 'pgtap_synthetic_action'$$,
   array[1::bigint],
   'Administrador ativo lê logs de auditoria'
 );

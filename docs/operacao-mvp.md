@@ -55,7 +55,7 @@ O lançamento público permanece bloqueado enquanto estiverem pendentes o envio 
 
 ### Sincronização do banco e promoção do site
 
-- Em 12/10/2026, o painel do Supabase hospedado mostrava `202608230010_stabilization_release` como última migração aplicada. A branch atual contém 109 migrações posteriores; não promover o deployment do PR 54 nem uma versão seguinte enquanto o banco remoto estiver nesse estado.
+- Em 15/10/2026, `supabase migration list --linked` mostrou `202610120002` como última migração aplicada. Restam 11 migrações versionadas de 13 a 15/10; não promover uma versão dependente delas enquanto o banco remoto estiver nesse estado.
 - Antes de solicitar a aplicação remota, concluir a revisão e a verificação da branch, apresentar o impacto das migrações e obter confirmação explícita. Aplicar as migrações versionadas em ordem, sem executar seus corpos isoladamente no SQL Editor nem alterar o histórico manualmente.
 - As migrações acrescentam estruturas e controles para catalogação, atendimento, administração, mensagens, pesquisa e e-mails; também configuram políticas RLS, publicação Realtime, armazenamento e tarefas agendadas. As rotinas de expurgo de mensagens e pesquisa exigem atenção especial à retenção aprovada. A tarefa de entrega de e-mails não chama a aplicação até que os dois segredos do worker estejam no Vault.
 - A migração `202610120002` remove as funções, a tabela e a política de ensaio local criadas por migrações anteriores, inclusive as RPCs de entrega via Mailpit, e restabelece a imutabilidade estrita das fichas homologadas. A tela de prévia com dados fictícios e os controles locais de persona, exclusão de protocolo e entrega de e-mails foram retirados do aplicativo. Os testes automatizados permanecem no repositório.

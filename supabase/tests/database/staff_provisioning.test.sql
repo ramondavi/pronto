@@ -155,7 +155,7 @@ set local request.jwt.claim.sub = '30000000-0000-4000-8000-000000000003';
 select throws_ok(
   $$select * from public.list_confirmed_staff_candidates()$$,
   'P0001',
-  'active_administrator_required',
+  'permission_denied',
   'Catalogador não consulta candidatos ao provisionamento'
 );
 select throws_ok(
@@ -167,7 +167,7 @@ select throws_ok(
       'cataloger'
     )$$,
   'P0001',
-  'active_administrator_required',
+  'permission_denied',
   'Catalogador ativo não provisiona equipe'
 );
 
@@ -181,7 +181,7 @@ select throws_ok(
       'cataloger'
     )$$,
   'P0001',
-  'active_administrator_required',
+  'permission_denied',
   'Administrador blocked não provisiona equipe'
 );
 
@@ -195,7 +195,7 @@ select throws_ok(
       'administrator'
     )$$,
   'P0001',
-  'active_administrator_required',
+  'permission_denied',
   'Administrador inactive não provisiona equipe'
 );
 

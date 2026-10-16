@@ -43,5 +43,14 @@ export function DashboardBreadcrumbs() {
   const { protocol } = useContext(DashboardProtocolContext);
   const { language } = useInterfaceLanguage();
   if (pathname === "/painel") return null;
+  if (pathname === "/painel/visao-estudante") {
+    const t = breadcrumbCopy[language];
+    const screen = searchParams.get("tela") ?? "inicio";
+    if (screen === "inicio") return null;
+    const items: Crumb[] = [{ label: t[5], href: "/painel/visao-estudante" }];
+    if (screen === "solicitacao" || screen === "correcao") items.push({ label: t[9], href: `/painel/visao-estudante?tela=solicitacoes${searchParams.get("estado") ? `&estado=${searchParams.get("estado")}` : ""}` }, { label: screen === "correcao" ? t[11] : t[10] });
+    else items.push({ label: screen === "solicitacoes" ? t[9] : screen === "autodeposito" ? t[12] : t[15] });
+    return <Trail variant="dashboard" items={items} />;
+  }
   return <Trail variant="dashboard" items={dashboardTrail(language, pathname, { responsible: searchParams.get("responsavel"), area: searchParams.get("area"), tab: searchParams.get("aba"), origin: searchParams.get("origem"), protocol: pathname.startsWith("/painel/atendimento/") ? protocol : null })} />;
 }

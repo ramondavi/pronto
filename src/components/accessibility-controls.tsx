@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { showPanelChange } from "@/components/panel-change-toast";
-import { ThemeSwitcher } from "./theme-switcher";
 import { AppIcon } from "./app-icon";
 import { useInterfaceLanguage } from "./interface-language";
 import { useStaffPanel } from "./use-staff-panel";
@@ -23,6 +22,15 @@ const mobileLinkCopy = {
 type TextScale = "normal" | "large" | "larger";
 
 const scales: TextScale[] = ["normal", "large", "larger"];
+const extraCopy = {
+  pt: ["Reduzir animações", "Destacar links", "Espaçar texto", "Restaurar ajustes"],
+  en: ["Reduce animations", "Highlight links", "Increase text spacing", "Reset settings"],
+  es: ["Reducir animaciones", "Destacar enlaces", "Espaciar texto", "Restablecer ajustes"],
+  de: ["Animationen reduzieren", "Links hervorheben", "Textabstand erhöhen", "Einstellungen zurücksetzen"],
+  fr: ["Réduire les animations", "Mettre les liens en évidence", "Espacer le texte", "Réinitialiser"],
+  it: ["Ridurre le animazioni", "Evidenziare i link", "Aumentare la spaziatura", "Ripristinare"],
+} as const;
+const closeCopy = { pt: "Fechar recursos", en: "Close tools", es: "Cerrar herramientas", de: "Werkzeuge schließen", fr: "Fermer les outils", it: "Chiudi gli strumenti" } as const;
 
 function applyPreferences(scale: TextScale, highContrast: boolean) {
   document.documentElement.dataset.textScale = scale;
@@ -35,16 +43,31 @@ export function AccessibilityControls() {
   const t = accessibilityCopy[effectiveLanguage];
   const [scale, setScale] = useState<TextScale>("normal");
   const [highContrast, setHighContrast] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [highlightLinks, setHighlightLinks] = useState(false);
+  const [spacedText, setSpacedText] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const widgetRef = useRef<HTMLElement>(null);
   const hasUserChangedPreference = useRef(false);
 
   useEffect(() => {
     const savedScale = localStorage.getItem("pronto-text-scale");
     const initialScale = scales.includes(savedScale as TextScale) ? savedScale as TextScale : "normal";
     const initialContrast = localStorage.getItem("pronto-high-contrast") === "true";
+    const initialMotion = localStorage.getItem("pronto-reduce-motion") === "true";
+    const initialLinks = localStorage.getItem("pronto-highlight-links") === "true";
+    const initialSpacing = localStorage.getItem("pronto-spaced-text") === "true";
     if (!hasUserChangedPreference.current) {
       setScale(initialScale);
       setHighContrast(initialContrast);
+      setReduceMotion(initialMotion);
+      setHighlightLinks(initialLinks);
+      setSpacedText(initialSpacing);
       applyPreferences(initialScale, initialContrast);
+      document.documentElement.dataset.reduceMotion = String(initialMotion);
+      document.documentElement.dataset.highlightLinks = String(initialLinks);
+      document.documentElement.dataset.spacedText = String(initialSpacing);
     }
     document.documentElement.dataset.appReady = "true";
   }, []);
@@ -55,13 +78,88 @@ export function AccessibilityControls() {
     const removeDuplicateShortcuts = () => {
       governmentBar.querySelectorAll<HTMLElement>("[accesskey]").forEach((element) => {
         const key = element.getAttribute("accesskey");
-        if (key && document.querySelector(`.accessibility-bar [accesskey="${key}"]`)) element.removeAttribute("accesskey");
+        if (key && document.querySelector(`.accessibility-widget [accesskey="${key}"]`)) element.removeAttribute("accesskey");
       });
     };
     const observer = new MutationObserver(removeDuplicateShortcuts);
     observer.observe(governmentBar, { subtree: true, childList: true, attributes: true, attributeFilter: ["accesskey"] });
     removeDuplicateShortcuts();
     return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); triggerRef.current?.focus(); } };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
+
+  useEffect(() => {
+    let frame = 0;
+    let discoveryTimer = 0;
+    let observedButton: HTMLElement | null = null;
+    let detachButton: (() => void) | null = null;
+    const resizeObserver = new ResizeObserver(() => positionBesideVlibras());
+    const positionBesideVlibras = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // A Barra Brasil injeta a marcação antiga, mas o script atual cria o
+        // botão e o balão visíveis dentro de uma shadow root.
+        const legacyButton = document.querySelector<HTMLElement>("[vw-access-button] .access-button");
+        const button = legacyButton ?? (window as Window & { VLibrasWidget?: { initBtn?: HTMLElement } }).VLibrasWidget?.initBtn;
+        const widget = widgetRef.current;
+        if (!button?.isConnected || !widget) return;
+        if (button !== observedButton) {
+          if (observedButton) resizeObserver.unobserve(observedButton);
+          detachButton?.();
+          resizeObserver.observe(button);
+          observedButton = button;
+          const properties = ["opacity", "transition"];
+          const previous = properties.map((property) => ({ property, value: button.style.getPropertyValue(property), priority: button.style.getPropertyPriority(property) }));
+          const root = button.getRootNode();
+          const popup = root instanceof ShadowRoot ? root.querySelector<HTMLElement>("#vlibras-popup") : null;
+          const popupStyle = popup ? document.createElement("style") : null;
+          if (popupStyle && root instanceof ShadowRoot) {
+            popupStyle.textContent = "#vlibras-popup { visibility: hidden; pointer-events: none; } #vlibras-access:is(:hover, :focus-within) #vlibras-popup { visibility: visible; }";
+            root.appendChild(popupStyle);
+          }
+          const normalOpacity = () => document.documentElement.dataset.contrast === "high" ? "1" : ".62";
+          const show = () => { button.style.setProperty("opacity", "1", "important"); };
+          const dim = () => { button.style.setProperty("opacity", normalOpacity(), "important"); };
+          button.style.setProperty("transition", "opacity .18s ease", "important");
+          if (button.matches(":hover, :focus-visible")) show(); else dim();
+          button.addEventListener("pointerenter", show);
+          button.addEventListener("pointerleave", dim);
+          button.addEventListener("focusin", show);
+          button.addEventListener("focusout", dim);
+          detachButton = () => {
+            button.removeEventListener("pointerenter", show);
+            button.removeEventListener("pointerleave", dim);
+            button.removeEventListener("focusin", show);
+            button.removeEventListener("focusout", dim);
+            for (const { property, value, priority } of previous) {
+              if (value) button.style.setProperty(property, value, priority);
+              else button.style.removeProperty(property);
+            }
+            popupStyle?.remove();
+          };
+        }
+        const bounds = button.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+        if (discoveryTimer) { window.clearInterval(discoveryTimer); discoveryTimer = 0; }
+        widget.style.setProperty("--access-widget-size", `${bounds.width}px`);
+        widget.style.setProperty("--access-widget-height", `${bounds.height}px`);
+        widget.style.setProperty("--access-widget-right", `${Math.max(0, document.documentElement.clientWidth - bounds.right - 1)}px`);
+        widget.style.setProperty("--access-widget-top", `${Math.max(12, bounds.top - bounds.height - 10)}px`);
+      });
+    };
+    const observer = new MutationObserver(positionBesideVlibras);
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("resize", positionBesideVlibras);
+    window.addEventListener("scroll", positionBesideVlibras, { passive: true });
+    window.addEventListener("pointerup", positionBesideVlibras);
+    discoveryTimer = window.setInterval(positionBesideVlibras, 300);
+    positionBesideVlibras();
+    return () => { observer.disconnect(); resizeObserver.disconnect(); detachButton?.(); window.clearInterval(discoveryTimer); window.removeEventListener("resize", positionBesideVlibras); window.removeEventListener("scroll", positionBesideVlibras); window.removeEventListener("pointerup", positionBesideVlibras); cancelAnimationFrame(frame); };
   }, []);
 
   function changeScale(next: TextScale) {
@@ -83,10 +181,29 @@ export function AccessibilityControls() {
   }
 
   const scaleIndex = scales.indexOf(scale);
+  const extras = extraCopy[effectiveLanguage];
+  const toggleExtra = (current: boolean, setter: (value: boolean) => void, storage: string, attribute: string) => {
+    hasUserChangedPreference.current = true;
+    setter(!current);
+    localStorage.setItem(storage, String(!current));
+    document.documentElement.dataset[attribute] = String(!current);
+  };
+  const reset = () => {
+    hasUserChangedPreference.current = true;
+    setScale("normal"); setHighContrast(false); setReduceMotion(false); setHighlightLinks(false); setSpacedText(false);
+    localStorage.setItem("pronto-text-scale", "normal"); localStorage.setItem("pronto-high-contrast", "false");
+    localStorage.setItem("pronto-reduce-motion", "false"); localStorage.setItem("pronto-highlight-links", "false"); localStorage.setItem("pronto-spaced-text", "false");
+    applyPreferences("normal", false);
+    document.documentElement.dataset.reduceMotion = "false";
+    document.documentElement.dataset.highlightLinks = "false";
+    document.documentElement.dataset.spacedText = "false";
+  };
 
   return (
-    <nav className="accessibility-bar" aria-label={t[4]}>
-      <div className="container accessibility-bar__inner">
+    <nav ref={widgetRef} className="accessibility-widget" aria-label={t[4]}>
+      <button ref={triggerRef} className="accessibility-widget__trigger" type="button" aria-label={t[4]} aria-expanded={open} aria-controls="accessibility-widget-panel" onClick={() => setOpen((current) => !current)}><AppIcon name="eye" /></button>
+      <div className={`accessibility-widget__panel${open ? " is-open" : ""}`} id="accessibility-widget-panel" inert={!open}>
+        <div className="accessibility-widget__heading"><strong>{t[4]}</strong><button type="button" aria-label={closeCopy[effectiveLanguage]} onClick={() => { setOpen(false); triggerRef.current?.focus(); }}><AppIcon name="close" /></button></div>
         <div className="accessibility-bar__links">
           <a href="#conteudo" accessKey="1" aria-label={t[0]}><span className="accessibility-bar__link-label">{t[0]}</span><span className="accessibility-bar__link-mobile">{mobileLinkCopy[effectiveLanguage][0]}</span><span className="accessibility-bar__link-short" aria-hidden="true">[1]</span></a>
           <a href="#menu-principal" accessKey="2" aria-label={t[1]}><span className="accessibility-bar__link-label">{t[1]}</span><span className="accessibility-bar__link-mobile">{mobileLinkCopy[effectiveLanguage][1]}</span><span className="accessibility-bar__link-short" aria-hidden="true">[2]</span></a>
@@ -99,7 +216,12 @@ export function AccessibilityControls() {
           <button type="button" onClick={() => changeScale("normal")} disabled={scale === "normal"} aria-label={t[7]} title={t[7]}>A</button>
           <button type="button" onClick={() => changeScale(scales[Math.min(scales.length - 1, scaleIndex + 1)])} disabled={scaleIndex === scales.length - 1} aria-label={t[8]} title={t[8]}>A+</button>
           <button type="button" onClick={changeContrast} aria-pressed={highContrast} aria-label={t[9]} title={t[10]}><AppIcon name="contrast" /></button>
-          <ThemeSwitcher />
+        </div>
+        <div className="accessibility-widget__extras" role="group" aria-label={t[5]}>
+          <button type="button" aria-pressed={reduceMotion} onClick={() => toggleExtra(reduceMotion, setReduceMotion, "pronto-reduce-motion", "reduceMotion")}>{extras[0]}</button>
+          <button type="button" aria-pressed={highlightLinks} onClick={() => toggleExtra(highlightLinks, setHighlightLinks, "pronto-highlight-links", "highlightLinks")}>{extras[1]}</button>
+          <button type="button" aria-pressed={spacedText} onClick={() => toggleExtra(spacedText, setSpacedText, "pronto-spaced-text", "spacedText")}>{extras[2]}</button>
+          <button type="button" onClick={reset}>{extras[3]}</button>
         </div>
       </div>
     </nav>

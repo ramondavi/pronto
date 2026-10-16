@@ -8,7 +8,7 @@ const shell = readFileSync(new URL("../src/components/dashboard-shell.tsx", impo
 test("staff opens the overview first and sees role-appropriate operational summaries", () => {
   assert.match(dashboard, /profile\.role === "cataloger" \|\| profile\.role === "administrator"/);
   assert.match(dashboard, /<StaffOverview role=\{profile\.role\} userId=\{user\.id\}/);
-  assert.match(dashboard, /<h1><AppIcon className="panel-heading-icon" name="home" \/>Visão geral<\/h1>/);
+  assert.match(dashboard, /<h1 className="sr-only">Visão geral<\/h1>/);
   assert.match(dashboard, /<AdminProvisioningAlert candidates=\{candidates \?\? \[\]\}/);
   assert.ok(shell.indexOf('href="/painel"') < shell.indexOf('href="/painel/fila"'));
 });

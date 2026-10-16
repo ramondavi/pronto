@@ -46,11 +46,13 @@ export function useInterfaceLanguage() { return useContext(LanguageContext); }
 
 export function PanelInterfaceLanguageScope({ staff, children }: { staff: boolean; children: React.ReactNode }) {
   const preference = useInterfaceLanguage();
+  const pathname = usePathname();
+  const staffView = staff && !pathname.startsWith("/painel/visao-estudante");
   useEffect(() => {
-    if (!staff) return;
+    if (!staffView) return;
     document.documentElement.lang = "pt-BR";
     return () => { document.documentElement.lang = preference.language === "pt" ? "pt-BR" : preference.language; };
-  }, [staff, preference.language]);
-  if (!staff) return children;
+  }, [staffView, preference.language]);
+  if (!staffView) return children;
   return <LanguageContext.Provider value={{ ...preference, language: "pt" }}>{children}</LanguageContext.Provider>;
 }

@@ -1,6 +1,6 @@
 # Estado atual — Pronto!
 
-Atualizado em 14/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md.
+Atualizado em 15/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md.
 
 ## Implementado
 
@@ -11,8 +11,8 @@ Atualizado em 14/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 
 - Em revisão para PR: permissões individuais da equipe, rascunhos no banco, recuperação de senha em outro navegador, barra lateral expansível e melhorias da página inicial. As migrações de 13/10 foram aplicadas apenas ao banco local.
 
-- Código aberto em `ramondavi/pronto` sob AGPL-3.0, com marcas em `ASSETS.md`. A versão em preparação inclui dez avatares vetoriais. O histórico anterior permanece privado.
+- Código aberto em `ramondavi/pronto` sob AGPL-3.0, com marcas em `ASSETS.md`. A versão em preparação inclui nove avatares vetoriais para a equipe, além do avatar padrão. O histórico anterior permanece privado.
 - Supabase Auth: Site URL, redirects, SMTP e modelos de e-mail configurados. Segredos de produção cadastrados na Vercel.
-- O Supabase hospedado ainda mostra `202608230010_stabilization_release` como última migração. As posteriores dependem de revisão de impacto e confirmação explícita para aplicação remota.
-- O deployment do PR 54 está em Production Staged, sem domínio automático. `prontobib.vercel.app` ainda apresenta versão antiga. Não promover antes de sincronizar o banco.
+- A consulta somente leitura ao Supabase hospedado em 15/10 mostrou `202610120002` como última migração. Restam 11 migrações versionadas de 13 a 15/10, que exigem revisão de impacto e confirmação explícita antes da aplicação remota.
+- `prontobib.vercel.app` responde pela Vercel, mas a página pública ainda não contém marcadores desta entrega. Confirmar o deployment aprovado e sua promoção após sincronizar o banco.
 - Após sincronizar código e banco: migração remota aprovada, segredos no Vault, testes de SMTP e perfis, PDFs anonimizados e aceite assistido.

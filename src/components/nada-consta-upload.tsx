@@ -8,7 +8,7 @@ import { showPanelChange } from "@/components/panel-change-toast";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import { uiText } from "@/lib/ui-text";
 
-export function NadaConstaUpload({ requestId, document }: { requestId: string; document: { original_name: string; size_bytes: number; status: string; rejection_reason: string | null } | null }) {
+export function NadaConstaUpload({ requestId, document, preview = false, previewSuccessHref }: { requestId: string; document: { original_name: string; size_bytes: number; status: string; rejection_reason: string | null } | null; preview?: boolean; previewSuccessHref?: string }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const router = useRouter();
@@ -18,6 +18,7 @@ export function NadaConstaUpload({ requestId, document }: { requestId: string; d
   const [error, setError] = useState("");
   async function submit() {
     if (!file || busy) return;
+    if (preview) { showPanelChange(t("Demonstração: nenhum arquivo foi enviado.")); if (previewSuccessHref) router.push(previewSuccessHref); return; }
     setBusy(true); setError("");
     try {
       const form = new FormData(); form.set("requestId", requestId); form.set("file", file);

@@ -1,9 +1,10 @@
 "use client";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { knowledgeCategories, type KnowledgeEntry, type KnowledgeTranslation } from "@/lib/knowledge-base";
+import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
 import { supportedLanguages, languageLabels, type InterfaceLanguage } from "@/lib/interface-language";
 import { AppIcon, type AppIconName } from "./app-icon";
 import { RichTextEditor } from "./rich-text-editor";
@@ -21,12 +22,21 @@ function FieldTooltip({ text }: { text: string }) {
   return <span className="tooltip" tabIndex={0} aria-label={text}>?<span role="tooltip">{text}</span></span>;
 }
 
-function KnowledgeCard({ entry, expanded, onToggle, onSaved }: {
-  entry: KnowledgeEntry; expanded: boolean; onToggle: () => void; onSaved: (oldId: string, saved: KnowledgeEntry) => void;
+function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, initialLanguage }: {
+  entry: KnowledgeEntry; expanded: boolean; onToggle: () => void; onSaved: (oldId: string, saved: KnowledgeEntry) => void; faqOnly: boolean; canEdit: boolean; initialLanguage: InterfaceLanguage;
 }) {
   const [kind, setKind] = useState(entry.kind);
-  const [editLanguage, setEditLanguage] = useState<InterfaceLanguage>("pt");
-  const [localized, setLocalized] = useState<Record<InterfaceLanguage, KnowledgeTranslation>>(() => Object.fromEntries(supportedLanguages.map((language) => [language, language === "pt" ? { title: entry.title, summary: entry.summary, body_html: entry.body_html } : entry.translations?.[language] ?? { title: "", summary: "", body_html: "<p></p>" }])) as Record<InterfaceLanguage, KnowledgeTranslation>);
+  const [editLanguage, setEditLanguage] = useState<InterfaceLanguage>(initialLanguage);
+  const [localized, setLocalized] = useState<Record<InterfaceLanguage, KnowledgeTranslation>>(() => Object.fromEntries(supportedLanguages.map((language) => {
+    if (language === "pt") return [language, { title: entry.title, summary: entry.summary, body_html: entry.body_html }];
+    const fallback = fallbackKnowledgeTranslation(entry, language);
+    const saved = entry.translations?.[language];
+    return [language, {
+      title: saved?.title || fallback?.title || "",
+      summary: saved?.summary || fallback?.summary || "",
+      body_html: saved?.body_html || fallback?.body_html || "<p></p>",
+    }];
+  })) as Record<InterfaceLanguage, KnowledgeTranslation>);
   const updateLocalized = (field: keyof KnowledgeTranslation, value: string) => setLocalized((current) => ({ ...current, [editLanguage]: { ...current[editLanguage], [field]: value } }));
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -69,16 +79,16 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved }: {
     setSaving(false);
   }
 
-  return <article className="knowledge-card">
+  return <article id={`knowledge-entry-${entry.id}`} className="knowledge-card">
     <button type="button" className="knowledge-card__summary" aria-expanded={expanded} aria-controls={formId} onClick={onToggle}>
       <span className="knowledge-card__icon"><AppIcon name={kindIcons[entry.kind]} /></span>
       <span className="knowledge-card__identity"><span className="knowledge-card__kind">{kindLabels[entry.kind]}</span><strong>{entry.title || "Novo conteúdo"}</strong></span>
       <span className="knowledge-card__meta"><span className={entry.active ? "knowledge-card__status is-published" : "knowledge-card__status"}>{entry.active ? "Publicado" : "Rascunho"}</span><small>Publicado: {dateLabel(entry.published_at)} · Atualizado: {dateLabel(entry.updated_at)}</small></span>
       <AppIcon name={expanded ? "panelCollapse" : "panelExpand"} className="knowledge-card__toggle-icon" />
     </button>
-    {expanded && <form id={formId} className="knowledge-card__editor" onSubmit={save}>
+    {expanded && <form id={formId} className="knowledge-card__editor" onSubmit={save} inert={!canEdit}>
       <div className="knowledge-card__fields">
-        <label>Tipo de conteúdo<select name="kind" value={kind} onChange={(event) => setKind(event.target.value as KnowledgeEntry["kind"])}><option value="faq">Pergunta frequente</option><option value="answer">Resposta rápida</option><option value="article">Artigo completo</option></select></label>
+        <label>Tipo de conteúdo<select name="kind" value={kind} disabled={faqOnly} onChange={(event) => setKind(event.target.value as KnowledgeEntry["kind"])}><option value="faq">Pergunta frequente</option>{!faqOnly && <><option value="answer">Resposta rápida</option><option value="article">Artigo completo</option></>}</select></label>
         <label>Categoria<select name="category" defaultValue={entry.category}>{knowledgeCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
         {kind === "article" && <label>Endereço do artigo<input name="slug" defaultValue={entry.slug ?? ""} required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="ex.: preparar-solicitacao" /></label>}
         <label>Ordem de exibição<input name="position" type="number" min="0" max="9999" defaultValue={entry.position} required /></label>
@@ -103,20 +113,25 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved }: {
   </article>;
 }
 
-export function KnowledgeBaseAdmin({ entries: initial }: { entries: KnowledgeEntry[] }) {
+export function KnowledgeBaseAdmin({ entries: initial, faqOnly = false, canEdit = true, initialEntryId, initialLanguage = "pt" }: { entries: KnowledgeEntry[]; faqOnly?: boolean; canEdit?: boolean; initialEntryId?: string; initialLanguage?: InterfaceLanguage }) {
   const [entries, setEntries] = useState(initial);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(() => initialEntryId && initial.some((entry) => entry.id === initialEntryId) ? initialEntryId : null);
+  useEffect(() => {
+    if (!initialEntryId || !entries.some((entry) => entry.id === initialEntryId)) return;
+    const frame = requestAnimationFrame(() => document.getElementById(`knowledge-entry-${initialEntryId}`)?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [initialEntryId, entries]);
   const saveEntry = (oldId: string, saved: KnowledgeEntry) => {
     setEntries((current) => current.map((entry) => entry.id === oldId ? saved : entry));
     setOpenId(saved.id);
   };
   const addEntry = () => {
     const id = `draft-${Date.now()}`;
-    setEntries((current) => [...current, { id, slug: null, kind: "article", title: "", summary: "", body_html: "<p></p>", category: "Geral", audiences: ["public"], active: false, position: current.length * 10 + 10, featured_position: null, created_at: null, updated_at: null, published_at: null }]);
+    setEntries((current) => [...current, { id, slug: null, kind: faqOnly ? "faq" : "article", title: "", summary: "", body_html: "<p></p>", category: "Geral", audiences: ["public"], active: false, position: current.length * 10 + 10, featured_position: null, created_at: null, updated_at: null, published_at: null }]);
     setOpenId(id);
   };
   return <section className="knowledge-admin" aria-labelledby="base-conhecimento">
-    <div className="knowledge-admin__heading"><div><p className="eyebrow">Central de ajuda</p><h3 id="base-conhecimento">Base de conhecimento</h3><p>Edite perguntas, respostas rápidas e artigos no mesmo espaço.</p></div><button type="button" className="button button--secondary" onClick={addEntry}><AppIcon name="document" />Adicionar conteúdo</button></div>
-    <div className="knowledge-admin__cards">{entries.map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} />)}</div>
+    <div className="knowledge-admin__heading"><div><p className="eyebrow">Conteúdo publicado e em preparo</p><h3 id="base-conhecimento">Perguntas, respostas e artigos</h3><p>{canEdit ? "Edite perguntas, respostas rápidas e artigos no mesmo espaço." : "Consulte o conteúdo da central de ajuda."}</p></div>{canEdit && <button type="button" className="button button--secondary" onClick={addEntry}><AppIcon name="document" />Adicionar conteúdo</button>}</div>
+    <div className="knowledge-admin__cards">{entries.filter((entry) => !faqOnly || entry.kind === "faq").map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} faqOnly={faqOnly} canEdit={canEdit} initialLanguage={initialLanguage} />)}</div>
   </section>;
 }

@@ -19,13 +19,20 @@ export function TooltipViewportManager() {
       const rightLimit = window.innerWidth - 12;
       const width = Math.max(0, Math.min(active.classList.contains("cataloging-classification__suggest-wrap") ? 360 : 320, rightLimit - leftLimit));
       tip.style.width = `${width}px`;
-      const height = tip.getBoundingClientRect().height;
-      const left = Math.min(Math.max(anchor.left + anchor.width / 2 - width / 2, leftLimit), rightLimit - width);
+      // A fixed tooltip can use a transformed ancestor as its containing block.
+      // Measure its viewport origin before converting the desired coordinates.
+      tip.style.left = "0px";
+      tip.style.top = "0px";
+      const origin = tip.getBoundingClientRect();
+      const scaleX = tip.offsetWidth ? origin.width / tip.offsetWidth : 1;
+      const scaleY = tip.offsetHeight ? origin.height / tip.offsetHeight : 1;
+      const height = origin.height;
+      const left = Math.min(Math.max(anchor.left + anchor.width / 2 - origin.width / 2, leftLimit), rightLimit - origin.width);
       const above = anchor.top - height - 8;
       const below = anchor.bottom + 8;
       const top = above >= 12 ? above : Math.min(below, Math.max(12, window.innerHeight - height - 12));
-      tip.style.left = `${left}px`;
-      tip.style.top = `${Math.max(12, top)}px`;
+      tip.style.left = `${(left - origin.left) / (scaleX || 1)}px`;
+      tip.style.top = `${(Math.max(12, top) - origin.top) / (scaleY || 1)}px`;
       tip.dataset.placed = "";
     };
 
