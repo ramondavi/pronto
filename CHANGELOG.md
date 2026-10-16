@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 16 de outubro de 2026
+
+- O e-mail de recuperação de senha passa a abrir a confirmação com o token esperado pelo Pronto!. O layout foi ajustado para clientes de e-mail, sem contorno externo, e o modelo hospedado no Supabase foi alinhado à versão do repositório.
+
 ### 15 de outubro de 2026
 
 - Estudantes e integrantes da equipe que optarem pelo avatar padrão recebem um monograma azul com a inicial do nome e detalhes do pictograma; o cabeçalho público mantém o contraste do avatar ao mostrar a saudação.
