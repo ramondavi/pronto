@@ -1,12 +1,16 @@
 "use client";
 
-// Valores já salvos continuam válidos; escolhas antigas são associadas às dez opções.
+import { StudentAvatar } from "./student-avatar";
+
+export const PRONTO_AVATAR_CHOICE = 75;
+
+// Valores antigos continuam legíveis; Ateliê passa a usar Pórtico.
 export const NEUTRAL_AVATARS = [
   { slot: 0, name: "Pórtico" }, { slot: 1, name: "Estante" },
   { slot: 2, name: "Planta" }, { slot: 3, name: "Arcada" },
   { slot: 4, name: "Luminária" }, { slot: 5, name: "Fachada" },
   { slot: 6, name: "Caderno" }, { slot: 7, name: "Escada" },
-  { slot: 8, name: "Janela" }, { slot: 9, name: "Ateliê" },
+  { slot: 8, name: "Janela" },
 ] as const;
 
 const palettes = [
@@ -17,7 +21,8 @@ const palettes = [
 
 export function avatarChoiceFor(id: string, choice?: number | null) {
   if (typeof choice === "number" && Number.isInteger(choice) && choice >= 0 && choice < 75) {
-    return (Math.floor(choice / 3) % NEUTRAL_AVATARS.length) * 3;
+    const legacySlot = Math.floor(choice / 3) % 10;
+    return (legacySlot === 9 ? 0 : legacySlot) * 3;
   }
   let hash = 0;
   for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
@@ -35,11 +40,12 @@ function ArchitecturalMotif({ index }: { index: number }) {
     case 6: return <><path d="M41 33h78v72H41zM50 33v72M60 46h48M60 57h33M60 74h48M60 85h33" /><path d="m75 105 20-24 14 12M35 106h91" /></>;
     case 7: return <><path d="M28 104h104M35 96h25v-19h25V58h25V39h19M35 96v9M60 77v28M85 58v47M110 39v66" /><path d="M38 34h45v21H38zM46 43h29M46 48h22" /></>;
     case 8: return <><path d="M40 27h80v78H40zM49 36h62v60H49zM80 36v60M49 67h62M34 106h92" /><path d="M59 45h13M88 77h13M61 77l8 9 8-9" /></>;
-    default: return <><path d="M27 105h106M37 105V40h86v65M47 50h66M47 61h66M57 71h46v34H57z" /><path d="m65 92 15-17 15 17M74 82v17M86 82v17" /></>;
+    default: return null;
   }
 }
 
 export function LiteraryAvatar({ id, label, choice, small = false }: { id: string; label: string; choice?: number | null; small?: boolean }) {
+  if (choice === PRONTO_AVATAR_CHOICE) return <StudentAvatar name={label} small={small} />;
   const index = avatarChoiceFor(id, choice) / 3;
   const avatar = NEUTRAL_AVATARS[index];
   const [background, ink, accent] = palettes[index % palettes.length];

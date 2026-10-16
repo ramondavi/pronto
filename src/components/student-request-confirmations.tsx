@@ -15,6 +15,14 @@ export const preparationItems = [
 
 export const studentPreparationEvent = "pronto:student-preparation-changed";
 export const studentPreparationKey = (userId: string) => `pronto:student-preparation:${userId}`;
+export const studentPreviewPreparationKey = "pronto:student-preview-preparation";
+
+export function readStudentPreviewPreparation(): boolean[] {
+  try {
+    const value: unknown = JSON.parse(sessionStorage.getItem(studentPreviewPreparationKey) ?? "null");
+    return Array.isArray(value) && value.length === preparationItems.length ? preparationItems.map((_, index) => value[index] === true) : preparationItems.map(() => false);
+  } catch { return preparationItems.map(() => false); }
+}
 
 export function readStudentPreparation(userId: string): boolean[] {
   try {
@@ -23,21 +31,22 @@ export function readStudentPreparation(userId: string): boolean[] {
   } catch { return preparationItems.map(() => false); }
 }
 
-export function StudentRequestConfirmations({ userId }: { userId: string }) {
+export function StudentRequestConfirmations({ userId, preview = false }: { userId: string; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const [checked, setChecked] = useState<boolean[]>(() => preparationItems.map(() => false));
   useEffect(() => {
+    if (preview) { setChecked(readStudentPreviewPreparation()); return; }
     const load = () => setChecked(readStudentPreparation(userId));
     load();
     const onStorage = (event: StorageEvent) => { if (event.key === studentPreparationKey(userId)) load(); };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [userId]);
+  }, [userId, preview]);
   const setItem = (index: number, value: boolean) => {
     const next = checked.map((item, position) => position === index ? value : item);
     setChecked(next);
-    try { localStorage.setItem(studentPreparationKey(userId), JSON.stringify(next)); } catch { /* A marcação permanece nesta página. */ }
+    try { if (preview) sessionStorage.setItem(studentPreviewPreparationKey, JSON.stringify(next)); else localStorage.setItem(studentPreparationKey(userId), JSON.stringify(next)); } catch { /* A marcação permanece nesta página. */ }
     window.dispatchEvent(new CustomEvent(studentPreparationEvent, { detail: next }));
   };
   return <div className="before-request-panel" aria-labelledby="student-preparation-title">

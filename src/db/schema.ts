@@ -141,6 +141,7 @@ export const issueTemplates = pgTable("issue_templates", {
   code: text("code").notNull().unique(),
   label: text("label").notNull(),
   message: text("message").notNull(),
+  fieldKeys: text("field_keys").array().default([]).notNull(),
   active: boolean("active").default(true).notNull(),
   position: integer("position").default(0).notNull(),
   ...timestamps,

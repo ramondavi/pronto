@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useInterfaceLanguage } from "./interface-language";
 import { useStaffPanel } from "./use-staff-panel";
 import { showPanelChange } from "@/components/panel-change-toast";
+import { IconMoon, IconSun } from "@tabler/icons-react";
 
 const themeCopy = {
   pt: ["Tema da interface", "Usar tema claro", "Tema claro", "Usar tema escuro", "Tema escuro"],
@@ -59,10 +60,10 @@ export function ThemeSwitcher() {
   return (
     <div className="theme-switcher" role="group" aria-label={t[0]}>
       <button type="button" aria-label={t[1]} title={t[2]} aria-pressed={preference === "light"} onClick={() => update("light")}>
-        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+        <IconSun aria-hidden="true" size={24} stroke={1.8} />
       </button>
       <button type="button" aria-label={t[3]} title={t[4]} aria-pressed={preference === "dark"} onClick={() => update("dark")}>
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        <IconMoon aria-hidden="true" size={24} stroke={1.8} />
       </button>
     </div>
   );

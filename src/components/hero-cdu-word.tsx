@@ -44,7 +44,7 @@ function HeroCduWord({ target, codes, delay = 0, onComplete }: { target: string;
   return <span className="hero__classification-word"><span className="hero__classification-target">{target}</span><span className="hero__classification-display" data-complete={display === target}>{display}</span></span>;
 }
 
-export function HeroClassificationPhrase() {
+export function HeroClassificationPhrase({ text }: { text: string }) {
   const [highlighted, setHighlighted] = useState(false);
   const highlightTimer = useRef<number | null>(null);
   const markComplete = useCallback(() => {
@@ -59,5 +59,6 @@ export function HeroClassificationPhrase() {
     if (highlightTimer.current !== null) window.clearTimeout(highlightTimer.current);
   }, []);
 
-  return <span className={`hero__classification-phrase${highlighted ? " is-highlighted" : ""}`}><HeroCduWord target="Fichas" codes={firstWordCodes} delay={120} /> <HeroCduWord target="Catalográficas" codes={secondWordCodes} delay={220} onComplete={markComplete} /></span>;
+  const words = text.split(" ");
+  return <span className={`hero__classification-phrase${highlighted ? " is-highlighted" : ""}`}>{words.map((word, index) => <span key={`${word}-${index}`}><HeroCduWord target={word} codes={index % 2 === 0 ? firstWordCodes : secondWordCodes} delay={120 + index * 100} onComplete={index === words.length - 1 ? markComplete : undefined} />{index < words.length - 1 ? " " : ""}</span>)}</span>;
 }

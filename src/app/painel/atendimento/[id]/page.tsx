@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { RequestAnalysisWorkspace, type ReviewField } from "@/components/request-analysis-workspace";
+import { legacyIssueTemplateFields } from "@/lib/issue-template-fields";
 import { RequestAnalysisSections } from "@/components/request-analysis-sections";
 import { AssistedCatalogingWorkspace } from "@/components/assisted-cataloging-workspace";
 import { NadaConstaReview } from "@/components/nada-consta-review";
@@ -67,7 +68,12 @@ export default async function RequestAnalysisPage({ params }: { params: Promise<
 
   const [{ data, error: requestError }, { data: templates }, { data: authorities }, { data: controlledTerms }, { data: assistedPeople }, { data: selectedTerms }, { data: catalogingMetadata }, { data: catalogingDraft }, { data: analysisDraft }, { data: nadaConsta }, { data: repositoryProgress }, { data: publication }, { data: timeline }, { data: homologation }, { data: staff }, { data: correctionBaselines }, { data: citationSourceSignature }, { data: citationRecord }, { data: priority }, { data: initialLinkVerified }, { data: activeStaff }] = await Promise.all([
     supabase.from("cataloging_requests").select(`id, protocol, status, title, subtitle, cancellation_reason, equivalent_title, equivalent_titles, original_language, public_work_url, library_note, assigned_to, submitted_at, updated_at, assignee:profiles!cataloging_requests_assigned_to_fkey(full_name), student:student_profiles!cataloging_requests_student_profile_id_fkey(profile:profiles!student_profiles_profile_id_fkey(full_name)), enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(registration_number, program:academic_programs!academic_enrollments_academic_program_id_fkey(code, name, level, work_type, cataloging_program_tracing, coordination_magic_link_enabled)), people:request_people(role, transcribed_name, position, birth_year, birth_year_validated_at), keywords:request_keywords(language, term, position), card_details:request_card_details(deposit_year, defense_year, deposit_date, defense_date, publication_place, extent_unit, extent_count, has_illustrations, dimensions, accompanying_material, advisor_note_label, coadvisor_note_label, include_equivalent_title), analysis:request_analyses(analysis_notes, internal_note, updated_at, review_completed_at, student_message_reply, student_message_reply_sent_at, declarations_reviewed_at)`).eq("id", id).maybeSingle(),
-    supabase.from("issue_templates").select("id, code, label, message").eq("active", true).order("position"),
+    (async () => {
+      const current = await supabase.from("issue_templates").select("id, code, label, message, field_keys").eq("active", true).order("position").order("label");
+      if (!current.error) return current;
+      const legacy = await supabase.from("issue_templates").select("id, code, label, message").eq("active", true).order("position").order("label");
+      return { ...legacy, data: legacy.data?.map((item) => ({ ...item, field_keys: legacyIssueTemplateFields(item.code) })) ?? null };
+    })(),
     supabase.from("person_authorities").select("id, authorized_name").eq("active", true).order("authorized_name").limit(200),
     supabase.from("controlled_terms").select("id, preferred_label_pt, preferred_label_en").eq("active", true).order("preferred_label_pt").limit(300),
     supabase.from("request_cataloging_people").select("authority_person_id, role, transcribed_name, authorized_name_snapshot, position").eq("request_id", id).order("position"),

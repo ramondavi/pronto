@@ -17,12 +17,12 @@ insert into public.staff_profiles(profile_id,professional_name,crb) values
  ('92000000-0000-4000-8000-000000000002','Catalogador Doze','CRB-5/1201');
 set local role authenticated;
 set local request.jwt.claim.sub='92000000-0000-4000-8000-000000000002';
-select throws_ok($$select public.admin_manage_account('92000000-0000-4000-8000-000000000003','student','blocked',null,null)$$,'P0001','active_administrator_required','catalogador não administra conta');
+select throws_ok($$select public.admin_manage_account('92000000-0000-4000-8000-000000000003','student','blocked',null,null)$$,'P0001','permission_denied','catalogador não administra conta');
 set local request.jwt.claim.sub='92000000-0000-4000-8000-000000000001';
 select lives_ok($$select public.admin_manage_account('92000000-0000-4000-8000-000000000003','student','blocked',null,null)$$,'admin bloqueia estudante');
 select is((select status::text from public.profiles where id='92000000-0000-4000-8000-000000000003'),'blocked','situação persistida');
 select is((select count(*)::integer from public.audit_logs where action='account_administration_changed' and entity_id='92000000-0000-4000-8000-000000000003'),1,'alteração auditada');
-select throws_ok($$select public.admin_manage_account('92000000-0000-4000-8000-000000000001','administrator','blocked','Admin Doze','CRB-5/1200')$$,'P0001','administrator_cannot_remove_own_access','admin não remove o próprio acesso');
+select throws_ok($$select public.admin_manage_account('92000000-0000-4000-8000-000000000001','administrator','blocked','Admin Doze','CRB-5/1200')$$,'P0001','cannot_change_own_access','admin não remove o próprio acesso');
 select lives_ok($$select public.admin_configure_program((select id from public.academic_programs order by code limit 1),5,false,false,'','')$$,'admin configura programa');
 select is((select service_level_business_days from public.academic_programs order by code limit 1),5,'SLA atualizado');
 select is((select count(*)::integer from public.sla_settings where business_days=5),1,'histórico do SLA preservado');

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { adminPermissionCodes } from "@/lib/admin-navigation";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -23,7 +24,22 @@ const previousRoleAccess: Record<string, string[]> = {
 
 export async function userHasPermission(supabase: SupabaseClient, code: string, role: string): Promise<boolean> {
   const { data, error } = await supabase.rpc("has_permission", { requested_code: code });
-  if (!error) return data === true;
+  if (!error) {
+    if (data === true) return true;
+    if (role === "administrator" && adminPermissionCodes.includes(code)) {
+      const { data: definition } = await supabase.from("permission_definitions").select("code").eq("code", code).maybeSingle();
+      if (!definition) return true; // Migração nova ainda não aplicada no banco local.
+    }
+    return false;
+  }
   if (error.code === "PGRST202") return previousRoleAccess[code]?.includes(role) ?? false;
   return false;
+}
+
+export async function userAdminPermissions(supabase: SupabaseClient, role: string): Promise<string[]> {
+  const { data, error } = await supabase.rpc("list_effective_staff_permissions");
+  if (!error && Array.isArray(data)) return data.filter((code): code is string => typeof code === "string" && adminPermissionCodes.includes(code));
+  return (await Promise.all(adminPermissionCodes.map(async (code) =>
+    await userHasPermission(supabase, code, role) ? code : null,
+  ))).filter((code): code is string => code !== null);
 }

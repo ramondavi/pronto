@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { BrandPixels } from "@/components/brand-pixels";
 import { logout } from "@/app/auth-actions";
@@ -14,13 +14,16 @@ import { useInterfaceLanguage } from "./interface-language";
 import { StaffCommunications } from "./staff-communications";
 import { ServiceDayRefresh } from "./service-day-refresh";
 import { LiteraryAvatar } from "./literary-avatar";
+import { StudentAvatar } from "./student-avatar";
 import { authorWikipediaUrl, quoteForDay } from "@/lib/daily-literary-quotes";
 import { uiText } from "@/lib/ui-text";
 import { PanelChangeToast } from "@/components/panel-change-toast";
 import { ServiceStatusPeek } from "@/components/service-status-peek";
+import { StaffGlobalSearch } from "@/components/staff-global-search";
 import { formatLibraryHour } from "@/lib/service-announcements";
 import { createClient } from "@/lib/supabase/client";
-import { adminSections, adminTabHref, resolveAdminLocation, type AdminArea } from "@/lib/admin-navigation";
+import { adminSections, adminTabHref, canOpenAdminTab, resolveAdminLocation, type AdminArea } from "@/lib/admin-navigation";
+import { studentPreviewScenarios } from "@/lib/student-preview-fixtures";
 
 const shellCopy = {
   pt: { student: "Estudante", cataloger: "Catalogador", administrator: "Administrador", overview: "Visão geral", queue: "Fila de solicitações", work: "Meus atendimentos", admin: "Administração", operation: "Operação", content: "Conteúdo", control: "Controle", account: "Minha conta", request: "Minhas solicitações", deposit: "Autodepósito", public: "Abrir site público", greeting: "Olá", logout: "Sair da conta", library: "Área da biblioteca", studentArea: "Área do estudante", adminSections: "Subseções administrativas" },
@@ -88,17 +91,37 @@ const commemorativeDates: Record<string, string> = {
   "12-15": "Dia do(a) Arquiteto(a) e Urbanista",
 };
 
-export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, canChangeHours = false, canViewOverview = true, canViewQueue = true, canViewCalendar = true, canManageCalendar = false, canPreviewStudent = false, showNotifications = true }: { children: React.ReactNode; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean; closingTime: string; specialHours: boolean; now: string }; canChangeHours?: boolean; canViewOverview?: boolean; canViewQueue?: boolean; canViewCalendar?: boolean; canManageCalendar?: boolean; canPreviewStudent?: boolean; showNotifications?: boolean }) {
+export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, canChangeHours = false, canViewOverview = true, canViewQueue = true, canViewCalendar = true, canManageCalendar = false, canPreviewStudent = false, adminPermissions = [], showNotifications = true }: { children: React.ReactNode; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean; closingTime: string; specialHours: boolean; now: string }; canChangeHours?: boolean; canViewOverview?: boolean; canViewQueue?: boolean; canViewCalendar?: boolean; canManageCalendar?: boolean; canPreviewStudent?: boolean; adminPermissions?: string[]; showNotifications?: boolean }) {
   const isStaff = role === "cataloger" || role === "administrator";
+  const [previewAllowed, setPreviewAllowed] = useState(canPreviewStudent);
   const pathname = usePathname();
+  const previewMode = isStaff && pathname.startsWith("/painel/visao-estudante");
+  useEffect(() => { setPreviewAllowed(canPreviewStudent); }, [canPreviewStudent]);
+  useEffect(() => {
+    if (!isStaff) return;
+    let active = true;
+    const refreshPreviewPermission = async () => {
+      const { data, error } = await createClient().rpc("has_permission", { requested_code: "student.preview" });
+      if (active && !error) setPreviewAllowed(Boolean(data));
+    };
+    window.addEventListener("pronto:staff-permissions-updated", refreshPreviewPermission);
+    window.addEventListener("focus", refreshPreviewPermission);
+    return () => { active = false; window.removeEventListener("pronto:staff-permissions-updated", refreshPreviewPermission); window.removeEventListener("focus", refreshPreviewPermission); };
+  }, [isStaff]);
+  const router = useRouter();
   const { language } = useInterfaceLanguage();
   const t = shellCopy[language];
   const translate = (value: string, values?: Record<string, string | number>) => uiText(language, value, values);
   const [openMenuLabel, closeMenuLabel] = mobileMenuCopy[language];
   const searchParams = useSearchParams();
-  const adminLocation = resolveAdminLocation(searchParams.get("area") ?? undefined, searchParams.get("aba") ?? undefined);
+  const previewHref = (screen: string) => `/painel/visao-estudante${screen ? `?tela=${screen}` : ""}${searchParams.get("estado") ? `${screen ? "&" : "?"}estado=${searchParams.get("estado")}` : ""}`;
+  const previewScenario = studentPreviewScenarios.find((item) => item.id === searchParams.get("estado")) ?? studentPreviewScenarios[0];
+  const adminAreaParam = searchParams.get("area");
+  const adminLocation = resolveAdminLocation(adminAreaParam ?? undefined, searchParams.get("aba") ?? undefined);
   const [expanded, setExpanded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const railRef = useRef<HTMLElement>(null);
+  const previewDockRef = useRef<HTMLDivElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [dailyQuote, setDailyQuote] = useState(() => quoteForDay(new Date()));
   const [birthdayVisible, setBirthdayVisible] = useState(false);
@@ -114,13 +137,51 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const birthdayCloseTimer = useRef<number | null>(null);
   const logoutFormRef = useRef<HTMLFormElement>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(() => pathname.startsWith("/painel/admin"));
-  const [adminGroupOpen, setAdminGroupOpen] = useState<AdminArea | null>(() => pathname === "/painel/admin" ? adminLocation.area : null);
+  const [openAdminGroups, setOpenAdminGroups] = useState<Set<AdminArea>>(() => new Set(pathname === "/painel/admin" && adminAreaParam ? [adminLocation.area] : []));
   const closeBirthday = useCallback(() => {
     setBirthdayClosing(true);
     if (birthdayCloseTimer.current !== null) window.clearTimeout(birthdayCloseTimer.current);
     birthdayCloseTimer.current = window.setTimeout(() => { setBirthdayVisible(false); setBirthdayClosing(false); birthdayCloseTimer.current = null; }, 650);
   }, []);
-  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin") setAdminGroupOpen(adminLocation.area); setMobileMenuOpen(false); }, [pathname, adminLocation.area]);
+  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin" && adminAreaParam) setOpenAdminGroups((open) => new Set([...open, adminLocation.area])); setMobileMenuOpen(false); }, [pathname, adminAreaParam, adminLocation.area]);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rail = railRef.current;
+        if (!rail) return;
+        const shell = rail.parentElement;
+        const shellBounds = shell?.getBoundingClientRect();
+        const headerAnchor = shell?.querySelector(".staff-communications, .dashboard-header__actions");
+        const anchorBounds = headerAnchor?.getBoundingClientRect();
+        const logoBounds = rail.querySelector(".dashboard-nav__logo-link")?.getBoundingClientRect();
+        const logoCenterWithinRail = logoBounds ? logoBounds.top - rail.getBoundingClientRect().top + logoBounds.height / 2 : 38;
+        const fixedTop = Math.max(0, anchorBounds ? anchorBounds.top + anchorBounds.height / 2 - logoCenterWithinRail : shellBounds?.top ?? 0);
+        const governmentBarBottom = document.getElementById("barra-brasil")?.getBoundingClientRect().bottom ?? shellBounds?.top ?? 0;
+        const backgroundTop = Math.min(0, Math.max(0, governmentBarBottom) - fixedTop);
+        const visibleHeight = window.innerHeight - fixedTop;
+        const progress = Math.min(1, window.scrollY / Math.max(240, window.innerHeight * .45));
+        rail.style.setProperty("--rail-fixed-top", `${fixedTop}px`);
+        rail.style.setProperty("--rail-bg-top", `${backgroundTop}px`);
+        rail.style.setProperty("--rail-bg-height", `${Math.max(0, Math.min(visibleHeight, (shellBounds?.bottom ?? window.innerHeight) - fixedTop) - backgroundTop)}px`);
+        rail.style.setProperty("--rail-preview-bottom", `${Math.max(16, window.innerHeight - (shellBounds?.bottom ?? window.innerHeight) + 16)}px`);
+        rail.style.setProperty("--rail-nav-top", `${visibleHeight * .5 * (1 - progress) + 160 * progress}px`);
+        rail.style.setProperty("--rail-nav-shift", `${-50 * (1 - progress)}%`);
+      });
+    };
+    update();
+    const resizeObserver = new ResizeObserver(update);
+    const shell = railRef.current?.parentElement;
+    const governmentBar = document.getElementById("barra-brasil");
+    if (shell) resizeObserver.observe(shell);
+    if (governmentBar) resizeObserver.observe(governmentBar);
+    const header = shell?.querySelector(".dashboard-header");
+    if (header) resizeObserver.observe(header);
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => { cancelAnimationFrame(frame); resizeObserver.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
+  }, []);
   useEffect(() => {
     const refreshQuote = () => { const now = new Date(); setDailyQuote(quoteForDay(now)); setToday(brasiliaDate(now)); setGreetingClock({ day: localGreetingDate(now), hour: now.getHours() }); };
     refreshQuote();
@@ -158,6 +219,22 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     if (logoutDialogOpen && dialog && !dialog.open) dialog.showModal();
     if (!logoutDialogOpen && dialog?.open) dialog.close();
   }, [logoutDialogOpen]);
+  useEffect(() => {
+    const dock = previewDockRef.current;
+    if (!previewMode || !dock) return;
+    const updateClearance = () => {
+      document.documentElement.style.setProperty("--student-preview-dock-clearance", `${Math.ceil(window.innerHeight - dock.getBoundingClientRect().top + 12)}px`);
+    };
+    const observer = new ResizeObserver(updateClearance);
+    observer.observe(dock);
+    updateClearance();
+    window.addEventListener("resize", updateClearance);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateClearance);
+      document.documentElement.style.removeProperty("--student-preview-dock-clearance");
+    };
+  }, [previewMode]);
   const adminMenuVisible = adminMenuOpen;
   const activeClass = (href: string) => {
     const [targetPath, targetQuery] = href.split("?");
@@ -170,60 +247,64 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
   return (
-    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff ? "true" : undefined}>
-      {!isStaff && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
-      <aside className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
+    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined}>
+      {(!isStaff || previewMode) && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
+      <aside ref={railRef} className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
         <div className="dashboard-nav__top">
-          <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v3-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v3-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
+          <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v9-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v9-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
           <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => setMobileMenuOpen((open) => !open)}><span /><span /><span /></button>
         </div>
-        {isStaff ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
+        {isStaff && !previewMode ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
           {canViewOverview && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>}
           {canViewQueue && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/fila")} href="/painel/fila" aria-label={`${t.queue}${visibleQueueCount ? `, ${visibleQueueCount} ${visibleQueueCount === 1 ? "atendimento novo" : "atendimentos novos"}` : ""}`} title={t.queue}><span className="dashboard-nav__queue-symbol"><SidebarIcon name="queue" />{visibleQueueCount > 0 && <span className="dashboard-nav__queue-badge" aria-hidden="true">{visibleQueueCount > 99 ? "99+" : visibleQueueCount}</span>}</span><span className="dashboard-nav__label">{t.queue}</span></Link>}
-          {canViewCalendar && role !== "administrator" && (canManageCalendar
+          {canViewCalendar && role !== "administrator" && !adminPermissions.some((code) => code.startsWith("admin.")) && (canManageCalendar
             ? <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/admin?area=operacao&aba=library")} href="/painel/admin?area=operacao&aba=library" aria-label="Calendário e mural" title="Calendário e mural"><AppIcon className="dashboard-nav__icon" name="calendar" /><span className="dashboard-nav__label">Calendário e mural</span></Link>
             : <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/calendario")} href="/painel/calendario" aria-label="Calendário da biblioteca" title="Calendário da biblioteca"><AppIcon className="dashboard-nav__icon" name="calendar" /><span className="dashboard-nav__label">Calendário da biblioteca</span></Link>)}
           {canChangeHours && (role !== "administrator" || !canViewCalendar) && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/horarios")} href="/painel/horarios" aria-label="Horários da biblioteca" title="Horários da biblioteca"><AppIcon className="dashboard-nav__icon" name="clock" /><span className="dashboard-nav__label">Horários da biblioteca</span></Link>}
-          {canPreviewStudent && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/visao-estudante")} href="/painel/visao-estudante" aria-label="Visão de estudante" title="Visão de estudante"><AppIcon className="dashboard-nav__icon" name="person" /><span className="dashboard-nav__label">Visão de estudante</span></Link>}
-          {role === "administrator" && <div className="dashboard-nav__admin">
+          {(adminSections.some((section) => section.tabs.some((tab) => canOpenAdminTab(tab.id, adminPermissions))) || adminPermissions.some((code) => code.startsWith("admin.feedback."))) && <div className="dashboard-nav__admin">
             <button className={`dashboard-nav__admin-trigger${pathname.startsWith("/painel/admin") ? " is-active" : ""}`} type="button" onClick={() => setAdminMenuOpen((open) => !open)} aria-expanded={adminMenuVisible} aria-controls="submenu-administracao" aria-label="Abrir ou fechar subseções de Administração" title={t.admin}><SidebarIcon name="admin" /><span className="dashboard-nav__label">{t.admin}</span></button>
             <div className={`dashboard-nav__admin-menu${adminMenuVisible ? " is-visible" : ""}`} id="submenu-administracao" aria-label={t.adminSections} inert={!adminMenuVisible}>
               <div className="dashboard-nav__admin-menu-inner">
-              {adminSections.map((section) => <div className="dashboard-nav__admin-group" key={section.area}>
-                <button type="button" className={`dashboard-nav__admin-group-trigger${pathname === "/painel/admin" && adminLocation.area === section.area ? " is-current" : ""}`} aria-expanded={adminGroupOpen === section.area} aria-controls={`submenu-admin-${section.area}`} onClick={() => setAdminGroupOpen((open) => open === section.area ? null : section.area)}>
+              {adminSections.filter((section) => section.tabs.some((tab) => canOpenAdminTab(tab.id, adminPermissions))).map((section) => <div className="dashboard-nav__admin-group" key={section.area}>
+                <button type="button" className={`dashboard-nav__admin-group-trigger${pathname === "/painel/admin" && adminAreaParam === section.area ? " is-current" : ""}`} aria-expanded={openAdminGroups.has(section.area)} aria-controls={`submenu-admin-${section.area}`} onClick={() => setOpenAdminGroups((open) => { const next = new Set(open); if (next.has(section.area)) next.delete(section.area); else next.add(section.area); return next; })}>
                   <AppIcon name={section.icon} />
                   <span>{section.area === "operacao" ? t.operation : section.area === "conteudo" ? t.content : t.control}</span>
                   <span className="dashboard-nav__admin-chevron" aria-hidden="true" />
                 </button>
-                <div className={`dashboard-nav__admin-submenu${adminGroupOpen === section.area ? " is-visible" : ""}`} id={`submenu-admin-${section.area}`} inert={adminGroupOpen !== section.area}>
+                <div className={`dashboard-nav__admin-submenu${openAdminGroups.has(section.area) ? " is-visible" : ""}`} id={`submenu-admin-${section.area}`} inert={!openAdminGroups.has(section.area)}>
                   <div className="dashboard-nav__admin-submenu-inner">
-                  {section.tabs.filter((tab) => tab.id !== "library" || canViewCalendar).map((tab) => <Link key={tab.id} href={adminTabHref(section.area, tab.id)} className={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "is-active" : undefined} aria-current={pathname === "/painel/admin" && adminLocation.area === section.area && adminLocation.tab === tab.id ? "page" : undefined} onClick={() => setMobileMenuOpen(false)}>{tab.label}</Link>)}
+                  {section.tabs.filter((tab) => canOpenAdminTab(tab.id, adminPermissions)).map((tab) => <Link key={tab.id} href={adminTabHref(section.area, tab.id)} className={pathname === "/painel/admin" && adminAreaParam === section.area && searchParams.get("aba") === tab.id ? "is-active" : undefined} aria-current={pathname === "/painel/admin" && adminAreaParam === section.area && searchParams.get("aba") === tab.id ? "page" : undefined} onClick={() => setMobileMenuOpen(false)}><AppIcon name={tab.icon} />{tab.label}</Link>)}
                   </div>
                 </div>
               </div>)}
-              <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/admin/avaliacoes")} href="/painel/admin/avaliacoes"><AppIcon name="review" />Avaliações</Link>
+              {adminPermissions.some((code) => code.startsWith("admin.feedback.")) && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/admin/avaliacoes")} href="/painel/admin/avaliacoes"><AppIcon name="review" />Avaliações</Link>}
               </div>
             </div>
           </div>}
           <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/conta")} href="/painel/conta" aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
+          {previewAllowed && <button className="dashboard-nav__preview-mobile" type="button" role="switch" aria-checked="false" onClick={() => { setMobileMenuOpen(false); router.push("/painel/visao-estudante"); }}><span className="dashboard-preview-switch__track"><span /></span><span>Ver como estudante</span></button>}
         </nav> : <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.studentArea}>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/solicitacao")} href="/painel/solicitacao" aria-label={t.request} title={t.request}><SidebarIcon name="request" /><span className="dashboard-nav__label">{t.request}</span></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/autodeposito")} href="/painel/autodeposito" aria-label={t.deposit} title={t.deposit}><SidebarIcon name="deposit" /><span className="dashboard-nav__label">{t.deposit}</span></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/conta")} href="/painel/conta" aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === null || searchParams.get("tela") === "inicio" ? "is-active" : undefined : activeClass("/painel")} href={previewMode ? previewHref("") : "/painel"} aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? ["solicitacoes", "solicitacao", "correcao"].includes(searchParams.get("tela") ?? "") ? "is-active" : undefined : activeClass("/painel/solicitacao")} href={previewMode ? previewHref("solicitacoes") : "/painel/solicitacao"} aria-label={t.request} title={t.request}><SidebarIcon name="request" /><span className="dashboard-nav__label">{t.request}</span></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "autodeposito" ? "is-active" : undefined : activeClass("/painel/autodeposito")} href={previewMode ? previewHref("autodeposito") : "/painel/autodeposito"} aria-label={t.deposit} title={t.deposit}><SidebarIcon name="deposit" /><span className="dashboard-nav__label">{t.deposit}</span></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "conta" ? "is-active" : undefined : activeClass("/painel/conta")} href={previewMode ? previewHref("conta") : "/painel/conta"} aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
         </nav>}
+        {isStaff && !previewMode && previewAllowed && <button className="dashboard-nav__preview-switch" type="button" role="switch" aria-checked="false" aria-label="Ver como estudante" title="Ver como estudante" onClick={() => router.push("/painel/visao-estudante")}><AppIcon className="dashboard-nav__preview-icon" name="eye" /><span className="dashboard-preview-switch__track"><span /></span><span className="dashboard-nav__preview-label">Ver como estudante</span></button>}
       </aside>
       <div className="dashboard-content">
-        <header className={`dashboard-header${isStaff ? " dashboard-header--staff" : ""}`}>
+        <header className={`dashboard-header${isStaff && !previewMode ? " dashboard-header--staff" : ""}`}>
           <div className="dashboard-header__inner">
-          {isStaff && showNotifications && <StaffCommunications userId={userId} previewBadges={previewBadges} />}
-          {!isStaff && pathname !== "/painel" && pathname !== "/painel/" && serviceStatus && <ServiceStatusPeek className="dashboard-header__service-peek" title={serviceStatus.title} date={serviceStatus.date} now={serviceStatus.now} reason={serviceStatus.reason} message={serviceStatus.message} closed={serviceStatus.closed} hint={serviceStatus.closed ? translate("Passe o mouse para saber mais") : translate("Fechamento previsto às {time}", { time: formatLibraryHour(serviceStatus.closingTime) })} hoursLabel={serviceStatus.specialHours ? translate("Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(serviceStatus.closingTime) }) : translate("Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={translate("Detalhes do funcionamento da biblioteca")} />}
+          {isStaff && !previewMode && showNotifications && <StaffCommunications userId={userId} previewBadges={previewBadges} />}
+          {isStaff && !previewMode && pathname !== "/painel" && pathname !== "/painel/" && <div className="dashboard-header__search"><StaffGlobalSearch /></div>}
+          {(!isStaff || previewMode) && pathname !== "/painel" && pathname !== "/painel/" && (previewMode ? searchParams.get("tela") !== null && searchParams.get("tela") !== "inicio" : true) && serviceStatus && <ServiceStatusPeek className="dashboard-header__service-peek" title={serviceStatus.title} date={serviceStatus.date} now={serviceStatus.now} reason={serviceStatus.reason} message={serviceStatus.message} closed={serviceStatus.closed} hint={serviceStatus.closed ? translate("Passe o mouse para saber mais") : translate("Fechamento previsto hoje às {time}", { time: formatLibraryHour(serviceStatus.closingTime) })} hoursLabel={serviceStatus.specialHours ? translate("Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(serviceStatus.closingTime) }) : translate("Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={translate("Detalhes do funcionamento da biblioteca")} />}
           <div className="dashboard-header__actions">
-            <div className="user-identity">{isStaff && <span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span>}<span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
+            {previewMode ? <div className="user-identity"><StudentAvatar name="Estudante" small /><span className="user-identity__copy"><Link className="user-greeting" href={previewHref("conta")}>{t.greeting}, Estudante</Link><span className="user-chip">{t.student}</span></span></div> : <>
+            <div className="user-identity">{isStaff ? <span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span> : <StudentAvatar name={firstName} small />}<span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
             <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>
+            </>}
           </div>
           </div>
-          {birthdayVisible && <div className={`dashboard-birthday${birthdayClosing ? " is-closing" : ""}`} role="status"><span className="dashboard-birthday__confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, index) => <i key={index} />)}</span><span className="dashboard-birthday__cake" aria-hidden="true">🎂</span><span className="dashboard-birthday__message"><strong>{translate("Feliz aniversário, {name}!", { name: firstName })}</strong> {translate("Que seu dia tenha boas histórias.")}</span><button type="button" aria-label={translate("Fechar saudação de aniversário")} onClick={closeBirthday}>×</button></div>}
+          {birthdayVisible && !previewMode && <div className={`dashboard-birthday${birthdayClosing ? " is-closing" : ""}`} role="status"><span className="dashboard-birthday__confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, index) => <i key={index} />)}</span><span className="dashboard-birthday__cake" aria-hidden="true">🎂</span><span className="dashboard-birthday__message"><strong>{translate("Feliz aniversário, {name}!", { name: firstName })}</strong> {translate("Que seu dia tenha boas histórias.")}</span><button type="button" aria-label={translate("Fechar saudação de aniversário")} onClick={closeBirthday}>×</button></div>}
         </header>
         <DashboardBreadcrumbProvider><DashboardBreadcrumbs />{children}</DashboardBreadcrumbProvider>
         <PanelChangeToast />
@@ -232,7 +313,13 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
           <blockquote><span>“{dailyQuote.text}”</span></blockquote>
           <figcaption><a href={authorWikipediaUrl(dailyQuote.author)} target="_blank" rel="noopener noreferrer" title={translate("Ver {author} na Wikipédia em português", { author: dailyQuote.author })}>{dailyQuote.author}<span className="sr-only"> ({translate("abre em nova aba")})</span></a> {translate("em")} <cite>{dailyQuote.work}</cite> ({dailyQuote.year}) <a className="dashboard-daily-quote__source" href={dailyQuote.source} target="_blank" rel="noopener noreferrer" aria-label={translate("Abrir fonte da citação em nova aba: {work}", { work: dailyQuote.work })} title={translate("Fonte da citação")}><AppIcon name="external" /></a></figcaption>
         </figure></div>
-        <BackendHelpWidget role={role} />
+        <BackendHelpWidget role={previewMode ? "student" : role} />
+        {previewMode && <div ref={previewDockRef} className="student-preview__dock" aria-label="Controles da equipe na demonstração">
+          <button className="dashboard-preview-switch" type="button" role="switch" aria-checked="true" aria-label={`Voltar à visão de ${role === "administrator" ? "administrador" : "catalogador"}`} onClick={() => router.push("/painel")}><span className="dashboard-preview-switch__track"><span /></span><span>Voltar à visão de {role === "administrator" ? "administrador" : "catalogador"}</span></button>
+          <details className="student-preview__notice"><summary><AppIcon name="eye" /><span>Demonstração</span><small>{previewScenario.label}</small><AppIcon className="student-preview__notice-chevron" name="arrowRight" /></summary><div className="student-preview__notice-body"><p>Dados fictícios. As ações são simuladas e não alteram contas, protocolos ou arquivos.</p><div className="student-preview__scenarios" aria-label="Etapas para demonstração">{studentPreviewScenarios.map((item) => <Link key={item.id} href={`/painel/visao-estudante?tela=${searchParams.get("tela") ?? "inicio"}&estado=${item.id}`} aria-current={previewScenario.id === item.id ? "true" : undefined}>{item.label}</Link>)}</div></div></details>
+          <span className="student-preview__staff-identity"><span className="dashboard-birthday-avatar"><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small /></span><span><strong>{firstName}</strong><small>{role === "administrator" ? t.administrator : t.cataloger}</small></span></span>
+          <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>
+        </div>}
       </div>
       <dialog ref={logoutDialogRef} className="dashboard-logout-dialog pronto-modal" aria-labelledby="dashboard-logout-title" aria-describedby="dashboard-logout-description" onCancel={() => setLogoutDialogOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) setLogoutDialogOpen(false); }}>
         <div className="dashboard-logout-dialog__content">

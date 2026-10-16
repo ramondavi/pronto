@@ -5,8 +5,19 @@ import { articleHtml, helpArticles, initialKnowledgeEntries, type KnowledgeEntry
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
 import type { InterfaceLanguage } from "@/lib/interface-language";
+import { userHasPermission } from "@/lib/staff-permissions";
 
 const fields = "id,slug,kind,title,summary,body_html,translations,category,audiences,active,position,featured_position,created_at,updated_at,published_at";
+
+export async function canEditPublicKnowledge(kind: KnowledgeEntry["kind"]): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data: profile } = await supabase.from("profiles").select("role,status").eq("id", user.id).single();
+  if (!profile || profile.status !== "active" || !["administrator", "cataloger"].includes(profile.role)) return false;
+  if (await userHasPermission(supabase, "admin.knowledge.manage", profile.role)) return true;
+  return kind === "faq" && await userHasPermission(supabase, "admin.faq.manage", profile.role);
+}
 
 function localizedEntry(entry: KnowledgeEntry, language: InterfaceLanguage): KnowledgeEntry {
   const translated = entry.translations?.[language]?.title && entry.translations?.[language]?.summary && entry.translations?.[language]?.body_html
@@ -35,11 +46,23 @@ function protectPublicContacts(entry: KnowledgeEntry, language: InterfaceLanguag
 
 export function safeKnowledgeHtml(html: string) {
   return sanitizeHtml(html, {
-    allowedTags: ["section", "span", "p", "br", "h2", "h3", "strong", "em", "s", "ul", "ol", "li", "blockquote", "hr", "a", "img"],
-    allowedAttributes: { section: ["class"], span: ["class", "aria-hidden"], ol: ["class"], a: ["href", "target", "rel"], img: ["src", "alt", "title", "width", "height"] },
+    allowedTags: ["section", "span", "mark", "p", "br", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "em", "s", "u", "ul", "ol", "li", "blockquote", "hr", "a", "img", "table", "caption", "colgroup", "col", "thead", "tbody", "tfoot", "tr", "th", "td"],
+    allowedAttributes: { section: ["class"], span: ["class", "aria-hidden", "style"], mark: ["style"], p: ["style"], h1: ["style"], h2: ["style", "data-heading-icon", "data-heading-icon-color"], h3: ["style", "data-heading-icon", "data-heading-icon-color"], h4: ["style"], h5: ["style"], h6: ["style"], ol: ["class"], th: ["colspan", "rowspan", "align", "scope"], td: ["colspan", "rowspan", "align"], a: ["href", "target", "rel"], img: ["src", "alt", "title", "width", "height", "style"] },
+    allowedStyles: {
+      span: { color: [/^#[0-9a-f]{3,8}$/i, /^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$/i] },
+      mark: { "background-color": [/^#[0-9a-f]{3,8}$/i, /^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$/i] },
+      p: { "text-align": [/^(left|center|right)$/] },
+      h1: { "text-align": [/^(left|center|right)$/] },
+      h2: { "text-align": [/^(left|center|right)$/] },
+      h3: { "text-align": [/^(left|center|right)$/] },
+      h4: { "text-align": [/^(left|center|right)$/] },
+      h5: { "text-align": [/^(left|center|right)$/] },
+      h6: { "text-align": [/^(left|center|right)$/] },
+      img: { width: [/^\d{2,4}px$/], height: [/^\d{2,4}px$/] },
+    },
     allowedSchemes: ["https", "mailto"],
     allowedSchemesByTag: { img: ["https"] },
-    transformTags: { a: (_tag, attrs) => ({ tagName: "a", attribs: { href: attrs.href ?? "#", target: "_blank", rel: "noopener noreferrer" } }), img: (_tag, attrs) => ({ tagName: "img", attribs: { src: attrs.src ?? "", alt: attrs.alt ?? "", loading: "lazy" } }) },
+    transformTags: { a: (_tag, attrs) => ({ tagName: "a", attribs: { href: attrs.href ?? "#", target: attrs.target === "_self" ? "_self" : "_blank", ...(attrs.target === "_self" ? {} : { rel: "noopener noreferrer" }) } }), img: (_tag, attrs) => ({ tagName: "img", attribs: { src: attrs.src ?? "", alt: attrs.alt ?? "", ...(attrs.width && /^\d{2,4}$/.test(attrs.width) ? { width: attrs.width } : {}), ...(attrs.height && /^\d{2,4}$/.test(attrs.height) ? { height: attrs.height } : {}), ...(attrs.style ? { style: attrs.style } : {}), loading: "lazy" } }) },
   });
 }
 

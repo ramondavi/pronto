@@ -16,7 +16,12 @@ function destination(path: string, kind: "error" | "message" | "session_error" |
 
 async function siteOrigin() {
   const headerStore = await headers();
-  return process.env.NEXT_PUBLIC_SITE_URL ?? headerStore.get("origin") ?? "http://localhost:3000";
+  if (process.env.NODE_ENV === "development") {
+    const origin = headerStore.get("origin");
+    if (origin === "http://127.0.0.1:3100" || origin === "http://localhost:3100") return origin;
+    return "http://127.0.0.1:3100";
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL ?? headerStore.get("origin") ?? "http://127.0.0.1:3100";
 }
 
 export type SignupState = { errors: SignupErrors; formError: string | null };
@@ -86,9 +91,18 @@ export async function requestPasswordReset(formData: FormData) {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   if (!isUfbaEmail(email)) redirect(destination("/recuperar-senha", "error", "Use seu endereço institucional @ufba.br."));
   const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/callback?next=/redefinir-senha` });
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
   if (error) redirect(destination("/recuperar-senha", "error", "Não foi possível enviar o link agora. Aguarde um instante e tente novamente."));
   redirect(destination("/recuperar-senha", "message", "Se o endereço estiver cadastrado, enviaremos as instruções."));
+}
+
+export async function confirmPasswordRecovery(formData: FormData) {
+  const tokenHash = String(formData.get("token_hash") ?? "");
+  if (!tokenHash) redirect(destination("/recuperar-senha", "error", "O link não está mais válido. Solicite um novo link para redefinir sua senha."));
+  const supabase = await createClient();
+  const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
+  if (error) redirect(destination("/recuperar-senha", "error", "O link não está mais válido. Solicite um novo link para redefinir sua senha."));
+  redirect("/redefinir-senha");
 }
 
 export type PrivacyAcknowledgementState = { error?: string; success?: boolean };
@@ -117,7 +131,7 @@ export async function requestAuthenticatedPasswordChange(_previousState: Passwor
     redirect(destination("/entrar", "error", "Não foi possível continuar. Entre novamente ou procure a biblioteca."));
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/callback?next=/redefinir-senha` });
+  const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
   if (error) return { status: "error", sentAt: _previousState.sentAt };
   return { status: "sent", sentAt: Date.now() };
 }

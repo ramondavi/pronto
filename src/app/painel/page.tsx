@@ -12,13 +12,14 @@ import { StaffAnnouncementsCalendar } from "@/components/staff-announcements-cal
 import { formatWorkTitle } from "@/lib/work-title";
 import { studentRequestProgress } from "@/lib/student-request-progress";
 import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
-import { formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
+import { formatLibraryHour, formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
 import { monographDisplayName, programDisplayName } from "@/domain/staff-queue/program-labels";
 import { RelativeDateTime } from "@/components/relative-date-time";
 import { ServiceStatusBanner } from "@/components/service-status-banner";
 import { userHasPermission } from "@/lib/staff-permissions";
+import { StaffGlobalSearch } from "@/components/staff-global-search";
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
@@ -28,7 +29,7 @@ export default async function StudentDashboardPage() {
   if (profile.role === "cataloger" || profile.role === "administrator") {
     const allowed = await userHasPermission(supabase, "staff.overview.view", profile.role);
     if (!allowed) redirect("/painel/conta");
-    return <StaffOverview role={profile.role} userId={user.id} />;
+    return <StaffOverview role={profile.role} userId={user.id} firstName={profile.full_name.trim().split(/\s+/)[0] || "Olá"} />;
   }
   const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, academic_enrollments(academic_programs(code,name,work_type))").in("status", ["submitted", "in_review", "changes_requested", "approved"]).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   const activeEnrollment = activeRequest && (Array.isArray(activeRequest.academic_enrollments) ? activeRequest.academic_enrollments[0] : activeRequest.academic_enrollments);
@@ -51,7 +52,7 @@ export default async function StudentDashboardPage() {
   const currentAnnouncement = announcements?.find((item) => item.type !== "normal" && item.starts_at <= now && (!item.ends_at || item.ends_at >= now) && isCurrentServiceAnnouncement(item, now));
   const closureAnnouncement = announcements?.find((item) => item.type !== "normal" && item.starts_at <= now && isCurrentServiceAnnouncement(item, now) && isLibraryClosureAnnouncement(item));
   const closed = isLibraryClosedNow(now, closingTime) || Boolean(closureAnnouncement);
-  const serviceStatus = closed ? uiText(language, "Biblioteca fechada agora") : currentAnnouncement ? `${uiText(language, "Prazos impactados:")} ${currentAnnouncement.title}` : uiText(language, "Atendimento normal");
+  const serviceStatus = closed ? uiText(language, "Biblioteca fechada agora") : currentAnnouncement ? `${uiText(language, "Prazos impactados:")} ${currentAnnouncement.title}` : uiText(language, "Atendimento normal agora");
   const closedMessage = uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.");
   return (
     <main className="dashboard-main dashboard-main--student-overview">
@@ -78,7 +79,7 @@ export default async function StudentDashboardPage() {
         <aside className="dashboard-side">
           <section className="panel panel--institutional calendar-panel" aria-label={t("Avisos e prazos")}>
             <strong className="panel-heading-with-icon"><AppIcon name="calendar" />{t("Avisos e prazos")}</strong>
-            <ServiceStatusBanner className="calendar-panel__status" title={serviceStatus} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} reason={closureAnnouncement?.title} message={closed ? closedMessage : currentAnnouncement?.message} closed={closed} />
+            <ServiceStatusBanner className="calendar-panel__status" title={serviceStatus} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} reason={closureAnnouncement?.title} message={closed ? closedMessage : currentAnnouncement?.message} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} closed={closed} />
             <div className="calendar-panel__deadline"><span><strong>{t("Prazo de referência")}</strong><small>{t("Para análise da solicitação após o envio")}</small></span><strong>3 <span>{t("dias úteis")}</span></strong></div>
             <StaffAnnouncementsCalendar announcements={announcements ?? []} />
           </section>
@@ -89,13 +90,14 @@ export default async function StudentDashboardPage() {
   );
 }
 
-async function StaffOverview({ role, userId }: { role: "cataloger" | "administrator"; userId: string }) {
+async function StaffOverview({ role, userId, firstName }: { role: "cataloger" | "administrator"; userId: string; firstName: string }) {
   const supabase = await createClient();
+  const canProvisionAccounts = await userHasPermission(supabase, "admin.accounts.provision", role);
   const [{ data: requests }, { data: announcements }, { data: candidates }, { count: activeStaffCount }, activityFeed, { data: priorityRows }] = await Promise.all([
     supabase.from("cataloging_requests").select("status,assigned_to"),
     supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100),
-    role === "administrator" ? supabase.rpc("list_confirmed_staff_candidates") : Promise.resolve({ data: [] as { user_id: string; email: string }[] }),
-    role === "administrator" ? supabase.from("profiles").select("id", { count: "exact", head: true }).in("role", ["cataloger", "administrator"]).eq("status", "active") : Promise.resolve({ count: null }),
+    canProvisionAccounts ? supabase.rpc("list_confirmed_staff_candidates") : Promise.resolve({ data: [] as { user_id: string; email: string }[] }),
+    canProvisionAccounts ? supabase.from("profiles").select("id", { count: "exact", head: true }).in("role", ["cataloger", "administrator"]).eq("status", "active") : Promise.resolve({ count: null }),
     supabase.rpc("list_staff_activity_feed", { page_size: 10 }),
     supabase.from("request_priorities").select("request_id,marked_at,request:cataloging_requests!inner(id,protocol,title,subtitle,status)").order("marked_at", { ascending: true }),
   ]);
@@ -104,7 +106,7 @@ async function StaffOverview({ role, userId }: { role: "cataloger" | "administra
   const mine = all.filter((request) => request.assigned_to === userId && ["in_review", "changes_requested"].includes(request.status)).length;
   const changes = all.filter((request) => request.status === "changes_requested").length;
   const approved = all.filter((request) => request.status === "approved").length;
-  const administrator = role === "administrator";
+  const administrator = canProvisionAccounts;
   const priorities = (priorityRows ?? []).flatMap((row) => {
     const request = Array.isArray(row.request) ? row.request[0] : row.request;
     return request && ["submitted", "in_review", "changes_requested", "approved"].includes(request.status)
@@ -112,7 +114,8 @@ async function StaffOverview({ role, userId }: { role: "cataloger" | "administra
       : [];
   });
   return <main className="dashboard-main dashboard-main--staff-overview">
-    <div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="home" />Visão geral</h1></div></div>
+    <StaffGlobalSearch prominent firstName={firstName} greetingVariant={Math.floor(Math.random() * 6)} />
+    <h1 className="sr-only">Visão geral</h1>
     <div className={`staff-overview-main${administrator ? " staff-overview-main--admin" : " staff-overview-main--cataloger"}`}>
       <StaffActivityFeed initialEvents={(activityFeed.data ?? []) as StaffActivityEvent[]} userId={userId} initialLoadError={Boolean(activityFeed.error)} />
       <div className="staff-overview-main__side"><section className="overview-stats" aria-label="Indicadores rápidos">

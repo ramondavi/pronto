@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import styles from "./site-footer.module.css";
 import { LanguageControl } from "./language-control";
 import { useInterfaceLanguage } from "./interface-language";
 import { useStaffPanel } from "./use-staff-panel";
+import { ThemeSwitcher } from "./theme-switcher";
 
 const footerCopy = {
   pt: ["Fichas catalográficas e autodepósito", "Central de ajuda", "Privacidade", "Acessibilidade", "Feito pelos bibliotecários da BIB/FAUFBA com", "e", "amor", "Código aberto no GitHub", "Licença", "Informações", "Instituições"],
@@ -25,28 +26,83 @@ export function SiteFooter({ version }: { version: string }) {
   const pathname = usePathname();
   const staffPanel = useStaffPanel();
   const t = footerCopy[staffPanel ? "pt" : language];
+  const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasAutoPlayedRef = useRef(false);
+  const [animateLibrary, setAnimateLibrary] = useState(false);
+  const [animationRun, setAnimationRun] = useState(0);
+  const startLibraryAnimation = useCallback(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+    setAnimationRun((run) => run + 1);
+    setAnimateLibrary(true);
+    animationTimerRef.current = setTimeout(() => setAnimateLibrary(false), 4200);
+  }, []);
+  useEffect(() => {
+    const checkPageEnd = () => {
+      if (hasAutoPlayedRef.current) return;
+      const page = document.documentElement;
+      if (window.scrollY + window.innerHeight < page.scrollHeight - 8) return;
+      hasAutoPlayedRef.current = true;
+      startLibraryAnimation();
+      window.removeEventListener("scroll", checkPageEnd);
+      window.removeEventListener("resize", checkPageEnd);
+    };
+    window.addEventListener("scroll", checkPageEnd, { passive: true });
+    window.addEventListener("resize", checkPageEnd);
+    window.addEventListener("load", checkPageEnd);
+    const frame = requestAnimationFrame(checkPageEnd);
+    const restorationCheck = setTimeout(checkPageEnd, 350);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(restorationCheck);
+      window.removeEventListener("scroll", checkPageEnd);
+      window.removeEventListener("resize", checkPageEnd);
+      window.removeEventListener("load", checkPageEnd);
+    };
+  }, [startLibraryAnimation]);
+  useEffect(() => () => {
+    if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+  }, []);
   useEffect(() => {
     const footerRow = document.querySelector<HTMLElement>("[data-language-alignment]");
-    const pageContent = document.querySelector<HTMLElement>(".card-publication-page__inner")
-      ?? document.querySelector<HTMLElement>(".coordination-page__inner")
-      ?? document.querySelector<HTMLElement>("body:has(.auth-shell) .accessibility-bar__inner")
-      ?? document.querySelector<HTMLElement>("main.dashboard-main")
-      ?? document.querySelector<HTMLElement>("main .container")
-      ?? document.querySelector<HTMLElement>("main");
-    if (!footerRow || !pageContent) return;
-
+    if (!footerRow) return;
+    const contentRoot = document.getElementById("conteudo");
+    let observedContent: HTMLElement | null = null;
+    let frame = 0;
+    const findPageContent = () => [
+      ".card-publication-page__inner",
+      ".coordination-page__inner",
+      ".auth-shell",
+      "main.dashboard-main",
+      "main .container",
+      "main",
+    ].map((selector) => contentRoot?.querySelector<HTMLElement>(selector)).find((element) => element && element.getBoundingClientRect().width > 0) ?? null;
     const alignLanguageControl = () => {
-      const offset = pageContent.getBoundingClientRect().left - footerRow.getBoundingClientRect().left;
-      footerRow.style.setProperty("--language-align-offset", `${offset}px`);
+      frame = 0;
+      const pageContent = findPageContent();
+      if (observedContent !== pageContent) {
+        if (observedContent) resizeObserver.unobserve(observedContent);
+        observedContent = pageContent;
+        if (observedContent) resizeObserver.observe(observedContent);
+      }
+      if (!pageContent) return;
+      const contentLeft = pageContent.getBoundingClientRect().left;
+      const rowLeft = footerRow.getBoundingClientRect().left;
+      if (contentLeft < 8 || !Number.isFinite(contentLeft) || !Number.isFinite(rowLeft)) return;
+      footerRow.style.setProperty("--language-align-offset", `${contentLeft - rowLeft}px`);
     };
-    alignLanguageControl();
-    const observer = new ResizeObserver(alignLanguageControl);
-    observer.observe(pageContent);
-    observer.observe(footerRow);
-    window.addEventListener("resize", alignLanguageControl);
+    const scheduleAlignment = () => { if (!frame) frame = requestAnimationFrame(alignLanguageControl); };
+    const resizeObserver = new ResizeObserver(scheduleAlignment);
+    resizeObserver.observe(footerRow);
+    const mutationObserver = new MutationObserver(scheduleAlignment);
+    if (contentRoot) mutationObserver.observe(contentRoot, { childList: true, subtree: true });
+    scheduleAlignment();
+    window.addEventListener("resize", scheduleAlignment);
     return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", alignLanguageControl);
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      window.removeEventListener("resize", scheduleAlignment);
       footerRow.style.removeProperty("--language-align-offset");
     };
   }, [pathname]);
@@ -55,10 +111,26 @@ export function SiteFooter({ version }: { version: string }) {
       <div className={styles.decoration} aria-hidden="true" />
       <div className={styles.inner}>
         <div className={styles.topRow} data-language-alignment>
-          {!staffPanel && <LanguageControl />}
+          <div className={styles.footerPreferences}>{!staffPanel && <LanguageControl />}<ThemeSwitcher /></div>
           <div className={styles.signature}>
-            <div className={styles.libraryBrand}><OfficialLibraryLogo variant="footer" /></div>
-            <p>{t[0]}</p>
+            <div className={styles.libraryBrand} onMouseEnter={startLibraryAnimation} onFocus={startLibraryAnimation}>
+              <OfficialLibraryLogo variant="footer" />
+              {animateLibrary && <div className={styles.libraryPages} key={`pages-${animationRun}`} aria-hidden="true">
+                {["Arquitetura", "Urbanismo", "e muito +"].map((word) => (
+                  <span key={word}><svg viewBox="0 0 779 194" focusable="false"><text x="389.5" y="163" textAnchor="middle" textLength="711" lengthAdjust="spacingAndGlyphs">{word}</text></svg></span>
+                ))}
+              </div>}
+              {animateLibrary && <svg className={styles.libraryCutLines} key={`cuts-${animationRun}`} viewBox="0 0 779 325" aria-hidden="true" focusable="false">
+                <path className={styles.cutLineA} pathLength="100" d="M278 218H799" />
+                <path className={styles.cutLineB} pathLength="100" d="M799 321H278" />
+                <path className={styles.cutLineC} pathLength="100" d="M317 350V188" />
+                <path className={styles.cutLineD} pathLength="100" d="M760 188V350" />
+                <path className={styles.cutMarkA} pathLength="100" d="M294 218h47 M317 194v49" />
+                <path className={styles.cutMarkB} pathLength="100" d="M736 218h47 M760 194v49" />
+                <path className={styles.cutMarkC} pathLength="100" d="M294 321h47 M317 298v45" />
+                <path className={styles.cutMarkD} pathLength="100" d="M736 321h47 M760 298v45" />
+              </svg>}
+            </div>
           </div>
         </div>
         <nav className={styles.navigation} aria-label={t[9]}>
@@ -71,7 +143,7 @@ export function SiteFooter({ version }: { version: string }) {
           <a href="https://sibi.ufba.br" target="_blank" rel="noreferrer"><Image src="/logo-sibi.png" alt="Sistema Universitário de Bibliotecas da UFBA" width={2876} height={850} /></a>
           <a href="https://arquitetura.ufba.br" target="_blank" rel="noreferrer"><Image src="/logo-faufba.png" alt="Faculdade de Arquitetura da UFBA" width={230} height={205} /></a>
         </div>
-        <p className={styles.credit}>{t[4]} vibe coding {t[5]} <span aria-label={t[6]} role="img">♥</span>.</p>
+        <p className={styles.credit}>{t[4]} <a href="https://openai.com/codex/" target="_blank" rel="noreferrer"><em>vibe coding</em></a> {t[5]} <span aria-label={t[6]} role="img">♥</span>.</p>
         <div className={styles.meta}>
           <span>2026 · v{version} · Beta</span>
           <a href="https://github.com/ramondavi/pronto" target="_blank" rel="noreferrer"><AppIcon name="github" />{t[7]} ↗</a>

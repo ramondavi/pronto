@@ -114,7 +114,7 @@ export function ControlledTermsAdmin() {
   }
 
   return <section className="panel admin-section controlled-terms-admin">
-    <header className="controlled-terms-admin__heading"><div><p className="eyebrow">Vocabulário controlado</p><h2>Assuntos cadastrados</h2><p>Revise os termos reutilizados na catalogação e retire das sugestões os registros de teste.</p></div><AppIcon name="book" aria-hidden="true" /></header>
+    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Revise os termos reutilizados na catalogação e retire das sugestões os registros de teste.</p></div></header>
 
     <div className="controlled-terms-admin__overview" aria-label="Resumo dos assuntos">
       <button type="button" className={status === "all" && review === "all" ? "is-selected" : ""} onClick={() => { setStatus("all"); chooseReview("all"); }}><AppIcon name="book" /><span><strong>{overview?.total_count ?? "—"}</strong> cadastrados</span></button>

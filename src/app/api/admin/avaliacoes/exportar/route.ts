@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createFeedbackAggregateCsv, createFeedbackAggregatePdf, createFeedbackCsv, createFeedbackPdf, type FeedbackExportResponse } from "@/lib/feedback-export";
+import { userHasPermission } from "@/lib/staff-permissions";
 
 export const runtime = "nodejs";
 
@@ -8,7 +9,7 @@ export async function GET(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: "Entre novamente para exportar a pesquisa." }, { status: 401 });
   const { data: profile } = await supabase.from("profiles").select("role,status").eq("id", user.id).single();
-  if (profile?.role !== "administrator" || profile.status !== "active") return Response.json({ error: "Acesso restrito à administração." }, { status: 403 });
+  if (!profile || profile.status !== "active" || !await userHasPermission(supabase, "admin.feedback.export", profile.role)) return Response.json({ error: "Acesso restrito à exportação da pesquisa." }, { status: 403 });
 
   const format = new URL(request.url).searchParams.get("formato");
   if (format !== "csv" && format !== "pdf") return Response.json({ error: "Formato de exportação inválido." }, { status: 400 });

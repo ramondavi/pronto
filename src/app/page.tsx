@@ -16,6 +16,15 @@ import { homeJourneyCopy } from "@/lib/home-journey-copy";
 import { benefitIcons, homeBenefitsCopy } from "@/lib/home-benefits-copy";
 import { uiText } from "@/lib/ui-text";
 
+const catalogPhrases = {
+  pt: "Fichas Catalográficas",
+  en: "Catalog Record",
+  es: "fichas catalográficas",
+  de: "Katalogeinträge",
+  fr: "notices de catalogage",
+  it: "schede catalografiche",
+} as const;
+
 const fallbackHomeFaqs = {
   pt: [["Quem pode usar o Pronto!?", "Estudantes da UFBA que precisam solicitar ficha catalográfica e realizar o autodepósito, além da equipe autorizada da BIB/FA."], ["O trabalho completo é enviado ao Pronto!?", "Não. O estudante informa um link público para análise e o PDF completo permanece no próprio dispositivo durante a mesclagem da ficha."], ["Quando posso baixar a ficha?", "Depois que a ficha for homologada pela biblioteca e o Nada Consta for aprovado."]],
   en: [["Who can use Pronto!?", "UFBA students requesting a catalog record and completing self-deposit, as well as authorized BIB/FA staff."], ["Is the complete work uploaded to Pronto!?", "No. Students provide a public link for review. The complete PDF stays on their device while the catalog record is merged."], ["When can I download the catalog record?", "After library approval and Nada Consta validation."]],
@@ -28,6 +37,8 @@ const fallbackHomeFaqs = {
 export default async function HomePage() {
   const language = await getInterfaceLanguage();
   const t = homeCopy[language];
+  const catalogPhrase = catalogPhrases[language];
+  const catalogPosition = t.lead.indexOf(catalogPhrase);
   const benefits = homeBenefitsCopy[language];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -56,12 +67,12 @@ export default async function HomePage() {
           <div className="container hero__grid">
             <div className="hero__content">
               <p className="eyebrow">Biblioteca da Faculdade de Arquitetura · UFBA</p>
-              <p className="hero__lead">{language === "pt" ? <><span className="sr-only">{t.lead}</span><span aria-hidden="true">Assistente de <HeroClassificationPhrase /> e Autodepósito</span></> : t.lead}</p>
+              <p className="hero__lead">{catalogPosition < 0 ? t.lead : <><span className="sr-only">{t.lead}</span><span aria-hidden="true">{t.lead.slice(0, catalogPosition)}<HeroClassificationPhrase text={catalogPhrase} />{t.lead.slice(catalogPosition + catalogPhrase.length)}</span></>}</p>
               <p className="hero__description">{t.description}</p>
               {!user && <div className="actions"><Link className="button button--primary button--with-icon" href="/entrar"><AppIcon name="account" />{t.signIn}</Link><Link className="button button--secondary button--with-icon" href="/cadastro"><AppIcon name="edit" />{t.register}</Link></div>}
             </div>
             <div className="hero__aside">
-              <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} copy={t.notice} />
+              <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} copy={t.notice} />
               <div className="requirements">
                 <p className="eyebrow">{t.before}</p>
                 <h2>{t.requirementTitle}</h2>

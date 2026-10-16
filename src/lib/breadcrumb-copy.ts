@@ -1,4 +1,4 @@
-import { adminSections, adminTabHref, resolveAdminLocation } from "@/lib/admin-navigation";
+import { adminAreaHref, adminSections, resolveAdminLocation } from "@/lib/admin-navigation";
 
 export const breadcrumbCopy = {
   pt: ["Caminho de navegação", "Início", "Central de ajuda", "Política de privacidade", "Acessibilidade", "Visão geral", "Fila de solicitações", "Atendimento", "Ficha catalográfica", "Minhas solicitações", "Nova solicitação", "Corrigir solicitação", "Autodepósito", "Administração", "Programas e coordenações", "Minha conta", "Meus atendimentos", "Avaliação do atendimento", "Avaliações", "Operação", "Conteúdo", "Controle"],
@@ -35,12 +35,18 @@ export function dashboardTrail(language: keyof typeof breadcrumbCopy, pathname: 
   else if (pathname === "/painel/admin/programas") items.push({ label: t[13], href: "/painel/admin" }, { label: t[14] });
   else if (pathname === "/painel/admin/avaliacoes") items.push({ label: t[13], href: "/painel/admin" }, { label: t[18] });
   else if (pathname === "/painel/admin") {
-    const location = resolveAdminLocation(options.area ?? undefined, options.tab ?? undefined);
-    const section = adminSections.find((entry) => entry.area === location.area) ?? adminSections[0];
-    const tab = section.tabs.find((entry) => entry.id === location.tab) ?? section.tabs[0];
-    items.push({ label: t[13], href: "/painel/admin" });
-    items.push({ label: location.area === "conteudo" ? t[20] : location.area === "controle" ? t[21] : t[19], href: adminTabHref(location.area, section.tabs[0].id) });
-    items.push({ label: tab.label });
+    if (!options.area && !options.tab) items.push({ label: t[13] });
+    else {
+      const location = resolveAdminLocation(options.area ?? undefined, options.tab ?? undefined);
+      const section = adminSections.find((entry) => entry.area === location.area) ?? adminSections[0];
+      items.push({ label: t[13], href: "/painel/admin" });
+      const areaLabel = location.area === "conteudo" ? t[20] : location.area === "controle" ? t[21] : t[19];
+      if (!options.tab) items.push({ label: areaLabel });
+      else {
+        const tab = section.tabs.find((entry) => entry.id === location.tab) ?? section.tabs[0];
+        items.push({ label: areaLabel, href: adminAreaHref(location.area) }, { label: tab.label });
+      }
+    }
   } else if (pathname === "/painel/avaliacao") items.push({ label: t[17] });
   else if (pathname === "/painel/conta") items.push({ label: t[15] });
   return items;

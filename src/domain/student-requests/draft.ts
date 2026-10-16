@@ -1,6 +1,7 @@
 export function studentRequestDraftKey(userId: string) {
   return `pronto:student-request-draft:v3:${userId}`;
 }
+export const studentPreviewDraftKey = "pronto:student-preview-draft:v1";
 
 export type RequestLanguage = "pt" | "en" | "es" | "de" | "fr" | "it";
 

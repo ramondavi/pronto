@@ -18,7 +18,7 @@ const currentValueLabel = (field: PendingField, programs: Program[]) => field.ki
 const normalizedValue = (field: PendingField, value: string) => field.kind === "list" ? value.split("\n").map((item) => item.trim()).filter(Boolean) : value.trim();
 const hasChanged = (field: PendingField, value: string) => JSON.stringify(normalizedValue(field, value)) !== JSON.stringify(normalizedValue(field, initialText(field)));
 
-export function StudentCorrectionForm({ requestId, fields, programs }: { requestId: string; fields: PendingField[]; programs: Program[] }) {
+export function StudentCorrectionForm({ requestId, fields, programs, preview = false, previewSuccessHref }: { requestId: string; fields: PendingField[]; programs: Program[]; preview?: boolean; previewSuccessHref?: string }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string, values?: Record<string, string | number>) => uiText(language, source, values);
   const router = useRouter();
@@ -41,6 +41,12 @@ export function StudentCorrectionForm({ requestId, fields, programs }: { request
       return;
     }
     const corrections = fields.map((field) => ({ fieldKey: field.fieldKey, value: normalizedValue(field, values[field.fieldKey] ?? ""), accessConfirmed: field.fieldKey === "public_work_url" && linkAccessConfirmed }));
+    if (preview) {
+      showPanelChange(t(fields.length === 1 ? "Correção pronta para reenviar na demonstração" : "Correções prontas para reenviar na demonstração"));
+      if (previewSuccessHref) router.push(previewSuccessHref);
+      setSubmitting(false);
+      return;
+    }
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("submit_request_corrections", { target_request_id: requestId, corrections });
     if (rpcError) { const message = t(fields.length === 1 ? "Não foi possível reenviar a correção. Confira o campo solicitado e tente novamente." : "Não foi possível reenviar as correções. Confira os campos solicitados e tente novamente."); setError(message); showPanelChangeError(t(fields.length === 1 ? "Correção não enviada" : "Correções não enviadas"), message); setSubmitting(false); return; }

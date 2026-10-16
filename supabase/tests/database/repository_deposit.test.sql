@@ -68,7 +68,7 @@ select is((select count(*)::integer from public.repository_deposit_progress),0,'
 select throws_ok($$select public.start_repository_deposit((select id from public.cataloging_requests limit 1))$$,'P0001','active_student_required','estudante bloqueado não registra início');
 
 set local request.jwt.claim.sub='98000000-0000-4000-8000-000000000003';
-select throws_ok($$select public.set_repository_deposit_enabled((select id from public.academic_programs where code='architecture-urbanism-undergraduate'),true)$$,'P0001','active_administrator_required','catalogador não altera configuração');
+select throws_ok($$select public.set_repository_deposit_enabled((select id from public.academic_programs where code='architecture-urbanism-undergraduate'),true)$$,'P0001','permission_denied','catalogador não altera configuração');
 set local request.jwt.claim.sub='98000000-0000-4000-8000-000000000002';
 select lives_ok($$select public.set_repository_deposit_enabled((select id from public.academic_programs where code='architecture-urbanism-undergraduate'),true)$$,'administrador ativa o módulo');
 select ok((select repository_deposit_enabled from public.academic_programs where code='architecture-urbanism-undergraduate'),'configuração foi atualizada');
