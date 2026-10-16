@@ -7,6 +7,7 @@ const actions = readFileSync("src/app/auth-actions.ts", "utf8");
 const callback = readFileSync("src/app/auth/callback/route.ts", "utf8");
 const confirm = readFileSync("src/app/auth/confirm/route.ts", "utf8");
 const config = readFileSync("supabase/config.toml", "utf8");
+const recoveryEmail = readFileSync("supabase/templates/recovery.html", "utf8");
 
 test("password recovery starts and completes PKCE on the server", () => {
   assert.match(form, /action=\{requestPasswordReset\}/);
@@ -22,4 +23,10 @@ test("local Auth accepts both supported development origins", () => {
   assert.match(config, /site_url = "http:\/\/127\.0\.0\.1:3100"/);
   assert.match(config, /"http:\/\/localhost:3100\/\*\*"/);
   assert.match(config, /"http:\/\/127\.0\.0\.1:3100\/\*\*"/);
+});
+
+test("recovery email sends the token hash expected by the confirmation route", () => {
+  assert.match(recoveryEmail, /\{\{ \.RedirectTo \}\}\?token_hash=\{\{ \.TokenHash \}\}&amp;type=recovery/);
+  assert.doesNotMatch(recoveryEmail, /\{\{ \.ConfirmationURL \}\}/);
+  assert.match(recoveryEmail, /background:#fff;border:1px solid #cfcfcf/);
 });
