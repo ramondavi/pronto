@@ -9,6 +9,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 ### 16 de outubro de 2026
 
 - Registrada a publicação do PR3 no domínio público, a aplicação das 11 migrações pendentes e a configuração do worker de e-mails no Supabase. O envio real e o aceite assistido continuam pendentes de verificação operacional. As instruções dos agentes foram condensadas sem alterar suas exigências para respeitar o limite de contexto do CI.
+- A recuperação de senha por e-mail voltou a funcionar após corrigir a autenticação SMTP do Supabase Auth; o link foi recebido na conta administrativa. A entrega da fila transacional ainda precisa de teste separado.
 
 ### 15 de outubro de 2026
 
