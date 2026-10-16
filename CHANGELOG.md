@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 16 de outubro de 2026
+
+- Registrada a publicação do PR3 no domínio público, a aplicação das 11 migrações pendentes e a configuração do worker de e-mails no Supabase. O envio real e o aceite assistido continuam pendentes de verificação operacional. As instruções dos agentes foram condensadas sem alterar suas exigências para respeitar o limite de contexto do CI.
+
 ### 15 de outubro de 2026
 
 - Estudantes e integrantes da equipe que optarem pelo avatar padrão recebem um monograma azul com a inicial do nome e detalhes do pictograma; o cabeçalho público mantém o contraste do avatar ao mostrar a saudação.
