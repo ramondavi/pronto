@@ -81,7 +81,7 @@ export function StaffPermissionsAdmin({ users, definitions, initialOverrides, in
   const activeOverrides = overrides.filter((item) => item.profile_id === selectedId && validAt(item, clock));
   const normalizedSearch = normalizePermissionSearch(search.trim());
   const visibleGroups = grouped.map(([heading, items]) => [heading, items.filter((item) =>
-    normalizePermissionSearch(`${heading} ${item.action} ${item.description} ${item.code === "student.preview" ? "herdar visão de estudante demonstração" : ""}`).includes(normalizedSearch) &&
+    normalizePermissionSearch(`${heading} ${item.action} ${item.description}`).includes(normalizedSearch) &&
     (!onlyIndividual || activeOverrides.some((override) => override.permission_code === item.code) || (item.code === "student.preview" && activeStudentRole)),
   )] as const).filter(([, items]) => items.length > 0);
   const adminRoleMatches = selected?.role === "cataloger" && normalizePermissionSearch("Administração delegada Herdar permissões padrão de administrador catalogador sem gerenciar permissões").includes(normalizedSearch) &&
@@ -115,7 +115,7 @@ export function StaffPermissionsAdmin({ users, definitions, initialOverrides, in
     setBusy("");
   }
 
-  async function inheritRole(form: FormData, inheritedRole: "student" | "administrator") {
+  async function inheritRole(form: FormData, inheritedRole: "administrator") {
     if (!selected) return;
     const start = toSalvadorInstant(String(form.get("starts") ?? ""), form.get("starts_all_day") === "on", false) ?? new Date().toISOString();
     const end = toSalvadorInstant(String(form.get("ends") ?? ""), form.get("ends_all_day") === "on", true);
@@ -134,7 +134,7 @@ export function StaffPermissionsAdmin({ users, definitions, initialOverrides, in
     } else {
       setRoles((current) => [...current, saved as InheritedRole]);
       setClock(Date.now());
-      setFeedback(inheritedRole === "student" ? "Visão de estudante liberada e confirmada no banco." : "Administração delegada liberada e confirmada no banco.");
+      setFeedback("Administração delegada liberada e confirmada no banco.");
       window.dispatchEvent(new Event("pronto:staff-permissions-updated"));
     }
     setBusy("");
@@ -203,16 +203,12 @@ export function StaffPermissionsAdmin({ users, definitions, initialOverrides, in
           const effective = item.code === "admin.permissions.manage" ? selected.role === "administrator" : current ? current.effect === "allow" : basic;
           return <details className="staff-permissions__item" key={`${selectedId}:${item.code}`}>
             <summary className="staff-permissions__item-summary"><span><strong>{item.action}</strong><small>{current ? "Decisão individual" : inherited ? "Visão de estudante" : activeAdminRole && item.default_roles.includes("administrator") && selected.role === "cataloger" && item.code !== "admin.permissions.manage" ? "Administração delegada" : "Perfil padrão"}</small></span><small className={`staff-permissions__effective${effective ? " is-allowed" : " is-denied"}`}><AppIcon name={effective ? "check" : "lock"} />{effective ? "Permitido" : "Bloqueado"}</small><AppIcon className="staff-permissions__item-chevron" name="arrowRight" /></summary>
-            <div className="staff-permissions__item-body"><div className="staff-permissions__activity-info"><p>{item.description}</p>{item.code === "student.preview" && <small>Liberação individual e herança da visão dão acesso à mesma demonstração. Uma decisão individual vigente prevalece.</small>}{current && <small>Decisão individual vigente até {current.valid_until ? formatDate(current.valid_until) : "revogação"}</small>}</div>
+            <div className="staff-permissions__item-body"><div className="staff-permissions__activity-info"><p>{item.description}</p>{item.code === "student.preview" && activeStudentRole && <small>Uma concessão antiga por herança também está ativa. A decisão individual prevalece e a concessão antiga pode ser revogada abaixo.</small>}{current && <small>Decisão individual vigente até {current.valid_until ? formatDate(current.valid_until) : "revogação"}</small>}</div>
             {item.delegable && <details className="staff-permissions__edit"><summary><AppIcon name="edit" />Alterar permissão</summary><form action={savePermission} className="staff-permissions__form staff-permissions__activity-form">
               <input type="hidden" name="code" value={item.code} />
               <div className="staff-permissions__decision"><label>Decisão para esta atividade<select name="effect" defaultValue="allow"><option value="allow">Permitir</option><option value="deny">Bloquear</option></select></label></div>
               <fieldset className="staff-permissions__schedule"><legend>Período da decisão</legend><p>Sem início, vale agora. Sem fim, vale até ser revogada.</p><div className="staff-permissions__schedule-fields"><PermissionPeriodField name="starts" label="Início (opcional)" /><PermissionPeriodField name="ends" label="Fim (opcional)" /></div></fieldset>
               <div className="staff-permissions__activity-actions"><button className="button button--secondary button--small" disabled={Boolean(busy)}><AppIcon name="check" />Salvar decisão</button></div>
-            </form></details>}
-            {item.code === "student.preview" && <details className="staff-permissions__edit"><summary><AppIcon name="eye" />Liberar por herança da visão</summary><form action={(form) => inheritRole(form, "student")} className="staff-permissions__form staff-permissions__activity-form">
-              <fieldset className="staff-permissions__schedule"><legend>Período da herança</legend><p>Sem início, vale agora. Sem fim, vale até ser revogada.</p><div className="staff-permissions__schedule-fields"><PermissionPeriodField name="starts" label="Início (opcional)" /><PermissionPeriodField name="ends" label="Fim (opcional)" /></div></fieldset>
-              <div className="staff-permissions__activity-actions"><button className="button button--secondary button--small" disabled={Boolean(busy)}><AppIcon name="check" />Liberar visão</button></div>
             </form></details>}
             {item.code === "student.preview" && roles.filter((role) => role.profile_id === selectedId && role.inherited_role === "student" && !role.revoked_at).map((role) => <div className="staff-permissions__grant" key={role.id}>
               <span>Herança · {new Date(role.valid_from).getTime() > clock ? "Agendada" : validAt(role, clock) ? "Ativa" : "Encerrada"} · {formatDate(role.valid_from)}{role.valid_until ? ` até ${formatDate(role.valid_until)}` : " · sem prazo final"}</span>

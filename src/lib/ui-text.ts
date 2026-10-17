@@ -404,6 +404,7 @@ const text: Record<string, Translations> = {
   "Ocorrência": { en: "Incident", es: "Incidencia", de: "Ereignis", fr: "Incident", it: "Evento" },
   "Feriado": { en: "Holiday", es: "Festivo", de: "Feiertag", fr: "Jour férié", it: "Festività" },
   "Ponto facultativo": { en: "Optional holiday", es: "Día no laborable opcional", de: "Optionaler freier Tag", fr: "Jour chômé facultatif", it: "Giorno facoltativo" },
+  "Fechamento excepcional": { en: "Exceptional closure", es: "Cierre excepcional", de: "Außerplanmäßige Schließung", fr: "Fermeture exceptionnelle", it: "Chiusura straordinaria" },
   "Bacharelado": { en: "Undergraduate", es: "Grado", de: "Bachelor", fr: "Licence", it: "Laurea triennale" },
   "TFG": { en: "Undergraduate final project", es: "Trabajo final de grado", de: "Bachelorarbeit", fr: "Projet de fin d’études", it: "Elaborato finale" },
   "TCC de Especialização": { en: "Specialization final paper", es: "Trabajo final de especialización", de: "Abschlussarbeit der Spezialisierung", fr: "Travail final de spécialisation", it: "Elaborato finale di specializzazione" },

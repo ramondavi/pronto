@@ -39,7 +39,7 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const { data: previousRequests } = await supabase.from("cataloging_requests").select("id,protocol,status,title,subtitle,submitted_at").neq("id", request.id).order("submitted_at", { ascending: false }).limit(20);
   const enrollment = Array.isArray(request.academic_enrollments) ? request.academic_enrollments[0] : request.academic_enrollments;
   const program = enrollment && (Array.isArray(enrollment.academic_programs) ? enrollment.academic_programs[0] : enrollment.academic_programs);
-  const { data: closures } = await supabase.from("library_announcements").select("type,starts_at,ends_at").eq("active", true).in("type", ["holiday", "optional_day", "recess", "strike"]);
+  const { data: closures } = await supabase.from("library_announcements").select("type,starts_at,ends_at").eq("active", true).in("type", ["holiday", "optional_day", "recess", "strike", "closure"]);
   const { data: revisionData } = await supabase.from("request_revision_rounds").select("id, round_number, returned_at, responded_at, issues:request_field_issues(field_key, field_label, justification, original_value), corrections:request_corrections(field_key, corrected_value, submitted_at)").eq("request_id", request.id).order("round_number", { ascending: false });
   const { data: nadaConsta } = await supabase.from("nada_consta_documents").select("original_name, size_bytes, status, rejection_reason, validated_at").eq("request_id", request.id).order("uploaded_at", { ascending: false }).limit(1).maybeSingle();
   const { data: homologation } = await supabase.from("cataloging_card_homologations").select("snapshot, homologated_at, public_token").eq("request_id", request.id).maybeSingle();

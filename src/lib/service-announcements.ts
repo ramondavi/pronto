@@ -8,8 +8,8 @@ type ServiceAnnouncement = {
   ends_at: string | null;
 };
 
-const oneDayTypes = new Set(["holiday", "optional_day"]);
-const closureTypes = new Set(["holiday", "optional_day", "recess", "strike"]);
+const oneDayTypes = new Set(["holiday", "optional_day", "closure"]);
+const closureTypes = new Set(["holiday", "optional_day", "recess", "strike", "closure"]);
 export const DEFAULT_LIBRARY_CLOSING_TIME = "21:00";
 
 export function libraryClosingTime(value?: string | null) {
@@ -33,7 +33,7 @@ export function formatServiceTime(value: string | Date) {
 }
 
 export function isLibraryClosureAnnouncement(announcement: ServiceAnnouncement) {
-  return closureTypes.has(announcement.type) || announcement.type === "other" && /biblioteca (sem funcionamento|fechada)/i.test(`${announcement.title ?? ""} ${announcement.message ?? ""}`);
+  return closureTypes.has(announcement.type);
 }
 
 export function isLibraryWeekend(now: string) {

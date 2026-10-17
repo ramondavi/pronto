@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { adminSections, adminTabHref, canOpenAdminTab, type AdminArea } from "@/lib/admin-navigation";
@@ -204,6 +204,7 @@ export function AdminOperations(props: {
   const [statsPeriod, setStatsPeriod] = useState({ start: "", end: "" });
   const [appliedStatsPeriod, setAppliedStatsPeriod] = useState({ start: "", end: "" });
   const [users, setUsers] = useState(props.users);
+  const [programs, setPrograms] = useState(props.programs);
   const [purge, setPurge] = useState(props.purgeDocuments);
   const [announcements, setAnnouncements] = useState(props.announcements);
   const [dailyHours, setDailyHours] = useState(props.dailyHours);
@@ -217,6 +218,11 @@ export function AdminOperations(props: {
   const [announcementSort, setAnnouncementSort] = useState<{ column: "date" | "title" | "type" | "origin" | "status"; direction: "asc" | "desc" }>({ column: "date", direction: "asc" });
   const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<number | null>(null);
+  const calendarFormRef = useRef<HTMLFormElement>(null);
+  const scrollToCalendarForm = () => window.requestAnimationFrame(() => calendarFormRef.current?.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start",
+  }));
   const activeTab = props.tab;
   const router = useRouter();
   const [userType, setUserType] = useState("all");
@@ -383,7 +389,8 @@ export function AdminOperations(props: {
     const email = String(form.get("email") ?? "")
       .trim()
       .toLowerCase();
-    await runVerified(
+    const persisted: { value: Pick<Program, "service_level_business_days" | "repository_deposit_enabled" | "coordination_magic_link_enabled" | "coordination_contacts"> | null } = { value: null };
+    const saved = await runVerified(
       `p-${program.id}`,
       () =>
         supabase.rpc("admin_configure_program", {
@@ -405,7 +412,7 @@ export function AdminOperations(props: {
         const contact = data?.coordination_contacts?.find(
           (item) => item.active,
         );
-        return (
+        const matches = (
           !error &&
           data?.service_level_business_days === sla &&
           data.repository_deposit_enabled === repository &&
@@ -415,9 +422,13 @@ export function AdminOperations(props: {
               contact && contact.name === name && contact.email === email,
             ))
         );
+        if (matches && data) persisted.value = data;
+        return matches;
       },
       "Alterações do programa salvas e confirmadas no banco de dados.",
     );
+    const savedValues = persisted.value;
+    if (saved && savedValues) setPrograms((current) => current.map((item) => item.id === program.id ? { ...item, ...savedValues } : item));
   }
   async function saveAnnouncement(form: FormData) {
     const type = String(form.get("type"));
@@ -514,9 +525,10 @@ export function AdminOperations(props: {
     const date = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     setClosingDate(date);
     const existing = eventsForDay(day)[0];
-    if (existing) { setEditingAnnouncement(existing); return; }
+    if (existing) { setEditingAnnouncement(existing); scrollToCalendarForm(); return; }
     const value = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T00:00`;
-    setEditingAnnouncement({ id: "" as string, type: "other", title: "", message: "Biblioteca sem funcionamento.", starts_at: value, ends_at: null, active: true, calendar_source: "manual" });
+    setEditingAnnouncement({ id: "" as string, type: "closure", title: "", message: "Biblioteca sem funcionamento.", starts_at: value, ends_at: null, active: true, calendar_source: "manual" });
+    scrollToCalendarForm();
   }
   async function saveTemplate(template: Template, form: FormData) {
     const label = String(form.get("label"));
@@ -669,12 +681,12 @@ export function AdminOperations(props: {
           : user.role !== "student")) &&
       (userStatus === "all" || user.status === userStatus),
   ).filter((user) => `${user.full_name} ${user.email}`.toLocaleLowerCase("pt-BR").includes(userSearch.trim().toLocaleLowerCase("pt-BR")));
-  const filteredPrograms = props.programs.filter((program) =>
+  const filteredPrograms = programs.filter((program) =>
     `${program.name} ${program.level}`.toLocaleLowerCase("pt-BR").includes(programSearch.trim().toLocaleLowerCase("pt-BR")) &&
     (programLevel === "all" || program.level === programLevel) &&
     (programGuide === "all" || program.repository_deposit_enabled === (programGuide === "enabled"))
   );
-  const programLevels = [...new Set(props.programs.map((program) => program.level))];
+  const programLevels = [...new Set(programs.map((program) => program.level))];
   const filteredLogs = props.logs.filter((log) =>
     (auditAction === "all" || log.action === auditAction) &&
     `${readableAuditAction(log.action)} ${log.action} ${log.profiles?.full_name ?? "Sistema"} ${log.entity_type} ${log.entity_id ?? ""}`.toLocaleLowerCase("pt-BR").includes(auditSearch.trim().toLocaleLowerCase("pt-BR"))
@@ -808,8 +820,8 @@ export function AdminOperations(props: {
       </section>
       <section className="panel admin-section">
         <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="settings" /></span><div><p className="eyebrow">Gestão acadêmica</p><h2>Configurações por programa</h2><p>Defina o prazo em dias úteis, o guia de autodepósito e o contato de coordenação de cada programa.</p></div></div>
-        <SectionStats items={[{ icon: "book", value: props.programs.length, label: "programas ativos" }, { icon: "calendar", value: props.programs.filter((program) => program.service_level_business_days > 0).length, label: "prazos definidos" }, { icon: "upload", value: props.programs.filter((program) => program.repository_deposit_enabled).length, label: "guias RI ativos" }, { icon: "message", value: props.programs.filter((program) => program.coordination_contacts.some((contact) => contact.active)).length, label: "coordenações com contato" }]} />
-        <div className="admin-section__subhead"><div><p className="eyebrow">Configuração</p><h3>Prazo, depósito e coordenação</h3></div><span>{filteredPrograms.length} de {props.programs.length} programas</span></div>
+        <SectionStats items={[{ icon: "book", value: programs.length, label: "programas ativos" }, { icon: "calendar", value: programs.filter((program) => program.service_level_business_days > 0).length, label: "prazos definidos" }, { icon: "upload", value: programs.filter((program) => program.repository_deposit_enabled).length, label: "guias RI ativos" }, { icon: "message", value: programs.filter((program) => program.coordination_contacts.some((contact) => contact.active)).length, label: "coordenações com contato" }]} />
+        <div className="admin-section__subhead"><div><p className="eyebrow">Configuração</p><h3>Prazo, depósito e coordenação</h3></div><span>{filteredPrograms.length} de {programs.length} programas</span></div>
         <div className="admin-programs__toolbar"><label>Buscar programa<input type="search" value={programSearch} onChange={(event) => setProgramSearch(event.target.value)} placeholder="Nome ou nível" /></label><label>Nível<select value={programLevel} onChange={(event) => setProgramLevel(event.target.value)}><option value="all">Todos os níveis</option>{programLevels.map((level) => <option value={level} key={level}>{level}</option>)}</select></label><label>Guia do RI<select value={programGuide} onChange={(event) => setProgramGuide(event.target.value)}><option value="all">Todos</option><option value="enabled">Ativo</option><option value="disabled">Desativado</option></select></label>{(programSearch || programLevel !== "all" || programGuide !== "all") && <button className="button button--secondary button--small" type="button" onClick={() => { setProgramSearch(""); setProgramLevel("all"); setProgramGuide("all"); }}>Limpar filtros</button>}</div>
         <div className="admin-list">
           {filteredPrograms.map((p) => {
@@ -819,7 +831,7 @@ export function AdminOperations(props: {
                 <summary className="admin-program__identity"><span className="admin-section__icon"><AppIcon name="book" /></span><span><strong>{p.name}</strong><small>{p.level} · SLA atual: {p.service_level_business_days ? `${p.service_level_business_days} ${p.service_level_business_days === 1 ? "dia útil" : "dias úteis"}` : "não definido"}</small></span><AppIcon className="admin-program__chevron" name="arrowRight" /></summary>
               <form
                 className="admin-row admin-row--program"
-                action={(f) => saveProgram(p, f)}
+                onSubmit={(event) => { event.preventDefault(); void saveProgram(p, new FormData(event.currentTarget)); }}
               >
                 <div className="admin-program__settings">
                 <label>
@@ -912,9 +924,11 @@ export function AdminOperations(props: {
           </div>
         </div>
         <DailyClosingControl key={closingDate} initialHours={dailyHours} selectedDate={closingDate} onSaved={setDailyHours} />
-        <div className="calendar-editor__heading"><span className="admin-section__icon"><AppIcon name={isEditingAnnouncement ? "edit" : "message"} /></span><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Normal” para comunicados sem fechamento. As ocorrências de fechamento entram no cálculo dos dias úteis.</p></div></div>
+        <div className="calendar-editor__heading"><span className="admin-section__icon"><AppIcon name={isEditingAnnouncement ? "edit" : "message"} /></span><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Fechamento excepcional” para suspensões pontuais da biblioteca que não sejam feriado, recesso ou greve. “Normal” e “Outro” são avisos sem fechamento.</p></div></div>
         <form
+          ref={calendarFormRef}
           className="admin-grid calendar-editor"
+          style={{ scrollMarginTop: 24 }}
           key={editingAnnouncement?.id || editingAnnouncement?.starts_at || "new"}
           action={saveAnnouncement}
         >
@@ -929,6 +943,7 @@ export function AdminOperations(props: {
               <option value="strike">Paralisação/greve</option>
               <option value="holiday">Feriado</option>
               <option value="optional_day">Ponto facultativo</option>
+              <option value="closure">Fechamento excepcional</option>
               <option value="other">Outro</option>
             </select>
           </label>
@@ -977,6 +992,7 @@ export function AdminOperations(props: {
               <option value="strike">Paralisação</option>
               <option value="holiday">Feriado</option>
               <option value="optional_day">Ponto facultativo</option>
+              <option value="closure">Fechamento excepcional</option>
               <option value="other">Outro</option>
             </select>
           </label>
@@ -995,7 +1011,7 @@ export function AdminOperations(props: {
         <div className="calendar-records" aria-label="Ocorrências cadastradas">
           <div className="calendar-records__header">{([["date", "Data"], ["title", "Ocorrência"], ["type", "Tipo"], ["origin", "Origem"], ["status", "Situação"]] as const).map(([column, label]) => <button key={column} type="button" aria-label={`Ordenar por ${label.toLowerCase()}`} aria-pressed={announcementSort.column === column} onClick={() => sortAnnouncements(column)}>{label}<span aria-hidden="true">{announcementSort.column === column ? announcementSort.direction === "asc" ? "↑" : "↓" : "↕"}</span></button>)}<span>Ações</span></div>
         {visibleAnnouncements.map((a) => {
-            const typeLabel = a.type === "holiday" ? "Feriado" : a.type === "optional_day" ? "Ponto facultativo" : a.type === "recess" ? "Recesso" : a.type === "strike" ? "Paralisação/greve" : a.type === "normal" ? "Aviso normal" : "Ocorrência local";
+            const typeLabel = a.type === "holiday" ? "Feriado" : a.type === "optional_day" ? "Ponto facultativo" : a.type === "recess" ? "Recesso" : a.type === "strike" ? "Paralisação/greve" : a.type === "closure" ? "Fechamento excepcional" : a.type === "normal" ? "Aviso normal" : "Ocorrência local";
             const sourceLabel = a.calendar_source === "federal_mgi" ? "Calendário federal (MGI)" : "Cadastro manual da biblioteca";
             const colorCategory = announcementColorCategory(a);
             return <article className="calendar-record" key={a.id}>
@@ -1008,7 +1024,7 @@ export function AdminOperations(props: {
                 <button
                   type="button"
                   className="button button--secondary button--small"
-                  onClick={() => setEditingAnnouncement(a)}
+                  onClick={() => { setEditingAnnouncement(a); scrollToCalendarForm(); }}
                 >
                   <AppIcon name="edit" />Editar
                 </button>

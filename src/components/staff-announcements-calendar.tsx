@@ -4,16 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "./app-icon";
 import { useInterfaceLanguage } from "./interface-language";
 import { uiText } from "@/lib/ui-text";
+import { isLibraryClosureAnnouncement } from "@/lib/service-announcements";
 
 type Announcement = { id: string; title: string; message: string; type: string; starts_at: string; ends_at: string | null };
 
-const labels: Record<string, string> = { normal: "Aviso", recess: "Recesso", strike: "Paralisação/greve", other: "Ocorrência", holiday: "Feriado", optional_day: "Ponto facultativo" };
+const labels: Record<string, string> = { normal: "Aviso", recess: "Recesso", strike: "Paralisação/greve", other: "Ocorrência", holiday: "Feriado", optional_day: "Ponto facultativo", closure: "Fechamento excepcional" };
 const dayParts = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "America/Bahia" });
 const dayKey = (value: string | Date) => { const parts = Object.fromEntries(dayParts.formatToParts(new Date(value)).map((part) => [part.type, part.value])); return `${parts.year}-${parts.month}-${parts.day}`; };
 const ongoingTypes = new Set(["recess", "strike"]);
-const closureTypes = new Set(["recess", "strike", "holiday", "optional_day"]);
 const appliesOn = (item: Announcement, date: string) => dayKey(item.starts_at) <= date && (item.ends_at ? date <= dayKey(item.ends_at) : ongoingTypes.has(item.type) || date === dayKey(item.starts_at));
-const closesLibrary = (item: Announcement) => closureTypes.has(item.type) || item.type === "other" && /biblioteca (sem funcionamento|fechada)/i.test(`${item.title} ${item.message}`);
+const closesLibrary = (item: Announcement) => isLibraryClosureAnnouncement(item);
 const isWeekend = (date: string) => [0, 6].includes(new Date(`${date}T12:00:00Z`).getUTCDay());
 
 export function StaffAnnouncementsCalendar({ announcements }: { announcements: Announcement[] }) {

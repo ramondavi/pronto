@@ -66,7 +66,7 @@ export function StudentPreviewScreens({ active, scenario, programs, announcement
   const activeRequest = ["submitted", "in_review", "changes_requested", "approved"].includes(scenario.status);
   const released = scenario.status === "approved" && scenario.nada === "approved" && scenario.homologated;
   const guideAvailable = (released || scenario.status === "completed") && scenario.id !== "guia-desativado";
-  const sla = <RequestSlaEstimate submittedAt={studentPreviewSubmittedAt} businessDays={3} closures={announcements.filter((item) => ["holiday", "optional_day", "recess", "strike"].includes(item.type))} status={scenario.status} />;
+  const sla = <RequestSlaEstimate submittedAt={studentPreviewSubmittedAt} businessDays={3} closures={announcements.filter((item) => ["holiday", "optional_day", "recess", "strike", "closure"].includes(item.type))} status={scenario.status} />;
   const pageClass = active === "inicio" ? "dashboard-main--student-overview" : active === "solicitacoes" ? "dashboard-main--narrow dashboard-main--student-request" : active === "solicitacao" || active === "correcao" || active === "autodeposito" && guideAvailable ? "dashboard-main--form" : active === "autodeposito" || active === "avaliacao" ? "dashboard-main--narrow" : "account-page";
   return <main className={`dashboard-main ${pageClass} dashboard-main--student-preview`}>
     {active === "correcao" && <Link className="back-link" href={demoHref("solicitacoes", scenario)}>← Minhas solicitações</Link>}

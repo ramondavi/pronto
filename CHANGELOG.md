@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 16 de outubro de 2026
 
+- A administração mantém os dados dos programas visíveis após salvar e permite configurar vários sem recarregar a página. O calendário ganha fechamento excepcional, rolagem até o formulário e distinção clara entre fechamento e aviso; a navegação recolhe as subseções da Administração, e a visão de estudante passa a ter uma única ação de concessão. A ativação do novo tipo de fechamento depende das migrações do banco hospedado.
 - Registrada a publicação do PR3 no domínio público, a aplicação das 11 migrações pendentes e a configuração do worker de e-mails no Supabase. O envio real e o aceite assistido continuam pendentes de verificação operacional. As instruções dos agentes foram condensadas sem alterar suas exigências para respeitar o limite de contexto do CI.
 - A recuperação de senha por e-mail voltou a funcionar após corrigir a autenticação SMTP do Supabase Auth; o link foi recebido na conta administrativa. A entrega da fila transacional ainda precisa de teste separado.
 
