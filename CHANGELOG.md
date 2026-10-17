@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- Os formulários de acesso, cadastro e recuperação ficam mais claros e consistentes no celular e no computador; o reenvio de código ganha espaço próprio e a entrada por código oferece retorno direto ao login com senha.
 - A entrada de estudantes e equipe passa a usar uma única página com seleção de perfil sem recarregar; estudantes podem usar senha ou código por e-mail, e a equipe usa senha. O código fica disponível na prévia após a configuração do modelo de e-mail.
 - A prévia alinha a ajuda contextual aos controles de acessibilidade e anima sua abertura e fechamento. A busca móvel abre FAQs, respostas e artigos; logos e datas de ajuda ficam ajustados no celular, e o estado normal da biblioteca revela seus detalhes ao tocar ou focar o rótulo.
 - A recuperação de senha funciona quando o e-mail é aberto em outro navegador, inclusive na prévia com o modelo padrão do Supabase.
