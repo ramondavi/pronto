@@ -13,7 +13,7 @@ export default async function PasswordRecoveryPage({ searchParams }: { searchPar
     <AuthShell title="Recupere sua senha" description="Informe o e-mail da sua conta. Se estiver cadastrado, enviaremos um link para criar outra senha.">
       <AuthFeedback error={error} message={message} />
       <PasswordRecoveryForm />
-      <Link className="auth-flow__back" href="/entrar"><AppIcon name="undo" />Voltar ao login</Link>
+      <Link className="auth-flow__back auth-recovery-back" href="/entrar"><AppIcon name="undo" />Voltar ao login</Link>
     </AuthShell>
   );
 }

@@ -1248,6 +1248,8 @@ body:has(.dashboard-shell) .backend-only { display: inline; }
 .auth-flow__back { display: inline-flex; align-items: center; gap: 7px; justify-self: start; width: fit-content; margin-top: 4px; font-size: .84rem; text-decoration: none; }
 .auth-flow__back svg { width: 17px; height: 17px; }
 .auth-flow__back:hover { text-decoration: underline; }
+.auth-recovery-back { display: flex; margin-top: 24px; }
+.auth-recovery-back + .back-link { display: block; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .form-stack { display: grid; gap: 19px; }
 .signup-birth-field { display: grid; gap: 7px; }
 .signup-birth-field .field-label-with-tooltip { justify-content: flex-start; }
