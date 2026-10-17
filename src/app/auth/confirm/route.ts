@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
+  const code = url.searchParams.get("code");
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) return NextResponse.redirect(new URL("/redefinir-senha", url.origin));
+  }
   if (tokenHash && type === "recovery") {
     const confirmation = new URL("/confirmar-recuperacao", url.origin);
     confirmation.searchParams.set("token_hash", tokenHash);

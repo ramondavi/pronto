@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 17 de outubro de 2026
+
+- O link padrão de recuperação de senha do Supabase também abre a definição de senha.
+
 ### 16 de outubro de 2026
 
 - A administração mantém os dados dos programas visíveis após salvar e permite configurar vários sem recarregar a página. O calendário ganha fechamento excepcional, rolagem até o formulário e distinção clara entre fechamento e aviso; a navegação recolhe as subseções da Administração, e a visão de estudante passa a ter uma única ação de concessão. A ativação do novo tipo de fechamento depende das migrações do banco hospedado.
