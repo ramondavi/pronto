@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { canChangeAuthenticatedEmail, isUfbaEmail, isValidBirthDate, normalizeEmail, normalizedSignupMetadata, validateEmailChange, validateSignupFields, type SignupErrors } from "@/domain/auth/account";
 import { validatePassword } from "@/domain/auth/password";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,16 @@ async function siteOrigin() {
     return "http://127.0.0.1:3100";
   }
   return process.env.NEXT_PUBLIC_SITE_URL ?? headerStore.get("origin") ?? "http://127.0.0.1:3100";
+}
+
+function recoveryEmailClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) throw new Error("Supabase recovery environment variables are not configured.");
+  // The email may be opened in a different browser from the one that requested it.
+  return createSupabaseClient(url, key, {
+    auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
 }
 
 export type SignupState = { errors: SignupErrors; formError: string | null };
@@ -90,8 +101,8 @@ export async function login(formData: FormData) {
 export async function requestPasswordReset(formData: FormData) {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   if (!isUfbaEmail(email)) redirect(destination("/recuperar-senha", "error", "Use seu endereço institucional @ufba.br."));
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
+  const supabase = recoveryEmailClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/recuperacao` });
   if (error) redirect(destination("/recuperar-senha", "error", "Não foi possível enviar o link agora. Aguarde um instante e tente novamente."));
   redirect(destination("/recuperar-senha", "message", "Se o endereço estiver cadastrado, enviaremos as instruções."));
 }
@@ -131,7 +142,7 @@ export async function requestAuthenticatedPasswordChange(_previousState: Passwor
     redirect(destination("/entrar", "error", "Não foi possível continuar. Entre novamente ou procure a biblioteca."));
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
+  const { error } = await recoveryEmailClient().auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/recuperacao` });
   if (error) return { status: "error", sentAt: _previousState.sentAt };
   return { status: "sent", sentAt: Date.now() };
 }
