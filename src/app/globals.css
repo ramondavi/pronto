@@ -1250,6 +1250,13 @@ body:has(.dashboard-shell) .backend-only { display: inline; }
 .auth-flow__back:hover { text-decoration: underline; }
 .auth-recovery-back { display: flex; margin-top: 24px; }
 .auth-recovery-back + .back-link { display: block; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.auth-recovery-form { display: grid; gap: 14px; }
+.auth-recovery-form__button { gap: 9px; }
+.auth-recovery-form__button svg { width: 18px; height: 18px; }
+.auth-recovery-form__button .account-page__password-link-progress { background: var(--institutional-on-dark); }
+.auth-recovery-form__button:disabled, .auth-recovery-form__button:disabled:hover { cursor: not-allowed; opacity: .8; box-shadow: none; transform: none; background: var(--text); border-color: var(--text); }
+.auth-recovery-form > .auth-field-hint { margin: 0; }
+.auth-recovery-form > .auth-feedback { margin: 0; }
 .form-stack { display: grid; gap: 19px; }
 .signup-birth-field { display: grid; gap: 7px; }
 .signup-birth-field .field-label-with-tooltip { justify-content: flex-start; }

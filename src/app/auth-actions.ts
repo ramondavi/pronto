@@ -149,13 +149,15 @@ export async function verifyStudentCode(_previousState: StudentCodeVerifyState, 
   redirect("/painel");
 }
 
-export async function requestPasswordReset(formData: FormData) {
+export type PasswordResetRequestState = { status: "idle" | "sent" | "error"; sentAt: number; email: string; message: string };
+
+export async function requestPasswordReset(_previousState: PasswordResetRequestState, formData: FormData): Promise<PasswordResetRequestState> {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
-  if (!isUfbaEmail(email)) redirect(destination("/recuperar-senha", "error", "Use seu endereço institucional @ufba.br."));
+  if (!isUfbaEmail(email)) return { status: "error", sentAt: 0, email, message: "Use seu endereço institucional @ufba.br." };
   const supabase = recoveryEmailClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/recuperacao` });
-  if (error) redirect(destination("/recuperar-senha", "error", "Não foi possível enviar o link agora. Aguarde um instante e tente novamente."));
-  redirect(destination("/recuperar-senha", "message", "Se o endereço estiver cadastrado, enviaremos as instruções."));
+  if (error) return { status: "error", sentAt: 0, email, message: "Não foi possível enviar o link agora. Aguarde um instante e tente novamente." };
+  return { status: "sent", sentAt: Date.now(), email, message: "Se o endereço estiver cadastrado, enviaremos as instruções." };
 }
 
 export async function confirmPasswordRecovery(formData: FormData) {
