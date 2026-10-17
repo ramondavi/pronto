@@ -1245,7 +1245,11 @@ body:has(.dashboard-shell) .backend-only { display: inline; }
 .auth-code-input { font-size: 1.15rem; font-weight: 700; letter-spacing: .12em; }
 .auth-resend { display: grid; gap: 10px; margin-top: 2px; padding-top: 22px; border-top: 1px solid var(--line); }
 .auth-resend p { margin: 0; color: var(--text-muted); font-size: .84rem; }
-.auth-flow__back { display: inline-flex; align-items: center; gap: 7px; justify-self: start; width: fit-content; margin-top: 4px; font-size: .84rem; text-decoration: none; }
+.auth-code-resend__button { gap: 9px; }
+.auth-code-resend__button svg { width: 18px; height: 18px; }
+.auth-code-resend__button:disabled, .auth-code-resend__button:disabled:hover { cursor: not-allowed; opacity: .8; box-shadow: none; transform: none; background: transparent; color: var(--text); }
+.auth-flow__links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.auth-flow__back { display: inline-flex; align-items: center; gap: 7px; justify-self: start; width: fit-content; margin-top: 4px; padding: 0; border: 0; background: transparent; color: var(--institutional); font: inherit; font-size: .84rem; font-weight: 720; text-decoration: none; cursor: pointer; }
 .auth-flow__back svg { width: 17px; height: 17px; }
 .auth-flow__back:hover { text-decoration: underline; }
 .auth-recovery-back { display: flex; margin-top: 24px; }
