@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   return (
-    <AuthShell title="Entre na sua conta" description="Acompanhe sua solicitação e veja sempre qual é a próxima etapa.">
+    <AuthShell title="Acesso do estudante" description="Acompanhe sua solicitação e veja sempre qual é a próxima etapa.">
       <AuthFeedback error={error} message={message} />
       <form className="form-stack" action={login}>
         {next === "/painel/solicitacao/corrigir" && <input type="hidden" name="next" value={next} />}
@@ -26,7 +26,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </div>
         <button className="button button--primary button--full" type="submit">{t("Entrar")}</button>
       </form>
+      {process.env.STUDENT_EMAIL_OTP_ENABLED === "true" && <p className="auth-card__footer">Prefere entrar sem senha? <Link href="/entrar/codigo">Receber código por e-mail</Link></p>}
       <p className="auth-card__footer">{t("Ainda não tem conta?")} <Link href="/cadastro">{t("Criar conta")}</Link></p>
+      <p className="auth-card__footer">Trabalha na biblioteca? <Link href="/entrar/equipe">Acesso da biblioteca</Link></p>
     </AuthShell>
   );
 }

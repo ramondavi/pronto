@@ -76,11 +76,12 @@ export async function updateBirthDate(formData: FormData) {
   redirect(destination("/painel/conta", "message", "Data de nascimento salva."));
 }
 
-export async function login(formData: FormData) {
+async function loginWithPassword(formData: FormData, audience: "student" | "staff") {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
-  const next = formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
-  const loginError = (message: string) => `${destination("/entrar", "error", message)}${next === "/painel" ? "" : `&next=${encodeURIComponent(next)}`}`;
+  const next = audience === "student" && formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
+  const path = audience === "student" ? "/entrar" : "/entrar/equipe";
+  const loginError = (message: string) => `${destination(path, "error", message)}${next === "/painel" ? "" : `&next=${encodeURIComponent(next)}`}`;
   if (!isUfbaEmail(email) || !password) redirect(loginError("Informe e-mail institucional e senha."));
 
   const supabase = await createClient();
@@ -89,13 +90,58 @@ export async function login(formData: FormData) {
   if (error?.status && error.status >= 500) redirect(loginError("O serviço de autenticação está temporariamente indisponível. Tente novamente em instantes."));
   if (error || !data.user) redirect(loginError("E-mail ou senha inválidos, ou e-mail ainda não confirmado."));
 
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("status").eq("id", data.user.id).single();
-  if (profileError) redirect(loginError("Não foi possível conferir sua conta agora. Tente novamente em instantes."));
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("status, role").eq("id", data.user.id).single();
+  if (profileError) {
+    await supabase.auth.signOut();
+    redirect(loginError("Não foi possível conferir sua conta agora. Tente novamente em instantes."));
+  }
   if (!profile || profile.status !== "active") {
     await supabase.auth.signOut();
-    redirect(destination("/entrar", "error", "Esta conta não está ativa. Procure a biblioteca."));
+    redirect(loginError("Esta conta não está ativa. Procure a biblioteca."));
+  }
+  if ((audience === "student" && profile.role !== "student") || (audience === "staff" && profile.role === "student")) {
+    await supabase.auth.signOut();
+    redirect(loginError(audience === "student" ? "Esta é uma conta da biblioteca. Use o acesso da equipe." : "Esta é uma conta de estudante. Use o acesso de estudantes."));
   }
   redirect(next);
+}
+
+export async function login(formData: FormData) {
+  return loginWithPassword(formData, "student");
+}
+
+export async function loginStaff(formData: FormData) {
+  return loginWithPassword(formData, "staff");
+}
+
+export type StudentCodeRequestState = { status: "idle" | "sent" | "error"; email: string; message: string };
+export type StudentCodeVerifyState = { error: string };
+
+export async function requestStudentCode(_previousState: StudentCodeRequestState, formData: FormData): Promise<StudentCodeRequestState> {
+  if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return { status: "error", email: "", message: "O acesso por código ainda não está disponível." };
+  const email = normalizeEmail(String(formData.get("email") ?? ""));
+  if (!isUfbaEmail(email)) return { status: "error", email, message: "Use seu endereço institucional @ufba.br." };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error?.status === 429) return { status: "error", email, message: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
+  if (error?.status && error.status >= 500) return { status: "error", email, message: "Não foi possível enviar o código agora. Tente novamente em instantes." };
+  return { status: "sent", email, message: "Se esta for uma conta estudantil cadastrada, enviaremos um código para esse e-mail." };
+}
+
+export async function verifyStudentCode(_previousState: StudentCodeVerifyState, formData: FormData): Promise<StudentCodeVerifyState> {
+  if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return { error: "O acesso por código ainda não está disponível." };
+  const email = normalizeEmail(String(formData.get("email") ?? ""));
+  const token = String(formData.get("code") ?? "").trim();
+  if (!isUfbaEmail(email) || !/^\d{6}$/.test(token)) return { error: "Informe o código de seis dígitos recebido por e-mail." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+  if (error || !data.user) return { error: "Código inválido ou expirado. Confira o e-mail ou solicite outro código." };
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role, status").eq("id", data.user.id).single();
+  if (profileError || !profile || profile.role !== "student" || profile.status !== "active") {
+    await supabase.auth.signOut();
+    return { error: "Este acesso é exclusivo para estudantes com conta ativa." };
+  }
+  redirect("/painel");
 }
 
 export async function requestPasswordReset(formData: FormData) {
