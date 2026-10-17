@@ -80,8 +80,13 @@ async function loginWithPassword(formData: FormData, audience: "student" | "staf
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
   const next = audience === "student" && formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
-  const path = audience === "student" ? "/entrar" : "/entrar/equipe";
-  const loginError = (message: string) => `${destination(path, "error", message)}${next === "/painel" ? "" : `&next=${encodeURIComponent(next)}`}`;
+  const loginError = (message: string) => {
+    const params = new URLSearchParams();
+    if (audience === "staff") params.set("perfil", "equipe");
+    params.set("error", message);
+    if (next !== "/painel") params.set("next", next);
+    return `/entrar?${params}`;
+  };
   if (!isUfbaEmail(email) || !password) redirect(loginError("Informe e-mail institucional e senha."));
 
   const supabase = await createClient();

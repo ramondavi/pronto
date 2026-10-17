@@ -1228,6 +1228,10 @@ body:has(.dashboard-shell) .backend-only { display: inline; }
 .auth-card { position: relative; z-index: 1; width: min(560px, 100%); padding: 44px; border-radius: var(--radius); background: var(--surface-raised); border: 1px solid var(--line); box-shadow: var(--shadow); }
 .auth-card h1 { font-size: clamp(2.8rem, 8vw, 4.6rem); }
 .auth-card__description { margin: 18px 0 30px; color: var(--text-muted); }
+.login-role-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 26px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--field); }
+.login-role-switch button { min-height: 48px; padding: 8px 10px; border: 0; border-radius: calc(var(--radius) - 4px); background: transparent; color: var(--text-muted); font: inherit; font-size: .84rem; font-weight: 750; line-height: 1.25; cursor: pointer; }
+.login-role-switch button[aria-pressed="true"] { background: var(--surface-raised); color: var(--institutional); box-shadow: 0 1px 5px rgba(0, 0, 0, .12); }
+.login-role-switch button:focus-visible { outline: 2px solid var(--institutional); outline-offset: 2px; }
 .form-stack { display: grid; gap: 19px; }
 .signup-birth-field { display: grid; gap: 7px; }
 .signup-birth-field .field-label-with-tooltip { justify-content: flex-start; }
