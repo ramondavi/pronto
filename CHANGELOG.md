@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- A prévia alinha a ajuda contextual aos controles de acessibilidade e anima sua abertura e fechamento. A busca móvel abre FAQs, respostas e artigos; logos e datas de ajuda ficam ajustados no celular, e o estado normal da biblioteca revela seus detalhes ao tocar ou focar o rótulo.
 - A recuperação de senha funciona quando o e-mail é aberto em outro navegador, inclusive na prévia com o modelo padrão do Supabase.
 - O link padrão de recuperação de senha do Supabase também abre a definição de senha.
 
