@@ -15,7 +15,7 @@ export function StudentCodeForm() {
     <p className="auth-feedback" role="status">{request.message}</p>
     <form className="form-stack" action={confirmCode}>
       <input type="hidden" name="email" value={request.email} />
-      <label>Código de seis dígitos<input name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required autoFocus placeholder="000000" /></label>
+      <label>Código recebido por e-mail<input name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,8}" maxLength={8} required autoFocus placeholder="Código numérico" /></label>
       {verification.error && <p className="auth-feedback auth-feedback--error" role="alert">{verification.error}</p>}
       <button className="button button--primary button--full" type="submit" disabled={confirming}>{confirming ? "Conferindo…" : "Confirmar código"}</button>
     </form>

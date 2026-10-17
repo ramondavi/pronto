@@ -132,7 +132,7 @@ export async function verifyStudentCode(_previousState: StudentCodeVerifyState, 
   if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return { error: "O acesso por código ainda não está disponível." };
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const token = String(formData.get("code") ?? "").trim();
-  if (!isUfbaEmail(email) || !/^\d{6}$/.test(token)) return { error: "Informe o código de seis dígitos recebido por e-mail." };
+  if (!isUfbaEmail(email) || !/^\d{6,8}$/.test(token)) return { error: "Informe o código numérico recebido por e-mail." };
   const supabase = await createClient();
   const { data, error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
   if (error || !data.user) return { error: "Código inválido ou expirado. Confira o e-mail ou solicite outro código." };
