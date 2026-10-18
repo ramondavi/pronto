@@ -2327,6 +2327,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .keyword-pair { position: relative; align-items: start; padding: 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
 .keyword-pair label { display: grid; gap: 6px; }
 .keyword-pair label small { color: var(--text-muted); font-size: .7rem; line-height: 1.35; }
+.keyword-pair__mobile-label { display: none; }
 .keyword-pair > .text-button { grid-column: 1 / -1; justify-self: end; }
 .is-review-target { animation: review-highlight 2.2s ease-out; border-radius: var(--radius-sm); outline: 3px solid color-mix(in srgb, var(--gold) 75%, transparent); outline-offset: 5px; }
 @keyframes review-highlight { 0%, 65% { background-color: color-mix(in srgb, var(--gold) 18%, var(--surface)); } 100% { background-color: transparent; } }
@@ -6461,4 +6462,46 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .feedback-admin__stats { grid-template-columns: minmax(0, 1fr); }
   .feedback-admin :is(.feedback-admin__campaign, .feedback-admin__export, .feedback-admin__summary, .feedback-admin__responses) { min-width: 0; overflow-wrap: anywhere; }
   .feedback-admin__export-actions .button { flex: 1 1 100%; }
+}
+
+/* Submissão: cada etapa mantém a leitura e os controles dentro da tela no celular. */
+@media (max-width: 700px) {
+  .dashboard-main--form .request-form, .request-form .form-section,
+  .request-form .form-subsection, .request-form .form-subsection__fields,
+  .request-form .form-row, .request-form .dynamic-fields,
+  .request-form .dynamic-field, .request-form .keyword-pairs,
+  .request-form .review-panel { min-width: 0; max-width: 100%; }
+  .request-form :is(input:not([type="checkbox"]), select, textarea) { box-sizing: border-box; min-width: 0; max-width: 100%; width: 100%; }
+  .request-form .form-section { gap: 20px; padding: 22px 18px; }
+  .request-form .form-subsection { gap: 16px; padding: 18px; }
+  .request-form .form-subsection__fields { gap: 16px; }
+  .request-form .form-row { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .request-form .special-cases { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .request-form .special-cases > span { grid-column: 1; }
+  .request-form .review-panel dl > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .request-form .review-pending-list { grid-template-columns: minmax(0, 1fr); }
+  .request-form .request-author-input:has(.request-author-hint) input { padding-right: 12px; }
+  .request-form .request-author-hint { position: static; max-width: 100%; margin-top: 8px; transform: none; }
+  .student-form-toolbar { align-items: stretch; }
+  .student-form-toolbar > div { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; gap: 9px; }
+  .student-form-toolbar button { min-width: 0; width: 100%; min-height: 46px; justify-content: center; text-align: center; }
+  .student-form-toolbar button > span { min-width: 0; text-align: center; }
+  .student-form-toolbar button small { max-width: none; }
+}
+@media (max-width: 560px) {
+  .request-form .form-section { padding: 18px 14px; }
+  .request-form .form-subsection { padding: 15px 13px; }
+  .request-form .field-help, .request-form .form-section__intro { padding: 11px 12px; }
+  .request-form .dynamic-field--draggable { grid-template-columns: 30px minmax(0, 1fr); align-items: start; gap: 9px; }
+  .request-form .dynamic-field--draggable > label { min-width: 0; }
+  .request-form .dynamic-field--draggable > .text-button--remove { grid-column: 2; justify-self: start; min-height: 36px; }
+  .request-form .keyword-pairs { overflow: visible; }
+  .request-form .keyword-pairs__labels { display: none; }
+  .request-form .keyword-pairs .keyword-pair { grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 13px; padding: 14px; }
+  .request-form .keyword-pair__mobile-label { display: block; color: var(--text); font-size: .8rem; font-weight: 800; }
+  .request-form .keyword-pair label { min-width: 0; }
+  .request-form .declarations { padding: 15px 13px; }
+  .request-form .declarations .check { align-items: start; line-height: 1.5; }
+  .request-form .declarations .check input { margin-top: 3px; }
+  .request-form .public-link-guidance__guide { align-items: flex-start; overflow-wrap: anywhere; }
 }

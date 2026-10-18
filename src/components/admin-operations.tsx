@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { adminSections, adminTabHref, canOpenAdminTab, type AdminArea } from "@/lib/admin-navigation";
@@ -25,6 +25,7 @@ type User = {
   student_profiles: { birth_date: string | null }[];
 };
 type StaffProfile = { professional_name: string; crb: string };
+let pendingAdminTabScroll: { area: AdminArea; target: string; left: number } | null = null;
 function firstStaffProfile(value: User["staff_profiles"]): StaffProfile | null {
   return Array.isArray(value) ? value[0] ?? null : value;
 }
@@ -695,10 +696,10 @@ export function AdminOperations(props: {
   );
   const auditActions = [...new Set(props.logs.map((log) => log.action))].sort((a, b) => readableAuditAction(a).localeCompare(readableAuditAction(b), "pt-BR"));
   const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => canOpenAdminTab(tab.id, props.grantedPermissions));
-  useEffect(() => {
+  useLayoutEffect(() => {
     const tabs = adminTabsRef.current;
     if (!tabs) return;
-    const centerSelected = () => {
+    const centerSelected = (behavior: ScrollBehavior) => {
       if (!window.matchMedia("(max-width: 560px)").matches) return;
       const buttons = tabs.querySelectorAll<HTMLElement>('[role="tab"]');
       const first = buttons[0];
@@ -712,26 +713,35 @@ export function AdminOperations(props: {
       const selectedBounds = selected.getBoundingClientRect();
       const centered = tabs.scrollLeft + selectedBounds.left + selectedBounds.width / 2 - tabsBounds.left - tabsBounds.width / 2;
       const left = Math.max(0, Math.min(centered, tabs.scrollWidth - tabs.clientWidth));
-      if (Math.abs(left - tabs.scrollLeft) > 2) tabs.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      if (Math.abs(left - tabs.scrollLeft) > 2) tabs.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : behavior });
     };
     const updateOverflow = () => {
       const start = tabs.scrollLeft > 2;
       const end = tabs.scrollLeft < tabs.scrollWidth - tabs.clientWidth - 2;
       setTabOverflow((current) => current.start === start && current.end === end ? current : { start, end });
     };
-    const resizeObserver = new ResizeObserver(() => { centerSelected(); updateOverflow(); });
+    const transition = pendingAdminTabScroll;
+    const continuing = transition?.area === props.area && transition.target === activeTab;
+    if (continuing) tabs.scrollLeft = transition.left;
+    pendingAdminTabScroll = null;
+    const resizeObserver = new ResizeObserver(updateOverflow);
     resizeObserver.observe(tabs);
     tabs.addEventListener("scroll", updateOverflow, { passive: true });
     const frame = window.requestAnimationFrame(() => {
-      centerSelected();
+      centerSelected(continuing ? "smooth" : "instant");
       updateOverflow();
     });
     return () => { window.cancelAnimationFrame(frame); resizeObserver.disconnect(); tabs.removeEventListener("scroll", updateOverflow); };
   }, [activeTab, props.area, adminTabs.length]);
+  const navigateAdminTab = (id: string) => {
+    if (id === activeTab) return;
+    pendingAdminTabScroll = { area: props.area, target: id, left: adminTabsRef.current?.scrollLeft ?? 0 };
+    router.push(adminTabHref(props.area, id), { scroll: false });
+  };
   const selectAdjacentAdminTab = (direction: -1 | 1) => {
     const index = adminTabs.findIndex((tab) => tab.id === activeTab);
     const next = adminTabs[index + direction];
-    if (next) router.push(adminTabHref(props.area, next.id), { scroll: false });
+    if (next) navigateAdminTab(next.id);
   };
   const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage" };
   const readOnly = activeTab !== "users" && Boolean(managePermission[activeTab] && !props.grantedPermissions.includes(managePermission[activeTab]) && !(activeTab === "faq" && props.grantedPermissions.includes("admin.faq.manage")));
@@ -758,7 +768,7 @@ export function AdminOperations(props: {
               role="tab"
               aria-selected={activeTab === id}
               className={activeTab === id ? "is-active" : ""}
-              onClick={() => { if (id !== activeTab) router.push(adminTabHref(props.area, id), { scroll: false }); }}
+              onClick={() => navigateAdminTab(id)}
               key={id}
             >
               <AppIcon name={icon} />
