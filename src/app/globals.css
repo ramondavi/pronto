@@ -2175,6 +2175,29 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .dashboard-main--student-request .student-request-history li > div:last-child { justify-items: end; color: var(--text-muted); font-size: .76rem; white-space: nowrap; }
 .dashboard-main--student-request .student-request-history li > div:first-child span { color: var(--text-muted); font-size: .82rem; overflow-wrap: anywhere; }
 .dashboard-main--student-request .student-request-history__status { color: var(--text); font-weight: 700; }
+.dashboard-main--student-request .student-request-history__completed { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.student-request-history__completed-title { display: flex; align-items: flex-start; gap: 12px; }
+.student-request-history__completed-title > svg { flex: 0 0 32px; width: 32px; height: 32px; padding: 8px; border-radius: 50%; background: color-mix(in srgb, var(--success) 13%, var(--surface-raised)); color: var(--success); }
+.student-request-history__completed-title > div { display: grid; gap: 4px; min-width: 0; }
+.student-request-history__completed-title strong { font-size: .95rem; line-height: 1.35; overflow-wrap: anywhere; }
+.student-request-history__completed-title span { color: var(--text-muted); font-size: .78rem; }
+.student-request-history__completed dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 20px; margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
+.student-request-history__completed dl > div { display: grid; gap: 4px; min-width: 0; }
+.student-request-history__completed dt { color: var(--text-muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
+.student-request-history__completed dd { margin: 0; font-size: .83rem; overflow-wrap: anywhere; }
+.student-completed-stage__note { margin: 0 0 12px; color: var(--text-muted); font-size: .85rem; line-height: 1.5; }
+.student-completed-stage__content > .button { width: fit-content; }
+.dashboard-main--student-request .publication-record { display: grid; gap: 17px; border-left: 4px solid var(--success); }
+.publication-record__heading { display: flex; align-items: flex-start; gap: 13px; }
+.publication-record__heading :is(p, h2) { margin: 0; }
+.publication-record__heading h2 { margin: 4px 0 6px; font-size: 1.24rem; }
+.publication-record__heading p:last-child { color: var(--text-muted); font-size: .84rem; line-height: 1.5; }
+.publication-record__icon { display: grid; flex: 0 0 38px; place-items: center; width: 38px; height: 38px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--success) 12%, var(--surface)); color: var(--success); }
+.publication-record__icon svg { width: 19px; height: 19px; }
+.publication-record__link { justify-self: start; max-width: 100%; white-space: normal; text-align: left; }
+.publication-record__preview { margin: 0; color: var(--text-muted); font-size: .83rem; }
+.publication-record__retention { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding-top: 13px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: .78rem; line-height: 1.5; }
+.publication-record__retention svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); }
 @media (max-width: 860px) { .dashboard-main--student-overview .dashboard-grid { grid-template-columns: 1fr; } .dashboard-main--student-overview .calendar-panel { height: auto; } }
 @media (max-width: 620px) {
   .dashboard-main--student-overview, .dashboard-main--student-request { width: min(100% - 32px, 680px); padding-block: 28px 64px; }
@@ -2185,6 +2208,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
   .dashboard-main--student-overview .student-request-shortcut__action, .dashboard-main--student-request .student-request-shortcut__action { padding-inline: 16px; }
   .dashboard-main--student-request .student-request-history li { flex-direction: column; gap: 8px; }
   .dashboard-main--student-request .student-request-history li > div:last-child { justify-items: start; }
+  .student-request-history__completed dl { grid-template-columns: 1fr; }
   .dashboard-main--student-request .student-progress-panel { align-items: stretch; flex-direction: column; }
   .dashboard-main--student-request .student-progress-panel .button { align-self: start; }
   .dashboard-main--student-request .request-summary__details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
