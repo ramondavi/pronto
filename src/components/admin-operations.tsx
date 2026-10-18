@@ -759,8 +759,8 @@ export function AdminOperations(props: {
             </button>
           ))}
         </div>
-        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--start" type="button" aria-label="Mostrar guias anteriores" title="Mostrar guias anteriores" onClick={() => scrollAdminTabs(-1)}><AppIcon name="arrowRight" /></button>
-        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--end" type="button" aria-label="Mostrar mais guias" title="Mostrar mais guias" onClick={() => scrollAdminTabs(1)}><AppIcon name="arrowRight" /></button>
+        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--start" type="button" aria-label="Mostrar guias anteriores" title="Mostrar guias anteriores" disabled={!tabOverflow.start} onClick={() => scrollAdminTabs(-1)}><AppIcon name="arrowRight" /></button>
+        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--end" type="button" aria-label="Mostrar mais guias" title="Mostrar mais guias" disabled={!tabOverflow.end} onClick={() => scrollAdminTabs(1)}><AppIcon name="arrowRight" /></button>
       </div>
       {readOnly && <p className="auth-feedback" role="status">Acesso de consulta: as alterações desta área exigem permissão específica.</p>}
       <section className="panel admin-section">

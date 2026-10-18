@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- As setas das guias administrativas permanecem no lugar ao alcançar a primeira ou a última guia, ficando discretamente inativas sem alterar a largura da lista.
 - O letreiro dos títulos longos do painel móvel começa a percorrer o texto assim que a tela abre, com velocidade mais adequada e sem pausa inicial.
 - A barra lateral aproveita todo o espaço acima da visão estudantil para mostrar os últimos itens; na versão contraída, o fundo dos ícones mantém os quatro cantos arredondados.
 - O menu flutuante da demonstração estudantil fica centralizado na área real do painel em todas as telas, inclusive Minhas solicitações, mesmo quando a janela é mais larga que o conteúdo.
