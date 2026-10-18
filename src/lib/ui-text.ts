@@ -84,6 +84,7 @@ const text: Record<string, Translations> = {
   "Pelo menos uma letra maiúscula": { en: "At least one uppercase letter", es: "Al menos una letra mayúscula", de: "Mindestens ein Großbuchstabe", fr: "Au moins une lettre majuscule", it: "Almeno una lettera maiuscola" },
   "Pelo menos um número": { en: "At least one number", es: "Al menos un número", de: "Mindestens eine Zahl", fr: "Au moins un chiffre", it: "Almeno un numero" },
   "Pelo menos um caractere especial (ex.: !, @, #)": { en: "At least one special character (e.g. !, @, #)", es: "Al menos un carácter especial (p. ej., !, @, #)", de: "Mindestens ein Sonderzeichen (z. B. !, @, #)", fr: "Au moins un caractère spécial (p. ex. !, @, #)", it: "Almeno un carattere speciale (ad es. !, @, #)" },
+  "Um caractere especial (!, @, #)": { en: "One special character (!, @, #)", es: "Un carácter especial (!, @, #)", de: "Ein Sonderzeichen (!, @, #)", fr: "Un caractère spécial (!, @, #)", it: "Un carattere speciale (!, @, #)" },
   "As senhas coincidem": { en: "Passwords match", es: "Las contraseñas coinciden", de: "Passwörter stimmen überein", fr: "Les mots de passe correspondent", it: "Le password corrispondono" },
   "Nova senha": { en: "New password", es: "Nueva contraseña", de: "Neues Passwort", fr: "Nouveau mot de passe", it: "Nuova password" },
   "Confirmar nova senha": { en: "Confirm new password", es: "Confirmar nueva contraseña", de: "Neues Passwort bestätigen", fr: "Confirmer le nouveau mot de passe", it: "Conferma nuova password" },

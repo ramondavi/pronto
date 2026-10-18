@@ -143,7 +143,7 @@ export function SiteFooter({ version }: { version: string }) {
           <a href="https://sibi.ufba.br" target="_blank" rel="noreferrer"><Image src="/logo-sibi.png" alt="Sistema Universitário de Bibliotecas da UFBA" width={2876} height={850} /></a>
           <a href="https://arquitetura.ufba.br" target="_blank" rel="noreferrer"><Image src="/logo-faufba.png" alt="Faculdade de Arquitetura da UFBA" width={230} height={205} /></a>
         </div>
-        <p className={styles.credit}>{t[4]} <a href="https://openai.com/codex/" target="_blank" rel="noreferrer"><em>vibe coding</em></a> {t[5]} <span aria-label={t[6]} role="img">♥</span>.</p>
+        <p className={styles.credit}><span className={styles.creditLead}>{t[4]}</span> <a href="https://openai.com/codex/" target="_blank" rel="noreferrer"><em>vibe coding</em></a> {t[5]} <span aria-label={t[6]} role="img">♥</span>.</p>
         <div className={styles.meta}>
           <span>2026 · v{version} · Beta</span>
           <a href="https://github.com/ramondavi/pronto" target="_blank" rel="noreferrer"><AppIcon name="github" />{t[7]} ↗</a>

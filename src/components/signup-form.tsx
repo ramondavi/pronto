@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { signup, type SignupState } from "@/app/auth-actions";
-import { type SignupField } from "@/domain/auth/account";
+import { isUfbaEmail, type SignupField } from "@/domain/auth/account";
 import { PRIVACY_NOTICE_VERSION } from "@/domain/privacy/notice";
 import { formatCpfInput } from "@/domain/students/cpf";
 import { AuthFeedback } from "./auth-feedback";
@@ -22,9 +22,14 @@ export function SignupForm() {
   const [cpf, setCpf] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [email, setEmail] = useState("");
+  const [emailBlurred, setEmailBlurred] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const errorFor = (field: SignupField) => clearedErrors.has(field) ? undefined : state.errors[field];
   const clearError = (field: SignupField) => setClearedErrors((current) => new Set(current).add(field));
+  const emailParts = email.trim().split("@");
+  const typedDomain = emailParts[1];
+  const invalidTypedDomain = emailParts.length > 2 || /\s/.test(email) || (typedDomain !== undefined && typedDomain.length > 0 && !"ufba.br".startsWith(typedDomain.toLowerCase()));
+  const emailError = !isUfbaEmail(email) && (emailBlurred || invalidTypedDomain) ? "Use seu endereço institucional @ufba.br." : errorFor("email");
 
   useEffect(() => {
     if (Object.keys(state.errors).length > 0) formRef.current?.querySelector<HTMLInputElement>("[aria-invalid='true']")?.focus();
@@ -32,7 +37,7 @@ export function SignupForm() {
 
   return <>
     <AuthFeedback error={state.formError ?? undefined} />
-    <form ref={formRef} className="form-stack auth-form" action={formAction} noValidate onSubmit={() => setClearedErrors(new Set())}>
+    <form ref={formRef} className="form-stack auth-form" action={formAction} noValidate onSubmit={(event) => { if (!isUfbaEmail(email)) { event.preventDefault(); setEmailBlurred(true); formRef.current?.querySelector<HTMLInputElement>('input[name="email"]')?.focus(); return; } setClearedErrors(new Set()); }}>
       <h2 className="auth-form__section-title">Seus dados</h2>
       <label>{t("Nome completo")}<input name="name" autoComplete="name" value={name} onChange={(event) => { setName(event.target.value); clearError("name"); }} required aria-invalid={Boolean(errorFor("name"))} aria-describedby={errorFor("name") ? "signup-name-error" : undefined} />{errorFor("name") && <span id="signup-name-error" className="signup-field-error" role="alert">{t(errorFor("name")!)}</span>}</label>
       <div className="auth-form__pair"><label>CPF<input name="cpf" inputMode="numeric" autoComplete="off" placeholder="000.000.000-00" maxLength={14} value={cpf} onChange={(event) => { setCpf(formatCpfInput(event.target.value)); clearError("cpf"); }} required aria-invalid={Boolean(errorFor("cpf"))} aria-describedby={errorFor("cpf") ? "signup-cpf-error" : undefined} />{errorFor("cpf") && <span id="signup-cpf-error" className="signup-field-error" role="alert">{t(errorFor("cpf")!)}</span>}</label>
@@ -45,7 +50,7 @@ export function SignupForm() {
         {errorFor("birthDate") && <span id="signup-birth-date-error" className="signup-field-error" role="alert">{t(errorFor("birthDate")!)}</span>}
       </div></div>
       <h2 className="auth-form__section-title">Acesso à conta</h2>
-      <label>{t("E-mail institucional")}<InstitutionalEmailInput value={email} onValueChange={(nextValue) => { setEmail(nextValue); clearError("email"); }} aria-invalid={Boolean(errorFor("email"))} aria-describedby={errorFor("email") ? "signup-email-error" : undefined} />{errorFor("email") && <span id="signup-email-error" className="signup-field-error" role="alert">{t(errorFor("email")!)}</span>}</label>
+      <label>{t("E-mail institucional")}<InstitutionalEmailInput value={email} completeDomain={false} onBlur={() => setEmailBlurred(true)} onValueChange={(nextValue) => { setEmail(nextValue); clearError("email"); }} aria-invalid={Boolean(emailError)} aria-describedby={emailError ? "signup-email-error" : undefined} />{emailError && <span id="signup-email-error" className="signup-field-error" role="alert">{t(emailError)}</span>}</label>
       <PasswordRequirements errors={{ password: errorFor("password"), passwordConfirmation: errorFor("passwordConfirmation") }} onFieldChange={clearError} />
       <div><label className="check"><input type="checkbox" name="privacyAccepted" checked={privacyAccepted} onChange={(event) => { setPrivacyAccepted(event.target.checked); clearError("privacyAccepted"); }} required aria-invalid={Boolean(errorFor("privacyAccepted"))} aria-describedby={errorFor("privacyAccepted") ? "signup-privacy-error" : undefined} /> <span>{t("Li e estou ciente da")} <Link href="/politica-de-privacidade" target="_blank">{t("Política de Privacidade")} v{PRIVACY_NOTICE_VERSION}</Link>.</span></label>{errorFor("privacyAccepted") && <span id="signup-privacy-error" className="signup-field-error" role="alert">{t(errorFor("privacyAccepted")!)}</span>}</div>
       <button className="button button--primary button--full" type="submit" disabled={pending}>{t("Criar conta")}</button>

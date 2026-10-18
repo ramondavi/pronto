@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- O cadastro avisa sobre domínio de e-mail inválido durante o preenchimento sem completar o endereço; em celulares, requisitos de senha, breadcrumbs e rodapé ganham layout mais adequado.
 - O logo da página inicial ganha mais destaque no cabeçalho do celular sem ampliar a largura total do cabeçalho.
 - A página inicial organiza botões, cartões de funcionamento, texto principal e logo para leitura e alinhamento em telas pequenas.
 - Em telas pequenas, o acesso ao painel no cabeçalho público mostra apenas o avatar, mantendo o destino e o menu da conta.

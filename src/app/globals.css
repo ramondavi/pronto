@@ -1286,6 +1286,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .form-stack input[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
 .signup-field-error { display: block; color: var(--danger); font-size: .78rem; font-weight: 650; line-height: 1.4; }
 .password-requirements { display: grid; gap: 5px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: color-mix(in srgb, var(--institutional) 5%, var(--surface-raised)); font-size: .8rem; }
+.password-requirements__special-short { display: none; }
 .password-requirements strong { margin-bottom: 2px; }
 .password-requirements p { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--text-muted); }
 .password-requirements p.is-met { color: var(--institutional); font-weight: 750; }
@@ -1324,6 +1325,8 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 }
 
 @media (max-width: 560px) {
+  .password-requirements__special-long { display: none; }
+  .password-requirements__special-short { display: inline; white-space: nowrap; }
   .form-navigation--first-step { grid-template-columns: 1fr; }
   .form-navigation--first-step .draft-status, .form-navigation--first-step > .button { grid-column: 1; }
   .form-navigation--first-step .draft-status { grid-row: 1; }
@@ -6122,6 +6125,19 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .site-header__account .site-header__access-greeting,
   .site-header__account--touch .site-header__access > span:last-child { display: none; }
 }
+@media (max-width: 650px) {
+  .breadcrumb { overflow: hidden; }
+  .breadcrumb ol { width: max-content; min-width: 100%; flex-wrap: nowrap; white-space: nowrap; }
+  .breadcrumb li { flex: none; }
+  .breadcrumb.is-scrolling ol { animation: breadcrumb-pan var(--breadcrumb-duration, 10s) ease-in-out infinite alternate; }
+  .breadcrumb:is(:hover, :focus-within, :active) ol { animation-play-state: paused; }
+}
+@keyframes breadcrumb-pan {
+  0%, 16% { transform: translateX(0); }
+  84%, 100% { transform: translateX(var(--breadcrumb-travel, 0px)); }
+}
 @media (prefers-reduced-motion: reduce) {
   .backend-help__panel, .backend-help.is-open .backend-help__panel { transition: none; }
+  .breadcrumb { overflow-x: auto; }
+  .breadcrumb.is-scrolling ol { animation: none; }
 }

@@ -8,6 +8,8 @@ type InstitutionalEmailInputProps = {
   value?: string;
   onValueChange?: (value: string) => void;
   placeholder?: string;
+  completeDomain?: boolean;
+  onBlur?: () => void;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 };
@@ -17,7 +19,7 @@ function completeInstitutionalEmail(value: string) {
   return /^[^@\s]+@?$/.test(trimmed) ? `${trimmed.replace(/@$/, "")}@ufba.br` : trimmed;
 }
 
-export function InstitutionalEmailInput({ value, onValueChange, placeholder = "Seu e-mail @ufba.br", ...accessibility }: InstitutionalEmailInputProps) {
+export function InstitutionalEmailInput({ value, onValueChange, placeholder = "Seu e-mail @ufba.br", completeDomain = true, onBlur, ...accessibility }: InstitutionalEmailInputProps) {
   const { language } = useInterfaceLanguage();
   const [localValue, setLocalValue] = useState("");
   const currentValue = value ?? localValue;
@@ -39,8 +41,9 @@ export function InstitutionalEmailInput({ value, onValueChange, placeholder = "S
 
   return <input type="email" name="email" autoComplete="email" placeholder={uiText(language, placeholder)} value={currentValue} required {...accessibility}
     onChange={(event) => update(event.target.value)}
-    onBlur={(event) => complete(event.currentTarget, false)}
+    onBlur={(event) => { if (completeDomain) complete(event.currentTarget, false); onBlur?.(); }}
     onKeyDown={(event) => {
+      if (!completeDomain) return;
       if (event.key === "@" && /^[^@\s]+$/.test(event.currentTarget.value.trim())) {
         event.preventDefault();
         complete(event.currentTarget, true);
