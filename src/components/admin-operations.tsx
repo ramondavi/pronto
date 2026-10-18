@@ -224,6 +224,7 @@ export function AdminOperations(props: {
     block: "start",
   }));
   const activeTab = props.tab;
+  const adminTabsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [userType, setUserType] = useState("all");
   const [userStatus, setUserStatus] = useState("all");
@@ -693,6 +694,19 @@ export function AdminOperations(props: {
   );
   const auditActions = [...new Set(props.logs.map((log) => log.action))].sort((a, b) => readableAuditAction(a).localeCompare(readableAuditAction(b), "pt-BR"));
   const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => canOpenAdminTab(tab.id, props.grantedPermissions));
+  useEffect(() => {
+    const tabs = adminTabsRef.current;
+    if (!tabs || !window.matchMedia("(max-width: 560px)").matches) return;
+    const selected = tabs.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
+    if (!selected) return;
+    const tabsBounds = tabs.getBoundingClientRect();
+    const selectedBounds = selected.getBoundingClientRect();
+    const inset = 6;
+    let left = tabs.scrollLeft;
+    if (selectedBounds.left < tabsBounds.left + inset) left += selectedBounds.left - tabsBounds.left - inset;
+    else if (selectedBounds.right > tabsBounds.right - inset) left += selectedBounds.right - tabsBounds.right + inset;
+    if (left !== tabs.scrollLeft) tabs.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [activeTab, props.area]);
   const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage" };
   const readOnly = activeTab !== "users" && Boolean(managePermission[activeTab] && !props.grantedPermissions.includes(managePermission[activeTab]) && !(activeTab === "faq" && props.grantedPermissions.includes("admin.faq.manage")));
   useEffect(() => {
@@ -710,7 +724,7 @@ export function AdminOperations(props: {
           {message}
         </p>
       )}
-      <div className="admin-tabs" role="tablist" aria-label="Seções da área selecionada">
+      <div className="admin-tabs" ref={adminTabsRef} role="tablist" aria-label="Seções da área selecionada">
           {adminTabs.map(({ id, label, icon }) => (
           <button
             type="button"
