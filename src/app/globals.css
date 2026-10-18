@@ -5358,6 +5358,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .notice-status__meta time svg,.notice-status__hours svg { flex: 0 0 14px; width: 14px; height: 14px; color: var(--service-tone); }
 .notice-status__times { display: flex; align-items: center; justify-content: flex-start; gap: 5px 11px; flex-wrap: wrap; }
 .notice .notice-status__hours { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin: 0 0 0 auto; color: var(--text-muted); text-align: right; }
+.notice-status__hours-mobile { display: none; }
 .notice-status__body { display: grid; grid-template-columns: 27px minmax(0,1fr); align-items: start; gap: 10px; padding-top: 12px; }
 .notice-status__icon { display: grid; place-items: center; width: 27px; height: 27px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--service-tone) 13%, var(--surface-raised)); color: var(--service-tone); }
 .notice-status__icon svg { width: 16px; height: 16px; }
@@ -6092,6 +6093,21 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .knowledge-article__dates dd { font-size: .88rem; font-variant-numeric: tabular-nums; }
   .knowledge-article__date-long { display: none; }
   .knowledge-article__date-compact { display: inline; }
+  body:has(main > .hero) .site-header__inner .brand--compact .brand__logo { width: min(200px, 46vw); }
+  .hero__lead { max-width: 100%; font-size: clamp(2.15rem, 9.8vw, 2.65rem); }
+  .hero__content > .actions { flex-wrap: nowrap; gap: 8px; }
+  .hero__content > .actions > .button { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: .8rem; white-space: nowrap; }
+  .hero__content > .actions > .button svg { width: 16px; height: 16px; }
+  .hero__aside, .hero__aside > :is(.notice, .requirements) { box-sizing: border-box; width: 100%; max-width: 100%; margin-inline: 0; }
+  .notice.notice--status { min-width: 0; }
+  .notice-status__meta { display: grid; justify-content: start; gap: 7px; }
+  .notice .notice-status__hours { justify-content: flex-start; margin: 0; text-align: left; }
+  .notice-status__hours-default { display: none; }
+  .notice-status__hours-mobile { display: inline; }
+  .notice.notice--status > .notice-status__message { font-size: .72rem; white-space: normal; }
+}
+@media (max-width: 360px) {
+  .hero__content > .actions > .button svg { display: none; }
 }
 @media (max-width: 760px) {
   .site-header__service-peek:not(.is-expanded) .service-status-peek__panel { visibility: hidden; opacity: 0; pointer-events: none; }
