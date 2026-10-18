@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- O logo da página inicial ganha mais destaque no cabeçalho do celular sem ampliar a largura total do cabeçalho.
 - A página inicial organiza botões, cartões de funcionamento, texto principal e logo para leitura e alinhamento em telas pequenas.
 - Em telas pequenas, o acesso ao painel no cabeçalho público mostra apenas o avatar, mantendo o destino e o menu da conta.
 - O botão flutuante de acessibilidade cresce 1 px em cada dimensão; no celular, a ajuda flutuante acompanha seu tamanho e sua margem lateral.

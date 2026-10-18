@@ -6093,7 +6093,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .knowledge-article__dates dd { font-size: .88rem; font-variant-numeric: tabular-nums; }
   .knowledge-article__date-long { display: none; }
   .knowledge-article__date-compact { display: inline; }
-  body:has(main > .hero) .site-header__inner .brand--compact .brand__logo { width: min(200px, 46vw); }
+  body:has(main > .hero) .site-header__inner { gap: 4px; }
+  body:has(main > .hero) .site-header__nav { gap: 3px; }
+  body:has(main > .hero) .site-header__inner .brand--compact .brand__logo { width: min(210px, 49vw); }
   .hero__lead { max-width: 100%; font-size: clamp(2.15rem, 9.8vw, 2.65rem); }
   .hero__content > .actions { flex-wrap: nowrap; gap: 8px; }
   .hero__content > .actions > .button { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: .8rem; white-space: nowrap; }
