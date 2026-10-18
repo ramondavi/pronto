@@ -73,6 +73,7 @@ export default async function StudentDashboardPage() {
             {progress && <p className={`student-progress-message${progress.needsAction ? " student-progress-message--action" : ""}`} role="status">{progress.description}</p>}
             {!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}
             {activeRequest && progress ? <Link className="button button--primary button--with-icon" href={progress.actionHref}><AppIcon name="request" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
+            {activeRequest?.status === "completed" && <Link className="next-action__new-enrollment" href="/painel/solicitacao/nova"><AppIcon name="book" />{t("Solicitar com nova matrícula")}</Link>}
             {!activeRequest && <p className="next-action__draft-note"><AppIcon name="document" /><span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span></p>}
           </div>
         </article>

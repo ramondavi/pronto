@@ -2008,7 +2008,17 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .dashboard-main--student-overview .student-progress-message--action { border-left: 3px solid var(--institutional); }
 body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top: 0; padding-top: 30px; }
 .dashboard-main--student-request { width: min(960px, calc(100% - 64px)); }
-.dashboard-main--student-request > :is(.student-draft-panel, .request-cancellation-notice, .pending-action, .request-summary, .nada-consta-panel, .publication-record, .revision-history, .student-request-history) { margin-top: var(--student-section-gap); }
+.dashboard-main--student-request > :is(.student-draft-panel, .student-new-enrollment, .request-cancellation-notice, .pending-action, .request-summary, .nada-consta-panel, .publication-record, .revision-history, .student-request-history) { margin-top: var(--student-section-gap); }
+.student-new-enrollment { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 15px; border-top: 3px solid var(--institutional); }
+.student-new-enrollment__icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.student-new-enrollment__icon svg { width: 21px; height: 21px; }
+.student-new-enrollment :is(.eyebrow, h2, p) { margin: 0; }
+.student-new-enrollment h2 { margin: 4px 0 6px; font-size: 1.12rem; }
+.student-new-enrollment p:not(.eyebrow) { color: var(--text-muted); font-size: .84rem; line-height: 1.5; }
+.student-new-enrollment .button { white-space: nowrap; }
+.next-action__new-enrollment { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; color: var(--institutional); font-size: .82rem; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
+.next-action__new-enrollment svg { width: 17px; height: 17px; }
+@media (max-width: 760px) { .student-new-enrollment { grid-template-columns: auto minmax(0, 1fr); } .student-new-enrollment .button { grid-column: 1 / -1; justify-self: start; max-width: 100%; white-space: normal; } }
 .dashboard-main--student-request .student-request-heading { align-items: center; flex-wrap: wrap; }
 .dashboard-main--student-request .student-request-heading__actions { align-items: center; flex-wrap: wrap; }
 .dashboard-main--student-request .student-request-heading__actions .request-status { min-height: 38px; border: 1px solid color-mix(in srgb, var(--institutional) 28%, var(--line)); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .78rem; }
