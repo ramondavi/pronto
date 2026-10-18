@@ -58,7 +58,7 @@ export default async function StudentDashboardPage() {
     <main className="dashboard-main dashboard-main--student-overview">
       <StudentRequestLiveRefresh active />
       <div className="page-heading">
-        <div><h1><AppIcon className="panel-heading-icon" name="home" />{t("Visão geral")}</h1></div>
+        <div><h1><AppIcon className="panel-heading-icon" name="home" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Visão geral")}</span></span></h1></div>
       </div>
 
       {hasPendingFeedback && <section className="feedback-invite panel"><span aria-hidden="true">✦</span><div><p className="eyebrow">{t("Sua opinião faz diferença")}</p><h2>{t("Como foi sua experiência com o Pronto!?")}</h2><p>{t("Sua avaliação leva cerca de 3 minutos e ajuda a melhorar o sistema e o atendimento da BIB/FA.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Responder avaliação")}</Link></section>}

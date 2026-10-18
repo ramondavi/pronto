@@ -32,7 +32,7 @@ export default async function CorrectStudentRequestPage() {
   if (fields.length === 0) redirect("/painel/solicitacao");
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
-  return <main className="dashboard-main dashboard-main--form"><Link className="back-link" href="/painel/solicitacao">← {t("Minhas solicitações")}</Link><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="edit" />{t("Corrigir solicitação")}</h1></div></div>
+  return <main className="dashboard-main dashboard-main--form"><Link className="back-link" href="/painel/solicitacao">← {t("Minhas solicitações")}</Link><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="edit" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Corrigir solicitação")}</span></span></h1></div></div>
     <header className="analysis-case-header student-delivery-case-header student-correction-case-header queue-status-color--changes_requested" aria-labelledby="correction-request-title">
       <div className="analysis-case-header__top"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" /><ProtocolCopyButton protocol={request.protocol} showLabel={false} /></span><span className="progress-badge queue-status-color queue-status-color--changes_requested"><AppIcon name="edit" />{t("Ajustes solicitados")}</span></div>
       <div className="analysis-case-header__title"><h2 id="correction-request-title">{formatWorkTitle(request.title, request.subtitle)}</h2></div>

@@ -179,19 +179,19 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
   }, [mobileMenuOpen]);
   useEffect(() => {
-    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .page-heading h1, .dashboard-main .analysis-case-header__title h1")];
+    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text")];
     if (!headings.length) return;
     const measure = () => {
       const compact = window.matchMedia("(max-width: 560px)").matches;
       headings.forEach((heading) => {
-        const distance = compact ? Math.max(0, heading.scrollWidth - (heading.parentElement?.clientWidth ?? heading.clientWidth)) : 0;
+        const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
         heading.classList.toggle("is-scrolling", distance > 2);
         heading.style.setProperty("--heading-travel", `${-distance}px`);
         heading.style.setProperty("--heading-duration", `${Math.max(8, distance / 24 + 4)}s`);
       });
     };
     const observer = new ResizeObserver(measure);
-    headings.forEach((heading) => { observer.observe(heading); if (heading.parentElement) observer.observe(heading.parentElement); });
+    headings.forEach((heading) => { observer.observe(heading); if (heading.firstElementChild) observer.observe(heading.firstElementChild); });
     const frame = window.requestAnimationFrame(measure);
     return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
   }, [pathname, searchParams]);

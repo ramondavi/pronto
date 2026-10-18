@@ -16,5 +16,5 @@ export default async function LibraryHoursPage() {
   const allowed = await userHasPermission(supabase, "library.hours.change", profile.role);
   if (!allowed) redirect("/painel");
   const { data: dailyHours } = await supabase.from("library_daily_hours").select("service_date,closing_time").order("service_date");
-  return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="calendar" />Horários da biblioteca</h1></div></div><section className="panel admin-section"><DailyClosingControl initialHours={dailyHours ?? []} /></section></main>;
+  return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="calendar" /><span className="panel-heading-text"><span className="panel-heading-text__inner">Horários da biblioteca</span></span></h1></div></div><section className="panel admin-section"><DailyClosingControl initialHours={dailyHours ?? []} /></section></main>;
 }

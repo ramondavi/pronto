@@ -17,5 +17,5 @@ export default async function StaffCalendarPage() {
   if (!allowed) redirect("/painel");
   const { data: announcements } = await supabase.from("library_announcements")
     .select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);
-  return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="calendar" />Calendário da biblioteca</h1></div></div><section className="panel panel--institutional"><StaffAnnouncementsCalendar announcements={announcements ?? []} /></section></main>;
+  return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="calendar" /><span className="panel-heading-text"><span className="panel-heading-text__inner">Calendário da biblioteca</span></span></h1></div></div><section className="panel panel--institutional"><StaffAnnouncementsCalendar announcements={announcements ?? []} /></section></main>;
 }
