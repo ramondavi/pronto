@@ -5538,7 +5538,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .dashboard-preview-switch[aria-checked="true"] .dashboard-preview-switch__track span { transform: translateX(12px); }
 .dashboard-nav__preview-switch, .dashboard-nav nav .dashboard-nav__preview-mobile { display: none; }
 @media (min-width: 901px) {
-  .dashboard-nav nav.dashboard-nav__menu { max-height: min(max(120px, calc(100dvh - var(--rail-fixed-top, 0px) - var(--rail-preview-bottom, 16px) - 220px)), var(--rail-nav-available, 100dvh)); }
+  .dashboard-nav nav.dashboard-nav__menu { max-height: var(--rail-nav-available, max(120px, calc(100dvh - var(--rail-fixed-top, 0px) - var(--rail-preview-bottom, 16px) - 220px))); }
   .dashboard-nav__preview-switch { position: absolute; bottom: var(--rail-preview-bottom, 16px); left: 18px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 7px; width: max-content; min-height: 28px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--nav-text) 28%, transparent); border-radius: var(--radius-sm); background: var(--nav-bg); color: var(--nav-text); font-size: .67rem; font-weight: 700; white-space: nowrap; cursor: pointer; }
   .dashboard-nav__preview-switch:hover, .dashboard-nav__preview-switch:focus-visible { border-color: var(--nav-accent); color: var(--nav-accent); }
   .dashboard-nav__preview-switch .dashboard-preview-switch__track { flex: 0 0 29px; }
@@ -5550,7 +5550,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
   .dashboard-nav--compact .dashboard-nav__preview-label { display: none; }
 }
 @media (min-width: 1101px) {
-  .dashboard-nav--compact nav.dashboard-nav__menu { overflow-y: auto; scrollbar-width: none; }
+  .dashboard-nav--compact nav.dashboard-nav__menu { right: auto; left: 14px; width: 48px; overflow-y: auto; scrollbar-width: none; }
 }
 @media (min-width: 1101px) and (hover: hover) and (pointer: fine) {
   .dashboard-nav:not(.dashboard-nav--compact) :is(.dashboard-nav__admin-menu a, .dashboard-nav__admin-group-trigger, .dashboard-nav__preview-switch) { animation: dashboard-nav-label-in .26s ease both; }
