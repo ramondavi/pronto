@@ -4143,7 +4143,7 @@ body:has([data-staff-panel="true"]) [data-language-alignment] .language-control 
   .dashboard-nav:not(.dashboard-nav--compact) nav { margin-left: 0; margin-right: 0; }
   .dashboard-nav { display: grid; grid-template-rows: 1fr; align-items: center; }
   .dashboard-nav__top { position: absolute; top: 16px; left: 16px; }
-  .dashboard-nav nav { position: absolute; top: var(--rail-nav-top, 50%); right: 16px; left: 16px; display: grid; grid-auto-rows: max-content; width: auto; max-height: calc(100dvh - 104px); margin: 0 !important; transform: translateY(var(--rail-nav-shift, -50%)); }
+  .dashboard-nav nav { position: absolute; top: var(--rail-nav-top, 50%); right: 16px; left: 14px; display: grid; grid-auto-rows: max-content; width: auto; max-height: calc(100dvh - 104px); margin: 0 !important; transform: translateY(var(--rail-nav-shift, -50%)); }
   .dashboard-nav--compact nav { overflow: visible; }
   .dashboard-nav:not(.dashboard-nav--compact) nav { overflow-y: auto; scrollbar-width: thin; }
 }
@@ -5769,7 +5769,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 }
 @media (min-width: 1101px) and (hover: hover) and (pointer: fine) {
   .dashboard-nav:not(.dashboard-nav--compact) :is(.dashboard-nav__admin-menu a, .dashboard-nav__admin-group-trigger, .dashboard-nav__preview-switch) { animation: dashboard-nav-label-in .26s ease both; }
-  @keyframes dashboard-nav-label-in { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes dashboard-nav-label-in { from { opacity: 0; } to { opacity: 1; } }
 }
 @media (prefers-reduced-motion: reduce) { .dashboard-nav:not(.dashboard-nav--compact) :is(.dashboard-nav__admin-menu a, .dashboard-nav__admin-group-trigger, .dashboard-nav__preview-switch) { animation: none; } }
 @media (max-width: 1100px), (pointer: coarse), (any-pointer: coarse) {
