@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- No celular, as etapas da linha do tempo ficam menores e avançam devagar após uma pausa, sem mover a divisória e exibindo a última etapa antes de voltar. Quando o Nada Consta já foi aprovado, as correções solicitadas aparecem antes dele na solicitação do estudante.
 - O selo do protocolo enviado mostra seu nome uma vez; as linhas do tempo horizontais percorrem as etapas com texto legível em telas pequenas.
 - Na prévia móvel, o aviso de funcionamento quebra o texto dentro da própria caixa sem alargar as telas do estudante; o menu da demonstração mantém a mesma altura da Visão geral.
 - Corrigida a regra móvel que anulava a centralização do menu de demonstração; ele passa a seguir a largura da tela estudantil aberta e recalcula a posição ao navegar.

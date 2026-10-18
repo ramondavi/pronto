@@ -202,10 +202,12 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
       const compact = window.matchMedia("(max-width: 560px)").matches;
       timelines.forEach((timeline) => {
         const viewport = timeline.parentElement;
-        const distance = compact && viewport ? Math.max(0, timeline.scrollWidth - viewport.clientWidth) : 0;
+        const viewportStyle = viewport ? window.getComputedStyle(viewport) : null;
+        const available = viewport && viewportStyle ? viewport.clientWidth - parseFloat(viewportStyle.paddingLeft) - parseFloat(viewportStyle.paddingRight) : 0;
+        const distance = compact && viewport ? Math.max(0, timeline.offsetWidth - available + 8) : 0;
         timeline.classList.toggle("is-scrolling", distance > 2);
         timeline.style.setProperty("--timeline-travel", `${-distance}px`);
-        timeline.style.setProperty("--timeline-duration", `${Math.min(9, Math.max(4, distance / 80 + 2.5))}s`);
+        timeline.style.setProperty("--timeline-duration", `${Math.min(16, Math.max(10, distance / 45 + 7))}s`);
       });
     };
     const collect = () => {
