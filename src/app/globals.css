@@ -2348,7 +2348,8 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .review-action-group > h3 { display: flex; align-items: center; gap: 9px; margin: 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--institutional) 5%, var(--surface-raised)); font-size: .86rem; }
 .review-action-group > h3 svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--institutional); }
 .review-action-group > h3 span { min-width: 0; }
-.review-action-group > h3 small { display: grid; flex: 0 0 auto; min-width: 24px; height: 24px; margin-left: auto; padding-inline: 5px; place-items: center; border-radius: 999px; background: var(--institutional-soft); color: var(--institutional); font-size: .72rem; }
+.review-action-group > h3 .review-action-group__count { display: inline-flex; flex: 0 0 auto; min-width: 24px; height: 22px; gap: 5px; margin-left: auto; padding-inline: 7px; border-radius: var(--radius-sm); color: #fff; white-space: nowrap; }
+.review-action-group__count .request-step-status__detail { max-width: none; opacity: 1; }
 .review-action-group__items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; padding: 0 16px; }
 .review-action-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
 .review-action-item:nth-child(-n+2) { border-top: 0; }
