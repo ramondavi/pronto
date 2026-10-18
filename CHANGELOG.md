@@ -8,7 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
-- No celular, o cabeçalho do estudante e sua visão de demonstração posicionam o avatar à direita; ele abre e fecha um menu com saudação, perfil, Meus dados e saída.
+- No celular, o cabeçalho do estudante e sua visão de demonstração posicionam o avatar à direita; ele abre e fecha um menu com saudação, perfil, Meus dados e saída. A identificação do estudante no cabeçalho usa o mesmo componente nas duas visões.
 
 ### 17 de outubro de 2026
 
