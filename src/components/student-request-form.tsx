@@ -185,6 +185,15 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
   const highlightTimer = useRef<number | undefined>(undefined);
   const requestFormRef = useRef<HTMLFormElement>(null);
   const reviewScrollRequested = useRef(openReview);
+  const stepScrollRequested = useRef(false);
+  const programPickerRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const closePicker = (event: PointerEvent) => {
+      if (event.target instanceof Node && !programPickerRef.current?.contains(event.target) && programPickerRef.current) programPickerRef.current.open = false;
+    };
+    document.addEventListener("pointerdown", closePicker);
+    return () => document.removeEventListener("pointerdown", closePicker);
+  }, []);
   const uiLanguage = interfaceLanguage;
   const text = uiCopy[uiLanguage] as Copy;
   const subtitleCopy = (draft.originalLanguage === "de" ? germanSubtitleCopy : subtitleCapitalizationCopy)[uiLanguage];
@@ -205,6 +214,11 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     setPendingFormLanguage(language);
   };
   const selectedProgram = programs.find((program) => program.id === draft.academicProgramId);
+  const selectProgram = (id: string) => {
+    const program = programs.find((item) => item.id === id);
+    setDraft((current) => ({ ...current, academicProgramId: id, extentUnit: program?.code === "mp-cecre-master" ? "volumes" : "pages", extentCount: "" }));
+    if (programPickerRef.current) programPickerRef.current.open = false;
+  };
   const detectedAuthorIndex = matchingRequesterAuthorIndex(requesterName, [draft.people.author, ...draft.people.additionalAuthors]);
   const requesterAuthorIndex = draft.people.birthYearAuthorIndex ?? detectedAuthorIndex;
   const draftForReview = { ...draft, people: { ...draft.people, birthYearAuthorIndex: requesterAuthorIndex } };
@@ -224,6 +238,12 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     reviewScrollRequested.current = false;
     requestFormRef.current?.querySelector(".review-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [ready, activeStep]);
+  useEffect(() => {
+    if (!ready || !stepScrollRequested.current) return;
+    stepScrollRequested.current = false;
+    const frame = window.requestAnimationFrame(() => requestFormRef.current?.querySelector<HTMLElement>(`.form-step--${activeStep}`)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeStep, ready]);
 
   useEffect(() => {
     const form = requestFormRef.current;
@@ -346,7 +366,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     if (!field) return;
     field.scrollIntoView({ behavior: "smooth", block: "center" });
     field.classList.add("is-review-target");
-    field.querySelector<HTMLElement>("input, select, textarea")?.focus({ preventScroll: true });
+    [...field.querySelectorAll<HTMLElement>("summary, input, select, textarea")].find((control) => control.getClientRects().length > 0)?.focus({ preventScroll: true });
     window.clearTimeout(highlightTimer.current);
     highlightTimer.current = window.setTimeout(() => {
       field.classList.remove("is-review-target");
@@ -428,12 +448,12 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     <form noValidate ref={requestFormRef} className="request-form" aria-busy={submitting} onSubmit={submit} onFocusCapture={(event) => { if (event.target.matches("input, textarea, select")) fieldEdit.current = { target: event.target, draft }; }} onBlurCapture={(event) => finishFieldEdit(event.target)} data-active-step={activeStep} data-revisited={activeStep < furthestStep ? "true" : undefined}>
       {error && <div className="auth-feedback auth-feedback--error" role="alert" tabIndex={-1}>{errorText(text, error)}</div>}
       <DraftProgress items={reviewItems} language={uiLanguage} onReview={activeStep === 5 ? undefined : () => { reviewScrollRequested.current = true; setActiveStep(5); setFurthestStep(5); }} />
-      <nav className="admin-tabs request-steps" aria-label={text.steps.join(", ")}>{steps.map((step, index) => { const pending = reviewItems.filter((item) => item.step === index + 1 && !item.valid).length; const statusLabel = ({ pt: ["erro/pendência", "erros/pendências"], en: ["error/pending", "errors/pending"], es: ["error/pendencia", "errores/pendencias"], de: ["Fehler/offen", "Fehler/offen"], fr: ["erreur/à corriger", "erreurs/à corriger"], it: ["errore/in sospeso", "errori/in sospeso"] } as const)[uiLanguage][pending === 1 ? 0 : 1]; return <button key={index} type="button" disabled={submitting} aria-current={activeStep === index + 1 ? "step" : undefined} className={activeStep === index + 1 ? "is-active" : ""} onClick={() => { setActiveStep(index + 1); setFurthestStep((current) => Math.max(current, index + 1)); }}><AppIcon name={step.icon} /><span className="request-step-title">{step.label}</span>{index < 4 && index + 1 < furthestStep && <span className={`request-step-status${pending ? " request-step-status--pending" : " request-step-status--ok"}`} aria-label={pending ? `${pending} ${statusLabel}` : text.checked}>{pending || <AppIcon name="check" />}{pending > 0 && <span className="request-step-status__detail" aria-hidden="true">{statusLabel}</span>}</span>}</button>; })}</nav>
+      <nav className="admin-tabs request-steps" aria-label={text.steps.join(", ")}>{steps.map((step, index) => { const pending = reviewItems.filter((item) => item.step === index + 1 && !item.valid).length; const statusLabel = ({ pt: ["erro/pendência", "erros/pendências"], en: ["error/pending", "errors/pending"], es: ["error/pendencia", "errores/pendencias"], de: ["Fehler/offen", "Fehler/offen"], fr: ["erreur/à corriger", "erreurs/à corriger"], it: ["errore/in sospeso", "errori/in sospeso"] } as const)[uiLanguage][pending === 1 ? 0 : 1]; return <button key={index} type="button" disabled={submitting} aria-current={activeStep === index + 1 ? "step" : undefined} className={activeStep === index + 1 ? "is-active" : ""} onClick={() => { if (activeStep !== index + 1) stepScrollRequested.current = true; setActiveStep(index + 1); setFurthestStep((current) => Math.max(current, index + 1)); }}><AppIcon name={step.icon} /><span className="request-step-title">{step.label}</span>{index < 4 && index + 1 < furthestStep && <span className={`request-step-status${pending ? " request-step-status--pending" : " request-step-status--ok"}`} aria-label={pending ? `${pending} ${statusLabel}` : text.checked}>{pending || <AppIcon name="check" />}{pending > 0 && <span className="request-step-status__detail" aria-hidden="true">{statusLabel}</span>}</span>}</button>; })}</nav>
 
       <fieldset disabled={submitting} className="form-section form-step form-step--1">
         <legend className="sr-only">{steps[0].label}</legend>
         <div className="form-row">
-          <label data-review-field="program"><FieldTitle icon="book">{text.program}</FieldTitle><select required value={draft.academicProgramId} onChange={(e) => { const program = programs.find((item) => item.id === e.target.value); setDraft((current) => ({ ...current, academicProgramId: e.target.value, extentUnit: program?.code === "mp-cecre-master" ? "volumes" : "pages", extentCount: "" })); }}><option value="">{text.select}</option>{programs.map((program) => <option key={program.id} value={program.id}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</option>)}</select></label>
+          <div className="request-program-field" data-review-field="program"><label htmlFor="request-program-select"><FieldTitle icon="book">{text.program}</FieldTitle></label><span className="request-program-field__mobile-label"><FieldTitle icon="book">{text.program}</FieldTitle></span><details className="request-program-picker" ref={programPickerRef} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }}><summary aria-label={`${text.program}: ${selectedProgram?.name ?? text.select}`}><span>{selectedProgram ? `${levelLabels[uiLanguage][selectedProgram.level] ?? selectedProgram.level} · ${selectedProgram.name}` : text.select}</span><span aria-hidden="true">⌄</span></summary><div className="request-program-picker__options" role="listbox" aria-label={text.program}>{programs.map((program) => <button type="button" role="option" aria-selected={draft.academicProgramId === program.id} key={program.id} onClick={() => { selectProgram(program.id); programPickerRef.current?.querySelector<HTMLElement>("summary")?.focus(); }}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</button>)}</div></details><select id="request-program-select" required value={draft.academicProgramId} onChange={(e) => selectProgram(e.target.value)}><option value="">{text.select}</option>{programs.map((program) => <option key={program.id} value={program.id}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</option>)}</select></div>
           <label data-review-field="registration"><FieldTitle icon="account">{text.registration}</FieldTitle><input required type="text" inputMode="numeric" pattern="[0-9]{3,30}" minLength={3} maxLength={30} value={draft.registrationNumber} onChange={(e) => set("registrationNumber", e.target.value.replace(/[^0-9]/g, ""))} placeholder={text.registration} aria-invalid={registrationUsed} aria-describedby={registrationUsed ? "registration-used-error" : undefined} />{registrationUsed && <span className="signup-field-error" id="registration-used-error">{errorText(text, "registration_already_used")}</span>}</label>
         </div>
         <FieldNote>{text.enrollmentNote}</FieldNote>
@@ -515,13 +535,13 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
         <label data-review-field="library-note"><FieldTitle icon="document">{text.libraryNote}</FieldTitle><textarea maxLength={2000} rows={4} value={draft.libraryNote} onChange={(e) => set("libraryNote", e.target.value)} placeholder={text.optional} /></label>
       </fieldset>
 
-      <section className="form-section form-step form-step--5 review-panel" aria-label={text.review}><ReviewSummary items={reviewItems} active={activeStep === 5} onNavigate={jumpToField} text={text} subtitleNeedsReview={subtitleNeedsReview} subtitleIsGerman={draft.originalLanguage === "de"} /></section>
+      <section className="form-section form-step form-step--5 review-panel" aria-label={text.review}><ReviewSummary items={reviewItems} onNavigate={jumpToField} text={text} subtitleNeedsReview={subtitleNeedsReview} subtitleIsGerman={draft.originalLanguage === "de"} /></section>
       <nav className="request-analysis-sections__toolbar student-form-toolbar" aria-label="Navegação entre etapas da solicitação">
         <span>{uiLanguage === "pt" ? `Etapa ${activeStep} de ${steps.length}` : `${activeStep} / ${steps.length}`}</span>
         <div>
-          {activeStep > 1 && <button disabled={submitting} className="request-analysis-sections__previous" type="button" onClick={() => setActiveStep((current) => current - 1)}><AppIcon name="arrowRight" />{text.back}: {steps[activeStep - 2].label}</button>}
+          {activeStep > 1 && <button disabled={submitting} className="request-analysis-sections__previous" type="button" onClick={() => { stepScrollRequested.current = true; setActiveStep((current) => current - 1); }}><AppIcon name="arrowRight" />{text.back}: {steps[activeStep - 2].label}</button>}
           {activeStep < 5
-            ? <button disabled={submitting} type="button" onClick={() => { setActiveStep((current) => current + 1); setFurthestStep((current) => Math.max(current, activeStep + 1)); }}>{text.next}: {steps[activeStep].label}<AppIcon name="arrowRight" /></button>
+            ? <button disabled={submitting} type="button" onClick={() => { stepScrollRequested.current = true; setActiveStep((current) => current + 1); setFurthestStep((current) => Math.max(current, activeStep + 1)); }}>{text.next}: {steps[activeStep].label}<AppIcon name="arrowRight" /></button>
             : <button className="student-form-toolbar__submit" type="button" onClick={() => void submitRequest()} disabled={submitting || !submissionReady}><AppIcon name="upload" /><span>{submitting ? text.sending : text.send}{!submissionReady && <small>{text.fillPending}</small>}</span></button>}
         </div>
       </nav>
@@ -777,37 +797,16 @@ function DraftProgress({ items, language, onReview, reviewHref }: { items: Revie
   return <div className={`student-draft-progress${complete ? " student-draft-progress--complete" : ""}`}>{content}</div>;
 }
 
-function ReviewSummary({ items, active, onNavigate, text, subtitleNeedsReview = false, subtitleIsGerman = false }: { items: ReviewItem[]; active: boolean; onNavigate: (step: number, field: string) => void; text: Copy; subtitleNeedsReview?: boolean; subtitleIsGerman?: boolean }) {
-  const [showIndex, setShowIndex] = useState(false);
-  const sectionsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!active) { setShowIndex(false); return; }
-    const update = () => {
-      const firstField = sectionsRef.current?.querySelector<HTMLElement>("dl > div, .review-item");
-      const sectionsBottom = sectionsRef.current?.getBoundingClientRect().bottom ?? 0;
-      setShowIndex(Boolean(firstField?.getClientRects().length && firstField.getBoundingClientRect().top < 24 && sectionsBottom > 80));
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => { window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
-  }, [active, items]);
+function ReviewSummary({ items, onNavigate, text, subtitleNeedsReview = false, subtitleIsGerman = false }: { items: ReviewItem[]; onNavigate: (step: number, field: string) => void; text: Copy; subtitleNeedsReview?: boolean; subtitleIsGerman?: boolean }) {
   const invalidCount = items.filter((item) => !item.valid).length;
   const grouping = [{ title: text.steps[0], step: 1 }, { title: text.steps[1], step: 2 }, { title: text.steps[2], step: 3 }, { title: text.steps[3], step: 4 }];
   const sectionFor = (item: ReviewItem) => item.step === 1 ? text.steps[0] : item.step === 3 ? text.keywords : item.step === 4 ? (item.field.startsWith("declaration") ? text.steps[3] : text.publicLink) : /^(author|birth|advisor|coadvisor|committee)/.test(item.field) ? text.people : /^(title|subtitle|original-language)/.test(item.field) ? text.titleAndLanguage : text.catalogingData;
-  const visibleGroups = grouping.map((group) => ({ ...group, fields: items.filter((item) => item.step === group.step && (!item.optional || Boolean(item.value?.trim()))) }));
+  const pendingGroups = grouping.map((group) => ({ ...group, fields: items.filter((item) => item.step === group.step && !item.valid) })).filter((group) => group.fields.length);
   return <>
     <h2>{text.review}</h2>{invalidCount > 0 && <p>{text.reviewIntro}</p>}
     <div className={`review-summary review-summary--${invalidCount ? "pending" : "ok"}`} role="status"><AppIcon name={invalidCount ? "help" : "check"} /><span>{invalidCount ? `${invalidCount} ${text.attention}` : text.allValid}</span></div>
     {subtitleNeedsReview && <button className="subtitle-capitalization-warning subtitle-capitalization-warning--review" type="button" onClick={() => onNavigate(2, "subtitle")}><AppIcon name="help" /><span>{(subtitleIsGerman ? germanSubtitleCopy : subtitleCapitalizationCopy)[copyLanguage(text)].warning}</span><AppIcon name="arrowRight" /></button>}
-    <div className={`review-section-layout${showIndex ? " review-section-layout--with-index" : ""}`}><nav className={`review-section-index${showIndex ? " review-section-index--visible" : ""}`} aria-label={text.review} aria-hidden={!showIndex}>{visibleGroups.map((group) => <button type="button" tabIndex={showIndex ? 0 : -1} key={group.step} onClick={() => document.getElementById(`review-section-${group.step}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}><AppIcon name={stepsIcon(group.step)} />{group.title}{group.fields.some((item) => !item.valid) && <span aria-label={text.pending}>{group.fields.filter((item) => !item.valid).length}</span>}</button>)}</nav>
-    <div ref={sectionsRef} className="review-section-list">{visibleGroups.map((group) => <section className="review-complete-group" id={`review-section-${group.step}`} key={group.step}>
-      <div className="review-complete-group__heading"><h3><AppIcon name={stepsIcon(group.step)} />{group.title}</h3><button type="button" onClick={() => onNavigate(group.step, group.fields[0]?.field ?? "")}>{text.reviewOptional}</button></div>
-      {[...new Set(group.fields.map(sectionFor))].map((section) => <div className="review-complete-subsection" key={section}>{section !== group.title && <h4>{section}</h4>}
-        <dl>{group.fields.filter((item) => sectionFor(item) === section && item.valid).map((item, index) => <div key={`${item.field}-${index}`}><dt>{item.label}</dt><dd>{item.value?.trim() || text.checked}</dd></div>)}</dl>
-        {group.fields.filter((item) => sectionFor(item) === section && !item.valid).map((item, index) => <button type="button" key={`${item.field}-${index}`} className="review-item review-item--pending" onClick={() => onNavigate(item.step, item.field)}><span>{item.label}{item.value && <small className="review-item__value">{item.value}</small>}{item.issue && <small className="review-item__issue">{item.issue}</small>}</span><AppIcon name="arrowRight" /></button>)}
-      </div>)}
-    </section>)}</div></div>
+    {pendingGroups.length > 0 && <div className="review-pending-list" aria-label={text.pending}>{pendingGroups.map((group) => <section className="review-group" key={group.step}><h3><AppIcon name={stepsIcon(group.step)} />{group.title}</h3>{[...new Set(group.fields.map(sectionFor))].map((section) => <div className="review-subsection" key={section}>{section !== group.title && <h5>{section}</h5>}{group.fields.filter((item) => sectionFor(item) === section).map((item, index) => <button type="button" key={`${item.field}-${index}`} className="review-item review-item--pending" onClick={() => onNavigate(item.step, item.field)}><span>{item.label}{item.value && <small className="review-item__value">{item.value}</small>}{item.issue && <small className="review-item__issue">{item.issue}</small>}</span><AppIcon name="arrowRight" /></button>)}</div>)}</section>)}</div>}
   </>;
 }
 

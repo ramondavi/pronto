@@ -41,19 +41,46 @@ export function TooltipViewportManager() {
       if (!(target instanceof Element)) return;
       const trigger = target.closest<HTMLElement>(selector);
       if (!trigger) return;
+      if (event.type === "focusin" && active !== trigger && trigger.closest(".request-form")) trigger.removeAttribute("data-tooltip-suppressed");
       active = trigger;
       place();
     };
     const deactivate = (event: FocusEvent | PointerEvent) => {
       if (!active || (event.relatedTarget instanceof Node && active.contains(event.relatedTarget))) return;
-      if (event.type === "pointerout") active.removeAttribute("data-tooltip-suppressed");
-      if (event.type === "focusout" && !active.matches(":hover")) active.removeAttribute("data-tooltip-suppressed");
+      if (active.closest(".request-form")) {
+        if (event.type === "pointerout" && (event as PointerEvent).pointerType === "mouse" && !active.matches(":focus-within")) active.removeAttribute("data-tooltip-suppressed");
+      } else {
+        if (event.type === "pointerout" || (event.type === "focusout" && !active.matches(":hover"))) active.removeAttribute("data-tooltip-suppressed");
+      }
+      if (active.hasAttribute("data-tooltip-open")) return;
       if (active.matches(":hover, :focus-within")) return;
       active = null;
     };
     const suppressOnClick = (event: MouseEvent) => {
       if (!(event.target instanceof Element)) return;
-      event.target.closest<HTMLElement>(selector)?.setAttribute("data-tooltip-suppressed", "");
+      const trigger = event.target.closest<HTMLElement>(selector);
+      if (trigger?.classList.contains("tooltip") && trigger.closest(".request-form")) {
+        event.preventDefault();
+        if (active && active !== trigger) active.removeAttribute("data-tooltip-open");
+        active = trigger;
+        if (trigger.hasAttribute("data-tooltip-open")) {
+          trigger.removeAttribute("data-tooltip-open");
+          trigger.setAttribute("data-tooltip-suppressed", "");
+        } else {
+          trigger.removeAttribute("data-tooltip-suppressed");
+          trigger.setAttribute("data-tooltip-open", "");
+          place();
+        }
+        return;
+      }
+      active?.removeAttribute("data-tooltip-open");
+      trigger?.setAttribute("data-tooltip-suppressed", "");
+      if (!trigger) active = null;
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !active) return;
+      active.removeAttribute("data-tooltip-open");
+      active.setAttribute("data-tooltip-suppressed", "");
     };
 
     document.addEventListener("pointerover", activate);
@@ -61,6 +88,7 @@ export function TooltipViewportManager() {
     document.addEventListener("pointerout", deactivate);
     document.addEventListener("focusout", deactivate);
     document.addEventListener("click", suppressOnClick);
+    document.addEventListener("keydown", closeOnEscape);
     document.addEventListener("scroll", place, true);
     window.addEventListener("resize", place);
     return () => {
@@ -69,6 +97,7 @@ export function TooltipViewportManager() {
       document.removeEventListener("pointerout", deactivate);
       document.removeEventListener("focusout", deactivate);
       document.removeEventListener("click", suppressOnClick);
+      document.removeEventListener("keydown", closeOnEscape);
       document.removeEventListener("scroll", place, true);
       window.removeEventListener("resize", place);
     };

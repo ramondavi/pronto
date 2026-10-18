@@ -2360,6 +2360,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .tooltip { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--institutional); color: var(--bg); font: 800 .75rem/1 serif; cursor: help; }
 .tooltip [role="tooltip"] { position: fixed; z-index: 1000; width: min(320px, 70vw); padding: 12px; border-radius: var(--radius-sm); background: var(--text); color: var(--bg); font: 500 .75rem/1.45 Inter, sans-serif; opacity: 0; visibility: hidden; pointer-events: none; overflow-wrap: anywhere; transition: opacity .15s; }
 .tooltip:is(:hover, :focus-within):not([data-tooltip-suppressed]) [role="tooltip"][data-placed] { opacity: 1; visibility: visible; }
+.tooltip[data-tooltip-open] [role="tooltip"][data-placed] { opacity: 1; visibility: visible; }
 .special-case-label { display: grid; grid-template-columns: 17px auto 20px; width: fit-content; justify-self: start; column-gap: 6px; align-items: center; }
 .review-panel h2 { margin: 0; }
 .review-panel > p { margin: -10px 0 0; color: var(--text-muted); }
@@ -3911,6 +3912,16 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .request-step-status--ok { background: #166534; }
 .request-step-status svg { width: 15px !important; height: 15px !important; }
 .request-steps { width: 100%; overflow-x: auto; }
+.request-program-field { display: grid; gap: 8px; min-width: 0; font-size: .84rem; font-weight: 750; }
+.request-program-field__mobile-label { display: none; }
+.request-program-picker { display: none; }
+.request-form .request-steps { box-sizing: border-box; display: flex; align-items: stretch; gap: 8px; padding: 7px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); scrollbar-width: none; }
+.request-form .request-steps::-webkit-scrollbar { display: none; }
+.request-form .request-steps > button { box-sizing: border-box; flex: 1 0 145px; min-height: 48px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text-muted); font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
+.request-form .request-steps > button:is(:hover, :focus-visible) { flex-grow: 1; border-color: var(--institutional); color: var(--institutional); }
+.request-form .request-steps > button.is-active { border-color: var(--institutional); background: var(--institutional-soft); color: var(--institutional); box-shadow: inset 0 -3px 0 var(--institutional); }
+.request-form .request-steps > button:disabled { cursor: default; }
+.request-form .form-step { scroll-margin-top: 24px; }
 .request-steps button { flex: 1 1 0; min-width: 0; justify-content: center; white-space: nowrap; transition: flex-grow .25s ease, background-color .2s ease; }
 .request-steps button:hover, .request-steps button:focus-visible { flex-grow: 1.9; }
 .request-step-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -6466,6 +6477,20 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 /* Submissão: cada etapa mantém a leitura e os controles dentro da tela no celular. */
 @media (max-width: 700px) {
+  .request-program-field > label { display: none; }
+  .request-program-field__mobile-label { display: block; }
+  .request-program-field > select { display: none; }
+  .request-program-picker { position: relative; display: block; min-width: 0; }
+  .request-program-picker summary { box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer; list-style: none; }
+  .request-program-picker summary::-webkit-details-marker { display: none; }
+  .request-program-picker summary > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .request-program-picker summary > span:last-child { flex: 0 0 auto; color: var(--institutional); font-size: 1.1rem; }
+  .request-program-picker[open] summary { border-color: var(--institutional); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+  .request-program-picker__options { position: absolute; z-index: 15; top: 100%; left: 0; box-sizing: border-box; display: grid; width: 100%; max-height: min(45dvh, 320px); overflow-y: auto; border: 1px solid var(--institutional); border-top: 0; border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--surface-raised); box-shadow: var(--shadow); }
+  .request-program-picker__options button { width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: .83rem; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
+  .request-program-picker__options button:is(:hover, :focus-visible), .request-program-picker__options button[aria-selected="true"] { background: var(--institutional-soft); color: var(--institutional); }
+  .request-form .request-steps > button { flex: 0 0 170px; scroll-snap-align: center; }
+  .request-form .request-steps { scroll-snap-type: x proximity; }
   .dashboard-main--form .request-form, .request-form .form-section,
   .request-form .form-subsection, .request-form .form-subsection__fields,
   .request-form .form-row, .request-form .dynamic-fields,
@@ -6483,7 +6508,8 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .request-form .request-author-input:has(.request-author-hint) input { padding-right: 12px; }
   .request-form .request-author-hint { position: static; max-width: 100%; margin-top: 8px; transform: none; }
   .student-form-toolbar { align-items: stretch; }
-  .student-form-toolbar > div { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; gap: 9px; }
+  .student-form-toolbar > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 9px; }
+  .student-form-toolbar > div:has(> button:only-child) { grid-template-columns: minmax(0, 1fr); }
   .student-form-toolbar button { min-width: 0; width: 100%; min-height: 46px; justify-content: center; text-align: center; }
   .student-form-toolbar button > span { min-width: 0; text-align: center; }
   .student-form-toolbar button small { max-width: none; }
