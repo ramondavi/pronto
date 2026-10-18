@@ -126,6 +126,11 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
 
 export function KnowledgeBaseAdmin({ entries: initial, faqOnly = false, canEdit = true, initialEntryId, initialLanguage = "pt", overview }: { entries: KnowledgeEntry[]; faqOnly?: boolean; canEdit?: boolean; initialEntryId?: string; initialLanguage?: InterfaceLanguage; overview?: ReactNode }) {
   const [entries, setEntries] = useState(initial);
+  const [search, setSearch] = useState("");
+  const [kindFilter, setKindFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [translationFilter, setTranslationFilter] = useState("all");
   const [openId, setOpenId] = useState<string | null>(() => initialEntryId && initial.some((entry) => entry.id === initialEntryId) ? initialEntryId : null);
   const [jump, setJump] = useState<{ id: string; language: InterfaceLanguage; serial: number } | null>(null);
   const initialEntryPresent = Boolean(initialEntryId && initial.some((entry) => entry.id === initialEntryId));
@@ -148,19 +153,35 @@ export function KnowledgeBaseAdmin({ entries: initial, faqOnly = false, canEdit 
     setOpenId(saved.id);
   };
   const addEntry = () => {
+    setSearch(""); setKindFilter("all"); setCategoryFilter("all"); setStatusFilter("all"); setTranslationFilter("all");
     const id = `draft-${Date.now()}`;
     setEntries((current) => [...current, { id, slug: null, kind: faqOnly ? "faq" : "article", title: "", summary: "", body_html: "<p></p>", category: "Geral", audiences: ["public"], active: false, position: current.length * 10 + 10, featured_position: null, created_at: null, updated_at: null, published_at: null }]);
     setOpenId(id);
   };
   const visibleEntries = entries.filter((entry) => !faqOnly || entry.kind === "faq");
   const untranslated = visibleEntries.map((entry) => ({ entry, languages: missingLanguages(entry) })).filter(({ languages }) => languages.length > 0);
+  const normalizedSearch = search.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+  const filteredEntries = visibleEntries.filter((entry) => {
+    const searchable = [entry.title, entry.summary, entry.slug, ...Object.values(entry.translations ?? {}).flatMap((translation) => [translation?.title, translation?.summary])].filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+    return (!normalizedSearch || searchable.includes(normalizedSearch)) && (kindFilter === "all" || entry.kind === kindFilter) && (categoryFilter === "all" || entry.category === categoryFilter) && (statusFilter === "all" || entry.active === (statusFilter === "published")) && (translationFilter === "all" || (missingLanguages(entry).length > 0) === (translationFilter === "pending"));
+  });
+  const filtersActive = Boolean(search || kindFilter !== "all" || categoryFilter !== "all" || statusFilter !== "all" || translationFilter !== "all");
+  const clearFilters = () => { setSearch(""); setKindFilter("all"); setCategoryFilter("all"); setStatusFilter("all"); setTranslationFilter("all"); };
   return <section className="knowledge-admin" aria-labelledby="base-conhecimento">
     {untranslated.length > 0 && <aside className="knowledge-translation-alert" aria-labelledby="knowledge-translation-alert-title">
       <div className="knowledge-translation-alert__heading"><AppIcon name="globe" /><div><h3 id="knowledge-translation-alert-title">Traduções pendentes em {untranslated.length} {untranslated.length === 1 ? "conteúdo" : "conteúdos"}</h3><p>Abra cada conteúdo para completar os idiomas indicados.</p></div></div>
-      <ul>{untranslated.map(({ entry, languages }) => <li key={entry.id}><a href={`#knowledge-entry-${entry.id}`} onClick={(event) => { event.preventDefault(); setOpenId(entry.id); setJump((current) => ({ id: entry.id, language: languages[0], serial: (current?.serial ?? 0) + 1 })); }}>{entry.title.trim() || "Novo conteúdo"}</a><span>{languages.map((language) => pendingLanguageLabels[language]).join(", ")}</span></li>)}</ul>
+      <ul>{untranslated.map(({ entry, languages }) => <li key={entry.id}><a href={`#knowledge-entry-${entry.id}`} onClick={(event) => { event.preventDefault(); clearFilters(); setOpenId(entry.id); setJump((current) => ({ id: entry.id, language: languages[0], serial: (current?.serial ?? 0) + 1 })); }}>{entry.title.trim() || "Novo conteúdo"}</a><span>{languages.map((language) => pendingLanguageLabels[language]).join(", ")}</span></li>)}</ul>
     </aside>}
     {overview}
     <div className="knowledge-admin__heading"><div><p className="eyebrow">Conteúdo publicado e em preparo</p><h3 id="base-conhecimento">Perguntas, respostas e artigos</h3><p>{canEdit ? "Edite perguntas, respostas rápidas e artigos no mesmo espaço." : "Consulte o conteúdo da central de ajuda."}</p></div>{canEdit && <button type="button" className="button button--secondary" onClick={addEntry}><AppIcon name="document" />Adicionar conteúdo</button>}</div>
-    <div className="knowledge-admin__cards">{visibleEntries.map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} faqOnly={faqOnly} canEdit={canEdit} initialLanguage={initialLanguage} jumpLanguage={jump?.id === entry.id ? jump.language : undefined} jumpSerial={jump?.id === entry.id ? jump.serial : undefined} />)}</div>
+    <div className="knowledge-admin__filters" role="search" aria-label="Filtrar conteúdos de ajuda">
+      <label>Buscar conteúdo<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Título, resumo ou endereço" /></label>
+      {!faqOnly && <label>Tipo<select value={kindFilter} onChange={(event) => setKindFilter(event.target.value)}><option value="all">Todos os tipos</option><option value="faq">Perguntas frequentes</option><option value="answer">Respostas rápidas</option><option value="article">Artigos completos</option></select></label>}
+      <label>Categoria<select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">Todas as categorias</option>{knowledgeCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label>
+      <label>Publicação<select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">Todos</option><option value="published">Publicados</option><option value="draft">Rascunhos</option></select></label>
+      <label>Traduções<select value={translationFilter} onChange={(event) => setTranslationFilter(event.target.value)}><option value="all">Todas</option><option value="pending">Pendentes</option><option value="complete">Completas</option></select></label>
+      <div className="knowledge-admin__filter-footer"><span role="status">{filteredEntries.length} de {visibleEntries.length} conteúdos</span>{filtersActive && <button className="button button--secondary button--small" type="button" onClick={clearFilters}>Limpar filtros</button>}</div>
+    </div>
+    <div className="knowledge-admin__cards">{filteredEntries.map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} faqOnly={faqOnly} canEdit={canEdit} initialLanguage={initialLanguage} jumpLanguage={jump?.id === entry.id ? jump.language : undefined} jumpSerial={jump?.id === entry.id ? jump.serial : undefined} />)}{filteredEntries.length === 0 && <p className="admin-empty-state"><AppIcon name="search" />Nenhum conteúdo corresponde aos filtros.</p>}</div>
   </section>;
 }

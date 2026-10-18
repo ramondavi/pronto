@@ -3741,6 +3741,12 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .knowledge-admin__heading p:last-child { margin: 0; color: var(--text-muted); font-size: .86rem; line-height: 1.5; }
 .knowledge-admin__heading .button { display: inline-flex; align-items: center; gap: 8px; }
 .knowledge-admin__heading .button svg { width: 17px; height: 17px; }
+.knowledge-admin__filters { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(4, minmax(135px, 1fr)); gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.knowledge-admin__filters label { display: grid; align-content: start; gap: 6px; min-width: 0; color: var(--text); font-size: .76rem; font-weight: 800; }
+.knowledge-admin__filters :is(input,select) { width: 100%; min-width: 0; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--field); color: var(--text); font: inherit; font-size: .84rem; font-weight: 500; }
+.knowledge-admin__filter-footer { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-muted); font-size: .78rem; }
+@media (max-width: 1100px) { .knowledge-admin__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { .knowledge-admin__filters { grid-template-columns: 1fr; } .knowledge-admin__filter-footer { flex-wrap: wrap; } }
 .knowledge-admin__cards { display: grid; gap: 10px; }
 .knowledge-card { margin: 0; min-width: 0; overflow: visible; border: 1px solid var(--line); border-left: 4px solid var(--institutional); border-radius: var(--radius); background: var(--surface-raised); transition: border-color .16s ease, box-shadow .16s ease; }
 .knowledge-card:hover, .knowledge-card:focus-within { border-color: color-mix(in srgb, var(--institutional) 42%, var(--line)); box-shadow: 0 4px 12px color-mix(in srgb, var(--institutional) 8%, transparent); }
@@ -5354,6 +5360,23 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .operational-calendar__days button.has-event.is-manual { box-shadow: inset 0 4px 0 var(--calendar-manual); }
 .operational-calendar__days button.has-event.is-notice { box-shadow: inset 0 4px 0 var(--calendar-notice); }
 .operational-calendar__days button.has-event .calendar-event :is(em,small) { color: var(--text); }
+.calendar-event__short { display: none; }
+@media (max-width: 640px) {
+  .operational-calendar { margin: 16px 0; }
+  .operational-calendar__header { gap: 6px; padding: 8px; }
+  .operational-calendar__header strong { gap: 5px; font-size: .88rem; }
+  .operational-calendar__header button { width: 32px; height: 32px; }
+  .operational-calendar__legend { gap: 6px 10px; padding: 8px 10px; font-size: .62rem; }
+  .operational-calendar__legend i { width: 9px; height: 9px; }
+  .operational-calendar__week span { padding: 6px 1px; font-size: .59rem; }
+  .operational-calendar__days > * { min-height: 54px; padding: 5px 2px; }
+  .operational-calendar__days button { gap: 2px; }
+  .operational-calendar__days b { font-size: .72rem; }
+  .operational-calendar__days .calendar-event { display: block; max-width: 100%; }
+  .operational-calendar__days .calendar-event__full { display: none; }
+  .operational-calendar__days .calendar-event__short { display: block; overflow: hidden; font-size: .55rem; font-weight: 750; letter-spacing: 0; line-height: 1.2; text-overflow: ellipsis; text-transform: none; white-space: nowrap; }
+  .operational-calendar__days .calendar-event > em:not(.calendar-event__full):not(.calendar-event__short) { display: block; overflow: hidden; font-size: .55rem; letter-spacing: 0; text-overflow: ellipsis; white-space: nowrap; }
+}
 .calendar-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-sm); }
 .calendar-badge::before { display: inline-block; flex: 0 0 10px; width: 10px; height: 10px; border-radius: var(--radius-sm); background: var(--calendar-color); content: ""; }
 .calendar-records { --calendar-holiday: #225e9c; --calendar-optional: #a15a08; --calendar-manual: #a23646; --calendar-notice: #26785b; }
