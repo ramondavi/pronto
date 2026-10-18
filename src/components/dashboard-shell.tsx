@@ -286,16 +286,26 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   useEffect(() => {
     const dock = previewDockRef.current;
     if (!previewMode || !dock) return;
+    const content = dock.closest<HTMLElement>(".dashboard-content");
     const updateClearance = () => {
+      const bounds = content?.getBoundingClientRect();
+      if (bounds) {
+        dock.style.setProperty("--student-preview-dock-center", `${bounds.left + bounds.width / 2}px`);
+        dock.style.setProperty("--student-preview-content-width", `${bounds.width}px`);
+        dock.classList.toggle("is-narrow", bounds.width <= 900);
+      }
       document.documentElement.style.setProperty("--student-preview-dock-clearance", `${Math.ceil(window.innerHeight - dock.getBoundingClientRect().top + 12)}px`);
     };
     const observer = new ResizeObserver(updateClearance);
     observer.observe(dock);
+    if (content) observer.observe(content);
     updateClearance();
     window.addEventListener("resize", updateClearance);
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", updateClearance);
+      dock.style.removeProperty("--student-preview-dock-center");
+      dock.style.removeProperty("--student-preview-content-width");
       document.documentElement.style.removeProperty("--student-preview-dock-clearance");
     };
   }, [previewMode]);

@@ -161,7 +161,7 @@
 .staff-permissions__empty { padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--text-muted); text-align: center; }
 @media (max-width: 960px) { .staff-permissions__group-grid { grid-template-columns: 1fr; } .staff-permissions__toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); } .staff-permissions__only-individual { grid-column: 1 / -1; justify-self: start; } }
 @media (max-width: 620px) { .staff-permissions__overview, .staff-permissions__toolbar { grid-template-columns: 1fr; } .staff-permissions__only-individual { grid-column: 1; } .staff-permissions__person-summary .staff-permissions__person-role { width: 100%; margin-left: 34px; } }
-.student-preview__dock { position: fixed; bottom: 22px; left: 50%; z-index: 75; display: flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); transform: translateX(-50%); padding: 5px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: 0 8px 24px rgb(0 0 0 / 24%), 0 2px 7px rgb(0 0 0 / 16%); }
+.student-preview__dock { position: fixed; bottom: 22px; left: var(--student-preview-dock-center, 50%); z-index: 75; display: flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); transform: translateX(-50%); padding: 5px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: 0 8px 24px rgb(0 0 0 / 24%), 0 2px 7px rgb(0 0 0 / 16%); }
 .student-preview__notice { position: relative; width: max-content; max-width: min(260px, 28vw); border: 1px solid var(--line); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--surface-raised); }
 .student-preview__staff-identity { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 6px; border-left: 1px solid var(--line); }
 .student-preview__staff-identity > span:last-child { display: grid; min-width: 0; line-height: 1.2; }
@@ -188,8 +188,16 @@
   .student-preview__notice-body { box-sizing: border-box; left: 0; width: min(308px, calc(100vw - 44px)); max-height: min(55dvh, calc(100dvh - 160px)); transform: none; }
   .student-preview__staff-identity { max-width: 96px; padding-inline: 4px; }
   .student-preview__dock form { grid-column: 3; }
-  .dashboard-content > .dashboard-main--student-preview:not(.dashboard-main--student-overview) { box-sizing: border-box; min-width: 0; max-width: calc(100% - 32px); overflow-x: clip; padding-bottom: calc(var(--student-preview-dock-clearance, 160px) + 16px); }
 }
+.dashboard-content:has(.student-preview__dock.is-narrow) > .dashboard-main--student-preview:not(.dashboard-main--student-overview) { padding-bottom: calc(var(--student-preview-dock-clearance, 160px) + 16px); }
+.student-preview__dock.is-narrow { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(var(--student-preview-content-width, 100vw) - 32px)); max-width: calc(var(--student-preview-content-width, 100vw) - 32px); gap: 6px; }
+.student-preview__dock.is-narrow > .dashboard-preview-switch { grid-column: 1 / -1; justify-content: center; min-width: 0; white-space: normal; }
+.student-preview__dock.is-narrow .student-preview__notice { width: auto; min-width: 0; max-width: none; }
+.student-preview__dock.is-narrow .student-preview__notice summary { min-width: 0; padding-inline: 8px; }
+.student-preview__dock.is-narrow .student-preview__notice summary > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.student-preview__dock.is-narrow .student-preview__notice-body { box-sizing: border-box; left: 0; width: min(308px, calc(var(--student-preview-content-width, 100vw) - 44px)); max-height: min(55dvh, calc(100dvh - 160px)); transform: none; }
+.student-preview__dock.is-narrow .student-preview__staff-identity { max-width: 96px; padding-inline: 4px; }
+.student-preview__dock.is-narrow form { grid-column: 3; }
 .dashboard-main--student-preview > .admin-tabs { display: flex; flex-wrap: wrap; margin-bottom: 20px; }
 .dashboard-main--student-preview > .admin-tabs a { padding: 12px 16px; border-bottom: 2px solid transparent; color: var(--text-muted); text-decoration: none; }
 .dashboard-main--student-preview > .admin-tabs a.is-active { border-bottom-color: var(--institutional); color: var(--text); background: var(--institutional-soft); }

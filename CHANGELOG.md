@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- O menu flutuante da demonstração estudantil fica centralizado na área real do painel em todas as telas, inclusive Minhas solicitações, mesmo quando a janela é mais larga que o conteúdo.
 - No fim das páginas, a navegação lateral preserva distância do botão de visão estudantil e rola dentro do espaço disponível em telas largas e baixas.
 - Na prévia móvel, as telas da demonstração respeitam a largura disponível, o aviso de funcionamento cabe em sua caixa e o letreiro dos títulos anima apenas o texto, preservando os ícones.
 - Em janelas largas e baixas, a barra lateral ajusta a posição dos itens após a rolagem para preservar o espaço acima do controle de visão estudantil, aberta ou contraída.
