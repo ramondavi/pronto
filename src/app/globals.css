@@ -6476,18 +6476,19 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 /* Submissão: cada etapa mantém a leitura e os controles dentro da tela no celular. */
 @media (max-width: 700px) {
-  .request-program-field > label { display: none; }
+  .request-form .request-program-field > label:not(.check):not(.special-case-label) { display: none; }
   .request-program-field__mobile-label { display: block; }
   .request-program-field > select { display: none; }
   .request-program-picker { position: relative; display: block; min-width: 0; }
-  .request-program-picker summary { box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer; list-style: none; }
+  .request-program-picker summary { box-sizing: border-box; display: flex; align-items: center; width: 100%; min-height: 46px; padding: 10px 38px 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background-color: var(--field); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2364758b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px 8px; color: var(--text); font: inherit; font-weight: 500; cursor: pointer; list-style: none; }
   .request-program-picker summary::-webkit-details-marker { display: none; }
   .request-program-picker summary > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .request-program-picker summary > span:last-child { flex: 0 0 auto; color: var(--institutional); font-size: 1.1rem; }
-  .request-program-picker[open] summary { border-color: var(--institutional); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
-  .request-program-picker__options { position: absolute; z-index: 15; top: 100%; left: 0; box-sizing: border-box; display: grid; width: 100%; max-height: min(45dvh, 320px); overflow-y: auto; border: 1px solid var(--institutional); border-top: 0; border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--surface-raised); box-shadow: var(--shadow); }
-  .request-program-picker__options button { width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: .83rem; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
+  .request-program-picker summary:is(:hover, :focus-visible), .request-program-picker[open] summary { border-color: var(--institutional); outline-color: var(--institutional); }
+  .request-program-picker[open] summary { border-radius: var(--radius) var(--radius) 0 0; }
+  .request-program-picker__options { position: absolute; z-index: 15; top: 100%; left: 0; box-sizing: border-box; display: grid; width: 100%; max-height: min(45dvh, 320px); overflow-y: auto; border: 1px solid var(--institutional); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: var(--surface-raised); box-shadow: var(--shadow); }
+  .request-program-picker__options button { width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: .83rem; font-weight: 600; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
   .request-program-picker__options button:is(:hover, :focus-visible), .request-program-picker__options button[aria-selected="true"] { background: var(--institutional-soft); color: var(--institutional); }
+  .request-program-picker__options button[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--institutional); font-weight: 800; }
   .request-form .request-steps > button { flex: 0 0 170px; scroll-snap-align: center; }
   .request-form .request-steps { scroll-snap-type: x proximity; }
   .dashboard-main--form .request-form, .request-form .form-section,
