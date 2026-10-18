@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- A chave de visão estudantil aparece no menu móvel da equipe, e os controles flutuantes da demonstração se acomodam junto à borda inferior. O compartilhamento usa o logo em fundo claro com quadrados da marca e descrição institucional curta.
 - O menu móvel da conta mostra saudação e perfil na mesma linha, sem repetir o nome, e usa o vermelho padrão na saída.
 - No celular, o cabeçalho do estudante e sua visão de demonstração posicionam o avatar à direita; ele abre e fecha um menu com saudação, perfil, Minha conta e saída. A identificação do estudante no cabeçalho usa o mesmo componente nas duas visões.
 

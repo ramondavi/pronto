@@ -16,6 +16,7 @@ import packageInfo from "../../package.json";
 const metadataBase = new URL("https://prontobib.vercel.app");
 const siteTitle = "Pronto! | Assistente de Fichas Catalográficas e Autodepósito";
 const siteDescription = "Serviço da Biblioteca da Faculdade de Arquitetura da UFBA para solicitar ficha catalográfica e orientar o autodepósito.";
+const openGraphDescription = "Serviço da Biblioteca da Faculdade de Arquitetura da UFBA.";
 const layoutCopy = {
   pt: [siteTitle, siteDescription, "Pular para o conteúdo principal", "Portal do Governo Brasileiro"],
   en: ["Pronto! | Catalog Record and Self-deposit Assistant", "BIB/FAUFBA service for requesting a catalog record and guiding self-deposit.", "Skip to main content", "Brazilian Government Portal"],
@@ -36,7 +37,7 @@ const baseMetadata: Metadata = {
   category: "Educação",
   keywords: ["UFBA", "BIB/FA", "Biblioteca da Faculdade de Arquitetura", "ficha catalográfica", "autodepósito", "repositório institucional", "trabalho de conclusão de curso", "dissertação", "tese"],
   alternates: { canonical: "/" },
-  openGraph: { type: "website", locale: "pt_BR", url: "/", siteName: "Pronto!", title: siteTitle, description: siteDescription, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: siteTitle }] },
+  openGraph: { type: "website", locale: "pt_BR", url: "/", siteName: "Pronto!", title: siteTitle, description: openGraphDescription, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: siteTitle }] },
   twitter: { card: "summary_large_image", title: siteTitle, description: siteDescription, images: ["/opengraph-image"] },
   robots: { index: true, follow: true },
 };
@@ -44,7 +45,7 @@ const baseMetadata: Metadata = {
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getInterfaceLanguage();
   const [title, description] = layoutCopy[language];
-  return { ...baseMetadata, title: { default: title, template: "%s | Pronto!" }, description, openGraph: { ...baseMetadata.openGraph, locale: language === "pt" ? "pt_BR" : `${language}_${({ en: "US", es: "ES", de: "DE", fr: "FR", it: "IT" } as const)[language]}`, title, description, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }] }, twitter: { ...baseMetadata.twitter, title, description } };
+  return { ...baseMetadata, title: { default: title, template: "%s | Pronto!" }, description, openGraph: { ...baseMetadata.openGraph, locale: language === "pt" ? "pt_BR" : `${language}_${({ en: "US", es: "ES", de: "DE", fr: "FR", it: "IT" } as const)[language]}`, title, description: language === "pt" ? openGraphDescription : description, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }] }, twitter: { ...baseMetadata.twitter, title, description } };
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
