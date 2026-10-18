@@ -6217,6 +6217,8 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .dashboard-header--staff .dashboard-header__inner { overflow: visible; }
 @media (max-width: 560px) {
+  .dashboard-content > .breadcrumb--dashboard { margin-top: 14px; }
+  .dashboard-content > .dashboard-main { padding-top: 14px; }
   .dashboard-shell .dashboard-nav nav.dashboard-nav__menu { max-height: max(80px, calc(100dvh - 140px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu { max-height: none; overflow: visible; }
   .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu.is-visible,

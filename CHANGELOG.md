@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- Em telas pequenas, o painel reduz e uniformiza o espaço entre o cabeçalho, os breadcrumbs e o conteúdo.
 - No celular, a barra de guias administrativas desloca-se suavemente para mostrar a guia selecionada, inclusive após recarregar a página.
 - O avatar da equipe no cabeçalho móvel usa o mesmo formato retangular arredondado do avatar estudantil.
 - Os contadores de notificações e mensagens ficam parcialmente fora dos botões em telas maiores. No celular, o menu da equipe rola até os últimos itens e as telas administrativas se ajustam à largura disponível.
