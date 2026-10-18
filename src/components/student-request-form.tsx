@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { dismissPanelChange, showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -184,6 +184,9 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
   const { language: interfaceLanguage } = useInterfaceLanguage();
   const highlightTimer = useRef<number | undefined>(undefined);
   const requestFormRef = useRef<HTMLFormElement>(null);
+  const requestStepsRef = useRef<HTMLElement>(null);
+  const animateStepTab = useRef(false);
+  const [stepOverflow, setStepOverflow] = useState({ start: false, end: false });
   const reviewScrollRequested = useRef(openReview);
   const stepScrollRequested = useRef(false);
   const programPickerRef = useRef<HTMLDetailsElement>(null);
@@ -199,6 +202,36 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
   const subtitleCopy = (draft.originalLanguage === "de" ? germanSubtitleCopy : subtitleCapitalizationCopy)[uiLanguage];
   const subtitleNeedsReview = draft.originalLanguageSelected && startsWithCapital(draft.subtitle);
   const steps: { label: string; icon: AppIconName }[] = text.steps.map((label, index) => ({ label, icon: (["account", "document", "tag", "shield", "review"] as AppIconName[])[index] }));
+  const navigateStep = (step: number) => {
+    if (submitting || step < 1 || step > steps.length || step === activeStep) return;
+    stepScrollRequested.current = true;
+    animateStepTab.current = true;
+    setActiveStep(step);
+    setFurthestStep((current) => Math.max(current, step));
+  };
+  useLayoutEffect(() => {
+    const tabs = requestStepsRef.current;
+    if (!tabs || !window.matchMedia("(max-width: 700px)").matches) return;
+    const updateOverflow = () => setStepOverflow({ start: tabs.scrollLeft > 2, end: tabs.scrollLeft + tabs.clientWidth < tabs.scrollWidth - 2 });
+    const centerSelected = (behavior: ScrollBehavior) => {
+      const buttons = Array.from(tabs.querySelectorAll<HTMLButtonElement>("[role=tab]"));
+      const selected = buttons.find((button) => button.getAttribute("aria-selected") === "true");
+      if (!selected || !buttons.length) return;
+      tabs.style.setProperty("--tab-edge-start", `${Math.max(0, (tabs.clientWidth - buttons[0].offsetWidth) / 2 - 6)}px`);
+      tabs.style.setProperty("--tab-edge-end", `${Math.max(0, (tabs.clientWidth - buttons[buttons.length - 1].offsetWidth) / 2 - 6)}px`);
+      const tabsRect = tabs.getBoundingClientRect();
+      const selectedRect = selected.getBoundingClientRect();
+      tabs.scrollTo({ left: tabs.scrollLeft + selectedRect.left - tabsRect.left + selectedRect.width / 2 - tabsRect.width / 2, behavior });
+      updateOverflow();
+    };
+    const behavior = animateStepTab.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth" : "instant";
+    animateStepTab.current = false;
+    const frame = window.requestAnimationFrame(() => centerSelected(behavior));
+    const resizeObserver = new ResizeObserver(() => centerSelected("instant"));
+    resizeObserver.observe(tabs);
+    tabs.addEventListener("scroll", updateOverflow, { passive: true });
+    return () => { window.cancelAnimationFrame(frame); resizeObserver.disconnect(); tabs.removeEventListener("scroll", updateOverflow); };
+  }, [activeStep, ready]);
   const selectOriginalLanguage = (language: FormLanguage, confirmed = false) => {
     if (language === draft.originalLanguage && draft.originalLanguageSelected) return;
     if (confirmed || !draft.originalLanguageSelected) {
@@ -448,7 +481,11 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     <form noValidate ref={requestFormRef} className="request-form" aria-busy={submitting} onSubmit={submit} onFocusCapture={(event) => { if (event.target.matches("input, textarea, select")) fieldEdit.current = { target: event.target, draft }; }} onBlurCapture={(event) => finishFieldEdit(event.target)} data-active-step={activeStep} data-revisited={activeStep < furthestStep ? "true" : undefined}>
       {error && <div className="auth-feedback auth-feedback--error" role="alert" tabIndex={-1}>{errorText(text, error)}</div>}
       <DraftProgress items={reviewItems} language={uiLanguage} onReview={activeStep === 5 ? undefined : () => { reviewScrollRequested.current = true; setActiveStep(5); setFurthestStep(5); }} />
-      <nav className="admin-tabs request-steps" aria-label={text.steps.join(", ")}>{steps.map((step, index) => { const pending = reviewItems.filter((item) => item.step === index + 1 && !item.valid).length; const statusLabel = ({ pt: ["erro/pendência", "erros/pendências"], en: ["error/pending", "errors/pending"], es: ["error/pendencia", "errores/pendencias"], de: ["Fehler/offen", "Fehler/offen"], fr: ["erreur/à corriger", "erreurs/à corriger"], it: ["errore/in sospeso", "errori/in sospeso"] } as const)[uiLanguage][pending === 1 ? 0 : 1]; return <button key={index} type="button" disabled={submitting} aria-current={activeStep === index + 1 ? "step" : undefined} className={activeStep === index + 1 ? "is-active" : ""} onClick={() => { if (activeStep !== index + 1) stepScrollRequested.current = true; setActiveStep(index + 1); setFurthestStep((current) => Math.max(current, index + 1)); }}><AppIcon name={step.icon} /><span className="request-step-title">{step.label}</span>{index < 4 && index + 1 < furthestStep && <span className={`request-step-status${pending ? " request-step-status--pending" : " request-step-status--ok"}`} aria-label={pending ? `${pending} ${statusLabel}` : text.checked}>{pending || <AppIcon name="check" />}{pending > 0 && <span className="request-step-status__detail" aria-hidden="true">{statusLabel}</span>}</span>}</button>; })}</nav>
+      <div className="request-steps-shell" data-overflow-start={stepOverflow.start} data-overflow-end={stepOverflow.end}>
+        <nav className="admin-tabs request-steps" ref={requestStepsRef} role="tablist" aria-label={text.steps.join(", ")}>{steps.map((step, index) => { const pending = reviewItems.filter((item) => item.step === index + 1 && !item.valid).length; const statusLabel = ({ pt: ["erro/pendência", "erros/pendências"], en: ["error/pending", "errors/pending"], es: ["error/pendencia", "errores/pendencias"], de: ["Fehler/offen", "Fehler/offen"], fr: ["erreur/à corriger", "erreurs/à corriger"], it: ["errore/in sospeso", "errori/in sospeso"] } as const)[uiLanguage][pending === 1 ? 0 : 1]; return <button key={index} role="tab" aria-selected={activeStep === index + 1} type="button" disabled={submitting} aria-current={activeStep === index + 1 ? "step" : undefined} className={activeStep === index + 1 ? "is-active" : ""} onClick={() => navigateStep(index + 1)}><AppIcon name={step.icon} /><span className="request-step-title">{step.label}</span>{index < 4 && index + 1 < furthestStep && <span className={`request-step-status${pending ? " request-step-status--pending" : " request-step-status--ok"}`} aria-label={pending ? `${pending} ${statusLabel}` : text.checked}>{pending || <AppIcon name="check" />}{pending > 0 && <span className="request-step-status__detail" aria-hidden="true">{statusLabel}</span>}</span>}</button>; })}</nav>
+        <button className="request-steps-shell__arrow request-steps-shell__arrow--start" type="button" disabled={submitting || activeStep === 1} aria-label={`${text.back}: ${steps[activeStep - 2]?.label ?? ""}`} onClick={() => navigateStep(activeStep - 1)}><AppIcon name="arrowRight" /></button>
+        <button className="request-steps-shell__arrow request-steps-shell__arrow--end" type="button" disabled={submitting || activeStep === steps.length} aria-label={`${text.next}: ${steps[activeStep]?.label ?? ""}`} onClick={() => navigateStep(activeStep + 1)}><AppIcon name="arrowRight" /></button>
+      </div>
 
       <fieldset disabled={submitting} className="form-section form-step form-step--1">
         <legend className="sr-only">{steps[0].label}</legend>
@@ -539,9 +576,9 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
       <nav className="request-analysis-sections__toolbar student-form-toolbar" aria-label="Navegação entre etapas da solicitação">
         <span>{uiLanguage === "pt" ? `Etapa ${activeStep} de ${steps.length}` : `${activeStep} / ${steps.length}`}</span>
         <div>
-          {activeStep > 1 && <button disabled={submitting} className="request-analysis-sections__previous" type="button" onClick={() => { stepScrollRequested.current = true; setActiveStep((current) => current - 1); }}><AppIcon name="arrowRight" />{text.back}: {steps[activeStep - 2].label}</button>}
+          {activeStep > 1 && <button disabled={submitting} className="request-analysis-sections__previous" type="button" onClick={() => navigateStep(activeStep - 1)}><AppIcon name="arrowRight" />{text.back}: {steps[activeStep - 2].label}</button>}
           {activeStep < 5
-            ? <button disabled={submitting} type="button" onClick={() => { stepScrollRequested.current = true; setActiveStep((current) => current + 1); setFurthestStep((current) => Math.max(current, activeStep + 1)); }}>{text.next}: {steps[activeStep].label}<AppIcon name="arrowRight" /></button>
+            ? <button disabled={submitting} type="button" onClick={() => navigateStep(activeStep + 1)}>{text.next}: {steps[activeStep].label}<AppIcon name="arrowRight" /></button>
             : <button className="student-form-toolbar__submit" type="button" onClick={() => void submitRequest()} disabled={submitting || !submissionReady}><AppIcon name="upload" /><span>{submitting ? text.sending : text.send}{!submissionReady && <small>{text.fillPending}</small>}</span></button>}
         </div>
       </nav>

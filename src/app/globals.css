@@ -3916,6 +3916,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .request-program-picker { display: none; }
 .request-form .request-steps { box-sizing: border-box; display: flex; align-items: stretch; gap: 8px; padding: 7px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); scrollbar-width: none; }
 .request-form .request-steps::-webkit-scrollbar { display: none; }
+.request-steps-shell__arrow { display: none; }
 .request-form .request-steps > button { box-sizing: border-box; flex: 1 0 145px; min-height: 48px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text-muted); font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
 .request-form .request-steps > button:is(:hover, :focus-visible) { flex-grow: 1; border-color: var(--institutional); color: var(--institutional); }
 .request-form .request-steps > button.is-active { border-color: var(--institutional); background: var(--institutional-soft); color: var(--institutional); box-shadow: inset 0 -3px 0 var(--institutional); }
@@ -6498,8 +6499,29 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .request-program-picker__options button { width: 100%; min-height: 44px; padding: 9px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: .83rem; font-weight: 600; line-height: 1.35; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
   .request-program-picker__options button:is(:hover, :focus-visible), .request-program-picker__options button[aria-selected="true"] { background: var(--institutional-soft); color: var(--institutional); }
   .request-program-picker__options button[aria-selected="true"] { background: color-mix(in srgb, var(--institutional) 14%, var(--surface-raised)); font-weight: 750; }
-  .request-form .request-steps > button { flex: 0 0 170px; scroll-snap-align: center; }
-  .request-form .request-steps { scroll-snap-type: x proximity; }
+  .request-steps-shell { position: relative; isolation: isolate; box-sizing: border-box; width: 100%; min-width: 0; overflow: hidden; border-radius: var(--radius); background: var(--surface); }
+  .request-form .request-steps-shell > .request-steps { box-sizing: border-box; width: 100%; min-width: 0; padding-inline: 0; scroll-snap-type: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .request-form .request-steps > button { flex: 0 0 170px; }
+  .request-form .request-steps > button:hover, .request-form .request-steps > button:focus-visible { flex-grow: 0; }
+  .request-steps-shell > .request-steps::before, .request-steps-shell > .request-steps::after { flex: 0 0 var(--tab-edge-start, 50px); content: ""; }
+  .request-steps-shell > .request-steps::after { flex-basis: var(--tab-edge-end, 50px); }
+  .request-steps-shell::before, .request-steps-shell::after { position: absolute; z-index: 2; top: 0; bottom: 0; width: 22px; pointer-events: none; content: ""; transition: opacity .25s ease; }
+  .request-steps-shell::before { left: 0; box-shadow: inset 14px 0 13px -13px color-mix(in srgb, var(--text) 62%, transparent); }
+  .request-steps-shell::after { right: 0; box-shadow: inset -14px 0 13px -13px color-mix(in srgb, var(--text) 62%, transparent); }
+  .request-steps-shell[data-overflow-start="false"]::before, .request-steps-shell[data-overflow-end="false"]::after { opacity: .3; }
+  .request-form .request-steps > button { opacity: .74; transition: background .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease, transform .25s ease, box-shadow .25s ease; }
+  .request-form .request-steps > button:is(:hover, :focus-visible) { opacity: 1; }
+  .request-form .request-steps > button.is-active { position: relative; z-index: 1; opacity: 1; font-weight: 900; box-shadow: inset 0 -3px 0 var(--institutional), 0 3px 12px color-mix(in srgb, var(--institutional) 18%, transparent); transform: scale(1.04); }
+  .request-steps-shell__arrow { position: absolute; z-index: 3; top: 0; bottom: 0; display: grid; place-items: center; width: 48px; padding: 0; border: 0; background: var(--surface); color: var(--institutional); cursor: pointer; transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  .request-steps-shell__arrow--start { left: 0; }
+  .request-steps-shell__arrow--end { right: 0; }
+  .request-steps-shell__arrow--start svg { transform: rotate(180deg); }
+  .request-steps-shell__arrow svg { width: 18px; height: 18px; }
+  .request-steps-shell__arrow:disabled { color: var(--text-muted); cursor: default; }
+  .request-steps-shell__arrow:disabled svg { opacity: .35; }
+  .request-steps-shell > .request-steps:focus-within ~ .request-steps-shell__arrow { opacity: 0; visibility: hidden; pointer-events: none; }
+  @media (hover: hover) { .request-steps-shell > .request-steps:hover ~ .request-steps-shell__arrow { opacity: 0; visibility: hidden; pointer-events: none; } }
+  @media (prefers-reduced-motion: reduce) { .request-form .request-steps > button, .request-steps-shell__arrow, .request-steps-shell::before, .request-steps-shell::after { transition: none; } }
   .dashboard-main--form .request-form, .request-form .form-section,
   .request-form .form-subsection, .request-form .form-subsection__fields,
   .request-form .form-row, .request-form .dynamic-fields,
