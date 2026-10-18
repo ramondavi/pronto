@@ -197,17 +197,19 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   }, [pathname, searchParams]);
   useEffect(() => {
     const timelines = new Set<HTMLElement>();
-    const observer = new ResizeObserver(() => window.requestAnimationFrame(measure));
+    const manual = new WeakSet<HTMLElement>();
+    const started = new WeakMap<HTMLElement, number>();
+    const states = new Set<HTMLElement>();
+    let frame = 0;
+    const onManual = (event: Event) => manual.add(event.currentTarget as HTMLElement);
+    const onStateTouch = (event: PointerEvent) => {
+      if (event.pointerType === "touch") (event.currentTarget as HTMLElement).focus({ preventScroll: true });
+    };
+    const observer = new ResizeObserver(measure);
     const measure = () => {
       const compact = window.matchMedia("(max-width: 560px)").matches;
       timelines.forEach((timeline) => {
-        const viewport = timeline.parentElement;
-        const viewportStyle = viewport ? window.getComputedStyle(viewport) : null;
-        const available = viewport && viewportStyle ? viewport.clientWidth - parseFloat(viewportStyle.paddingLeft) - parseFloat(viewportStyle.paddingRight) : 0;
-        const distance = compact && viewport ? Math.max(0, timeline.offsetWidth - available + 8) : 0;
-        timeline.classList.toggle("is-scrolling", distance > 2);
-        timeline.style.setProperty("--timeline-travel", `${-distance}px`);
-        timeline.style.setProperty("--timeline-duration", `${Math.min(16, Math.max(10, distance / 45 + 7))}s`);
+        timeline.classList.toggle("is-scrollable", compact && timeline.scrollWidth - timeline.clientWidth > 4);
       });
     };
     const collect = () => {
@@ -215,16 +217,42 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         if (timelines.has(timeline)) return;
         timelines.add(timeline);
         observer.observe(timeline);
-        if (timeline.parentElement) observer.observe(timeline.parentElement);
+        timeline.tabIndex = 0;
+        timeline.addEventListener("pointerdown", onManual);
+        timeline.addEventListener("wheel", onManual);
+        timeline.addEventListener("keydown", onManual);
+        const state = timeline.closest<HTMLElement>(".queue-item__state");
+        if (state && !states.has(state)) { states.add(state); state.addEventListener("pointerdown", onStateTouch); }
       });
       measure();
+    };
+    const animate = (now: number) => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (compact && !reduced && !document.hidden) timelines.forEach((timeline) => {
+        if (!timeline.isConnected || manual.has(timeline)) return;
+        const state = timeline.closest(".queue-item__state");
+        if (state && !state.matches(":hover, :focus-within")) { started.delete(timeline); return; }
+        const distance = timeline.scrollWidth - timeline.clientWidth;
+        if (distance <= 4) return;
+        const duration = Math.min(16_000, Math.max(10_000, distance / 45 * 1_000 + 7_000));
+        const pause = 1_500;
+        const endPause = 2_500;
+        const cycle = pause + duration + endPause + duration;
+        const elapsed = (now - (started.get(timeline) ?? now)) % cycle;
+        if (!started.has(timeline)) started.set(timeline, now);
+        const fraction = elapsed < pause ? 0 : elapsed < pause + duration ? (elapsed - pause) / duration : elapsed < pause + duration + endPause ? 1 : 1 - (elapsed - pause - duration - endPause) / duration;
+        timeline.scrollLeft = distance * fraction;
+      });
+      frame = window.requestAnimationFrame(animate);
     };
     const changes = new MutationObserver(collect);
     const root = document.querySelector(".dashboard-main");
     if (root) changes.observe(root, { childList: true, subtree: true });
     collect();
+    frame = window.requestAnimationFrame(animate);
     window.addEventListener("resize", measure);
-    return () => { changes.disconnect(); observer.disconnect(); window.removeEventListener("resize", measure); };
+    return () => { window.cancelAnimationFrame(frame); changes.disconnect(); observer.disconnect(); window.removeEventListener("resize", measure); timelines.forEach((timeline) => { timeline.removeEventListener("pointerdown", onManual); timeline.removeEventListener("wheel", onManual); timeline.removeEventListener("keydown", onManual); }); states.forEach((state) => state.removeEventListener("pointerdown", onStateTouch)); };
   }, [pathname, searchParams]);
   useEffect(() => {
     let frame = 0;
@@ -451,12 +479,11 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
       <dialog ref={logoutDialogRef} className="dashboard-logout-dialog pronto-modal" aria-labelledby="dashboard-logout-title" aria-describedby="dashboard-logout-description" onCancel={() => setLogoutDialogOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) setLogoutDialogOpen(false); }}>
         <div className="dashboard-logout-dialog__content">
           <ModalCloseButton onClick={() => setLogoutDialogOpen(false)} />
-          <p className="eyebrow">{t.logout}</p>
-          <h2 id="dashboard-logout-title">{logoutDialogCopy[language].title}</h2>
+          <div className="dashboard-logout-dialog__heading"><span className="dashboard-logout-dialog__icon"><AppIcon name="logout" /></span><div><p className="eyebrow">{t.logout}</p><h2 id="dashboard-logout-title">{logoutDialogCopy[language].title}</h2></div></div>
           <p id="dashboard-logout-description">{logoutDialogCopy[language].description}</p>
           <div className="dashboard-logout-dialog__actions">
-            <button className="button button--secondary" type="button" autoFocus onClick={() => setLogoutDialogOpen(false)}>{logoutDialogCopy[language].stay}</button>
-            <button className="button button--danger" type="submit" form="dashboard-logout-form">{logoutDialogCopy[language].exit}</button>
+            <button className="button button--secondary button--with-icon" type="button" autoFocus onClick={() => setLogoutDialogOpen(false)}><AppIcon name="check" />{logoutDialogCopy[language].stay}</button>
+            <button className="button button--danger button--with-icon" type="submit" form="dashboard-logout-form"><AppIcon name="logout" />{logoutDialogCopy[language].exit}</button>
           </div>
         </div>
       </dialog>

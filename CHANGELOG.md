@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- Em telas pequenas, os títulos preservam letras inteiras, a linha do tempo aceita arraste livre com uma indicação visível e a confirmação de saída ganha ícones e espaçamentos do painel.
+- A solicitação do estudante destaca primeiro a etapa pendente ou a ficha liberada; Nada Consta aprovado e correções resolvidas ficam recolhidos como concluídos. A Visão geral da demonstração leva diretamente à correção pendente.
 - No celular, as etapas da linha do tempo ficam menores e avançam devagar após uma pausa, sem mover a divisória e exibindo a última etapa antes de voltar. Quando o Nada Consta já foi aprovado, as correções solicitadas aparecem antes dele na solicitação do estudante.
 - O selo do protocolo enviado mostra seu nome uma vez; as linhas do tempo horizontais percorrem as etapas com texto legível em telas pequenas.
 - Na prévia móvel, o aviso de funcionamento quebra o texto dentro da própria caixa sem alargar as telas do estudante; o menu da demonstração mantém a mesma altura da Visão geral.

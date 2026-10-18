@@ -41,7 +41,7 @@ export default async function StudentDashboardPage() {
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language) : null;
-  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "check" : "book";
+  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
   const { data: programs } = activeRequest ? { data: [] } : await supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true);
   const { data: feedbackInvitations } = await supabase.from("feedback_invitations").select("responded,invited_at");
   const hasPendingFeedback = (feedbackInvitations ?? []).some((invitation) => !invitation.responded && Date.now() < new Date(invitation.invited_at).getTime() + 30 * 86_400_000);

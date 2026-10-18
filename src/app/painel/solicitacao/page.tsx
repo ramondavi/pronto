@@ -17,6 +17,7 @@ import { StudentRequestLiveRefresh } from "@/components/student-request-live-ref
 import { ProtocolCopyButton } from "@/components/protocol-copy-button";
 import { monographDisplayName, programDisplayName } from "@/domain/staff-queue/program-labels";
 import { StudentRevisionGallery, type StudentRevision } from "@/components/student-revision-gallery";
+import { StudentCompletedStage } from "@/components/student-completed-stage";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
 
@@ -48,7 +49,13 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const [{data:publication},{data:timeline}]=await Promise.all([supabase.from("repository_publications").select("permanent_url,verified_at").eq("request_id",request.id).maybeSingle(),supabase.rpc("request_timeline",{target_request_id:request.id})]);
   const { data: feedbackInvitation } = request.status === "completed" ? await supabase.from("feedback_invitations").select("request_id,responded,invited_at").eq("request_id", request.id).maybeSingle() : { data: null };
   const revisions = (revisionData ?? []) as unknown as StudentRevision[];
-  const correctionsBeforeNadaConsta = request.status === "changes_requested" && nadaConsta?.status === "approved" && revisions.length > 0;
+  const correctionsPending = request.status === "changes_requested" && revisions.length > 0;
+  const nadaApproved = nadaConsta?.status === "approved";
+  const cardReleased = request.status === "approved" && nadaApproved && Boolean(homologation?.snapshot);
+  const nadaSection = ["submitted", "in_review", "changes_requested", "approved"].includes(request.status) && <NadaConstaUpload requestId={request.id} document={nadaConsta} />;
+  const nadaStage = nadaApproved && nadaSection ? <StudentCompletedStage title={t("Nada Consta")} completedLabel={t("Etapa concluída")}>{nadaSection}</StudentCompletedStage> : nadaSection;
+  const revisionSection = revisions.length > 0 && <StudentRevisionGallery revisions={revisions} />;
+  const revisionStage = !correctionsPending && revisions.every((revision) => Boolean(revision.responded_at)) && revisionSection ? <StudentCompletedStage title={t("Correções anteriores")} completedLabel={t("Etapa concluída")}>{revisionSection}</StudentCompletedStage> : revisionSection;
   const singleCorrection = request.status === "changes_requested" && revisions[0]?.issues.length === 1;
   const singleCorrectionResent = params.corrigida === "1" && revisions[0]?.issues.length === 1;
   return <main className="dashboard-main dashboard-main--narrow dashboard-main--student-request">
@@ -74,14 +81,14 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
       </ol>
       {request.status !== "approved" && <p className="student-delivery-case-header__sla"><AppIcon name="calendar" />{t("Prazo de referência")}: <RequestSlaEstimate submittedAt={request.submitted_at} businessDays={program?.service_level_business_days ?? null} closures={closures} status={request.status} /></p>}
     </header> : <section className="panel request-summary" aria-labelledby="student-request-summary-title"><p className="eyebrow">{t("Dados da solicitação")}</p><h2 id="student-request-summary-title">{formatWorkTitle(request.title, request.subtitle)}</h2><dl className="request-summary__details"><div><dt className="request-summary__label"><AppIcon name="book" />{t("Curso ou programa")}</dt><dd>{program?.name ?? "—"}</dd></div><div><dt className="request-summary__label"><AppIcon name="tag" />{t("Matrícula deste vínculo")}</dt><dd>{enrollment?.registration_number ?? "—"}</dd></div><div><dt className="request-summary__label"><AppIcon name="calendar" />{t("Enviada")}</dt><dd><RelativeDateTime value={request.submitted_at} /></dd></div><div><dt className="request-summary__label"><AppIcon name="review" />{t("Prazo de referência")}</dt><dd className="request-summary__sla"><RequestSlaEstimate submittedAt={request.submitted_at} businessDays={program?.service_level_business_days ?? null} closures={closures} status={request.status} /><small>{t("Estimativa para análise pela biblioteca, em dias úteis; correções podem alterar o andamento.")}</small></dd></div></dl></section>}
-    {correctionsBeforeNadaConsta && <StudentRevisionGallery revisions={revisions} />}
-    {["submitted", "in_review", "changes_requested", "approved"].includes(request.status) && <NadaConstaUpload requestId={request.id} document={nadaConsta} />}
-    {request.status === "approved" && nadaConsta?.status === "approved" && homologation?.snapshot && <BrowserPdfDelivery snapshot={homologation.snapshot as unknown as CatalogingCardSnapshot} publicToken={homologation.public_token} />}
+    {cardReleased && homologation?.snapshot && <BrowserPdfDelivery snapshot={homologation.snapshot as unknown as CatalogingCardSnapshot} publicToken={homologation.public_token} />}
+    {cardReleased && program?.repository_deposit_enabled && <BrowserPdfDeliveryFollowup repositoryDepositEnabled />}
+    {correctionsPending && revisionStage}
+    {nadaStage}
+    {!correctionsPending && revisionStage}
 
     {publication&&<section className="panel publication-record"><p className="eyebrow">{t("Publicação no RI/UFBA")}</p><h2>{t("Protocolo encerrado")}</h2><a href={publication.permanent_url} target="_blank" rel="noreferrer">{t("Abrir endereço permanente")} ↗</a><p>{t("O Nada Consta será expurgado após o prazo de 60 dias; o registro textual da validação será preservado.")}</p></section>}
     {feedbackInvitation && !feedbackInvitation.responded && Date.now() < new Date(feedbackInvitation.invited_at).getTime() + 30 * 86_400_000 && <section className="feedback-invite panel"><span aria-hidden="true">✦</span><div><p className="eyebrow">{t("Convite especial")}</p><h2>{t("Ajude a melhorar o Pronto! e a BIB/FA")}</h2><p>{t("Você concluiu todas as etapas. Conte como foi sua experiência em cerca de 3 minutos. Sua avaliação não altera o resultado do protocolo.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Avaliar minha experiência")}</Link></section>}
-    {revisions.length > 0 && !correctionsBeforeNadaConsta && <StudentRevisionGallery revisions={revisions} />}
     <section className="panel student-request-history" aria-labelledby="student-request-history-title"><div className="student-request-history__heading"><AppIcon name="archive" /><div><p className="eyebrow">{t("Histórico")}</p><h2 id="student-request-history-title">{t("Solicitações anteriores")}</h2></div></div>{previousRequests?.length ? <ul>{(previousRequests as PreviousRequest[]).map((previous) => <li key={previous.id}><div><strong>{previous.protocol}</strong><span>{formatWorkTitle(previous.title, previous.subtitle)}</span></div><div><span className="student-request-history__status">{t(statusLabels[previous.status] ?? previous.status)}</span><RelativeDateTime value={previous.submitted_at} /></div></li>)}</ul> : <p>{t("Você ainda não tem solicitações anteriores.")}</p>}</section>
-    {request.status === "approved" && nadaConsta?.status === "approved" && homologation?.snapshot && program?.repository_deposit_enabled && <BrowserPdfDeliveryFollowup repositoryDepositEnabled />}
   </main>;
 }
