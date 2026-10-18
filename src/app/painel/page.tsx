@@ -2,7 +2,7 @@ import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel"); }
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { FeedbackSparkles } from "@/components/feedback-sparkles";
+import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { redirect } from "next/navigation";
 import { AdminProvisioningAlert } from "@/components/admin-provisioning-alert";
 import { StudentRequestShortcut } from "@/components/student-request-shortcut";
@@ -44,8 +44,6 @@ export default async function StudentDashboardPage() {
   const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language) : null;
   const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
   const { data: programs } = activeRequest ? { data: [] } : await supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true);
-  const { data: feedbackInvitations } = await supabase.from("feedback_invitations").select("responded,invited_at");
-  const hasPendingFeedback = (feedbackInvitations ?? []).some((invitation) => !invitation.responded && Date.now() < new Date(invitation.invited_at).getTime() + 30 * 86_400_000);
   const { data: announcements } = await supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);
   const now = new Date().toISOString();
   const { data: dailyHours } = await supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle();
@@ -62,7 +60,7 @@ export default async function StudentDashboardPage() {
         <div><h1><AppIcon className="panel-heading-icon" name="home" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Visão geral")}</span></span></h1></div>
       </div>
 
-      {hasPendingFeedback && <section className="feedback-invite panel"><FeedbackSparkles /><div><p className="eyebrow">{t("Sua opinião faz diferença")}</p><h2>{t("Como foi sua experiência com o Pronto!?")}</h2><p>{t("Sua avaliação leva cerca de 3 minutos e ajuda a melhorar o sistema e o atendimento da BIB/FAUFBA.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Responder avaliação")}</Link></section>}
+      <StudentFeedbackInvite />
 
       <section className={`dashboard-grid${activeRequest ? " dashboard-grid--active-request" : ""}`}>
         <article className="next-action">

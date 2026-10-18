@@ -3798,9 +3798,10 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .review-item__issue { grid-column: 2 / -1; color: var(--danger, #b42318); font-size: .78rem; }
 
 .feedback-invite { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-block: 22px; border-color: var(--institutional); background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)); }
-.dashboard-main--student-overview .feedback-invite { border: 3px solid transparent; background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)) padding-box, linear-gradient(110deg, #1a3b70, #b26b08, #26785b, #1a3b70) border-box; background-size: 100% 100%, 250% 100%; box-shadow: 0 7px 24px color-mix(in srgb, var(--institutional) 14%, transparent); animation: student-feedback-border 5s linear infinite; }
-@keyframes student-feedback-border { from { background-position: 0 0, 0% 50%; } to { background-position: 0 0, 100% 50%; } }
-@media (prefers-reduced-motion: reduce) { .dashboard-main--student-overview .feedback-invite { animation: none; } }
+@property --feedback-border-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.dashboard-main:has(> .feedback-invite) > .feedback-invite { border: 3px solid transparent; background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)) padding-box, conic-gradient(from var(--feedback-border-angle), #1a3b70, #b26b08, #26785b, #8b426d, #1a3b70) border-box; box-shadow: 0 7px 24px color-mix(in srgb, var(--institutional) 14%, transparent); animation: student-feedback-border 8s linear infinite; }
+@keyframes student-feedback-border { to { --feedback-border-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .dashboard-main:has(> .feedback-invite) > .feedback-invite { animation: none; } }
 .feedback-invite > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--institutional); color: #fff; font-size: 1.5rem; }
 .feedback-invite__sparkles { position: relative; overflow: hidden; }
 .feedback-invite__sparkles > span { position: absolute; color: #fff; line-height: 1; text-shadow: 0 0 8px rgb(255 255 255 / 85%); animation: feedback-sparkle 2.8s ease-in-out infinite; }

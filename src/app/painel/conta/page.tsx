@@ -9,6 +9,7 @@ import { PanelMessageNotice } from "@/components/panel-message-notice";
 import { StaffAvatarPicker } from "@/components/staff-avatar-picker";
 import { LiteraryAvatar } from "@/components/literary-avatar";
 import { StudentAvatar } from "@/components/student-avatar";
+import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { StaffBirthdaySetting } from "@/components/staff-birthday-setting";
 import { AccountConfirmForm } from "@/components/account-confirm-form";
 import { AccountPasswordLinkForm } from "@/components/account-password-link-form";
@@ -34,6 +35,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   return (
     <main className="dashboard-main account-page">
       <div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="account" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Minha conta")}</span></span></h1></div></div>
+      {!isStaff && <StudentFeedbackInvite />}
       <section id="account-profile" className="panel account-page__profile" aria-labelledby="account-profile-title">
         <div className="account-page__identity"><span className="account-page__monogram" aria-hidden="true">{isStaff ? <LiteraryAvatar id={user.id} label={profile.full_name} choice={profile.avatar_choice} /> : <StudentAvatar name={profile.full_name} />}</span><div><p className="eyebrow">{t(roleLabel)}</p><h2 id="account-profile-title">{profile.full_name}</h2></div></div>
         <dl className="account-page__facts"><div><AppIcon name="message" /><dt>{t("E-mail institucional")}</dt><dd>{profile.email}</dd></div>{profile.role === "student" && studentProfile && <div><AppIcon name="idCard" /><dt>CPF</dt><dd>{maskCpf(studentProfile.cpf)}</dd></div>}{profile.role === "student" && studentProfile?.birth_date && <div><AppIcon name="calendar" /><dt>{t("Data de nascimento")}</dt><dd>{new Intl.DateTimeFormat(language === "pt" ? "pt-BR" : language, { dateStyle: "short", timeZone: "UTC" }).format(new Date(`${studentProfile.birth_date}T12:00:00Z`))}</dd></div>}{isStaff && <div><AppIcon name="idCard" /><dt>CRB</dt><dd>{staffProfile?.crb?.trim() || "Não cadastrado"}</dd></div>}{isStaff && <StaffBirthdaySetting month={staffProfile?.birthday_month ?? null} day={staffProfile?.birthday_day ?? null} />}</dl>

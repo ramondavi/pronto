@@ -1,6 +1,7 @@
 import { AppIcon } from "@/components/app-icon";
 import { redirect } from "next/navigation";
 import { StudentRequestForm } from "@/components/student-request-form";
+import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { createClient } from "@/lib/supabase/server";
 import { panelMetadata } from "@/lib/panel-metadata";
 import { getInterfaceLanguage } from "@/lib/server-language";
@@ -23,5 +24,5 @@ export default async function NewStudentRequestPage({ searchParams }: { searchPa
   if (!student?.birth_date) redirect("/painel/conta?error=Informe%20sua%20data%20de%20nascimento%20antes%20de%20abrir%20uma%20solicita%C3%A7%C3%A3o.");
   const { data: requester } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
   const { data: programs } = await supabase.from("academic_programs").select("id, code, name, level, work_type").eq("active", true).order("name");
-  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="document" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{uiText(await getInterfaceLanguage(), "Nova solicitação")}</span></span></h1></div></div><StudentRequestForm key={user.id} userId={user.id} requesterName={requester?.full_name ?? ""} programs={programs ?? []} usedRegistrations={usedRegistrations} openReview={revisao === "1"} /></main>;
+  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="document" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{uiText(await getInterfaceLanguage(), "Nova solicitação")}</span></span></h1></div></div><StudentFeedbackInvite /><StudentRequestForm key={user.id} userId={user.id} requesterName={requester?.full_name ?? ""} programs={programs ?? []} usedRegistrations={usedRegistrations} openReview={revisao === "1"} /></main>;
 }

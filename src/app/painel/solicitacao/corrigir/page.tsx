@@ -4,6 +4,7 @@ import { AppIcon } from "@/components/app-icon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StudentCorrectionForm } from "@/components/student-correction-form";
+import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { correctableFields } from "@/domain/issues/fields";
 import { createClient } from "@/lib/supabase/server";
 import { ProtocolCopyButton } from "@/components/protocol-copy-button";
@@ -33,6 +34,7 @@ export default async function CorrectStudentRequestPage() {
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   return <main className="dashboard-main dashboard-main--form"><Link className="back-link" href="/painel/solicitacao">← {t("Minhas solicitações")}</Link><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="edit" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Corrigir solicitação")}</span></span></h1></div></div>
+    <StudentFeedbackInvite />
     <header className="analysis-case-header student-delivery-case-header student-correction-case-header queue-status-color--changes_requested" aria-labelledby="correction-request-title">
       <div className="analysis-case-header__top"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" /><ProtocolCopyButton protocol={request.protocol} showLabel={false} /></span><span className="progress-badge queue-status-color queue-status-color--changes_requested"><AppIcon name="edit" />{t("Ajustes solicitados")}</span></div>
       <div className="analysis-case-header__title"><h2 id="correction-request-title">{formatWorkTitle(request.title, request.subtitle)}</h2></div>
