@@ -1416,6 +1416,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 :root[data-contrast="high"] .dashboard-daily-quote blockquote::before, :root[data-contrast="high"] .dashboard-daily-quote blockquote::after { color: var(--text); }
 .dashboard-nav { --nav-accent: var(--institutional); position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 28px 16px 22px; background: var(--nav-bg); color: var(--nav-text); transition: padding .24s ease; }
 .dashboard-nav__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; min-height: 34px; }
+.dashboard-student-profile { display: none; }
 .dashboard-nav__top .brand { min-width: 0; }
 .dashboard-nav__favicon { display: grid; flex: 0 0 auto; place-items: center; border: 0; background: transparent; color: color-mix(in srgb, var(--nav-text) 78%, transparent); }
 .dashboard-nav__brand-logo { position: relative; display: block; width: 192px; max-width: 100%; transition: opacity .2s ease, transform .22s ease; }
@@ -6149,6 +6150,24 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-nav__logo-link { top: 0; width: 44px; height: 44px; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-nav__logo-link .dashboard-nav__favicon { display: grid !important; box-sizing: border-box; width: 44px; height: 44px; padding: 8px; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-nav__logo-link .dashboard-nav__brand-logo { display: none !important; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-student-profile { position: relative; z-index: 45; display: block; flex: 0 0 44px; margin-left: auto; }
+  .dashboard-student-profile__trigger { display: grid; width: 44px; height: 44px; padding: 0; place-items: center; border: 1px solid color-mix(in srgb, var(--nav-text) 28%, transparent); border-radius: var(--radius); background: transparent; cursor: pointer; }
+  .dashboard-student-profile__trigger .student-avatar { flex-basis: 34px; width: 34px; height: 34px; }
+  .dashboard-student-profile__trigger:focus-visible, .dashboard-student-profile__actions :focus-visible { outline: 2px solid var(--nav-accent); outline-offset: 2px; }
+  .dashboard-student-profile__menu { position: absolute; top: calc(100% + 8px); right: 0; box-sizing: border-box; width: min(280px, calc(100vw - 32px)); padding: 8px; border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent); border-radius: var(--radius); background: var(--nav-bg); color: var(--nav-text); box-shadow: var(--shadow-lg); }
+  .dashboard-student-profile__menu[hidden] { display: none; }
+  .dashboard-student-profile__identity { display: grid; gap: 3px; min-width: 0; padding: 10px 12px 12px; border-bottom: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent); }
+  .dashboard-student-profile__identity strong { overflow-wrap: anywhere; font-size: .94rem; }
+  .dashboard-student-profile__identity span { overflow-wrap: anywhere; font-size: .86rem; }
+  .dashboard-student-profile__identity small { color: var(--text-muted); font-size: .8rem; }
+  .dashboard-student-profile__actions { display: flex; align-items: center; gap: 8px; padding-top: 8px; }
+  .dashboard-student-profile__actions a, .dashboard-student-profile__actions button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--nav-text); text-decoration: none; cursor: pointer; }
+  .dashboard-student-profile__actions a { flex: 1; justify-content: flex-start; }
+  .dashboard-student-profile__actions button { flex: 0 0 44px; padding: 8px; }
+  .dashboard-student-profile__actions :is(a, button):hover { background: color-mix(in srgb, var(--nav-text) 8%, transparent); }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__actions { display: none; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header { min-height: 0; padding-block: 0; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__inner { min-height: 0; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-header { position: relative; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-header__service-peek { position: absolute; z-index: 40; top: -60px; left: 76px; width: 42px; max-width: none; margin: 0; }
   .dashboard-header__service-peek:not(.is-expanded) .service-status-peek__panel { visibility: hidden; opacity: 0; pointer-events: none; }

@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 18 de outubro de 2026
+
+- No celular, o cabeçalho do estudante posiciona o avatar à direita; ele abre e fecha um menu com saudação, perfil, Meus dados e saída.
+
 ### 17 de outubro de 2026
 
 - A página de Acessibilidade passa a descrever os controles do botão flutuante e evita largura excedente no celular; redes sociais vão ao rodapé móvel, e o cabeçalho estudantil reúne menu, pictograma e aviso da biblioteca na mesma linha.

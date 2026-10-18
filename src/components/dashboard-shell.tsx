@@ -34,6 +34,14 @@ const shellCopy = {
   it: { student: "Studente", cataloger: "Catalogatore", administrator: "Amministratore", overview: "Panoramica", queue: "Richieste", work: "I miei casi", admin: "Amministrazione", operation: "Operazioni", content: "Contenuto", control: "Controllo", account: "Il mio account", request: "Le mie richieste", deposit: "Autodeposito", public: "Apri sito pubblico", greeting: "Ciao", logout: "Esci", library: "Area biblioteca", studentArea: "Area studenti", adminSections: "Sezioni amministrative" },
 };
 const mobileMenuCopy = { pt: ["Abrir menu do painel", "Fechar menu do painel"], en: ["Open dashboard menu", "Close dashboard menu"], es: ["Abrir menú del panel", "Cerrar menú del panel"], de: ["Dashboardmenü öffnen", "Dashboardmenü schließen"], fr: ["Ouvrir le menu du tableau de bord", "Fermer le menu du tableau de bord"], it: ["Apri menu del pannello", "Chiudi menu del pannello"] } as const;
+const studentProfileCopy = {
+  pt: { open: "Abrir menu da conta", close: "Fechar menu da conta", details: "Meus dados" },
+  en: { open: "Open account menu", close: "Close account menu", details: "My details" },
+  es: { open: "Abrir menú de la cuenta", close: "Cerrar menú de la cuenta", details: "Mis datos" },
+  de: { open: "Kontomenü öffnen", close: "Kontomenü schließen", details: "Meine Daten" },
+  fr: { open: "Ouvrir le menu du compte", close: "Fermer le menu du compte", details: "Mes données" },
+  it: { open: "Apri menu account", close: "Chiudi menu account", details: "I miei dati" },
+} as const;
 const logoutDialogCopy = {
   pt: { title: "Sair do painel?", description: "Sua sessão será encerrada.", stay: "Continuar no painel", exit: "Sair da conta" },
   en: { title: "Sign out?", description: "Your session will end.", stay: "Stay in dashboard", exit: "Sign out" },
@@ -120,6 +128,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const adminLocation = resolveAdminLocation(adminAreaParam ?? undefined, searchParams.get("aba") ?? undefined);
   const [expanded, setExpanded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
+  const mobileProfileRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLElement>(null);
   const previewDockRef = useRef<HTMLDivElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -143,7 +153,19 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     if (birthdayCloseTimer.current !== null) window.clearTimeout(birthdayCloseTimer.current);
     birthdayCloseTimer.current = window.setTimeout(() => { setBirthdayVisible(false); setBirthdayClosing(false); birthdayCloseTimer.current = null; }, 650);
   }, []);
-  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin" && adminAreaParam) setOpenAdminGroups((open) => new Set([...open, adminLocation.area])); setMobileMenuOpen(false); }, [pathname, adminAreaParam, adminLocation.area]);
+  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin" && adminAreaParam) setOpenAdminGroups((open) => new Set([...open, adminLocation.area])); setMobileMenuOpen(false); setMobileProfileOpen(false); }, [pathname, adminAreaParam, adminLocation.area]);
+  useEffect(() => {
+    if (!mobileProfileOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !mobileProfileRef.current?.contains(event.target)) setMobileProfileOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setMobileProfileOpen(false); mobileProfileRef.current?.querySelector("button")?.focus(); }
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
+  }, [mobileProfileOpen]);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -247,12 +269,19 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
   return (
-    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined}>
+    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined} data-student-panel={!isStaff ? "true" : undefined}>
       {(!isStaff || previewMode) && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
       <aside ref={railRef} className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
         <div className="dashboard-nav__top">
           <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v9-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v9-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
-          <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => setMobileMenuOpen((open) => !open)}><span /><span /><span /></button>
+          <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => { setMobileProfileOpen(false); setMobileMenuOpen((open) => !open); }}><span /><span /><span /></button>
+          {!isStaff && <div className="dashboard-student-profile" ref={mobileProfileRef}>
+            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={firstName} small /></button>
+            <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
+              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {firstName}</strong><span>{fullName}</span><small>{t.student}</small></div>
+              <div className="dashboard-student-profile__actions"><Link href="/painel/conta" onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{studentProfileCopy[language].details}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
+            </div>
+          </div>}
         </div>
         {isStaff && !previewMode ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
           {canViewOverview && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>}
