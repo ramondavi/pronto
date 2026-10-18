@@ -2,6 +2,7 @@ import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel"); }
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { FeedbackSparkles } from "@/components/feedback-sparkles";
 import { redirect } from "next/navigation";
 import { AdminProvisioningAlert } from "@/components/admin-provisioning-alert";
 import { StudentRequestShortcut } from "@/components/student-request-shortcut";
@@ -61,7 +62,7 @@ export default async function StudentDashboardPage() {
         <div><h1><AppIcon className="panel-heading-icon" name="home" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Visão geral")}</span></span></h1></div>
       </div>
 
-      {hasPendingFeedback && <section className="feedback-invite panel"><span aria-hidden="true">✦</span><div><p className="eyebrow">{t("Sua opinião faz diferença")}</p><h2>{t("Como foi sua experiência com o Pronto!?")}</h2><p>{t("Sua avaliação leva cerca de 3 minutos e ajuda a melhorar o sistema e o atendimento da BIB/FAUFBA.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Responder avaliação")}</Link></section>}
+      {hasPendingFeedback && <section className="feedback-invite panel"><FeedbackSparkles /><div><p className="eyebrow">{t("Sua opinião faz diferença")}</p><h2>{t("Como foi sua experiência com o Pronto!?")}</h2><p>{t("Sua avaliação leva cerca de 3 minutos e ajuda a melhorar o sistema e o atendimento da BIB/FAUFBA.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Responder avaliação")}</Link></section>}
 
       <section className={`dashboard-grid${activeRequest ? " dashboard-grid--active-request" : ""}`}>
         <article className="next-action">

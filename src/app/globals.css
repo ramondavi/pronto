@@ -3798,10 +3798,19 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .review-item__issue { grid-column: 2 / -1; color: var(--danger, #b42318); font-size: .78rem; }
 
 .feedback-invite { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-block: 22px; border-color: var(--institutional); background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)); }
-.dashboard-main--student-overview .feedback-invite { border: 2px solid transparent; background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)) padding-box, linear-gradient(110deg, var(--institutional), var(--gold), var(--success), var(--institutional)) border-box; background-size: 100% 100%, 250% 100%; animation: student-feedback-border 8s linear infinite; }
+.dashboard-main--student-overview .feedback-invite { border: 3px solid transparent; background: linear-gradient(115deg, var(--institutional-soft), var(--surface-raised)) padding-box, linear-gradient(110deg, #1a3b70, #b26b08, #26785b, #1a3b70) border-box; background-size: 100% 100%, 250% 100%; box-shadow: 0 7px 24px color-mix(in srgb, var(--institutional) 14%, transparent); animation: student-feedback-border 5s linear infinite; }
 @keyframes student-feedback-border { from { background-position: 0 0, 0% 50%; } to { background-position: 0 0, 100% 50%; } }
 @media (prefers-reduced-motion: reduce) { .dashboard-main--student-overview .feedback-invite { animation: none; } }
 .feedback-invite > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--institutional); color: #fff; font-size: 1.5rem; }
+.feedback-invite__sparkles { position: relative; overflow: hidden; }
+.feedback-invite__sparkles > span { position: absolute; color: #fff; line-height: 1; text-shadow: 0 0 8px rgb(255 255 255 / 85%); animation: feedback-sparkle 2.8s ease-in-out infinite; }
+.feedback-invite__sparkles > span:nth-child(1) { top: 13px; left: 15px; font-size: 1.25rem; animation-delay: -1.4s; }
+.feedback-invite__sparkles > span:nth-child(2) { top: 7px; left: 7px; font-size: .62rem; animation-delay: -.3s; }
+.feedback-invite__sparkles > span:nth-child(3) { top: 7px; right: 7px; font-size: .55rem; animation-delay: -2.1s; }
+.feedback-invite__sparkles > span:nth-child(4) { right: 7px; bottom: 7px; font-size: .68rem; animation-delay: -.9s; }
+.feedback-invite__sparkles > span:nth-child(5) { bottom: 8px; left: 8px; font-size: .48rem; animation-delay: -2.5s; }
+@keyframes feedback-sparkle { 0%, 100% { opacity: .3; transform: scale(.72); } 45% { opacity: 1; transform: scale(1.18); } }
+@media (prefers-reduced-motion: reduce) { .feedback-invite__sparkles > span { animation: none; opacity: 1; transform: none; } }
 .feedback-invite h2, .feedback-invite p { margin: 0 0 5px; }
 .feedback-invite h2 { font-size: 1.2rem; }
 .feedback-invite p:not(.eyebrow) { color: var(--text-muted); font-size: .85rem; line-height: 1.5; }
