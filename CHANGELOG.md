@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- Após a conclusão do protocolo, o painel estudantil destaca o pedido com nova matrícula e mostra o protocolo encerrado de forma discreta; a demonstração da equipe acompanha o mesmo layout.
 - Nas telas de avaliação do estudante e na demonstração, a biblioteca passa a ser identificada como BIB/FAUFBA.
 - Estudantes com protocolo concluído podem usar a mesma conta para solicitar ficha de outro curso ou grau com nova matrícula; o formulário avisa quando a matrícula já foi usada, e o banco impede a duplicação. A ajuda esclarece essa regra.
 - O cancelamento mostra o motivo e os dados do protocolo no mesmo bloco, sem sugerir que o estudante saia da tela; a Central de ajuda ganha um artigo sobre a ficha catalográfica e corrige respostas sobre novas solicitações.

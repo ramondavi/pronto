@@ -66,6 +66,13 @@ export default async function StudentDashboardPage() {
       <section className={`dashboard-grid${activeRequest ? " dashboard-grid--active-request" : ""}`}>
         <article className="next-action">
           <div className="next-action__content">
+            {activeRequest?.status === "completed" && <div className="next-action__new-request"><p className="eyebrow"><AppIcon name="book" />{t("Novo vínculo acadêmico")}</p><h2>{t("Ingressou em outro curso ou grau?")}</h2><p>{t("Você pode usar esta mesma conta para pedir outra ficha com a matrícula do novo vínculo. A matrícula do protocolo concluído não pode ser reutilizada.")}</p><Link className="button button--primary button--with-icon" href="/painel/solicitacao/nova"><AppIcon name="document" />{t("Solicitar com nova matrícula")}</Link></div>}
+            {activeRequest?.status === "completed" ? <div className="next-action__completed-record">
+              <p className="eyebrow"><AppIcon name="check" />{t("Protocolo concluído")}</p>
+              <strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong>
+              <span>{activeRequest.protocol} · {t(programDisplayName(activeProgram))}</span>
+              <Link href="/painel/solicitacao">{t("Ver protocolo")}</Link>
+            </div> : <>
             {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label={t("Dados da solicitação")}><div className="analysis-case-header__top"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{activeRequest.protocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />{t("Enviada")} <RelativeDateTime value={activeRequest.submitted_at} /></span></div><div className="analysis-case-header__title"><strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />{t("Programa")}</dt><dd title={activeProgram?.name}>{t(programDisplayName(activeProgram))}</dd></div><div><dt><AppIcon name="document" />{t("Tipo de monografia")}</dt><dd>{t(monographDisplayName(activeProgram))}</dd></div></dl></header>}
             <p className="eyebrow next-action__eyebrow"><AppIcon name={actionVisual} />{t("Sua próxima ação")}</p>
             <h2>{activeRequest ? progress?.title : t("Sua solicitação")}</h2>
@@ -73,8 +80,8 @@ export default async function StudentDashboardPage() {
             {progress && <p className={`student-progress-message${progress.needsAction ? " student-progress-message--action" : ""}`} role="status">{progress.description}</p>}
             {!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}
             {activeRequest && progress ? <Link className="button button--primary button--with-icon" href={progress.actionHref}><AppIcon name="request" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
-            {activeRequest?.status === "completed" && <Link className="next-action__new-enrollment" href="/painel/solicitacao/nova"><AppIcon name="book" />{t("Solicitar com nova matrícula")}</Link>}
             {!activeRequest && <p className="next-action__draft-note"><AppIcon name="document" /><span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span></p>}
+            </>}
           </div>
         </article>
         <aside className="dashboard-side">

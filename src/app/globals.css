@@ -2010,6 +2010,23 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .dashboard-main--student-request { width: min(960px, calc(100% - 64px)); }
 .dashboard-main--student-request > :is(.student-draft-panel, .student-new-enrollment, .request-cancellation-notice, .pending-action, .request-summary, .nada-consta-panel, .publication-record, .revision-history, .student-request-history) { margin-top: var(--student-section-gap); }
 .student-new-enrollment { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 15px; border-top: 3px solid var(--institutional); }
+.dashboard-main--student-request .student-new-enrollment { padding: clamp(22px, 3vw, 30px); background: var(--institutional-soft); }
+.student-new-enrollment .button--primary { box-shadow: var(--shadow-card); }
+.dashboard-main--student-request:has(.student-new-enrollment) :is(.student-progress-panel, .request-summary, .publication-record) { padding: 16px 20px; border-top: 1px solid var(--line); background: var(--surface-raised); box-shadow: none; }
+.dashboard-main--student-request:has(.student-new-enrollment) .student-progress-panel h2 { font-size: 1rem; }
+.dashboard-main--student-request:has(.student-new-enrollment) .request-summary__details { margin-top: 12px; padding-top: 12px; }
+.dashboard-main--student-request:has(.student-new-enrollment) .publication-record h2 { font-size: 1rem; }
+.next-action__new-request { display: grid; justify-items: start; gap: 12px; padding: clamp(18px, 3vw, 26px); border: 1px solid color-mix(in srgb, var(--institutional) 32%, var(--line)); border-top: 3px solid var(--institutional); border-radius: var(--radius); background: var(--institutional-soft); }
+.next-action__new-request :is(.eyebrow, p, h2) { margin: 0; }
+.next-action__new-request .eyebrow, .next-action__completed-record .eyebrow { display: inline-flex; align-items: center; gap: 7px; }
+.next-action__new-request .eyebrow svg, .next-action__completed-record .eyebrow svg { width: 17px; height: 17px; }
+.dashboard-main--student-overview .next-action__new-request h2 { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+.next-action__new-request > p:not(.eyebrow) { color: var(--text-muted); font-size: .88rem; line-height: 1.5; }
+.next-action__completed-record { display: grid; justify-items: start; gap: 5px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); font-size: .82rem; }
+.next-action__completed-record :is(p, strong, span) { margin: 0; }
+.next-action__completed-record :is(.eyebrow, span) { color: var(--text-muted); }
+.next-action__completed-record strong { overflow-wrap: anywhere; }
+.next-action__completed-record a { margin-top: 4px; color: var(--institutional); font-weight: 700; }
 .student-new-enrollment__icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
 .student-new-enrollment__icon svg { width: 21px; height: 21px; }
 .student-new-enrollment :is(.eyebrow, h2, p) { margin: 0; }
