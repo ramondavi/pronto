@@ -857,7 +857,7 @@ function ReviewSummary({ items, onNavigate, text, subtitleNeedsReview = false, s
     {pendingGroups.length > 0 && <div className="review-action-list" aria-label={text.pending}>{pendingGroups.map((group) => <section className="review-action-group" key={group.step}>
       <h3><AppIcon name={stepsIcon(group.step)} /><span>{group.title}</span><span className="request-step-status request-step-status--pending review-action-group__count" aria-label={`${group.fields.length} ${group.fields.length === 1 ? copy.pendingOne : copy.pendingMany}`}>{group.fields.length}<span className="request-step-status__detail" aria-hidden="true">{group.fields.length === 1 ? copy.pendingOne : copy.pendingMany}</span></span></h3>
       <div className="review-action-group__items">{group.fields.map((item, index) => <button type="button" key={`${item.field}-${index}`} className="review-action-item" onClick={() => onNavigate(item.step, item.field)}>
-        <span className="review-action-item__content"><strong>{item.label}</strong><small>{item.issue || (item.field.startsWith("declaration") ? copy.declaration : item.value?.trim() ? copy.invalid : copy.missing)}</small></span>
+        <span className="review-action-item__content"><strong>{item.label}</strong><small className="review-action-item__issue">{item.issue || (item.field.startsWith("declaration") ? copy.declaration : item.value?.trim() ? copy.invalid : copy.missing)}</small></span>
         <span className="review-action-item__target">{copy.fix}<AppIcon name="arrowRight" /></span>
       </button>)}</div>
     </section>)}</div>}

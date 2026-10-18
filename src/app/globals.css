@@ -2357,7 +2357,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .review-action-item:focus-visible { outline: 2px solid var(--institutional); outline-offset: 2px; border-radius: var(--radius-sm); }
 .review-action-item__content { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
 .review-action-item__content strong { font-size: .8rem; line-height: 1.35; }
-.review-action-item__content small { color: var(--danger, #b42318); font-size: .73rem; line-height: 1.35; }
+.request-form .review-action-item .review-action-item__issue { color: var(--danger, #b42318); font-size: .73rem; line-height: 1.35; }
 .review-action-item__target { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--institutional); font-size: .72rem; font-weight: 800; white-space: nowrap; }
 .review-action-item__target svg { width: 15px; height: 15px; }
 .review-completed-steps { display: grid; gap: 9px; min-width: 0; color: var(--text-muted); font-size: .74rem; }
