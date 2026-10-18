@@ -547,6 +547,7 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Os títulos principais das telas do painel interno usam pictogramas do conjunto existente, com tamanho, cor e alinhamento constantes ao lado do nome da tela, inclusive em celular.
 - Datas de protocolos no painel aparecem em forma relativa (por exemplo, minutos atrás, ontem ou há dois dias); ao passar o mouse ou focar a data pelo teclado, a data e hora completas substituem o texto com transição suave, como na central de avisos.
 - A Administração organiza usuários, programas, biblioteca, atendimento, FAQ, assuntos, catálogo CDU, indicadores, retenção e auditoria em abas horizontais responsivas. O menu lateral espelha essas abas em um segundo nível recolhível sob Operação, Conteúdo e Controle; cada item tem endereço próprio, e a aba ativa aparece marcada nos dois lugares. O título principal, o breadcrumb e o título da aba do navegador usam o nome da subseção aberta.
+- Em telas pequenas, as setas laterais da barra de guias selecionam a guia anterior ou a próxima, sem desaparecer nos extremos. A guia selecionada fica centralizada sempre que a largura permite e recebe destaque visual; a faixa também aceita rolagem lateral por toque, sem barra de rolagem aparente. Ao passar o cursor ou focar a faixa, as setas somem suavemente para liberar a navegação direta. Sombras internas nas extremidades indicam a continuidade das guias, e as transições respeitam movimento reduzido.
 
 ### 20.1. Perguntas frequentes e ajuda
 

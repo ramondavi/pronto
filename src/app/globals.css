@@ -6408,15 +6408,31 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .admin-operations, .admin-index, .admin-list { grid-template-columns: minmax(0, 1fr); }
   .admin-operations > .admin-tabs-shell,
   .admin-tabs-shell > .admin-tabs { box-sizing: border-box; width: 100%; min-width: 0; }
-  .admin-operations > .admin-tabs-shell { overflow: hidden; border-radius: var(--radius); background: var(--surface); }
-  .admin-tabs-shell > .admin-tabs { padding-inline: 54px; scroll-padding-inline: 54px; }
-  .admin-tabs-shell__arrow { position: absolute; z-index: 1; top: 0; bottom: 0; display: grid; place-items: center; width: 48px; padding: 0; border: 0; background: var(--surface); color: var(--institutional); cursor: pointer; }
-  .admin-tabs-shell__arrow--start { left: 0; box-shadow: 8px 0 12px -8px var(--text-muted); }
-  .admin-tabs-shell__arrow--end { right: 0; box-shadow: -8px 0 12px -8px var(--text-muted); }
+  .admin-operations > .admin-tabs-shell { isolation: isolate; overflow: hidden; border-radius: var(--radius); background: var(--surface); }
+  .admin-tabs-shell > .admin-tabs { padding-inline: 0; scroll-padding-inline: 0; scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .admin-tabs-shell > .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tabs-shell > .admin-tabs::before,
+  .admin-tabs-shell > .admin-tabs::after { flex: 0 0 var(--tab-edge-start, 50px); content: ""; }
+  .admin-tabs-shell > .admin-tabs::after { flex-basis: var(--tab-edge-end, 50px); }
+  .admin-tabs-shell::before,
+  .admin-tabs-shell::after { position: absolute; z-index: 2; top: 0; bottom: 0; width: 22px; pointer-events: none; content: ""; transition: opacity .25s ease; }
+  .admin-tabs-shell::before { left: 0; box-shadow: inset 14px 0 13px -13px color-mix(in srgb, var(--text) 62%, transparent); }
+  .admin-tabs-shell::after { right: 0; box-shadow: inset -14px 0 13px -13px color-mix(in srgb, var(--text) 62%, transparent); }
+  .admin-tabs-shell[data-overflow-start="false"]::before,
+  .admin-tabs-shell[data-overflow-end="false"]::after { opacity: .3; }
+  .admin-tabs-shell > .admin-tabs button { opacity: .74; transition: background .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease, transform .25s ease, box-shadow .25s ease; }
+  .admin-tabs-shell > .admin-tabs button:is(:hover, :focus-visible) { opacity: 1; }
+  .admin-tabs-shell > .admin-tabs button.is-active { position: relative; z-index: 1; opacity: 1; border-color: var(--institutional); background: var(--institutional-soft); font-weight: 900; box-shadow: inset 0 -3px 0 var(--institutional), 0 3px 12px color-mix(in srgb, var(--institutional) 18%, transparent); transform: scale(1.04); }
+  .admin-tabs-shell__arrow { position: absolute; z-index: 3; top: 0; bottom: 0; display: grid; place-items: center; width: 48px; padding: 0; border: 0; background: var(--surface); color: var(--institutional); cursor: pointer; transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  .admin-tabs-shell__arrow--start { left: 0; }
+  .admin-tabs-shell__arrow--end { right: 0; }
   .admin-tabs-shell__arrow--start svg { transform: rotate(180deg); }
   .admin-tabs-shell__arrow svg { width: 18px; height: 18px; }
-  .admin-tabs-shell__arrow:disabled { color: var(--text-muted); cursor: default; box-shadow: none; }
+  .admin-tabs-shell__arrow:disabled { color: var(--text-muted); cursor: default; }
   .admin-tabs-shell__arrow:disabled svg { opacity: .35; }
+  .admin-tabs-shell > .admin-tabs:focus-within ~ .admin-tabs-shell__arrow { opacity: 0; visibility: hidden; pointer-events: none; }
+  @media (hover: hover) { .admin-tabs-shell > .admin-tabs:hover ~ .admin-tabs-shell__arrow { opacity: 0; visibility: hidden; pointer-events: none; } }
+  @media (prefers-reduced-motion: reduce) { .admin-tabs-shell > .admin-tabs button, .admin-tabs-shell__arrow, .admin-tabs-shell::before, .admin-tabs-shell::after { transition: none; } }
   .admin-operations > .admin-section { box-sizing: border-box; width: 100%; }
   .admin-index__card, .admin-tab-page .admin-section :is(form, label, fieldset, details, article, input, select, textarea) { min-width: 0; max-width: 100%; }
   .admin-tab-page .admin-section { padding: 18px; }
