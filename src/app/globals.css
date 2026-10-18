@@ -1511,7 +1511,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .staff-notifications__trigger.is-emitting { transform-origin: 24px 50%; animation: staff-notification-trigger-expand .65s cubic-bezier(.2,.9,.25,1.1) both; }
 @keyframes staff-notification-trigger-expand { 0%, 100% { transform: scale(1); } 24% { transform: scale(1.08,.82); } 52% { transform: scale(.94,1.13); } 75% { transform: scale(1.03,.97); } }
 @keyframes staff-bell-ring { 0%, 100% { transform: rotate(0); } 20%, 60% { transform: rotate(-18deg); } 40%, 80% { transform: rotate(18deg); } }
-.staff-notifications__badge { position: absolute; top: -9px; right: -10px; display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border: 2px solid var(--nav-bg); border-radius: 999px; background: #b91c1c; color: #fff; font-size: .65rem; font-weight: 800; line-height: 1; }
+.staff-notifications__badge { position: absolute; top: -19px; right: -20px; display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border: 2px solid var(--nav-bg); border-radius: 999px; background: #b91c1c; color: #fff; font-size: .65rem; font-weight: 800; line-height: 1; }
 :root[data-theme="dark"] .staff-notifications__badge { background: #c72d2d; }
 :root[data-contrast="high"] .staff-notifications__badge { border-color: #000; background: #fff; color: #000; }
 .staff-notifications__toast { position: absolute; z-index: 21; top: calc(100% + 10px); left: 0; display: grid; gap: 4px; width: min(320px, calc(100vw - 32px)); padding: 14px 16px; border: 1px solid var(--institutional); border-radius: 24px; background: var(--staff-notification-bg); box-shadow: 0 14px 36px rgb(0 0 0 / .2); color: var(--text); font: inherit; text-align: left; cursor: pointer; transform-origin: 20px -29px; animation: staff-notification-toast-expand .65s cubic-bezier(.2,.9,.25,1.1) both; transition: background .18s ease; }
@@ -6213,4 +6213,43 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .backend-help__panel, .backend-help.is-open .backend-help__panel { transition: none; }
   .breadcrumb--public, .breadcrumb--dashboard { overflow-x: auto; }
   .breadcrumb--public.is-scrolling ol, .breadcrumb--dashboard.is-scrolling ol { animation: none; }
+}
+
+.dashboard-header--staff .dashboard-header__inner { overflow: visible; }
+@media (max-width: 560px) {
+  .dashboard-shell .dashboard-nav nav.dashboard-nav__menu { max-height: max(80px, calc(100dvh - 140px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu { max-height: none; overflow: visible; }
+  .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu.is-visible,
+  .dashboard-shell .dashboard-nav .dashboard-nav__admin-submenu.is-visible { grid-template-rows: auto; }
+  .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu.is-visible > .dashboard-nav__admin-menu-inner,
+  .dashboard-shell .dashboard-nav .dashboard-nav__admin-submenu.is-visible > .dashboard-nav__admin-submenu-inner { overflow: visible; }
+
+  .admin-index-screen, .admin-tab-page, .admin-index, .admin-operations,
+  .admin-operations > .admin-section, .admin-list { min-width: 0; max-width: 100%; }
+  .admin-index__card, .admin-tab-page .admin-section :is(form, label, fieldset, details, article, input, select, textarea) { min-width: 0; max-width: 100%; }
+  .admin-tab-page .admin-section { padding: 18px; }
+  .admin-tab-page .admin-section :is(input, select, textarea) { box-sizing: border-box; }
+  .admin-tab-page .admin-section :is(.admin-grid, .admin-row, .admin-columns, .knowledge-card__fields, .staff-permissions__schedule-fields) { grid-template-columns: minmax(0, 1fr); }
+  .admin-tab-page .admin-section :is(.admin-wide, .knowledge-card__wide, .admin-row--faq-question, .admin-row--faq-answer) { grid-column: 1; }
+  .admin-tab-page .admin-section :is(.admin-section__stats, .stat-grid) { grid-template-columns: minmax(0, 1fr); }
+  .admin-tab-page .admin-section :is(.admin-user-filters label, .admin-programs__toolbar label, .admin-stats__period-fields label) { flex-basis: 100%; width: 100%; min-width: 0; max-width: none; }
+  .admin-tab-page .admin-birth-date { margin-inline: 0; }
+  .admin-tab-page .admin-birth-date label { min-width: 0; width: 100%; }
+  .admin-tab-page .admin-stats__period { padding: 16px; }
+  .admin-tab-page .admin-stats__presets { min-width: 0; flex-wrap: wrap; }
+  .admin-tab-page .knowledge-admin { min-width: 0; padding: 16px; }
+  .admin-tab-page .knowledge-card__summary { grid-template-columns: 36px minmax(0, 1fr) 18px; gap: 9px; padding: 14px; }
+  .admin-tab-page .knowledge-card__icon { width: 36px; height: 36px; }
+  .admin-tab-page .knowledge-card__meta { grid-column: 2; grid-row: 2; justify-items: start; }
+  .admin-tab-page .knowledge-card__toggle-icon { grid-column: 3; grid-row: 1; }
+  .admin-tab-page .knowledge-card__editor { padding: 14px; }
+  .admin-tab-page :is(.admin-section, .admin-row, .admin-index__copy, .staff-permissions__group, .knowledge-card__editor) { overflow-wrap: anywhere; }
+  .admin-tab-page :is(.calendar-records, .audit-table, .knowledge-rich-content) { max-width: 100%; overflow-x: auto; }
+  .program-setting-card, .feedback-admin { min-width: 0; max-width: 100%; }
+  .program-setting-card { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 18px; }
+  .program-setting-card :is(form, label, input) { min-width: 0; max-width: 100%; }
+  .program-setting-card input:not([type="checkbox"]) { width: 100%; }
+  .feedback-admin__stats { grid-template-columns: minmax(0, 1fr); }
+  .feedback-admin :is(.feedback-admin__campaign, .feedback-admin__export, .feedback-admin__summary, .feedback-admin__responses) { min-width: 0; overflow-wrap: anywhere; }
+  .feedback-admin__export-actions .button { flex: 1 1 100%; }
 }
