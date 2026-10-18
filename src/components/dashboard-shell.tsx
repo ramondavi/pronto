@@ -217,7 +217,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         rail.style.setProperty("--rail-bg-top", `${backgroundTop}px`);
         rail.style.setProperty("--rail-bg-height", `${Math.max(0, Math.min(visibleHeight, (shellBounds?.bottom ?? window.innerHeight) - fixedTop) - backgroundTop)}px`);
         rail.style.setProperty("--rail-preview-bottom", `${Math.max(16, window.innerHeight - (shellBounds?.bottom ?? window.innerHeight) + 16)}px`);
-        rail.style.setProperty("--rail-nav-top", `${visibleHeight * .5 * (1 - progress) + 160 * progress}px`);
+        const scrolledNavTop = Math.max(88, Math.min(160, visibleHeight * .22));
+        rail.style.setProperty("--rail-nav-top", `${visibleHeight * .5 * (1 - progress) + scrolledNavTop * progress}px`);
         rail.style.setProperty("--rail-nav-shift", `${-50 * (1 - progress)}%`);
       });
     };

@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- Em janelas largas e baixas, a barra lateral ajusta a posição dos itens após a rolagem para preservar o espaço acima do controle de visão estudantil, aberta ou contraída.
 - As setas das guias administrativas no celular cobrem as laterais sem deixar o texto das guias aparecer por trás das bordas.
 - Na prévia móvel, os controles da visão estudantil deixam espaço nas demais telas, o cabeçalho alinha avatar e aviso ao menu, o menu fecha ao tocar fora e títulos longos percorrem uma linha.
 - Em telas pequenas, o painel mantém um espaço intermediário e uniforme entre o cabeçalho, os breadcrumbs e o conteúdo.
