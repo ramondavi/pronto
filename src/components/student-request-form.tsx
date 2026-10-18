@@ -835,15 +835,33 @@ function DraftProgress({ items, language, onReview, reviewHref }: { items: Revie
 }
 
 function ReviewSummary({ items, onNavigate, text, subtitleNeedsReview = false, subtitleIsGerman = false }: { items: ReviewItem[]; onNavigate: (step: number, field: string) => void; text: Copy; subtitleNeedsReview?: boolean; subtitleIsGerman?: boolean }) {
-  const invalidCount = items.filter((item) => !item.valid).length;
   const grouping = [{ title: text.steps[0], step: 1 }, { title: text.steps[1], step: 2 }, { title: text.steps[2], step: 3 }, { title: text.steps[3], step: 4 }];
-  const sectionFor = (item: ReviewItem) => item.step === 1 ? text.steps[0] : item.step === 3 ? text.keywords : item.step === 4 ? (item.field.startsWith("declaration") ? text.steps[3] : text.publicLink) : /^(author|birth|advisor|coadvisor|committee)/.test(item.field) ? text.people : /^(title|subtitle|original-language)/.test(item.field) ? text.titleAndLanguage : text.catalogingData;
   const pendingGroups = grouping.map((group) => ({ ...group, fields: items.filter((item) => item.step === group.step && !item.valid) })).filter((group) => group.fields.length);
+  const completedGroups = grouping.filter((group) => !pendingGroups.some((pending) => pending.step === group.step));
+  const invalidCount = pendingGroups.reduce((count, group) => count + group.fields.length, 0);
+  const copy = ({
+    pt: { issues: "itens para resolver", stage: "etapa com pendências", stages: "etapas com pendências", completed: "Etapas prontas", fix: "Ir ao campo", missing: "Preencha este campo.", invalid: "Confira a informação preenchida.", declaration: "Confirme esta declaração." },
+    en: { issues: "items to resolve", stage: "step with pending items", stages: "steps with pending items", completed: "Completed steps", fix: "Go to field", missing: "Fill in this field.", invalid: "Check the information entered.", declaration: "Confirm this statement." },
+    es: { issues: "elementos por resolver", stage: "etapa con pendientes", stages: "etapas con pendientes", completed: "Etapas completas", fix: "Ir al campo", missing: "Complete este campo.", invalid: "Revise la información ingresada.", declaration: "Confirme esta declaración." },
+    de: { issues: "Punkte zu bearbeiten", stage: "Schritt mit offenen Punkten", stages: "Schritte mit offenen Punkten", completed: "Abgeschlossene Schritte", fix: "Zum Feld", missing: "Füllen Sie dieses Feld aus.", invalid: "Prüfen Sie die eingegebene Angabe.", declaration: "Bestätigen Sie diese Erklärung." },
+    fr: { issues: "éléments à corriger", stage: "étape avec des éléments en attente", stages: "étapes avec des éléments en attente", completed: "Étapes terminées", fix: "Aller au champ", missing: "Remplissez ce champ.", invalid: "Vérifiez la saisie.", declaration: "Confirmez cette déclaration." },
+    it: { issues: "elementi da risolvere", stage: "fase con elementi in sospeso", stages: "fasi con elementi in sospeso", completed: "Fasi completate", fix: "Vai al campo", missing: "Compila questo campo.", invalid: "Controlla le informazioni inserite.", declaration: "Conferma questa dichiarazione." },
+  } as const)[copyLanguage(text)];
   return <>
-    <h2>{text.review}</h2>{invalidCount > 0 && <p>{text.reviewIntro}</p>}
-    <div className={`review-summary review-summary--${invalidCount ? "pending" : "ok"}`} role="status"><AppIcon name={invalidCount ? "help" : "check"} /><span>{invalidCount ? `${invalidCount} ${text.attention}` : text.allValid}</span></div>
+    <h2>{text.review}</h2>
+    <div className={`review-action-summary review-action-summary--${invalidCount ? "pending" : "ok"}`} role="status">
+      <span className="review-action-summary__icon"><AppIcon name={invalidCount ? "help" : "check"} /></span>
+      <span className="review-action-summary__text"><strong>{invalidCount ? `${invalidCount} ${copy.issues}` : text.allValid}</strong>{invalidCount > 0 && <small>{pendingGroups.length} {pendingGroups.length === 1 ? copy.stage : copy.stages}</small>}</span>
+    </div>
     {subtitleNeedsReview && <button className="subtitle-capitalization-warning subtitle-capitalization-warning--review" type="button" onClick={() => onNavigate(2, "subtitle")}><AppIcon name="help" /><span>{(subtitleIsGerman ? germanSubtitleCopy : subtitleCapitalizationCopy)[copyLanguage(text)].warning}</span><AppIcon name="arrowRight" /></button>}
-    {pendingGroups.length > 0 && <div className="review-pending-list" aria-label={text.pending}>{pendingGroups.map((group) => <section className="review-group" key={group.step}><h3><AppIcon name={stepsIcon(group.step)} />{group.title}</h3>{[...new Set(group.fields.map(sectionFor))].map((section) => <div className="review-subsection" key={section}>{section !== group.title && <h5>{section}</h5>}{group.fields.filter((item) => sectionFor(item) === section).map((item, index) => <button type="button" key={`${item.field}-${index}`} className="review-item review-item--pending" onClick={() => onNavigate(item.step, item.field)}><span>{item.label}{item.value && <small className="review-item__value">{item.value}</small>}{item.issue && <small className="review-item__issue">{item.issue}</small>}</span><AppIcon name="arrowRight" /></button>)}</div>)}</section>)}</div>}
+    {pendingGroups.length > 0 && <div className="review-action-list" aria-label={text.pending}>{pendingGroups.map((group) => <section className="review-action-group" key={group.step}>
+      <h3><AppIcon name={stepsIcon(group.step)} /><span>{group.title}</span><small>{group.fields.length}</small></h3>
+      <div className="review-action-group__items">{group.fields.map((item, index) => <button type="button" key={`${item.field}-${index}`} className="review-action-item" onClick={() => onNavigate(item.step, item.field)}>
+        <span className="review-action-item__content"><strong>{item.label}</strong><small>{item.issue || (item.field.startsWith("declaration") ? copy.declaration : item.value?.trim() ? copy.invalid : copy.missing)}</small></span>
+        <span className="review-action-item__target">{copy.fix}<AppIcon name="arrowRight" /></span>
+      </button>)}</div>
+    </section>)}</div>}
+    {completedGroups.length > 0 && invalidCount > 0 && <div className="review-completed-steps"><span>{copy.completed}</span><ul>{completedGroups.map((group) => <li key={group.step}><AppIcon name="check" />{group.title}</li>)}</ul></div>}
   </>;
 }
 
