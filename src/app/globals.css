@@ -6226,6 +6226,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
   .admin-index-screen, .admin-tab-page, .admin-index, .admin-operations,
   .admin-operations > .admin-section, .admin-list { min-width: 0; max-width: 100%; }
+  .admin-operations, .admin-index, .admin-list { grid-template-columns: minmax(0, 1fr); }
+  .admin-operations > .admin-tabs { box-sizing: border-box; width: 100%; min-width: 0; }
+  .admin-operations > .admin-section { box-sizing: border-box; width: 100%; }
   .admin-index__card, .admin-tab-page .admin-section :is(form, label, fieldset, details, article, input, select, textarea) { min-width: 0; max-width: 100%; }
   .admin-tab-page .admin-section { padding: 18px; }
   .admin-tab-page .admin-section :is(input, select, textarea) { box-sizing: border-box; }
