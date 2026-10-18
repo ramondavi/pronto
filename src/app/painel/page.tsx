@@ -31,7 +31,7 @@ export default async function StudentDashboardPage() {
     if (!allowed) redirect("/painel/conta");
     return <StaffOverview role={profile.role} userId={user.id} firstName={profile.full_name.trim().split(/\s+/)[0] || "Olá"} />;
   }
-  const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, academic_enrollments(academic_programs(code,name,work_type))").in("status", ["submitted", "in_review", "changes_requested", "approved"]).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, academic_enrollments(academic_programs(code,name,work_type))").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   const activeEnrollment = activeRequest && (Array.isArray(activeRequest.academic_enrollments) ? activeRequest.academic_enrollments[0] : activeRequest.academic_enrollments);
   const activeProgram = activeEnrollment && (Array.isArray(activeEnrollment.academic_programs) ? activeEnrollment.academic_programs[0] : activeEnrollment.academic_programs);
   const [{ data: nadaConsta }, { data: homologation }] = activeRequest ? await Promise.all([
