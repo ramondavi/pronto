@@ -8,7 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
-- A tela real e a demonstração deixam de oferecer outro pedido no protocolo concluído ou cancelado; a Visão geral acompanha o último protocolo e uma nova regra impede repetir a matrícula do mesmo vínculo acadêmico.
+- A tela real e a demonstração deixam de oferecer outro pedido após a conclusão; um protocolo cancelado permite recomeçar. A Visão geral acompanha o último protocolo, e uma regra no banco impede nova solicitação quando já existe protocolo ativo ou concluído.
 - Corrigida a falha de compilação que impedia a atualização da prévia após os ajustes do painel estudantil.
 - Em telas pequenas, os títulos preservam letras inteiras, a linha do tempo aceita arraste livre com uma indicação visível e a confirmação de saída ganha ícones e espaçamentos do painel.
 - A solicitação do estudante destaca primeiro a etapa pendente ou a ficha liberada; Nada Consta aprovado e correções resolvidas ficam recolhidos como concluídos. A Visão geral da demonstração leva diretamente à correção pendente.
