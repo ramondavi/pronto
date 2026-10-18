@@ -196,6 +196,35 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
   }, [pathname, searchParams]);
   useEffect(() => {
+    const timelines = new Set<HTMLElement>();
+    const observer = new ResizeObserver(() => window.requestAnimationFrame(measure));
+    const measure = () => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      timelines.forEach((timeline) => {
+        const viewport = timeline.parentElement;
+        const distance = compact && viewport ? Math.max(0, timeline.scrollWidth - viewport.clientWidth) : 0;
+        timeline.classList.toggle("is-scrolling", distance > 2);
+        timeline.style.setProperty("--timeline-travel", `${-distance}px`);
+        timeline.style.setProperty("--timeline-duration", `${Math.min(9, Math.max(4, distance / 80 + 2.5))}s`);
+      });
+    };
+    const collect = () => {
+      document.querySelectorAll<HTMLElement>(".dashboard-main ol.queue-item__timeline").forEach((timeline) => {
+        if (timelines.has(timeline)) return;
+        timelines.add(timeline);
+        observer.observe(timeline);
+        if (timeline.parentElement) observer.observe(timeline.parentElement);
+      });
+      measure();
+    };
+    const changes = new MutationObserver(collect);
+    const root = document.querySelector(".dashboard-main");
+    if (root) changes.observe(root, { childList: true, subtree: true });
+    collect();
+    window.addEventListener("resize", measure);
+    return () => { changes.disconnect(); observer.disconnect(); window.removeEventListener("resize", measure); };
+  }, [pathname, searchParams]);
+  useEffect(() => {
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);

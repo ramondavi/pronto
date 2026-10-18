@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- O selo do protocolo enviado mostra seu nome uma vez; as linhas do tempo horizontais percorrem as etapas com texto legível em telas pequenas.
 - Na prévia móvel, o aviso de funcionamento quebra o texto dentro da própria caixa sem alargar as telas do estudante; o menu da demonstração mantém a mesma altura da Visão geral.
 - Corrigida a regra móvel que anulava a centralização do menu de demonstração; ele passa a seguir a largura da tela estudantil aberta e recalcula a posição ao navegar.
 - As setas das guias administrativas permanecem no lugar ao alcançar a primeira ou a última guia, ficando discretamente inativas sem alterar a largura da lista.

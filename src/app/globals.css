@@ -4433,6 +4433,20 @@ button.queue-item__note:hover, button.queue-item__note:focus-visible { backgroun
 .student-delivery-timeline .is-current .queue-item__timeline-dot::after { animation: none; }
 @media (max-width: 800px) { .student-delivery-case-header .analysis-case-header__details { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 650px) { .student-delivery-timeline li { font-size: .65rem; } .student-delivery-timeline li > time { font-size: .62rem; } }
+@media (max-width: 560px) {
+  .queue-item__state, .student-delivery-case-header { overflow: hidden; }
+  .queue-item__state { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-main .queue-item__timeline { justify-content: flex-start; gap: 18px; width: max-content; min-width: 100%; max-width: none; }
+  .dashboard-main .queue-item__timeline li { flex: 0 0 136px; min-width: 136px; font-size: .72rem; }
+  .dashboard-main .queue-item__timeline.is-scrolling { animation: panel-heading-pan var(--timeline-duration, 5s) linear infinite alternate; --heading-travel: var(--timeline-travel); }
+  .queue-item__state .queue-item__timeline.is-scrolling { animation-play-state: paused; }
+  .queue-item__state:has(.progress-badge:hover) .queue-item__timeline.is-scrolling, .queue-item__state:focus-visible .queue-item__timeline.is-scrolling { animation-play-state: running; }
+  .dashboard-main .student-delivery-timeline li > time, .dashboard-main .student-delivery-timeline li > small { font-size: .7rem; }
+}
+@media (max-width: 560px) and (prefers-reduced-motion: reduce) {
+  .queue-item__state, .student-delivery-case-header { overflow-x: auto; }
+  .dashboard-main .queue-item__timeline.is-scrolling { animation: none; }
+}
 @media (max-width: 520px) { .student-delivery-case-header .analysis-case-header__details { grid-template-columns: 1fr; } }
 
 .dashboard-main--analysis .analysis-case-header { margin-top: 2px; }
