@@ -167,6 +167,35 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
   }, [mobileProfileOpen]);
   useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Element && !event.target.closest("#menu-painel, .dashboard-nav__mobile-toggle")) setMobileMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
+  }, [mobileMenuOpen]);
+  useEffect(() => {
+    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .page-heading h1, .dashboard-main .analysis-case-header__title h1")];
+    if (!headings.length) return;
+    const measure = () => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      headings.forEach((heading) => {
+        const distance = compact ? Math.max(0, heading.scrollWidth - (heading.parentElement?.clientWidth ?? heading.clientWidth)) : 0;
+        heading.classList.toggle("is-scrolling", distance > 2);
+        heading.style.setProperty("--heading-travel", `${-distance}px`);
+        heading.style.setProperty("--heading-duration", `${Math.max(8, distance / 24 + 4)}s`);
+      });
+    };
+    const observer = new ResizeObserver(measure);
+    headings.forEach((heading) => { observer.observe(heading); if (heading.parentElement) observer.observe(heading.parentElement); });
+    const frame = window.requestAnimationFrame(measure);
+    return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [pathname, searchParams]);
+  useEffect(() => {
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
