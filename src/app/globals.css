@@ -1291,6 +1291,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .password-requirements p { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--text-muted); }
 .password-requirements p.is-met { color: var(--institutional); font-weight: 750; }
 .password-requirements p span { width: 16px; font-size: 1rem; }
+.password-requirements p :is(.password-requirements__special-long, .password-requirements__special-short) { width: auto; font-size: inherit; }
 .form-row--between { display: flex; align-items: center; justify-content: space-between; font-size: 0.83rem; }
 .check { display: flex; align-items: flex-start; gap: 8px; font-size: 0.83rem; color: var(--text-muted); }
 .check input { width: 17px; min-height: 17px; margin-top: 2px; accent-color: var(--institutional); }
@@ -6099,6 +6100,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   body:has(main > .hero) .site-header__inner { gap: 4px; }
   body:has(main > .hero) .site-header__nav { gap: 3px; }
   body:has(main > .hero) .site-header__inner .brand--compact .brand__logo { width: min(210px, 49vw); }
+  body:has(main > .hero) .hero__grid { padding-top: 145px; }
   .hero__lead { max-width: 100%; font-size: clamp(2.15rem, 9.8vw, 2.65rem); }
   .hero__content > .actions { flex-wrap: nowrap; gap: 8px; }
   .hero__content > .actions > .button { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: .8rem; white-space: nowrap; }
@@ -6124,6 +6126,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .site-header__account .site-header__access-label,
   .site-header__account .site-header__access-greeting,
   .site-header__account--touch .site-header__access > span:last-child { display: none; }
+}
+@media (max-width: 820px) {
+  .breadcrumb--public { width: min(100% - 28px, 680px); }
 }
 @media (max-width: 650px) {
   .breadcrumb { overflow: hidden; }
