@@ -277,13 +277,13 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         <div className="dashboard-nav__top">
           <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v9-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v9-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
           <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => { setMobileProfileOpen(false); setMobileMenuOpen((open) => !open); }}><span /><span /><span /></button>
-          {(!isStaff || previewMode) && <div className="dashboard-student-profile" ref={mobileProfileRef}>
-            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={studentProfileName} small /></button>
+          <div className="dashboard-student-profile" ref={mobileProfileRef}>
+            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}>{isStaff && !previewMode ? <LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small /> : <StudentAvatar name={studentProfileName} small />}</button>
             <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
-              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><small>{t.student}</small></div>
+              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><small>{isStaff && !previewMode ? t[role as keyof typeof t] ?? role : t.student}</small></div>
               <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{t.account}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
             </div>
-          </div>}
+          </div>
         </div>
         {isStaff && !previewMode ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
           {canViewOverview && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>}

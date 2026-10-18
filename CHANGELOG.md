@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- No celular, o cabeçalho da equipe reúne menu, notificações, mensagens, pictograma e avatar na mesma linha; os contadores acompanham seus botões e o avatar abre as ações da conta.
 - A chave de visão estudantil, o ícone da fila e os rótulos dos submenus aparecem corretamente no menu móvel da equipe; Minha conta mantém o mesmo espaçamento dos demais itens. Os controles da demonstração cabem em telas estreitas. Os links sociais do rodapé ganham áreas de toque maiores. O compartilhamento usa o logo em fundo claro com quadrados da marca e mantém a descrição institucional completa.
 - O menu móvel da conta mostra saudação e perfil na mesma linha, sem repetir o nome, e usa o vermelho padrão na saída.
 - No celular, o cabeçalho do estudante e sua visão de demonstração posicionam o avatar à direita; ele abre e fecha um menu com saudação, perfil, Minha conta e saída. A identificação do estudante no cabeçalho usa o mesmo componente nas duas visões.
