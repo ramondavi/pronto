@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- O botão flutuante de acessibilidade cresce 1 px em cada dimensão; no celular, a ajuda flutuante acompanha seu tamanho e sua margem lateral.
 - A busca de ajuda no celular usa áreas de toque completas e leva às respostas; os logos isolados ficam centrados pela arte visível, as datas dos artigos ganham leitura melhor e o rótulo de funcionamento fecha ao segundo toque.
 - O envio do código de acesso para estudantes também mostra uma contagem de 90 segundos no botão de reenvio, preservada ao recarregar a tela.
 - A recuperação pública de senha mostra no próprio botão a contagem de 90 segundos antes de permitir novo envio, como em Meus dados pessoais.

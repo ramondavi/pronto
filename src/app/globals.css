@@ -5464,8 +5464,8 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 @media (prefers-reduced-motion: reduce) { .book-loading-icon__page { animation: none; opacity: 0; } }
 :root { --floating-access-size: 40px; --vlibras-btn-outline: 1px solid var(--institutional); --vlibras-btn-focus-visible-outline: 3px solid var(--focus); --vlibras-btn-focus-visible-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 24%, transparent); --vlibras-btn-hover-filter: brightness(.88); }
 :root[data-theme="dark"] { --vlibras-btn-hover-filter: brightness(1.18); }
-.accessibility-widget { position: fixed; z-index: 89; top: var(--access-widget-top, calc(50dvh - 72px)); right: var(--access-widget-right, 10px); width: var(--access-widget-size, var(--floating-access-size)); border: 0; background: transparent; color: var(--text); font-size: .78rem; font-weight: 650; }
-.accessibility-widget .accessibility-widget__trigger { display: grid; place-items: center; box-sizing: border-box; width: var(--access-widget-size, var(--floating-access-size)); height: var(--access-widget-height, var(--floating-access-size)); min-width: 0; min-height: 0; padding: 0; border: 1px solid color-mix(in srgb, var(--institutional) 62%, var(--surface)); border-radius: 10px; background: color-mix(in srgb, var(--institutional) 62%, var(--surface)); color: #fff; box-shadow: var(--shadow); cursor: pointer; opacity: .62; transition: background-color .18s ease, border-color .18s ease, opacity .18s ease; }
+.accessibility-widget { position: fixed; z-index: 89; top: var(--access-widget-top, calc(50dvh - 72px)); right: var(--access-widget-right, 10px); width: calc(var(--access-widget-size, var(--floating-access-size)) + 1px); border: 0; background: transparent; color: var(--text); font-size: .78rem; font-weight: 650; }
+.accessibility-widget .accessibility-widget__trigger { display: grid; place-items: center; box-sizing: border-box; width: calc(var(--access-widget-size, var(--floating-access-size)) + 1px); height: calc(var(--access-widget-height, var(--floating-access-size)) + 1px); min-width: 0; min-height: 0; padding: 0; border: 1px solid color-mix(in srgb, var(--institutional) 62%, var(--surface)); border-radius: 10px; background: color-mix(in srgb, var(--institutional) 62%, var(--surface)); color: #fff; box-shadow: var(--shadow); cursor: pointer; opacity: .62; transition: background-color .18s ease, border-color .18s ease, opacity .18s ease; }
 .accessibility-widget .accessibility-widget__trigger:hover, .accessibility-widget .accessibility-widget__trigger:focus-visible, .accessibility-widget .accessibility-widget__trigger[aria-expanded="true"] { border-color: color-mix(in srgb, var(--institutional) 72%, var(--text)); background: color-mix(in srgb, var(--institutional) 72%, var(--text)); color: #fff; opacity: 1; }
 :root[data-contrast="high"] .accessibility-widget .accessibility-widget__trigger { opacity: 1; }
 .accessibility-widget .accessibility-widget__trigger:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
@@ -6052,6 +6052,16 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   pointer-events: auto;
   transform: translate(0, 0) scale(1);
   transition: opacity .24s ease, transform .32s cubic-bezier(.2, .8, .2, 1), visibility 0s, box-shadow .18s ease;
+}
+@media (max-width: 650px) {
+  .backend-help { right: var(--access-widget-right, 10px); }
+  .backend-help .backend-help__trigger,
+  .backend-help:hover .backend-help__trigger,
+  .backend-help__trigger:focus-visible { width: calc(var(--access-widget-size, var(--floating-access-size)) + 1px); height: calc(var(--access-widget-height, var(--floating-access-size)) + 1px); }
+  .backend-help:hover .backend-help__trigger svg,
+  .backend-help__trigger:focus-visible svg { transform: none; }
+  .backend-help:hover .backend-help__trigger span,
+  .backend-help__trigger:focus-visible span { opacity: 0; }
 }
 .help-search__answer { margin-top: 16px; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); scroll-margin-top: 24px; }
 .help-search__answer h2 { margin-top: 0; }
