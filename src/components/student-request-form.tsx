@@ -840,12 +840,12 @@ function ReviewSummary({ items, onNavigate, text, subtitleNeedsReview = false, s
   const completedGroups = grouping.filter((group) => !pendingGroups.some((pending) => pending.step === group.step));
   const invalidCount = pendingGroups.reduce((count, group) => count + group.fields.length, 0);
   const copy = ({
-    pt: { issues: "itens para resolver", stage: "etapa com pendências", stages: "etapas com pendências", completed: "Etapas prontas", fix: "Ir ao campo", missing: "Preencha este campo.", invalid: "Confira a informação preenchida.", declaration: "Confirme esta declaração." },
-    en: { issues: "items to resolve", stage: "step with pending items", stages: "steps with pending items", completed: "Completed steps", fix: "Go to field", missing: "Fill in this field.", invalid: "Check the information entered.", declaration: "Confirm this statement." },
-    es: { issues: "elementos por resolver", stage: "etapa con pendientes", stages: "etapas con pendientes", completed: "Etapas completas", fix: "Ir al campo", missing: "Complete este campo.", invalid: "Revise la información ingresada.", declaration: "Confirme esta declaración." },
-    de: { issues: "Punkte zu bearbeiten", stage: "Schritt mit offenen Punkten", stages: "Schritte mit offenen Punkten", completed: "Abgeschlossene Schritte", fix: "Zum Feld", missing: "Füllen Sie dieses Feld aus.", invalid: "Prüfen Sie die eingegebene Angabe.", declaration: "Bestätigen Sie diese Erklärung." },
-    fr: { issues: "éléments à corriger", stage: "étape avec des éléments en attente", stages: "étapes avec des éléments en attente", completed: "Étapes terminées", fix: "Aller au champ", missing: "Remplissez ce champ.", invalid: "Vérifiez la saisie.", declaration: "Confirmez cette déclaration." },
-    it: { issues: "elementi da risolvere", stage: "fase con elementi in sospeso", stages: "fasi con elementi in sospeso", completed: "Fasi completate", fix: "Vai al campo", missing: "Compila questo campo.", invalid: "Controlla le informazioni inserite.", declaration: "Conferma questa dichiarazione." },
+    pt: { issues: "itens para resolver", stage: "etapa com pendências", stages: "etapas com pendências", completed: "Etapas prontas", revisit: "Revisar esta etapa", fix: "Ir ao campo", missing: "Preencha este campo.", invalid: "Confira a informação preenchida.", declaration: "Confirme esta declaração." },
+    en: { issues: "items to resolve", stage: "step with pending items", stages: "steps with pending items", completed: "Completed steps", revisit: "Review this step", fix: "Go to field", missing: "Fill in this field.", invalid: "Check the information entered.", declaration: "Confirm this statement." },
+    es: { issues: "elementos por resolver", stage: "etapa con pendientes", stages: "etapas con pendientes", completed: "Etapas completas", revisit: "Revisar esta etapa", fix: "Ir al campo", missing: "Complete este campo.", invalid: "Revise la información ingresada.", declaration: "Confirme esta declaración." },
+    de: { issues: "Punkte zu bearbeiten", stage: "Schritt mit offenen Punkten", stages: "Schritte mit offenen Punkten", completed: "Abgeschlossene Schritte", revisit: "Diesen Schritt prüfen", fix: "Zum Feld", missing: "Füllen Sie dieses Feld aus.", invalid: "Prüfen Sie die eingegebene Angabe.", declaration: "Bestätigen Sie diese Erklärung." },
+    fr: { issues: "éléments à corriger", stage: "étape avec des éléments en attente", stages: "étapes avec des éléments en attente", completed: "Étapes terminées", revisit: "Revoir cette étape", fix: "Aller au champ", missing: "Remplissez ce champ.", invalid: "Vérifiez la saisie.", declaration: "Confirmez cette déclaration." },
+    it: { issues: "elementi da risolvere", stage: "fase con elementi in sospeso", stages: "fasi con elementi in sospeso", completed: "Fasi completate", revisit: "Rivedi questa fase", fix: "Vai al campo", missing: "Compila questo campo.", invalid: "Controlla le informazioni inserite.", declaration: "Conferma questa dichiarazione." },
   } as const)[copyLanguage(text)];
   return <>
     <h2>{text.review}</h2>
@@ -861,7 +861,14 @@ function ReviewSummary({ items, onNavigate, text, subtitleNeedsReview = false, s
         <span className="review-action-item__target">{copy.fix}<AppIcon name="arrowRight" /></span>
       </button>)}</div>
     </section>)}</div>}
-    {completedGroups.length > 0 && invalidCount > 0 && <div className="review-completed-steps"><span>{copy.completed}</span><ul>{completedGroups.map((group) => <li key={group.step}><AppIcon name="check" />{group.title}</li>)}</ul></div>}
+    {completedGroups.length > 0 && <div className="review-completed-steps"><span>{copy.completed}</span><ul>{completedGroups.map((group) => {
+      const filled = items.filter((item) => item.step === group.step && item.valid && item.value?.trim());
+      return <li key={group.step}><details><summary><AppIcon name="check" /><span>{group.title}</span><AppIcon name="arrowRight" /></summary>
+        <div className="review-completed-steps__content"><dl>{filled.map((item, index) => <div key={`${item.field}-${index}`}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+          <button type="button" onClick={() => onNavigate(group.step, filled[0]?.field ?? "")}>{copy.revisit}<AppIcon name="arrowRight" /></button>
+        </div>
+      </details></li>;
+    })}</ul></div>}
   </>;
 }
 
