@@ -205,13 +205,13 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     const onStateTouch = (event: PointerEvent) => {
       if (event.pointerType === "touch") (event.currentTarget as HTMLElement).focus({ preventScroll: true });
     };
-    const observer = new ResizeObserver(measure);
     const measure = () => {
       const compact = window.matchMedia("(max-width: 560px)").matches;
       timelines.forEach((timeline) => {
         timeline.classList.toggle("is-scrollable", compact && timeline.scrollWidth - timeline.clientWidth > 4);
       });
     };
+    const observer = new ResizeObserver(measure);
     const collect = () => {
       document.querySelectorAll<HTMLElement>(".dashboard-main ol.queue-item__timeline").forEach((timeline) => {
         if (timelines.has(timeline)) return;
