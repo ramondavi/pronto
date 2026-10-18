@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- A identificação da biblioteca no hero fica em uma linha no celular; o crédito do rodapé centraliza a frase inicial sem criar rolagem horizontal.
 - Corrigidos o tamanho do texto do critério de senha, o alinhamento dos breadcrumbs públicos, os espaços do rodapé e a distância entre cabeçalho e hero no celular.
 - O cadastro avisa sobre domínio de e-mail inválido durante o preenchimento sem completar o endereço; em celulares, requisitos de senha, breadcrumbs e rodapé ganham layout mais adequado.
 - O logo da página inicial ganha mais destaque no cabeçalho do celular sem ampliar a largura total do cabeçalho.

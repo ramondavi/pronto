@@ -97,7 +97,8 @@
   .topRow .signature { grid-column: 1; grid-row: 1; }
   .footerPreferences { grid-column: 1; grid-row: 2; justify-self: center; transform: none; }
   .navigation { margin-top: 26px; }
-  .credit { box-sizing: border-box; width: 100%; max-width: 100%; overflow-x: auto; white-space: nowrap; text-align: left; scrollbar-width: thin; }
+  .credit { max-width: 100%; font-size: clamp(.64rem, 2.25vw, .7rem); text-align: center; }
+  .creditLead { display: block; white-space: nowrap; }
   .decoration::before { width: 170px; height: 92px; left: 18px; top: -48px; transform: rotate(16deg) skewX(-10deg); box-shadow: 58px 58px 0 -1px color-mix(in srgb, var(--institutional) 21%, transparent), 112px 92px 0 -1px color-mix(in srgb, var(--institutional) 14%, transparent); }
   .decoration::after { width: 160px; height: 82px; right: 10px; bottom: -38px; box-shadow: -72px -42px 0 -1px color-mix(in srgb, var(--institutional) 22%, transparent), -126px -72px 0 -1px color-mix(in srgb, var(--institutional) 13%, transparent); }
 }

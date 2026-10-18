@@ -6101,6 +6101,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   body:has(main > .hero) .site-header__nav { gap: 3px; }
   body:has(main > .hero) .site-header__inner .brand--compact .brand__logo { width: min(210px, 49vw); }
   body:has(main > .hero) .hero__grid { padding-top: 145px; }
+  .hero__content > .eyebrow { font-size: clamp(.6rem, 2.75vw, .72rem); letter-spacing: 0; white-space: nowrap; }
   .hero__lead { max-width: 100%; font-size: clamp(2.15rem, 9.8vw, 2.65rem); }
   .hero__content > .actions { flex-wrap: nowrap; gap: 8px; }
   .hero__content > .actions > .button { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: .8rem; white-space: nowrap; }
