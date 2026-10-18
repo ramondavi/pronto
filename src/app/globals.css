@@ -4222,9 +4222,9 @@ body:has([data-staff-panel="true"]) [data-language-alignment] .language-control 
   .dashboard-main .page-heading h1 > .panel-heading-icon { flex: none; transform: none; }
   .dashboard-main .panel-heading-text { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; }
   .dashboard-main .panel-heading-text__inner { display: inline-block; width: max-content; white-space: nowrap; }
-  .dashboard-main .panel-heading-text.is-scrolling .panel-heading-text__inner { animation: panel-heading-pan var(--heading-duration, 10s) ease-in-out infinite alternate; }
+  .dashboard-main .panel-heading-text.is-scrolling .panel-heading-text__inner { animation: panel-heading-pan var(--heading-duration, 5s) linear infinite alternate; }
 }
-@keyframes panel-heading-pan { 0%, 16% { transform: translateX(0); } 84%, 100% { transform: translateX(var(--heading-travel, 0px)); } }
+@keyframes panel-heading-pan { from { transform: translateX(0); } to { transform: translateX(var(--heading-travel, 0px)); } }
 @media (prefers-reduced-motion: reduce) {
   .dashboard-main .panel-heading-text { overflow-x: auto; }
   .dashboard-main .panel-heading-text.is-scrolling .panel-heading-text__inner { animation: none; }

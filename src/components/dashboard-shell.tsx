@@ -187,7 +187,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
         heading.classList.toggle("is-scrolling", distance > 2);
         heading.style.setProperty("--heading-travel", `${-distance}px`);
-        heading.style.setProperty("--heading-duration", `${Math.max(8, distance / 24 + 4)}s`);
+        heading.style.setProperty("--heading-duration", `${Math.min(7.5, Math.max(3.5, distance / 80 + 2.5))}s`);
       });
     };
     const observer = new ResizeObserver(measure);
