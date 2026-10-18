@@ -3927,8 +3927,8 @@ body:has([data-staff-panel="true"]) [data-language-alignment] .language-control 
   .dashboard-nav nav a, .dashboard-nav nav button { flex: initial; justify-content: flex-start; width: 100%; min-height: 44px; margin: 0; padding: 10px 12px; border: 0; border-radius: var(--radius-sm); text-align: left; }
   .dashboard-nav nav .is-active { border-bottom-color: transparent; }
   .dashboard-nav__admin { position: static; }
-  .dashboard-nav__admin-menu, .dashboard-nav--compact .dashboard-nav__admin-menu { position: static; width: auto; margin: 4px 0 8px 24px; padding: 4px 0 4px 12px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-  .dashboard-nav__admin-menu.is-visible, .dashboard-nav--compact .dashboard-nav__admin-menu.is-visible { display: grid !important; }
+  .dashboard-nav__admin-menu, .dashboard-nav--compact .dashboard-nav__admin-menu { position: static; width: auto; margin: 0 0 0 24px; padding: 0 0 0 12px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  .dashboard-nav__admin-menu.is-visible, .dashboard-nav--compact .dashboard-nav__admin-menu.is-visible { display: grid !important; margin-top: 4px; padding-block: 4px; }
   .dashboard-nav nav .dashboard-nav__admin-group-trigger, .dashboard-nav nav .dashboard-nav__admin-submenu a { min-height: 44px !important; }
 }
 @media (max-width: 560px) {
