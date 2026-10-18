@@ -35,12 +35,12 @@ const shellCopy = {
 };
 const mobileMenuCopy = { pt: ["Abrir menu do painel", "Fechar menu do painel"], en: ["Open dashboard menu", "Close dashboard menu"], es: ["Abrir menú del panel", "Cerrar menú del panel"], de: ["Dashboardmenü öffnen", "Dashboardmenü schließen"], fr: ["Ouvrir le menu du tableau de bord", "Fermer le menu du tableau de bord"], it: ["Apri menu del pannello", "Chiudi menu del pannello"] } as const;
 const studentProfileCopy = {
-  pt: { open: "Abrir menu da conta", close: "Fechar menu da conta", details: "Meus dados" },
-  en: { open: "Open account menu", close: "Close account menu", details: "My details" },
-  es: { open: "Abrir menú de la cuenta", close: "Cerrar menú de la cuenta", details: "Mis datos" },
-  de: { open: "Kontomenü öffnen", close: "Kontomenü schließen", details: "Meine Daten" },
-  fr: { open: "Ouvrir le menu du compte", close: "Fermer le menu du compte", details: "Mes données" },
-  it: { open: "Apri menu account", close: "Chiudi menu account", details: "I miei dati" },
+  pt: { open: "Abrir menu da conta", close: "Fechar menu da conta" },
+  en: { open: "Open account menu", close: "Close account menu" },
+  es: { open: "Abrir menú de la cuenta", close: "Cerrar menú de la cuenta" },
+  de: { open: "Kontomenü öffnen", close: "Kontomenü schließen" },
+  fr: { open: "Ouvrir le menu du compte", close: "Fermer le menu du compte" },
+  it: { open: "Apri menu account", close: "Chiudi menu account" },
 } as const;
 const logoutDialogCopy = {
   pt: { title: "Sair do painel?", description: "Sua sessão será encerrada.", stay: "Continuar no painel", exit: "Sair da conta" },
@@ -281,7 +281,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
             <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={studentProfileName} small /></button>
             <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
               <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><small>{t.student}</small></div>
-              <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{studentProfileCopy[language].details}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
+              <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{t.account}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
             </div>
           </div>}
         </div>
