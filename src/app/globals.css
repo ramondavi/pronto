@@ -180,7 +180,7 @@
 .student-preview__notice-body { position: absolute; bottom: calc(100% + 8px); left: 50%; width: min(320px, calc(100vw - 32px)); max-height: calc(100dvh - 110px); overflow-y: auto; transform: translateX(-50%); padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: 0 12px 32px rgb(0 0 0 / 22%); }
 .student-preview__notice-body p { margin: 0; color: var(--text-muted); font-size: .72rem; line-height: 1.4; }
 @media (max-width: 900px) {
-  .student-preview__dock { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); left: 50%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(100vw - 32px)); max-width: calc(100vw - 32px); gap: 6px; transform: translateX(-50%); }
+  .student-preview__dock { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(100vw - 32px)); max-width: calc(100vw - 32px); gap: 6px; transform: translateX(-50%); }
   .student-preview__dock > .dashboard-preview-switch { grid-column: 1 / -1; justify-content: center; min-width: 0; white-space: normal; }
   .student-preview__notice { width: auto; min-width: 0; max-width: none; }
   .student-preview__notice summary { min-width: 0; padding-inline: 8px; }
@@ -190,7 +190,7 @@
   .student-preview__dock form { grid-column: 3; }
 }
 .dashboard-content:has(.student-preview__dock.is-narrow) > .dashboard-main--student-preview:not(.dashboard-main--student-overview) { padding-bottom: calc(var(--student-preview-dock-clearance, 160px) + 16px); }
-.student-preview__dock.is-narrow { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(var(--student-preview-content-width, 100vw) - 32px)); max-width: calc(var(--student-preview-content-width, 100vw) - 32px); gap: 6px; }
+.student-preview__dock.is-narrow { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); left: var(--student-preview-dock-center, 50%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(var(--student-preview-content-width, 100vw) - 32px)); max-width: calc(var(--student-preview-content-width, 100vw) - 32px); gap: 6px; }
 .student-preview__dock.is-narrow > .dashboard-preview-switch { grid-column: 1 / -1; justify-content: center; min-width: 0; white-space: normal; }
 .student-preview__dock.is-narrow .student-preview__notice { width: auto; min-width: 0; max-width: none; }
 .student-preview__dock.is-narrow .student-preview__notice summary { min-width: 0; padding-inline: 8px; }

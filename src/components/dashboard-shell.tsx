@@ -287,8 +287,15 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     const dock = previewDockRef.current;
     if (!previewMode || !dock) return;
     const content = dock.closest<HTMLElement>(".dashboard-content");
+    let observedPanel: HTMLElement | null = null;
     const updateClearance = () => {
-      const bounds = content?.getBoundingClientRect();
+      const panel = content?.querySelector<HTMLElement>(".dashboard-main--student-preview") ?? null;
+      if (panel !== observedPanel) {
+        if (observedPanel) observer.unobserve(observedPanel);
+        if (panel) observer.observe(panel);
+        observedPanel = panel;
+      }
+      const bounds = panel?.getBoundingClientRect();
       if (bounds) {
         dock.style.setProperty("--student-preview-dock-center", `${bounds.left + bounds.width / 2}px`);
         dock.style.setProperty("--student-preview-content-width", `${bounds.width}px`);
@@ -299,16 +306,19 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     const observer = new ResizeObserver(updateClearance);
     observer.observe(dock);
     if (content) observer.observe(content);
+    const mutationObserver = new MutationObserver(updateClearance);
+    if (content) mutationObserver.observe(content, { childList: true, subtree: true });
     updateClearance();
     window.addEventListener("resize", updateClearance);
     return () => {
       observer.disconnect();
+      mutationObserver.disconnect();
       window.removeEventListener("resize", updateClearance);
       dock.style.removeProperty("--student-preview-dock-center");
       dock.style.removeProperty("--student-preview-content-width");
       document.documentElement.style.removeProperty("--student-preview-dock-clearance");
     };
-  }, [previewMode]);
+  }, [previewMode, pathname, searchParams]);
   const adminMenuVisible = adminMenuOpen;
   const activeClass = (href: string) => {
     const [targetPath, targetQuery] = href.split("?");
