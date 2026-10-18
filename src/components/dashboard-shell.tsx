@@ -280,7 +280,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
           {(!isStaff || previewMode) && <div className="dashboard-student-profile" ref={mobileProfileRef}>
             <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={studentProfileName} small /></button>
             <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
-              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><span>{studentProfileFullName}</span><small>{t.student}</small></div>
+              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><small>{t.student}</small></div>
               <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{studentProfileCopy[language].details}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
             </div>
           </div>}

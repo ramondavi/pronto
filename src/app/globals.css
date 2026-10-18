@@ -6156,10 +6156,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .dashboard-student-profile__trigger:focus-visible, .dashboard-student-profile__actions :focus-visible { outline: 2px solid var(--nav-accent); outline-offset: 2px; }
   .dashboard-student-profile__menu { position: absolute; top: calc(100% + 8px); right: 0; box-sizing: border-box; width: min(280px, calc(100vw - 32px)); padding: 8px; border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent); border-radius: var(--radius); background: var(--nav-bg); color: var(--nav-text); box-shadow: var(--shadow-lg); }
   .dashboard-student-profile__menu[hidden] { display: none; }
-  .dashboard-student-profile__identity { display: grid; justify-items: start; gap: 4px; min-width: 0; padding: 12px; border: 1px solid color-mix(in srgb, var(--institutional) 22%, transparent); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--institutional) 8%, var(--nav-bg)); }
-  .dashboard-student-profile__identity strong { overflow-wrap: anywhere; font-size: .94rem; }
-  .dashboard-student-profile__identity span { overflow-wrap: anywhere; font-size: .86rem; }
-  .dashboard-student-profile__identity small { margin-top: 4px; padding: 4px 8px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--institutional) 13%, var(--nav-bg)); color: var(--institutional); font-size: .75rem; font-weight: 750; }
+  .dashboard-student-profile__identity { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 12px; border: 1px solid color-mix(in srgb, var(--institutional) 22%, transparent); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--institutional) 8%, var(--nav-bg)); }
+  .dashboard-student-profile__identity strong { min-width: 0; overflow: hidden; font-size: .94rem; text-overflow: ellipsis; white-space: nowrap; }
+  .dashboard-student-profile__identity small { flex: none; padding: 4px 8px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--institutional) 13%, var(--nav-bg)); color: var(--institutional); font-size: .75rem; font-weight: 750; }
   .dashboard-student-profile__actions { display: flex; align-items: center; gap: 8px; padding-top: 8px; }
   .dashboard-student-profile__actions a, .dashboard-student-profile__actions button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--nav-text); text-decoration: none; cursor: pointer; }
   .dashboard-student-profile__actions a { flex: 1; justify-content: flex-start; }
