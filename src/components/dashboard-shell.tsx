@@ -218,7 +218,17 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         rail.style.setProperty("--rail-bg-height", `${Math.max(0, Math.min(visibleHeight, (shellBounds?.bottom ?? window.innerHeight) - fixedTop) - backgroundTop)}px`);
         rail.style.setProperty("--rail-preview-bottom", `${Math.max(16, window.innerHeight - (shellBounds?.bottom ?? window.innerHeight) + 16)}px`);
         const scrolledNavTop = Math.max(88, Math.min(160, visibleHeight * .22));
-        rail.style.setProperty("--rail-nav-top", `${visibleHeight * .5 * (1 - progress) + scrolledNavTop * progress}px`);
+        const preferredNavTop = visibleHeight * .5 * (1 - progress) + scrolledNavTop * progress;
+        const menu = rail.querySelector<HTMLElement>("nav.dashboard-nav__menu");
+        const previewSwitch = window.matchMedia("(min-width: 901px)").matches ? rail.querySelector<HTMLElement>(".dashboard-nav__preview-switch") : null;
+        const previewTop = previewSwitch ? previewSwitch.getBoundingClientRect().top - rail.getBoundingClientRect().top : visibleHeight;
+        if (previewSwitch) rail.style.setProperty("--rail-nav-available", `${Math.max(80, previewTop - 112)}px`);
+        else rail.style.removeProperty("--rail-nav-available");
+        const menuHeight = menu?.getBoundingClientRect().height ?? 0;
+        const bottomFactor = (1 + progress) / 2;
+        const topLimit = previewTop - 36 - menuHeight * bottomFactor;
+        const minimumTop = 76 + menuHeight * (1 - progress) / 2;
+        rail.style.setProperty("--rail-nav-top", `${previewSwitch ? Math.max(minimumTop, Math.min(preferredNavTop, topLimit)) : preferredNavTop}px`);
         rail.style.setProperty("--rail-nav-shift", `${-50 * (1 - progress)}%`);
       });
     };
@@ -230,6 +240,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     if (governmentBar) resizeObserver.observe(governmentBar);
     const header = shell?.querySelector(".dashboard-header");
     if (header) resizeObserver.observe(header);
+    const menu = railRef.current?.querySelector("nav.dashboard-nav__menu");
+    if (menu) resizeObserver.observe(menu);
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => { cancelAnimationFrame(frame); resizeObserver.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
