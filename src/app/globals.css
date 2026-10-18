@@ -6494,10 +6494,10 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .request-program-picker summary > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .request-program-picker summary:is(:hover, :focus-visible), .request-program-picker[open] summary { border-color: var(--institutional); outline-color: var(--institutional); }
   .request-program-picker[open] summary { border-radius: var(--radius) var(--radius) 0 0; }
-  .request-program-picker__options { position: absolute; z-index: 15; top: 100%; left: 0; box-sizing: border-box; display: grid; width: 100%; max-height: min(45dvh, 320px); overflow-y: auto; border: 1px solid var(--institutional); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: var(--surface-raised); box-shadow: var(--shadow); }
-  .request-program-picker__options button { width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: .83rem; font-weight: 600; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
+  .request-program-picker__options { position: absolute; z-index: 15; top: 100%; left: 0; box-sizing: border-box; display: grid; gap: 2px; width: 100%; max-height: min(45dvh, 320px); padding: 6px; overflow-y: auto; border: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); background: var(--surface-raised); box-shadow: var(--shadow-lg); }
+  .request-program-picker__options button { width: 100%; min-height: 44px; padding: 9px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: .83rem; font-weight: 600; line-height: 1.35; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
   .request-program-picker__options button:is(:hover, :focus-visible), .request-program-picker__options button[aria-selected="true"] { background: var(--institutional-soft); color: var(--institutional); }
-  .request-program-picker__options button[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--institutional); font-weight: 800; }
+  .request-program-picker__options button[aria-selected="true"] { background: color-mix(in srgb, var(--institutional) 14%, var(--surface-raised)); font-weight: 750; }
   .request-form .request-steps > button { flex: 0 0 170px; scroll-snap-align: center; }
   .request-form .request-steps { scroll-snap-type: x proximity; }
   .dashboard-main--form .request-form, .request-form .form-section,
