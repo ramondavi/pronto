@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 17 de outubro de 2026
 
+- A página de Acessibilidade passa a descrever os controles do botão flutuante e evita largura excedente no celular; redes sociais vão ao rodapé móvel, e o cabeçalho estudantil reúne menu, pictograma e aviso da biblioteca na mesma linha.
 - Os breadcrumbs do painel também percorrem suavemente os caminhos longos em telas pequenas, mantendo tudo em uma linha.
 - A identificação da biblioteca no hero fica em uma linha no celular; o crédito do rodapé centraliza a frase inicial sem criar rolagem horizontal.
 - Corrigidos o tamanho do texto do critério de senha, o alinhamento dos breadcrumbs públicos, os espaços do rodapé e a distância entre cabeçalho e hero no celular.

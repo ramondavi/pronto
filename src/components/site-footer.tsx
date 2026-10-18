@@ -11,6 +11,7 @@ import { LanguageControl } from "./language-control";
 import { useInterfaceLanguage } from "./interface-language";
 import { useStaffPanel } from "./use-staff-panel";
 import { ThemeSwitcher } from "./theme-switcher";
+import { LibrarySocialLinks } from "./library-social-links";
 
 const footerCopy = {
   pt: ["Fichas catalográficas e autodepósito", "Central de ajuda", "Privacidade", "Acessibilidade", "Feito pelos bibliotecários da BIB/FAUFBA com", "e", "amor", "Código aberto no GitHub", "Licença", "Informações", "Instituições"],
@@ -144,6 +145,7 @@ export function SiteFooter({ version }: { version: string }) {
           <a href="https://arquitetura.ufba.br" target="_blank" rel="noreferrer"><Image src="/logo-faufba.png" alt="Faculdade de Arquitetura da UFBA" width={230} height={205} /></a>
         </div>
         <p className={styles.credit}><span className={styles.creditLead}>{t[4]}</span> <a href="https://openai.com/codex/" target="_blank" rel="noreferrer"><em>vibe coding</em></a> {t[5]} <span aria-label={t[6]} role="img">♥</span>.</p>
+        <div className={styles.mobileSocial}><LibrarySocialLinks /></div>
         <div className={styles.meta}>
           <span>2026 · v{version} · Beta</span>
           <a href="https://github.com/ramondavi/pronto" target="_blank" rel="noreferrer"><AppIcon name="github" />{t[7]} ↗</a>
