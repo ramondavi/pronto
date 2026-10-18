@@ -19,7 +19,6 @@ import { monographDisplayName, programDisplayName } from "@/domain/staff-queue/p
 import { StudentRevisionGallery, type StudentRevision } from "@/components/student-revision-gallery";
 import { StudentCompletedStage } from "@/components/student-completed-stage";
 import { StudentPublicationRecord } from "@/components/student-publication-record";
-import { cardPublicUrl } from "@/domain/cataloging-card/public-link";
 import { CanceledRequestNotice } from "@/components/canceled-request-notice";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
@@ -55,7 +54,7 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const correctionsPending = request.status === "changes_requested" && revisions.length > 0;
   const nadaApproved = nadaConsta?.status === "approved";
   const cardReleased = request.status === "approved" && nadaApproved && Boolean(homologation?.snapshot);
-  const nadaSection = ["submitted", "in_review", "changes_requested", "approved", "completed"].includes(request.status) && <NadaConstaUpload requestId={request.id} document={nadaConsta} />;
+  const nadaSection = ["submitted", "in_review", "changes_requested", "approved"].includes(request.status) && <NadaConstaUpload requestId={request.id} document={nadaConsta} />;
   const nadaStage = nadaApproved && nadaSection ? <StudentCompletedStage title={t("Nada Consta")} completedLabel={t("Etapa concluída")}>{nadaSection}</StudentCompletedStage> : nadaSection;
   const revisionSection = revisions.length > 0 && <StudentRevisionGallery revisions={revisions} />;
   const revisionStage = !correctionsPending && revisions.every((revision) => Boolean(revision.responded_at)) && revisionSection ? <StudentCompletedStage title={t("Correções anteriores")} completedLabel={t("Etapa concluída")}>{revisionSection}</StudentCompletedStage> : revisionSection;
@@ -88,11 +87,9 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
     </header> : null}
     {cardReleased && homologation?.snapshot && <BrowserPdfDelivery snapshot={homologation.snapshot as unknown as CatalogingCardSnapshot} publicToken={homologation.public_token} />}
     {cardReleased && program?.repository_deposit_enabled && <BrowserPdfDeliveryFollowup repositoryDepositEnabled />}
-    {correctionsPending && revisionStage}
-    {nadaStage}
-    {!correctionsPending && revisionStage}
-    {request.status === "completed" && <StudentCompletedStage title={t("Ficha catalográfica liberada")} completedLabel={t("Etapa concluída")}><p className="student-completed-stage__note">{t("A ficha homologada permanece disponível para consulta no registro público do trabalho.")}</p>{homologation?.public_token && <a className="button button--secondary button--with-icon" href={cardPublicUrl(homologation.public_token)} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t("Consultar ficha catalográfica")}</a>}</StudentCompletedStage>}
-    {request.status === "completed" && program?.repository_deposit_enabled && <StudentCompletedStage title={t("Autodepósito no RI/UFBA")} completedLabel={t("Etapa concluída")}><p className="student-completed-stage__note">{t("O início do autodepósito foi registrado e a publicação foi verificada pela biblioteca.")}</p><Link className="button button--secondary button--with-icon" href="/painel/autodeposito"><AppIcon name="book" />{t("Consultar guia de autodepósito")}</Link></StudentCompletedStage>}
+    {request.status !== "completed" && correctionsPending && revisionStage}
+    {request.status !== "completed" && nadaStage}
+    {request.status !== "completed" && !correctionsPending && revisionStage}
     {publication && <StudentPublicationRecord url={publication.permanent_url} label={t} />}
     <section className="panel student-request-history" aria-labelledby="student-request-history-title"><div className="student-request-history__heading"><AppIcon name="archive" /><div><p className="eyebrow">{t("Histórico")}</p><h2 id="student-request-history-title">{t("Solicitações anteriores")}</h2></div></div>{request.status === "completed" && <article className="student-request-history__completed"><div className="student-request-history__completed-title"><AppIcon name="check" /><div><strong>{formatWorkTitle(request.title, request.subtitle)}</strong><span>{request.protocol} · {t("Concluída")}</span></div></div><dl><div><dt>{t("Curso ou programa")}</dt><dd>{program?.name ?? "—"}</dd></div><div><dt>{t("Matrícula deste vínculo")}</dt><dd>{enrollment?.registration_number ?? "—"}</dd></div><div><dt>{t("Enviada")}</dt><dd><RelativeDateTime value={request.submitted_at} /></dd></div><div><dt>{t("Concluída")}</dt><dd><RelativeDateTime value={request.updated_at} /></dd></div></dl></article>}{previousRequests?.length ? <ul>{(previousRequests as PreviousRequest[]).map((previous) => <li key={previous.id}><div><strong>{previous.protocol}</strong><span>{formatWorkTitle(previous.title, previous.subtitle)}</span></div><div><span className="student-request-history__status">{t(statusLabels[previous.status] ?? previous.status)}</span><RelativeDateTime value={previous.submitted_at} /></div></li>)}</ul> : request.status !== "completed" && <p>{t("Você ainda não tem solicitações anteriores.")}</p>}</section>
   </main>;
