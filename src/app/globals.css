@@ -2236,8 +2236,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .provisioning-alert__summary span { overflow-wrap: anywhere; }
 .provisioning-alert__summary small { color: var(--text-muted); }
 
-.dashboard-main--form { width: min(960px, calc(100% - 72px)); }
-@media (min-width: 1401px) { .dashboard-main--form:has(.request-form[data-active-step="5"]) { width: min(1120px, calc(100% - 72px)); } }
+.dashboard-main--form { width: min(1180px, calc(100% - 64px)); }
 .request-heading { align-items: start; }
 .request-heading p:not(.eyebrow) { max-width: 650px; color: var(--text-muted); }
 .request-form { display: grid; gap: 22px; }
