@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 18 de outubro de 2026
 
+- A gestão de Ajuda e FAQ avisa quais conteúdos ainda precisam de tradução, lista os idiomas pendentes e abre cada item diretamente com rolagem suave.
 - A Central de ajuda ganha um artigo persuasivo sobre o valor do autodepósito no RI/UFBA para a circulação, identificação e preservação dos trabalhos acadêmicos.
 - O artigo sobre a ficha catalográfica explica seu papel na descoberta atual de trabalhos em catálogos, bases de dados, repositórios e buscas na internet.
 - Após a conclusão do protocolo, o painel estudantil destaca o pedido com nova matrícula e mostra o protocolo encerrado de forma discreta; a demonstração da equipe acompanha o mesmo layout.

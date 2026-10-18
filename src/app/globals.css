@@ -3701,6 +3701,17 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 @keyframes protocol-copy-confirm { from { opacity: .55; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .protocol-copy-button.is-copied { animation: none; } }
 .knowledge-admin { display: grid; gap: 20px; margin-top: 26px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.knowledge-admin > .admin-section__stats { margin-bottom: 0; }
+.knowledge-translation-alert { display: grid; gap: 14px; padding: 18px 20px; border: 1px solid color-mix(in srgb, var(--institutional) 35%, var(--line)); border-left: 4px solid var(--institutional); border-radius: var(--radius); background: var(--institutional-soft); }
+.knowledge-translation-alert__heading { display: flex; align-items: flex-start; gap: 12px; }
+.knowledge-translation-alert__heading > svg { flex: 0 0 23px; width: 23px; height: 23px; color: var(--institutional); }
+.knowledge-translation-alert__heading h3 { margin: 0 0 4px; font-size: 1rem; line-height: 1.3; }
+.knowledge-translation-alert__heading p { margin: 0; color: var(--text-muted); font-size: .82rem; line-height: 1.45; }
+.knowledge-translation-alert ul { display: grid; gap: 0; max-height: 260px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.knowledge-translation-alert li { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 5px 16px; padding: 10px 0; border-top: 1px solid var(--line); font-size: .83rem; line-height: 1.4; }
+.knowledge-translation-alert li a { color: var(--institutional); font-weight: 800; overflow-wrap: anywhere; text-underline-offset: 3px; }
+.knowledge-translation-alert li a:is(:hover, :focus-visible) { text-decoration-thickness: 2px; }
+.knowledge-translation-alert li span { color: var(--text-muted); }
 .knowledge-admin__heading { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .knowledge-admin__heading h3 { margin: 3px 0 6px; font-size: 1.25rem; line-height: 1.3; }
 .knowledge-admin__heading p:last-child { margin: 0; color: var(--text-muted); font-size: .86rem; line-height: 1.5; }
