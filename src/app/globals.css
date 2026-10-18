@@ -6096,6 +6096,13 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 @media (max-width: 760px) {
   .site-header__service-peek:not(.is-expanded) .service-status-peek__panel { visibility: hidden; opacity: 0; pointer-events: none; }
   .site-header__service-peek.is-expanded .service-status-peek__panel { visibility: visible; opacity: 1; pointer-events: auto; }
+  .site-header__account .site-header__access { display: grid; width: 44px; min-width: 44px; max-width: 44px; height: 44px; min-height: 44px; grid-template-columns: 1fr; place-items: center; gap: 0; padding: 0; }
+  .site-header__account .site-header__access-icon { width: 27px; height: 27px; }
+  .site-header__account .site-header__access-icon:has(:is(.student-avatar, .literary-avatar)) > svg { display: none; }
+  .site-header__account .site-header__access-icon .literary-avatar { width: 27px; height: 27px; opacity: 1; transform: none; }
+  .site-header__account .site-header__access-label,
+  .site-header__account .site-header__access-greeting,
+  .site-header__account--touch .site-header__access > span:last-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .backend-help__panel, .backend-help.is-open .backend-help__panel { transition: none; }
