@@ -3540,7 +3540,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
   .dashboard-nav--compact .dashboard-nav__top::before { content: "Pronto!"; color: var(--nav-text); font-weight: 850; }
   .dashboard-nav--compact .dashboard-nav__label { display: inline; }
   .dashboard-nav nav { order: 3; width: 100%; display: flex; gap: 6px; margin-top: 14px; overflow-x: auto; scrollbar-width: thin; }
-  .dashboard-nav nav a, .dashboard-nav nav button, .dashboard-nav nav span { flex: 0 0 auto; min-height: 44px; width: auto; padding: 10px 12px; border-left: 0; border-bottom: 2px solid transparent; }
+  .dashboard-nav nav a, .dashboard-nav nav button { flex: 0 0 auto; min-height: 44px; width: auto; padding: 10px 12px; border-left: 0; border-bottom: 2px solid transparent; }
   .dashboard-nav nav .is-active { border-left-color: transparent; border-bottom-color: var(--nav-accent); }
   .dashboard-nav__institution { margin: 0 0 0 auto; }
   .dashboard-nav__institution .official-library-logo { width: 64px; }
@@ -3580,7 +3580,6 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
   .dashboard-header { align-items: flex-start; flex-direction: column; padding: 14px 16px; }
   .dashboard-header__actions { width: 100%; flex-wrap: wrap; }
   .dashboard-header__actions form { margin-left: auto; }
-  .dashboard-nav nav span { display: none; }
   .page-heading { align-items: stretch; flex-direction: column; gap: 22px; margin-bottom: 28px; }
   .analysis-case-header { margin-top: 12px; padding: 18px 16px; }
   .analysis-case-header__top { align-items: flex-start; flex-direction: column; gap: 10px; }
