@@ -190,7 +190,7 @@
   .student-preview__dock form { grid-column: 3; }
 }
 .dashboard-content:has(.student-preview__dock.is-narrow) > .dashboard-main--student-preview:not(.dashboard-main--student-overview) { padding-bottom: calc(var(--student-preview-dock-clearance, 160px) + 16px); }
-.student-preview__dock.is-narrow { box-sizing: border-box; right: auto; bottom: max(82px, calc(env(safe-area-inset-bottom) + 66px)); left: var(--student-preview-dock-center, 50%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(var(--student-preview-content-width, 100vw) - 32px)); max-width: calc(var(--student-preview-content-width, 100vw) - 32px); gap: 6px; }
+.student-preview__dock.is-narrow { box-sizing: border-box; right: auto; left: var(--student-preview-dock-center, 50%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 96px) 40px; width: min(320px, calc(var(--student-preview-content-width, 100vw) - 32px)); max-width: calc(var(--student-preview-content-width, 100vw) - 32px); gap: 6px; }
 .student-preview__dock.is-narrow > .dashboard-preview-switch { grid-column: 1 / -1; justify-content: center; min-width: 0; white-space: normal; }
 .student-preview__dock.is-narrow .student-preview__notice { width: auto; min-width: 0; max-width: none; }
 .student-preview__dock.is-narrow .student-preview__notice summary { min-width: 0; padding-inline: 8px; }
@@ -3918,6 +3918,8 @@ body:has([data-staff-panel="true"]) [data-language-alignment] .language-control 
   .dashboard-content { grid-column: 1; }
   .dashboard-header { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px; }
   .dashboard-header > :first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__inner { overflow: visible; white-space: normal; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__service-peek .service-status-peek__panel { overflow-wrap: anywhere; white-space: normal; }
   .dashboard-header > .staff-communications:first-child { flex: 0 0 auto; overflow: visible; white-space: normal; }
   .dashboard-header__actions { flex: 0 1 auto; min-width: 0; width: auto; flex-wrap: nowrap; gap: 8px; margin-left: auto; }
   .dashboard-header__actions .user-identity { min-width: 0; }
@@ -6221,12 +6223,13 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .dashboard-shell[data-staff-panel="true"] .dashboard-header__search { flex: 1 1 100%; }
   .dashboard-shell[data-student-panel="true"] .dashboard-header__actions { display: none; }
   .dashboard-shell[data-student-panel="true"] .dashboard-header { min-height: 0; padding-block: 0; }
-  .dashboard-shell[data-student-panel="true"] .dashboard-header__inner { min-height: 0; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__inner { min-height: 0; overflow: visible; white-space: normal; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-header { position: relative; }
   .dashboard-shell:not([data-staff-panel="true"]) .dashboard-header__service-peek { position: absolute; z-index: 40; top: -60px; left: 76px; width: 42px; max-width: none; margin: 0; }
   .dashboard-shell[data-student-panel="true"] .dashboard-header__service-peek { box-sizing: border-box; width: 44px; height: 44px; }
   .dashboard-shell[data-student-panel="true"] .dashboard-header__service-peek .service-status-peek__trigger { box-sizing: border-box; width: 44px; min-height: 44px; height: 44px; }
-  .dashboard-shell[data-student-panel="true"] .dashboard-header__service-peek .service-status-peek__panel { box-sizing: border-box; width: min(280px, calc(100vw - 100px)); max-width: none; overflow-wrap: anywhere; }
+  .dashboard-shell[data-student-panel="true"] .dashboard-header__service-peek .service-status-peek__panel { box-sizing: border-box; width: min(280px, calc(100vw - 100px)); max-width: none; overflow-wrap: anywhere; white-space: normal; }
+  .dashboard-shell[data-student-panel="true"] .service-status-peek__panel :is(strong, p, time) { min-width: 0; max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
   .dashboard-header__service-peek:not(.is-expanded) .service-status-peek__panel { visibility: hidden; opacity: 0; pointer-events: none; }
   .dashboard-header__service-peek.is-expanded .service-status-peek__panel { visibility: visible; opacity: 1; pointer-events: auto; }
 }
