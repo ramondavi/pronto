@@ -268,18 +268,20 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   };
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
+  const studentProfileName = previewMode ? t.student : firstName;
+  const studentProfileFullName = previewMode ? t.student : fullName;
   return (
-    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined} data-student-panel={!isStaff ? "true" : undefined}>
+    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined} data-student-panel={!isStaff || previewMode ? "true" : undefined}>
       {(!isStaff || previewMode) && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
       <aside ref={railRef} className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
         <div className="dashboard-nav__top">
           <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v9-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v9-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
           <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => { setMobileProfileOpen(false); setMobileMenuOpen((open) => !open); }}><span /><span /><span /></button>
-          {!isStaff && <div className="dashboard-student-profile" ref={mobileProfileRef}>
-            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={firstName} small /></button>
+          {(!isStaff || previewMode) && <div className="dashboard-student-profile" ref={mobileProfileRef}>
+            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}><StudentAvatar name={studentProfileName} small /></button>
             <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
-              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {firstName}</strong><span>{fullName}</span><small>{t.student}</small></div>
-              <div className="dashboard-student-profile__actions"><Link href="/painel/conta" onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{studentProfileCopy[language].details}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
+              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><span>{studentProfileFullName}</span><small>{t.student}</small></div>
+              <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{studentProfileCopy[language].details}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
             </div>
           </div>}
         </div>
