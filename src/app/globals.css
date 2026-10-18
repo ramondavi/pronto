@@ -6474,9 +6474,10 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .admin-tabs-shell > .admin-tabs button { opacity: .74; transition: background .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease, transform .25s ease, box-shadow .25s ease; }
   .admin-tabs-shell > .admin-tabs button:is(:hover, :focus-visible) { opacity: 1; }
   .admin-tabs-shell > .admin-tabs button.is-active { position: relative; z-index: 1; opacity: 1; border-color: var(--institutional); background: var(--institutional-soft); font-weight: 900; box-shadow: inset 0 -3px 0 var(--institutional), 0 3px 12px color-mix(in srgb, var(--institutional) 18%, transparent); transform: scale(1.04); }
-  .admin-tabs-shell__arrow { position: absolute; z-index: 3; top: 0; bottom: 0; display: grid; place-items: center; width: 48px; padding: 0; border: 0; background: var(--surface); color: var(--institutional); cursor: pointer; transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
-  .admin-tabs-shell__arrow--start { left: 0; }
-  .admin-tabs-shell__arrow--end { right: 0; }
+  .admin-tabs-shell__arrow { position: absolute; z-index: 3; top: 50%; display: grid; place-items: center; width: 34px; height: 38px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); box-shadow: var(--shadow); cursor: pointer; transform: translateY(-50%); transition: opacity .25s ease, visibility .25s ease, background .2s ease; }
+  .admin-tabs-shell__arrow--start { left: 6px; }
+  .admin-tabs-shell__arrow--end { right: 6px; }
+  .admin-tabs-shell__arrow:is(:hover, :focus-visible):not(:disabled) { border-color: var(--institutional); background: var(--institutional-soft); }
   .admin-tabs-shell__arrow--start svg { transform: rotate(180deg); }
   .admin-tabs-shell__arrow svg { width: 18px; height: 18px; }
   .admin-tabs-shell__arrow:disabled { color: var(--text-muted); cursor: default; }
