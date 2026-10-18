@@ -268,8 +268,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   };
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
-  const studentProfileName = previewMode ? t.student : firstName;
-  const studentProfileFullName = previewMode ? t.student : fullName;
+  const studentProfileName = previewMode ? "Alex" : firstName;
+  const studentProfileFullName = previewMode ? "Alex Silva" : fullName;
   return (
     <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined} data-student-panel={!isStaff || previewMode ? "true" : undefined}>
       {(!isStaff || previewMode) && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
