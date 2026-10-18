@@ -32,11 +32,13 @@
 :where(article, .card, .panel, [class$="-card"], [class*="-card "], [class$="__card"], [class*="__card "], [class$="-panel"], [class*="-panel "]) { border-radius: var(--radius); }
 
 .admin-operations { display: grid; gap: 22px; }
-.admin-operations > .admin-tabs { display: flex; width: max-content; max-width: 100%; gap: 6px; overflow-x: auto; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); scrollbar-width: thin; }
-.admin-operations > .admin-tabs button { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 9px 14px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font: inherit; font-size: .8rem; font-weight: 750; white-space: nowrap; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease; }
-.admin-operations > .admin-tabs button svg { flex: 0 0 17px; width: 17px; height: 17px; }
-.admin-operations > .admin-tabs button:is(:hover, :focus-visible) { border-color: var(--line); color: var(--institutional); background: var(--surface-raised); }
-.admin-operations > .admin-tabs button.is-active { border-color: color-mix(in srgb, var(--institutional) 35%, var(--line)); color: var(--institutional); background: var(--surface-raised); box-shadow: inset 0 -3px 0 var(--institutional), 0 2px 8px rgb(10 10 10 / 5%); }
+.admin-tabs-shell { position: relative; width: max-content; max-width: 100%; }
+.admin-tabs-shell > .admin-tabs { display: flex; width: max-content; max-width: 100%; gap: 6px; overflow-x: auto; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); scrollbar-width: thin; }
+.admin-tabs-shell > .admin-tabs button { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 9px 14px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font: inherit; font-size: .8rem; font-weight: 750; white-space: nowrap; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease; }
+.admin-tabs-shell > .admin-tabs button svg { flex: 0 0 17px; width: 17px; height: 17px; }
+.admin-tabs-shell > .admin-tabs button:is(:hover, :focus-visible) { border-color: var(--line); color: var(--institutional); background: var(--surface-raised); }
+.admin-tabs-shell > .admin-tabs button.is-active { border-color: color-mix(in srgb, var(--institutional) 35%, var(--line)); color: var(--institutional); background: var(--surface-raised); box-shadow: inset 0 -3px 0 var(--institutional), 0 2px 8px rgb(10 10 10 / 5%); }
+.admin-tabs-shell__arrow { display: none; }
 .admin-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
 .admin-index__card { display: flex; align-items: flex-start; gap: 15px; min-height: 112px; padding: 20px; border: 1px solid var(--line); border-left: 4px solid var(--institutional); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); text-decoration: none; box-shadow: var(--shadow-card); transition: border-color .18s ease, background .18s ease, transform .18s ease; }
 .admin-index__card:is(:hover, :focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); transform: translateY(-2px); }
@@ -6217,8 +6219,8 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .dashboard-header--staff .dashboard-header__inner { overflow: visible; }
 @media (max-width: 560px) {
-  .dashboard-content > .breadcrumb--dashboard { margin-top: 14px; }
-  .dashboard-content > .dashboard-main { padding-top: 14px; }
+  .dashboard-content > .breadcrumb--dashboard { margin-top: 22px; }
+  .dashboard-content > .dashboard-main { padding-top: 22px; }
   .dashboard-shell .dashboard-nav nav.dashboard-nav__menu { max-height: max(80px, calc(100dvh - 140px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu { max-height: none; overflow: visible; }
   .dashboard-shell .dashboard-nav .dashboard-nav__admin-menu.is-visible,
@@ -6229,7 +6231,16 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .admin-index-screen, .admin-tab-page, .admin-index, .admin-operations,
   .admin-operations > .admin-section, .admin-list { min-width: 0; max-width: 100%; }
   .admin-operations, .admin-index, .admin-list { grid-template-columns: minmax(0, 1fr); }
-  .admin-operations > .admin-tabs { box-sizing: border-box; width: 100%; min-width: 0; }
+  .admin-operations > .admin-tabs-shell,
+  .admin-tabs-shell > .admin-tabs { box-sizing: border-box; width: 100%; min-width: 0; }
+  .admin-tabs-shell > .admin-tabs { scroll-padding-inline: 42px; }
+  .admin-tabs-shell__arrow { position: absolute; z-index: 1; top: 1px; bottom: 1px; display: grid; place-items: center; width: 38px; padding: 0; border: 0; background: var(--surface); color: var(--institutional); cursor: pointer; }
+  .admin-tabs-shell__arrow--start { left: 1px; border-radius: var(--radius) 0 0 var(--radius); box-shadow: 8px 0 12px -8px var(--text-muted); }
+  .admin-tabs-shell__arrow--end { right: 1px; border-radius: 0 var(--radius) var(--radius) 0; box-shadow: -8px 0 12px -8px var(--text-muted); }
+  .admin-tabs-shell__arrow--start svg { transform: rotate(180deg); }
+  .admin-tabs-shell__arrow svg { width: 18px; height: 18px; }
+  .admin-tabs-shell[data-overflow-start="false"] .admin-tabs-shell__arrow--start,
+  .admin-tabs-shell[data-overflow-end="false"] .admin-tabs-shell__arrow--end { display: none; }
   .admin-operations > .admin-section { box-sizing: border-box; width: 100%; }
   .admin-index__card, .admin-tab-page .admin-section :is(form, label, fieldset, details, article, input, select, textarea) { min-width: 0; max-width: 100%; }
   .admin-tab-page .admin-section { padding: 18px; }

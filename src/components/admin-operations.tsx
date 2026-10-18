@@ -225,6 +225,7 @@ export function AdminOperations(props: {
   }));
   const activeTab = props.tab;
   const adminTabsRef = useRef<HTMLDivElement>(null);
+  const [tabOverflow, setTabOverflow] = useState({ start: false, end: false });
   const router = useRouter();
   const [userType, setUserType] = useState("all");
   const [userStatus, setUserStatus] = useState("all");
@@ -696,17 +697,35 @@ export function AdminOperations(props: {
   const adminTabs = (adminSections.find((section) => section.area === props.area)?.tabs ?? adminSections[0].tabs).filter((tab) => canOpenAdminTab(tab.id, props.grantedPermissions));
   useEffect(() => {
     const tabs = adminTabsRef.current;
-    if (!tabs || !window.matchMedia("(max-width: 560px)").matches) return;
-    const selected = tabs.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
-    if (!selected) return;
-    const tabsBounds = tabs.getBoundingClientRect();
-    const selectedBounds = selected.getBoundingClientRect();
-    const inset = 6;
-    let left = tabs.scrollLeft;
-    if (selectedBounds.left < tabsBounds.left + inset) left += selectedBounds.left - tabsBounds.left - inset;
-    else if (selectedBounds.right > tabsBounds.right - inset) left += selectedBounds.right - tabsBounds.right + inset;
-    if (left !== tabs.scrollLeft) tabs.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  }, [activeTab, props.area]);
+    if (!tabs) return;
+    const updateOverflow = () => {
+      const start = tabs.scrollLeft > 2;
+      const end = tabs.scrollLeft < tabs.scrollWidth - tabs.clientWidth - 2;
+      setTabOverflow((current) => current.start === start && current.end === end ? current : { start, end });
+    };
+    const resizeObserver = new ResizeObserver(updateOverflow);
+    resizeObserver.observe(tabs);
+    tabs.addEventListener("scroll", updateOverflow, { passive: true });
+    const frame = window.requestAnimationFrame(() => {
+      if (window.matchMedia("(max-width: 560px)").matches) {
+        const selected = tabs.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
+        if (selected) {
+          const tabsBounds = tabs.getBoundingClientRect();
+          const selectedBounds = selected.getBoundingClientRect();
+          const centered = tabs.scrollLeft + selectedBounds.left + selectedBounds.width / 2 - tabsBounds.left - tabsBounds.width / 2;
+          const left = Math.max(0, Math.min(centered, tabs.scrollWidth - tabs.clientWidth));
+          if (Math.abs(left - tabs.scrollLeft) > 2) tabs.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        }
+      }
+      updateOverflow();
+    });
+    return () => { window.cancelAnimationFrame(frame); resizeObserver.disconnect(); tabs.removeEventListener("scroll", updateOverflow); };
+  }, [activeTab, props.area, adminTabs.length]);
+  const scrollAdminTabs = (direction: -1 | 1) => {
+    const tabs = adminTabsRef.current;
+    if (!tabs) return;
+    tabs.scrollBy({ left: direction * tabs.clientWidth * .7, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  };
   const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage" };
   const readOnly = activeTab !== "users" && Boolean(managePermission[activeTab] && !props.grantedPermissions.includes(managePermission[activeTab]) && !(activeTab === "faq" && props.grantedPermissions.includes("admin.faq.manage")));
   useEffect(() => {
@@ -724,20 +743,24 @@ export function AdminOperations(props: {
           {message}
         </p>
       )}
-      <div className="admin-tabs" ref={adminTabsRef} role="tablist" aria-label="Seções da área selecionada">
+      <div className="admin-tabs-shell" data-overflow-start={tabOverflow.start} data-overflow-end={tabOverflow.end}>
+        <div className="admin-tabs" ref={adminTabsRef} role="tablist" aria-label="Seções da área selecionada">
           {adminTabs.map(({ id, label, icon }) => (
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === id}
-            className={activeTab === id ? "is-active" : ""}
-            onClick={() => { if (id !== activeTab) router.push(adminTabHref(props.area, id), { scroll: false }); }}
-            key={id}
-          >
-            <AppIcon name={icon} />
-            {label}
-          </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === id}
+              className={activeTab === id ? "is-active" : ""}
+              onClick={() => { if (id !== activeTab) router.push(adminTabHref(props.area, id), { scroll: false }); }}
+              key={id}
+            >
+              <AppIcon name={icon} />
+              {label}
+            </button>
           ))}
+        </div>
+        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--start" type="button" aria-label="Mostrar guias anteriores" title="Mostrar guias anteriores" onClick={() => scrollAdminTabs(-1)}><AppIcon name="arrowRight" /></button>
+        <button className="admin-tabs-shell__arrow admin-tabs-shell__arrow--end" type="button" aria-label="Mostrar mais guias" title="Mostrar mais guias" onClick={() => scrollAdminTabs(1)}><AppIcon name="arrowRight" /></button>
       </div>
       {readOnly && <p className="auth-feedback" role="status">Acesso de consulta: as alterações desta área exigem permissão específica.</p>}
       <section className="panel admin-section">
