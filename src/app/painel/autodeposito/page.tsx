@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatWorkTitle } from "@/lib/work-title";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
+import { repositoryDepositSetup } from "@/lib/repository-deposit-setup";
 
 
 const first = <T,>(value: T | T[] | null | undefined): T | null => Array.isArray(value) ? value[0] ?? null : value ?? null;
@@ -18,9 +19,9 @@ export default async function RepositoryDepositPage() {
   const t = (value: string) => uiText(language, value);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).single() : { data: null };
+  const { data: profile } = user ? await supabase.from("profiles").select("role,full_name").eq("id", user.id).single() : { data: null };
   if (!user || profile?.role !== "student") redirect("/painel");
-  const { data: request } = await supabase.from("cataloging_requests").select(`id,status,title,subtitle,equivalent_title,people:request_people(role,transcribed_name,authorized_name,position),enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(program:academic_programs!academic_enrollments_academic_program_id_fkey(id,name,level,repository_deposit_enabled,repository_collection_label,repository_document_type_label,repository_academic_degree_label,repository_institution_label,repository_institution_acronym,repository_unit_label,repository_program_label,repository_country_label,repository_default_language_label))`).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  const { data: request } = await supabase.from("cataloging_requests").select(`id,status,title,subtitle,equivalent_title,people:request_people(role,transcribed_name,authorized_name,position),enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(program:academic_programs!academic_enrollments_academic_program_id_fkey(id,code,name,level,repository_deposit_enabled,repository_collection_label,repository_document_type_label,repository_academic_degree_label,repository_institution_label,repository_institution_acronym,repository_unit_label,repository_program_label,repository_country_label,repository_default_language_label))`).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   if (!request) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="document" /></span><div><h2>{t("Guia ainda indisponível")}</h2><p>{t("Faça uma solicitação de ficha para acompanhar as próximas etapas aqui.")}</p></div></section></main>;
   const enrollment = first(request.enrollment); const program = first(enrollment?.program);
   const [{ data: nada }, { data: homologation }, { data: progress }, { data: citation }, { data: workDates }] = await Promise.all([
@@ -33,6 +34,7 @@ export default async function RepositoryDepositPage() {
   const available = request.status === "approved" && nada?.status === "approved" && Boolean(homologation?.snapshot);
   if (!program?.repository_deposit_enabled) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="lock" /></span><div><h2>{t("Guia desativado para este curso")}</h2><p>{uiText(language, "O guia de autodepósito não está habilitado para {program}. Para TFG de graduação, ele permanece inicialmente desativado por cautela normativa.", { program: program?.name ?? t("seu curso ou programa") })}</p></div></section></main>;
   if (!available) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="review" /></span><div><h2>{t("Aguarde a liberação da ficha")}</h2><p>{t("O guia ficará disponível após a homologação da ficha e a aprovação do Nada Consta.")}</p></div></section></main>;
+  const setup = repositoryDepositSetup(program.code, { collection: program.repository_collection_label ?? "", documentType: program.repository_document_type_label ?? "" });
   const snapshot = homologation!.snapshot as unknown as CatalogingCardSnapshot;
   const people = [...snapshot.people].sort((a,b) => (a.position ?? 0)-(b.position ?? 0));
   const personField = (label: string, person: (typeof people)[number]): RepositoryCopyField => {
@@ -46,7 +48,7 @@ export default async function RepositoryDepositPage() {
   const coadvisors = people.filter((item) => item.role === "coadvisor");
   const board = people.filter((item) => ["advisor", "coadvisor", "committee_member"].includes(item.role));
   const fields: RepositoryCopyField[] = [
-    { label: "Coleção liberada", value: program.repository_collection_label, note: "A equipe do RI libera o acesso à coleção; confira a que aparece na sua conta.", copyable: false, group: "Configuração do depósito" }, { label: "Tipo de documento liberado", value: program.repository_document_type_label, note: "Confira o tipo disponibilizado pelo RI para este depósito.", copyable: false, group: "Configuração do depósito" },
+    { label: "Coleção prevista", value: setup.collection, note: "A equipe do RI libera o acesso à coleção adequada; confira a que aparece na sua conta.", copyable: false, group: "Configuração do depósito" }, { label: "Tipo de documento previsto", value: setup.documentType, note: "Confira o tipo disponibilizado pelo RI para este depósito.", copyable: false, group: "Configuração do depósito" },
     { label: "Grau acadêmico", value: program.repository_academic_degree_label, group: "Trabalho e datas" }, { label: "Título e subtítulo", value: formatWorkTitle(snapshot.request.title, snapshot.request.subtitle), group: "Trabalho e datas" }, { label: "Título equivalente", value: snapshot.request.equivalentTitle, group: "Trabalho e datas" },
     { label: "Data de depósito do trabalho", value: workDates?.deposit_date, kind: "date", note: "Se o protocolo antigo não tiver dia e mês, confira a data no arquivo final.", group: "Trabalho e datas" },
     { label: snapshot.request.workNature === "Dissertação" || snapshot.request.workNature === "Tese" ? "Data de defesa do trabalho" : "Data de apresentação do trabalho", value: workDates?.defense_date, kind: "date", note: "Use a data indicada na folha ou ata de aprovação.", group: "Trabalho e datas" },
@@ -73,5 +75,5 @@ export default async function RepositoryDepositPage() {
     { label: "Relação com outros documentos", note: "Preencha quando o trabalho tiver vínculo com outro documento ou publicação.", group: "Conferir no RI" },
     { label: "Arquivo, formato e descrição", note: "Envie a versão final com a ficha, confira o formato exigido pelo RI e marque o arquivo principal.", group: "Conferir no RI" },
   ];
-  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><span className="request-status">{snapshot.request.protocol}</span></div><StudentFeedbackInvite /><RepositoryDepositGuide requestId={request.id} startedAt={progress?.started_at ?? null} fields={fields} /></main>;
+  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><span className="request-status">{snapshot.request.protocol}</span></div><StudentFeedbackInvite /><RepositoryDepositGuide requestId={request.id} startedAt={progress?.started_at ?? null} fields={fields} setup={setup} requesterName={profile.full_name ?? ""} /></main>;
 }

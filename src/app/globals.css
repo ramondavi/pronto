@@ -3505,6 +3505,13 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-steps strong { font-size: .84rem; }
 .repository-guide__access-steps p { margin: 4px 0 0 !important; font-size: .79rem !important; }
 .repository-guide__access-steps a { color: var(--institutional); font-weight: 800; }
+.repository-guide__access-template { grid-column: 2; display: grid; gap: 12px; min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.repository-guide__access-template h3 { margin: 3px 0 4px; font-size: 1rem; }
+.repository-guide__access-template p:not(.eyebrow) { margin: 0; }
+.repository-guide__access-template label { display: grid; gap: 6px; font-size: .82rem; font-weight: 700; }
+.repository-guide__access-template input, .repository-guide__access-template textarea { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: var(--surface-raised); color: var(--text); font: inherit; }
+.repository-guide__access-template textarea { resize: vertical; line-height: 1.5; font-size: .82rem; }
+.repository-guide__access-template .button { justify-self: start; }
 .repository-guide__welcome-action { grid-column: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 17px 18px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius-sm); background: var(--institutional-soft); }
 .repository-guide__welcome-action > div { display: grid; gap: 3px; max-width: 390px; }
 .repository-guide__welcome-action strong { color: var(--text); font-size: .87rem; }
@@ -3660,7 +3667,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__reminders svg { flex: none; width: 19px; height: 19px; color: var(--institutional); }
 .repository-guide__reminders p { margin: 0; color: var(--text-muted); font-size: .79rem; line-height: 1.5; }
 .repository-guide__reminders strong { color: var(--text); }
-@media (max-width: 700px) { .repository-guide__welcome { grid-template-columns: 1fr; } .repository-guide__access-heading, .repository-guide__access-steps, .repository-guide__welcome-action, .repository-guide__welcome > .form-error { grid-column: 1; } .repository-guide__steps, .repository-guide__reminders { grid-template-columns: 1fr; } .repository-guide__hero { align-items: stretch; flex-direction: column; } .repository-guide__hero > .button { align-self: flex-start; } }
+@media (max-width: 700px) { .repository-guide__welcome { grid-template-columns: 1fr; } .repository-guide__access-heading, .repository-guide__access-steps, .repository-guide__access-template, .repository-guide__welcome-action, .repository-guide__welcome > .form-error { grid-column: 1; } .repository-guide__steps, .repository-guide__reminders { grid-template-columns: 1fr; } .repository-guide__hero { align-items: stretch; flex-direction: column; } .repository-guide__hero > .button { align-self: flex-start; } }
 @media (max-width: 480px) { .repository-guide__field { align-items: flex-start; flex-direction: column; } .repository-guide__field > .button { align-self: flex-start; } }
 @media (max-width: 480px) { .repository-guide__person-parts { grid-template-columns: 1fr; } }
 .program-settings { display: grid; gap: 12px; }

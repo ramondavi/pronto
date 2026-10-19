@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import { uiText } from "@/lib/ui-text";
+import { repositoryAccessEmail, type RepositoryDepositSetup } from "@/lib/repository-deposit-setup";
 
 type RepositoryFieldGroup = "Configuração do depósito" | "Trabalho e datas" | "Pessoas e instituição" | "Assuntos e referência" | "Conferir no RI" | "Dados do trabalho";
 export type RepositoryCopyField = { label: string; value?: string | null; note?: string; group?: RepositoryFieldGroup; kind?: "date" | "person" | "selection"; entry?: string; remainder?: string; copyable?: boolean };
@@ -31,7 +32,7 @@ const steps: { title: string; description: string; icon: AppIconName }[] = [
   { title: "Conclusão", description: "Acompanhe o andamento pelo e-mail e pelo “Meu espaço” no RI.", icon: "check" },
 ];
 
-export function RepositoryDepositGuide({ requestId, startedAt, fields, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; preview?: boolean }) {
+export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (value: string) => uiText(language, value);
   const fieldLabel = (label: string) => {
@@ -42,6 +43,8 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, preview =
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
   const [error, setError] = useState("");
+  const [repositoryEmail, setRepositoryEmail] = useState("");
+  const accessEmail = repositoryAccessEmail(requesterName, repositoryEmail.trim(), setup);
 
   async function begin() {
     if (preview) { setStarted(new Date().toISOString()); return; }
@@ -74,9 +77,10 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, preview =
     <div className="repository-guide__access-heading"><span>{t("Antes de começar")}</span><h3>{t("Prepare seu acesso em 3 etapas")}</h3></div>
     <ol className="repository-guide__access-steps" aria-label={t("Como obter acesso para depositar no RI")}>
       <li><span className="repository-guide__access-number">1</span><AppIcon name="person" /><div><strong>{t("Crie sua conta")}</strong><p>{t("Cadastre-se no")} <a href="https://repositorio.ufba.br/" target="_blank" rel="noopener noreferrer">RI/UFBA</a> {t("com seu e-mail")} <strong>@ufba.br</strong>, {t("caso ainda não tenha conta. Se precisar, consulte o")} <a href="https://repositorio.ufba.br/files/TUTORIAL_CADASTRO_DE_USUARIOS.PDF" target="_blank" rel="noopener noreferrer">{t("tutorial de cadastro")}</a>.</p></div></li>
-      <li><span className="repository-guide__access-number">2</span><AppIcon name="message" /><div><strong>{t("Solicite a liberação")}</strong><p>{t("Envie um e-mail para")} <a href="mailto:repositorio@ufba.br">repositorio@ufba.br</a> {t("com")} <strong>{t("o e-mail cadastrado no RI")}</strong>, {t("seu")} <strong>{t("vínculo institucional atual")}</strong> {t("e o")} <strong>{t("tipo de monografia")}</strong> {t("que vai depositar.")}</p></div></li>
+      <li><span className="repository-guide__access-number">2</span><AppIcon name="message" /><div><strong>{t("Solicite a liberação")}</strong><p>Envie um e-mail para <a href="mailto:repositorio@ufba.br">repositorio@ufba.br</a> com seu nome completo, o e-mail usado no cadastro do RI/UFBA e a comunidade, subcomunidade (quando houver), coleção e tipo de documento indicados abaixo.</p></div></li>
       <li><span className="repository-guide__access-number">3</span><AppIcon name="calendar" /><div><strong>{t("Aguarde a confirmação do RI")}</strong><p>{t("Só inicie o depósito após a equipe liberar seu acesso. A liberação vale por")} <strong>{t("30 dias")}</strong>; {t("se vencer, solicite outra por e-mail.")}</p></div></li>
     </ol>
+    <div className="repository-guide__access-template"><div><p className="eyebrow">Pedido de acesso ao RI/UFBA</p><h3>E-mail pronto para copiar</h3><p>A equipe do RI libera a coleção e o tipo adequados. Confira os dados e informe o mesmo e-mail usado no seu cadastro no RI.</p></div><label>E-mail cadastrado no RI/UFBA<input type="email" autoComplete="email" placeholder="seu.nome@ufba.br" value={repositoryEmail} onChange={(event) => setRepositoryEmail(event.target.value)} /></label><p><strong>Assunto:</strong> Solicitação de liberação para autodepósito no RI/UFBA</p><textarea readOnly rows={14} aria-label="Corpo do e-mail para solicitar acesso ao RI/UFBA" value={accessEmail} /><button className="button button--secondary button--small button--with-icon" type="button" disabled={!repositoryEmail.trim() || !/^[^\s@]+@ufba\.br$/i.test(repositoryEmail.trim())} onClick={() => void copy("pedido de acesso", accessEmail)}><AppIcon name={copied === "pedido de acesso" ? "check" : "copy"} />{copied === "pedido de acesso" ? "Copiado" : "Copiar mensagem"}</button></div>
     <div className="repository-guide__welcome-action"><div><strong>{t("Recebeu a liberação?")}</strong><small>{t("Tenha em mãos o PDF final com a ficha. O guia ajudará você a preencher o depósito.")}</small></div><button className="button button--primary button--with-icon" type="button" disabled={busy} onClick={() => void begin()}><AppIcon name="arrowRight" />{t(busy ? "Registrando início…" : "Começar guia de depósito")}</button></div>
     {error && <p className="form-error" role="alert">{error}</p>}
   </section>;
