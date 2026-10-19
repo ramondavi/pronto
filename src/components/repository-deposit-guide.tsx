@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import { uiText } from "@/lib/ui-text";
+import { repositoryAccessEmail, repositoryAccessEmailHtml, repositoryAccessItems, repositoryAccessSubject, repositoryAccessText, type RepositoryDepositSetup } from "@/lib/repository-deposit-setup";
 
 type RepositoryFieldGroup = "Configuração do depósito" | "Trabalho e datas" | "Pessoas e instituição" | "Assuntos e referência" | "Conferir no RI" | "Dados do trabalho";
 export type RepositoryCopyField = { label: string; value?: string | null; note?: string; group?: RepositoryFieldGroup; kind?: "date" | "person" | "selection"; entry?: string; remainder?: string; copyable?: boolean };
@@ -31,7 +32,7 @@ const steps: { title: string; description: string; icon: AppIconName }[] = [
   { title: "Conclusão", description: "Acompanhe o andamento pelo e-mail e pelo “Meu espaço” no RI.", icon: "check" },
 ];
 
-export function RepositoryDepositGuide({ requestId, startedAt, fields, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; preview?: boolean }) {
+export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, requesterEmail, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; requesterEmail: string; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (value: string) => uiText(language, value);
   const fieldLabel = (label: string) => {
@@ -42,6 +43,66 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, preview =
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
   const [error, setError] = useState("");
+  const [emailChoice, setEmailChoice] = useState<"" | "same" | "other">("");
+  const [otherEmail, setOtherEmail] = useState("");
+  const [otherEmailDraft, setOtherEmailDraft] = useState("");
+  const [editingOtherEmail, setEditingOtherEmail] = useState(false);
+  const [confirmingOtherEmail, setConfirmingOtherEmail] = useState(false);
+  const otherEmailInputRef = useRef<HTMLInputElement>(null);
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [copyFormat, setCopyFormat] = useState<"formatted" | "plain">("formatted");
+  const repositoryEmail = emailChoice === "same" ? requesterEmail : emailChoice === "other" ? otherEmail.trim() : "";
+  const emailReady = emailChoice !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(repositoryEmail);
+  const accessSubject = repositoryAccessSubject(requesterName, language);
+  const accessEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup, language);
+  const accessItems = repositoryAccessItems(requesterName, repositoryEmail, setup, language);
+  const accessText = repositoryAccessText(language);
+  const portugueseSubject = repositoryAccessSubject(requesterName);
+  const portugueseEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup);
+
+  useEffect(() => {
+    if (editingOtherEmail) otherEmailInputRef.current?.focus();
+  }, [editingOtherEmail]);
+
+  useEffect(() => () => {
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+  }, []);
+
+  function openOtherEmailEditor() {
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+    setConfirmingOtherEmail(false);
+    setOtherEmailDraft(otherEmail);
+    setEditingOtherEmail(true);
+  }
+
+  function confirmOtherEmail() {
+    const normalized = otherEmailDraft.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return;
+    setOtherEmail(normalized);
+    setOtherEmailDraft(normalized);
+    setEditingOtherEmail(false);
+    setConfirmingOtherEmail(true);
+    confirmationTimer.current = setTimeout(() => {
+      setConfirmingOtherEmail(false);
+      confirmationTimer.current = null;
+    }, 1400);
+  }
+
+  async function copyAccessMessage() {
+    if (!emailReady) return;
+    try {
+      if (copyFormat === "formatted" && typeof ClipboardItem !== "undefined") {
+        const html = repositoryAccessEmailHtml(requesterName, repositoryEmail, setup);
+        await navigator.clipboard.write([new ClipboardItem({
+          "text/plain": new Blob([portugueseEmail], { type: "text/plain" }),
+          "text/html": new Blob([html], { type: "text/html" }),
+        })]);
+      } else await navigator.clipboard.writeText(portugueseEmail);
+      setError("");
+      setCopied("pedido de acesso");
+      window.setTimeout(() => setCopied(""), 1600);
+    } catch { setError(t("Não foi possível copiar. Selecione o texto e copie manualmente.")); }
+  }
 
   async function begin() {
     if (preview) { setStarted(new Date().toISOString()); return; }
@@ -73,8 +134,20 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, preview =
     <div><p className="eyebrow">{t("Próxima etapa")}</p><h2 id="repository-welcome-title">{t("Faça o autodepósito no RI/UFBA")}</h2><p>{t("Antes de depositar, prepare seu acesso ao repositório. Siga as etapas abaixo na ordem indicada.")}</p></div>
     <div className="repository-guide__access-heading"><span>{t("Antes de começar")}</span><h3>{t("Prepare seu acesso em 3 etapas")}</h3></div>
     <ol className="repository-guide__access-steps" aria-label={t("Como obter acesso para depositar no RI")}>
-      <li><span className="repository-guide__access-number">1</span><AppIcon name="person" /><div><strong>{t("Crie sua conta")}</strong><p>{t("Cadastre-se no")} <a href="https://repositorio.ufba.br/" target="_blank" rel="noopener noreferrer">RI/UFBA</a> {t("com seu e-mail")} <strong>@ufba.br</strong>, {t("caso ainda não tenha conta. Se precisar, consulte o")} <a href="https://repositorio.ufba.br/files/TUTORIAL_CADASTRO_DE_USUARIOS.PDF" target="_blank" rel="noopener noreferrer">{t("tutorial de cadastro")}</a>.</p></div></li>
-      <li><span className="repository-guide__access-number">2</span><AppIcon name="message" /><div><strong>{t("Solicite a liberação")}</strong><p>{t("Envie um e-mail para")} <a href="mailto:repositorio@ufba.br">repositorio@ufba.br</a> {t("com")} <strong>{t("o e-mail cadastrado no RI")}</strong>, {t("seu")} <strong>{t("vínculo institucional atual")}</strong> {t("e o")} <strong>{t("tipo de monografia")}</strong> {t("que vai depositar.")}</p></div></li>
+      <li><span className="repository-guide__access-number">1</span><AppIcon name="person" /><div><strong>{t("Crie sua conta")}</strong><p>{t("Se ainda não tiver conta, cadastre-se no")} <a href="https://repositorio.ufba.br/" target="_blank" rel="noopener noreferrer">RI/UFBA</a> {t("com o e-mail que pretende usar no repositório. Recomendamos usar seu e-mail institucional @ufba.br. Se precisar, consulte o")} <a href="https://repositorio.ufba.br/files/TUTORIAL_CADASTRO_DE_USUARIOS.PDF" target="_blank" rel="noopener noreferrer">{t("tutorial de cadastro")}</a>.</p></div></li>
+      <li className="repository-guide__access-step--email"><span className="repository-guide__access-number">2</span><AppIcon name="message" /><div><strong>{t("Solicite a liberação")}</strong><p>{t("Confira o modelo abaixo e envie a solicitação para")} <a href="mailto:repositorio@ufba.br">repositorio@ufba.br</a>. {t("Use o e-mail cadastrado no RI/UFBA; a equipe confirmará a coleção e o tipo de documento liberados.")}</p>
+        <div className="repository-guide__access-template">
+          <div className="repository-guide__access-template-heading"><span className="repository-guide__access-template-icon"><AppIcon name="message" /></span><div><span className="eyebrow">{t("Pedido de acesso")}</span><h3>{t("Prepare o e-mail ao RI/UFBA")}</h3></div></div>
+          <fieldset className="repository-guide__email-choice"><legend>{t("Qual e-mail você cadastrou no RI/UFBA?")}</legend>
+            <div className={`repository-guide__email-option${emailChoice === "same" ? " is-selected" : ""}`}><label htmlFor={`repository-email-same-${requestId}`}><input id={`repository-email-same-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "same"} onChange={() => { setEmailChoice("same"); setEditingOtherEmail(false); setConfirmingOtherEmail(false); }} /><AppIcon className="repository-guide__email-option-icon" name="person" /><span><strong>{t("O mesmo e-mail do Pronto!")}</strong><small>{requesterEmail}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label></div>
+            <div className={`repository-guide__email-option repository-guide__email-option--other${emailChoice === "other" ? " is-selected" : ""}${editingOtherEmail ? " is-editing" : ""}${confirmingOtherEmail ? " is-confirming" : ""}`}><label htmlFor={`repository-email-other-${requestId}`} onClick={(event) => { if (emailChoice === "other") { event.preventDefault(); if (!editingOtherEmail) openOtherEmailEditor(); } }}><input id={`repository-email-other-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "other"} onChange={() => { setEmailChoice("other"); openOtherEmailEditor(); }} /><AppIcon className="repository-guide__email-option-icon" name="message" /><span className="repository-guide__other-email-copy"><strong>{t("Outro e-mail")}</strong><small>{otherEmail || t("Informe o endereço usado no cadastro do RI/UFBA.")}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label><input ref={otherEmailInputRef} className="repository-guide__other-email-input" type="email" autoComplete="email" placeholder={t("Digite o e-mail usado no RI/UFBA")} aria-label={t("E-mail cadastrado no RI/UFBA")} value={otherEmailDraft} onChange={(event) => setOtherEmailDraft(event.target.value)} onBlur={confirmOtherEmail} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); event.currentTarget.blur(); } }} aria-invalid={otherEmailDraft.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(otherEmailDraft.trim())} tabIndex={editingOtherEmail ? 0 : -1} /><span className="repository-guide__other-email-feedback" role="status"><AppIcon name="check" />{t("E-mail aplicado à mensagem")}</span></div>
+          </fieldset>
+          {language !== "pt" && <p className="repository-guide__copy-language-note"><AppIcon name="message" />{t("O assunto e a mensagem aparecem no idioma selecionado para sua conferência. Ao copiar, o texto será em português para a equipe do RI/UFBA.")}</p>}
+          <div className="repository-guide__access-subject"><div><span>{t("Assunto")}</span><strong>{accessSubject}</strong></div><button className="button button--secondary button--small button--with-icon" type="button" onClick={() => void copy("assunto do pedido", portugueseSubject)}><AppIcon name={copied === "assunto do pedido" ? "check" : "copy"} />{copied === "assunto do pedido" ? t("Copiado") : t("Copiar assunto")}</button></div>
+          <div className="repository-guide__access-message"><div className="repository-guide__access-message-heading"><span>{t("Mensagem")}</span><div className="repository-guide__copy-format" role="group" aria-label={t("Formato da cópia da mensagem")}><button type="button" className={copyFormat === "formatted" ? "is-selected" : ""} aria-pressed={copyFormat === "formatted"} onClick={() => setCopyFormat("formatted")}>{t("Formatada")}</button><button type="button" className={copyFormat === "plain" ? "is-selected" : ""} aria-pressed={copyFormat === "plain"} onClick={() => setCopyFormat("plain")}>{t("Sem formatação")}</button></div></div>{copyFormat === "plain" ? <pre className="repository-guide__message-plain" aria-label={t("Prévia sem formatação da mensagem")}>{accessEmail}</pre> : <div className="repository-guide__message-preview" aria-label={t("Prévia da mensagem")}><p>{accessText.greeting}</p><p>{accessText.request}</p><ul>{accessItems.map((item) => <li key={item}>{item}</li>)}</ul><p>{accessText.thanks}</p><p>{accessText.closing}<br />{requesterName}</p></div>}</div>
+          <button className="button button--primary button--with-icon repository-guide__copy-message" type="button" disabled={!emailReady} onClick={() => void copyAccessMessage()}><AppIcon name={copied === "pedido de acesso" ? "check" : emailReady ? "copy" : "lock"} />{t(!emailReady ? "Informe o e-mail cadastrado no RI para copiar" : copied === "pedido de acesso" ? "Mensagem copiada" : "Copiar mensagem")}</button>
+        </div>
+      </div></li>
       <li><span className="repository-guide__access-number">3</span><AppIcon name="calendar" /><div><strong>{t("Aguarde a confirmação do RI")}</strong><p>{t("Só inicie o depósito após a equipe liberar seu acesso. A liberação vale por")} <strong>{t("30 dias")}</strong>; {t("se vencer, solicite outra por e-mail.")}</p></div></li>
     </ol>
     <div className="repository-guide__welcome-action"><div><strong>{t("Recebeu a liberação?")}</strong><small>{t("Tenha em mãos o PDF final com a ficha. O guia ajudará você a preencher o depósito.")}</small></div><button className="button button--primary button--with-icon" type="button" disabled={busy} onClick={() => void begin()}><AppIcon name="arrowRight" />{t(busy ? "Registrando início…" : "Começar guia de depósito")}</button></div>

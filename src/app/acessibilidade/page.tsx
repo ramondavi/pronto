@@ -19,12 +19,22 @@ const copy: Record<InterfaceLanguage, { intro: [string, string, string]; resourc
   it: { intro: ["Accessibilità digitale", "Un Pronto! più facile da usare.", "Pronto! funziona con la tastiera, diverse dimensioni del testo, contrasto elevato e tecnologie assistive."], resources: [["Navigazione da tastiera", "Usa Tab, Invio e Spazio per accedere ai controlli."], ["Visualizzazione regolabile", "Il pulsante fluttuante per l’accessibilità permette di ingrandire il testo e attivare il contrasto elevato."], ["Hai trovato una barriera?", "Scrivi alla Biblioteca della Facoltà di Architettura indicando la pagina e cosa hai tentato di fare."]], labels: ["Principali funzioni di accessibilità", "Scorciatoie e dettagli sull’accessibilità", "Funzioni disponibili", "Scorciatoie e funzioni"], shortcuts: ["va al contenuto principale.", "va al menu principale.", "apre il Centro assistenza.", "apre questa pagina.", "apre l’Informativa sulla privacy."], note: "Alcuni browser richiedono anche Maiusc o un altro tasto. Link e pulsanti funzionano con Tab, Invio e Spazio.", view: ["Visualizzazione", "Il pulsante fluttuante per l’accessibilità permette di cambiare la dimensione del testo e attivare il contrasto elevato. Queste preferenze restano solo in questo browser."], sign: ["Lingua dei segni brasiliana", "Quando la Barra Brasil ufficiale è attiva, offre VLibras. Pronto! non raccoglie dati da questa funzione."], barrier: ["Hai trovato una barriera?", "Indica alla Biblioteca della Facoltà di Architettura la pagina e cosa hai tentato di fare. Esamineremo il problema e cercheremo una soluzione."] },
 };
 
+const extraResources: Record<InterfaceLanguage, string> = {
+  pt: "No mesmo botão, você pode reduzir animações, destacar links, aumentar o espaçamento do texto e restaurar todos os ajustes. Os atalhos para conteúdo, menu, ajuda e privacidade também ficam ali.",
+  en: "The same button can reduce animations, highlight links, increase text spacing and reset all settings. It also contains shortcuts to content, menu, help and privacy.",
+  es: "El mismo botón permite reducir animaciones, destacar enlaces, aumentar el espaciado del texto y restablecer los ajustes. También incluye accesos al contenido, menú, ayuda y privacidad.",
+  de: "Mit derselben Schaltfläche können Sie Animationen reduzieren, Links hervorheben, den Textabstand vergrößern und alle Einstellungen zurücksetzen. Sie enthält auch Verknüpfungen zu Inhalt, Menü, Hilfe und Datenschutz.",
+  fr: "Le même bouton permet de réduire les animations, de mettre les liens en évidence, d’espacer le texte et de rétablir les réglages. Il contient aussi des raccourcis vers le contenu, le menu, l’aide et la confidentialité.",
+  it: "Lo stesso pulsante permette di ridurre le animazioni, evidenziare i link, aumentare la spaziatura del testo e ripristinare le impostazioni. Include anche scorciatoie per contenuto, menu, aiuto e privacy.",
+};
+
 export default async function AccessibilityPage() {
-  const t = copy[await getInterfaceLanguage()];
+  const language = await getInterfaceLanguage();
+  const t = copy[language];
   return <><SiteHeader /><main className="accessibility-page"><header className="container accessibility-page__hero">
     <p className="eyebrow">{t.intro[0]}</p><h1>{t.intro[1]}</h1><p>{t.intro[2]}</p>
   </header><section className="container accessibility-page__cards" aria-label={t.labels[0]}>{t.resources.map(([title, description], index) => <article key={title}><AppIcon name={(["check", "settings", "help"] as const)[index]} /><h2>{title}</h2><p>{description}</p></article>)}</section><section className="container accessibility-page__content" aria-label={t.labels[1]}><div className="accessibility-page__section-heading"><AppIcon name="help" /><div><p className="eyebrow">{t.labels[2]}</p><h2>{t.labels[3]}</h2></div></div>
     <ul>{t.shortcuts.map((description, index) => <li key={index}><strong>Alt + {index + 1}:</strong> {description}</li>)}</ul>
-    <p>{t.note}</p><h2>{t.view[0]}</h2><p>{t.view[1]}</p><h2>{t.sign[0]}</h2><p>{t.sign[1]}</p><h2>{t.barrier[0]}</h2><p>{t.barrier[1]} <ProtectedEmail recipient="library" />.</p>
+    <p>{t.note}</p><h2>{t.view[0]}</h2><p>{t.view[1]}</p><p>{extraResources[language]}</p><h2>{t.sign[0]}</h2><p>{t.sign[1]}</p><h2>{t.barrier[0]}</h2><p>{t.barrier[1]} <ProtectedEmail recipient="library" />.</p>
   </section></main></>;
 }

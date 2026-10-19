@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { panelMetadata } from "@/lib/panel-metadata";
 import { studentPreviewScenarios } from "@/lib/student-preview-fixtures";
 import { studentServiceStatus } from "@/lib/student-service-status";
+import { getPublishedKnowledge } from "@/lib/knowledge-service";
+import { getInterfaceLanguage } from "@/lib/server-language";
 
 export async function generateMetadata() { return panelMetadata("/painel/visao-estudante"); }
 
@@ -20,10 +22,12 @@ export default async function StudentPreviewPage({ searchParams }: { searchParam
   const { tela, estado } = await searchParams;
   const active = screens.find((item) => item === tela) ?? "inicio";
   const scenario = studentPreviewScenarios.find((item) => item.id === estado) ?? studentPreviewScenarios[0];
-  const [{ data: programs }, { data: announcements }, serviceStatus] = await Promise.all([
+  const [{ data: programs }, { data: announcements }, serviceStatus, helpArticles, language] = await Promise.all([
     supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true).order("name"),
     supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100),
     studentServiceStatus(supabase),
+    ["inicio", "solicitacoes"].includes(active) ? getPublishedKnowledge().then((entries) => entries.filter((entry) => entry.kind === "article" && entry.slug).map((entry) => ({ slug: entry.slug!, title: entry.title, category: entry.category }))) : Promise.resolve([]),
+    getInterfaceLanguage(),
   ]);
-  return <StudentPreviewScreens active={active} scenario={scenario} programs={programs ?? []} announcements={announcements ?? []} serviceStatus={serviceStatus} userId={user.id} />;
+  return <StudentPreviewScreens active={active} scenario={scenario} programs={programs ?? []} announcements={announcements ?? []} serviceStatus={serviceStatus} userId={user.id} helpArticles={helpArticles} language={language} />;
 }

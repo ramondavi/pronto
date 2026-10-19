@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useInterfaceLanguage } from "./interface-language";
 import { breadcrumbCopy, dashboardTrail } from "@/lib/breadcrumb-copy";
 import { AppIcon } from "./app-icon";
@@ -24,8 +24,26 @@ export function DashboardBreadcrumbProtocol({ protocol }: { protocol: string }) 
 
 function Trail({ items, variant }: { items: Crumb[]; variant: "public" | "dashboard" }) {
   const { language } = useInterfaceLanguage();
+  const navRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    const nav = navRef.current;
+    const list = listRef.current;
+    if (!nav || !list) return;
+    const measure = () => {
+      const distance = Math.max(0, list.scrollWidth - nav.clientWidth);
+      nav.classList.toggle("is-scrolling", distance > 2);
+      list.style.setProperty("--breadcrumb-travel", `${-distance}px`);
+      list.style.setProperty("--breadcrumb-duration", `${Math.max(8, distance / 24 + 4)}s`);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(nav);
+    observer.observe(list);
+    measure();
+    return () => observer.disconnect();
+  }, [items]);
   if (items.length < 2) return null;
-  return <nav className={`breadcrumb breadcrumb--${variant}`} aria-label={breadcrumbCopy[language][0]}><ol>{items.map((item, index) => <li key={`${item.label}-${index}`}>{item.href && index < items.length - 1 ? <Link href={item.href}>{index === 0 && <AppIcon name="home" />}{item.label}</Link> : <span aria-current={index === items.length - 1 ? "page" : undefined}>{item.label}</span>}{index < items.length - 1 && <AppIcon className="breadcrumb__separator" name="arrowRight" />}</li>)}</ol></nav>;
+  return <nav ref={navRef} className={`breadcrumb breadcrumb--${variant}`} aria-label={breadcrumbCopy[language][0]}><ol ref={listRef}>{items.map((item, index) => <li key={`${item.label}-${index}`}>{item.href && index < items.length - 1 ? <Link href={item.href}>{index === 0 && <AppIcon name="home" />}{item.label}</Link> : <span aria-current={index === items.length - 1 ? "page" : undefined}>{item.label}</span>}{index < items.length - 1 && <AppIcon className="breadcrumb__separator" name="arrowRight" />}</li>)}</ol></nav>;
 }
 
 export function PublicBreadcrumbs({ articleTitle }: { articleTitle?: string }) {

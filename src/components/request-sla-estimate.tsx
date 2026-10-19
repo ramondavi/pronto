@@ -12,7 +12,7 @@ function isBusinessDay(date: Date, closures: Closure[]) {
   const day = dayKey(date);
   return weekday !== 0 && weekday !== 6 && !closures.some((item) => {
     const start = item.starts_at.slice(0, 10);
-    const end = item.ends_at?.slice(0, 10) ?? (["holiday", "optional_day"].includes(item.type) ? start : null);
+    const end = item.ends_at?.slice(0, 10) ?? (["holiday", "optional_day", "closure"].includes(item.type) ? start : null);
     return day >= start && (end === null || day <= end);
   });
 }

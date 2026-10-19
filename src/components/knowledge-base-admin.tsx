@@ -1,7 +1,7 @@
 "use client";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { knowledgeCategories, type KnowledgeEntry, type KnowledgeTranslation } from "@/lib/knowledge-base";
 import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
@@ -12,6 +12,16 @@ import { RichTextEditor } from "./rich-text-editor";
 export type { KnowledgeEntry } from "@/lib/knowledge-base";
 const kindLabels = { faq: "Pergunta frequente", answer: "Resposta rápida", article: "Artigo completo" };
 const kindIcons: Record<KnowledgeEntry["kind"], AppIconName> = { faq: "help", answer: "review", article: "book" };
+const pendingLanguageLabels: Record<InterfaceLanguage, string> = { pt: "Português", en: "Inglês", es: "Espanhol", de: "Alemão", fr: "Francês", it: "Italiano" };
+const hasCompleteTranslation = (translation: KnowledgeTranslation | null | undefined) => Boolean(
+  translation?.title?.trim() && translation?.summary?.trim() && translation?.body_html?.replace(/<[^>]*>/g, "").replace(/&nbsp;/gi, " ").trim(),
+);
+function missingLanguages(entry: KnowledgeEntry): InterfaceLanguage[] {
+  return supportedLanguages.filter((language) => {
+    if (language === "pt") return !hasCompleteTranslation({ title: entry.title, summary: entry.summary, body_html: entry.body_html });
+    return !hasCompleteTranslation(entry.translations?.[language]) && !hasCompleteTranslation(fallbackKnowledgeTranslation(entry, language));
+  });
+}
 const audienceOptions = [
   ["public", "Página pública"], ["student", "Estudante"], ["cataloger", "Bibliotecário"],
   ["administrator", "Administrador"], ["panel", "Painel interno"],
@@ -22,11 +32,12 @@ function FieldTooltip({ text }: { text: string }) {
   return <span className="tooltip" tabIndex={0} aria-label={text}>?<span role="tooltip">{text}</span></span>;
 }
 
-function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, initialLanguage }: {
-  entry: KnowledgeEntry; expanded: boolean; onToggle: () => void; onSaved: (oldId: string, saved: KnowledgeEntry) => void; faqOnly: boolean; canEdit: boolean; initialLanguage: InterfaceLanguage;
+function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, initialLanguage, jumpLanguage, jumpSerial }: {
+  entry: KnowledgeEntry; expanded: boolean; onToggle: () => void; onSaved: (oldId: string, saved: KnowledgeEntry) => void; faqOnly: boolean; canEdit: boolean; initialLanguage: InterfaceLanguage; jumpLanguage?: InterfaceLanguage; jumpSerial?: number;
 }) {
   const [kind, setKind] = useState(entry.kind);
   const [editLanguage, setEditLanguage] = useState<InterfaceLanguage>(initialLanguage);
+  useEffect(() => { if (jumpLanguage) setEditLanguage(jumpLanguage); }, [jumpLanguage, jumpSerial]);
   const [localized, setLocalized] = useState<Record<InterfaceLanguage, KnowledgeTranslation>>(() => Object.fromEntries(supportedLanguages.map((language) => {
     if (language === "pt") return [language, { title: entry.title, summary: entry.summary, body_html: entry.body_html }];
     const fallback = fallbackKnowledgeTranslation(entry, language);
@@ -113,25 +124,64 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
   </article>;
 }
 
-export function KnowledgeBaseAdmin({ entries: initial, faqOnly = false, canEdit = true, initialEntryId, initialLanguage = "pt" }: { entries: KnowledgeEntry[]; faqOnly?: boolean; canEdit?: boolean; initialEntryId?: string; initialLanguage?: InterfaceLanguage }) {
+export function KnowledgeBaseAdmin({ entries: initial, faqOnly = false, canEdit = true, initialEntryId, initialLanguage = "pt", overview }: { entries: KnowledgeEntry[]; faqOnly?: boolean; canEdit?: boolean; initialEntryId?: string; initialLanguage?: InterfaceLanguage; overview?: ReactNode }) {
   const [entries, setEntries] = useState(initial);
+  const [search, setSearch] = useState("");
+  const [kindFilter, setKindFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [translationFilter, setTranslationFilter] = useState("all");
   const [openId, setOpenId] = useState<string | null>(() => initialEntryId && initial.some((entry) => entry.id === initialEntryId) ? initialEntryId : null);
+  const [jump, setJump] = useState<{ id: string; language: InterfaceLanguage; serial: number } | null>(null);
+  const initialEntryPresent = Boolean(initialEntryId && initial.some((entry) => entry.id === initialEntryId));
   useEffect(() => {
-    if (!initialEntryId || !entries.some((entry) => entry.id === initialEntryId)) return;
+    if (!initialEntryId || !initialEntryPresent) return;
     const frame = requestAnimationFrame(() => document.getElementById(`knowledge-entry-${initialEntryId}`)?.scrollIntoView({ block: "start" }));
     return () => cancelAnimationFrame(frame);
-  }, [initialEntryId, entries]);
+  }, [initialEntryId, initialEntryPresent]);
+  useEffect(() => {
+    if (!jump) return;
+    const frame = requestAnimationFrame(() => {
+      const card = document.getElementById(`knowledge-entry-${jump.id}`);
+      card?.querySelector<HTMLButtonElement>(".knowledge-card__summary")?.focus({ preventScroll: true });
+      card?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [jump]);
   const saveEntry = (oldId: string, saved: KnowledgeEntry) => {
     setEntries((current) => current.map((entry) => entry.id === oldId ? saved : entry));
     setOpenId(saved.id);
   };
   const addEntry = () => {
+    setSearch(""); setKindFilter("all"); setCategoryFilter("all"); setStatusFilter("all"); setTranslationFilter("all");
     const id = `draft-${Date.now()}`;
     setEntries((current) => [...current, { id, slug: null, kind: faqOnly ? "faq" : "article", title: "", summary: "", body_html: "<p></p>", category: "Geral", audiences: ["public"], active: false, position: current.length * 10 + 10, featured_position: null, created_at: null, updated_at: null, published_at: null }]);
     setOpenId(id);
   };
+  const visibleEntries = entries.filter((entry) => !faqOnly || entry.kind === "faq");
+  const untranslated = visibleEntries.map((entry) => ({ entry, languages: missingLanguages(entry) })).filter(({ languages }) => languages.length > 0);
+  const normalizedSearch = search.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+  const filteredEntries = visibleEntries.filter((entry) => {
+    const searchable = [entry.title, entry.summary, entry.slug, ...Object.values(entry.translations ?? {}).flatMap((translation) => [translation?.title, translation?.summary])].filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+    return (!normalizedSearch || searchable.includes(normalizedSearch)) && (kindFilter === "all" || entry.kind === kindFilter) && (categoryFilter === "all" || entry.category === categoryFilter) && (statusFilter === "all" || entry.active === (statusFilter === "published")) && (translationFilter === "all" || (missingLanguages(entry).length > 0) === (translationFilter === "pending"));
+  });
+  const filtersActive = Boolean(search || kindFilter !== "all" || categoryFilter !== "all" || statusFilter !== "all" || translationFilter !== "all");
+  const clearFilters = () => { setSearch(""); setKindFilter("all"); setCategoryFilter("all"); setStatusFilter("all"); setTranslationFilter("all"); };
   return <section className="knowledge-admin" aria-labelledby="base-conhecimento">
+    {untranslated.length > 0 && <aside className="knowledge-translation-alert" aria-labelledby="knowledge-translation-alert-title">
+      <div className="knowledge-translation-alert__heading"><AppIcon name="globe" /><div><h3 id="knowledge-translation-alert-title">Traduções pendentes em {untranslated.length} {untranslated.length === 1 ? "conteúdo" : "conteúdos"}</h3><p>Abra cada conteúdo para completar os idiomas indicados.</p></div></div>
+      <ul>{untranslated.map(({ entry, languages }) => <li key={entry.id}><a href={`#knowledge-entry-${entry.id}`} onClick={(event) => { event.preventDefault(); clearFilters(); setOpenId(entry.id); setJump((current) => ({ id: entry.id, language: languages[0], serial: (current?.serial ?? 0) + 1 })); }}>{entry.title.trim() || "Novo conteúdo"}</a><span>{languages.map((language) => pendingLanguageLabels[language]).join(", ")}</span></li>)}</ul>
+    </aside>}
+    {overview}
     <div className="knowledge-admin__heading"><div><p className="eyebrow">Conteúdo publicado e em preparo</p><h3 id="base-conhecimento">Perguntas, respostas e artigos</h3><p>{canEdit ? "Edite perguntas, respostas rápidas e artigos no mesmo espaço." : "Consulte o conteúdo da central de ajuda."}</p></div>{canEdit && <button type="button" className="button button--secondary" onClick={addEntry}><AppIcon name="document" />Adicionar conteúdo</button>}</div>
-    <div className="knowledge-admin__cards">{entries.filter((entry) => !faqOnly || entry.kind === "faq").map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} faqOnly={faqOnly} canEdit={canEdit} initialLanguage={initialLanguage} />)}</div>
+    <div className="knowledge-admin__filters" role="search" aria-label="Filtrar conteúdos de ajuda">
+      <label>Buscar conteúdo<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Título, resumo ou endereço" /></label>
+      {!faqOnly && <label>Tipo<select value={kindFilter} onChange={(event) => setKindFilter(event.target.value)}><option value="all">Todos os tipos</option><option value="faq">Perguntas frequentes</option><option value="answer">Respostas rápidas</option><option value="article">Artigos completos</option></select></label>}
+      <label>Categoria<select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">Todas as categorias</option>{knowledgeCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label>
+      <label>Publicação<select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">Todos</option><option value="published">Publicados</option><option value="draft">Rascunhos</option></select></label>
+      <label>Traduções<select value={translationFilter} onChange={(event) => setTranslationFilter(event.target.value)}><option value="all">Todas</option><option value="pending">Pendentes</option><option value="complete">Completas</option></select></label>
+      <div className="knowledge-admin__filter-footer"><span role="status">{filteredEntries.length} de {visibleEntries.length} conteúdos</span>{filtersActive && <button className="button button--secondary button--small" type="button" onClick={clearFilters}>Limpar filtros</button>}</div>
+    </div>
+    <div className="knowledge-admin__cards">{filteredEntries.map((entry) => <KnowledgeCard key={entry.id} entry={entry} expanded={openId === entry.id} onToggle={() => setOpenId(openId === entry.id ? null : entry.id)} onSaved={saveEntry} faqOnly={faqOnly} canEdit={canEdit} initialLanguage={initialLanguage} jumpLanguage={jump?.id === entry.id ? jump.language : undefined} jumpSerial={jump?.id === entry.id ? jump.serial : undefined} />)}{filteredEntries.length === 0 && <p className="admin-empty-state"><AppIcon name="search" />Nenhum conteúdo corresponde aos filtros.</p>}</div>
   </section>;
 }

@@ -2,6 +2,7 @@ import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel"); }
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { redirect } from "next/navigation";
 import { AdminProvisioningAlert } from "@/components/admin-provisioning-alert";
 import { StudentRequestShortcut } from "@/components/student-request-shortcut";
@@ -10,7 +11,9 @@ import { StudentDraftSummary } from "@/components/student-request-form";
 import { StaffActivityFeed, type StaffActivityEvent } from "@/components/staff-activity-feed";
 import { StaffAnnouncementsCalendar } from "@/components/staff-announcements-calendar";
 import { formatWorkTitle } from "@/lib/work-title";
-import { studentRequestProgress } from "@/lib/student-request-progress";
+import { studentHelpAllowedForProgram, studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
+import { getPublishedKnowledge } from "@/lib/knowledge-service";
+import { StudentCompletedRecord } from "@/components/student-completed-record";
 import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
 import { formatLibraryHour, formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { getInterfaceLanguage } from "@/lib/server-language";
@@ -20,6 +23,7 @@ import { RelativeDateTime } from "@/components/relative-date-time";
 import { ServiceStatusBanner } from "@/components/service-status-banner";
 import { userHasPermission } from "@/lib/staff-permissions";
 import { StaffGlobalSearch } from "@/components/staff-global-search";
+import { StudentOverviewAction } from "@/components/student-overview-action";
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
@@ -31,7 +35,7 @@ export default async function StudentDashboardPage() {
     if (!allowed) redirect("/painel/conta");
     return <StaffOverview role={profile.role} userId={user.id} firstName={profile.full_name.trim().split(/\s+/)[0] || "Olá"} />;
   }
-  const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, academic_enrollments(academic_programs(code,name,work_type))").in("status", ["submitted", "in_review", "changes_requested", "approved"]).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  const { data: activeRequest } = await supabase.from("cataloging_requests").select("id, protocol, status, title, subtitle, submitted_at, updated_at, academic_enrollments(academic_programs(code,name,work_type,repository_deposit_enabled))").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   const activeEnrollment = activeRequest && (Array.isArray(activeRequest.academic_enrollments) ? activeRequest.academic_enrollments[0] : activeRequest.academic_enrollments);
   const activeProgram = activeEnrollment && (Array.isArray(activeEnrollment.academic_programs) ? activeEnrollment.academic_programs[0] : activeEnrollment.academic_programs);
   const [{ data: nadaConsta }, { data: homologation }] = activeRequest ? await Promise.all([
@@ -40,11 +44,13 @@ export default async function StudentDashboardPage() {
   ]) : [{ data: null }, { data: null }];
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
-  const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language) : null;
-  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "check" : "book";
+  const repositoryDepositEnabled = activeProgram?.repository_deposit_enabled === true;
+  const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language, repositoryDepositEnabled) : null;
+  const helpSlug = studentOverviewHelpSlug(activeRequest?.status ?? null, nadaConsta?.status ?? null, Boolean(homologation), repositoryDepositEnabled);
+  const helpCandidate = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
+  const helpArticle = studentHelpAllowedForProgram(helpCandidate, repositoryDepositEnabled) ? helpCandidate : null;
+  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "canceled" ? "archive" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
   const { data: programs } = activeRequest ? { data: [] } : await supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true);
-  const { data: feedbackInvitations } = await supabase.from("feedback_invitations").select("responded,invited_at");
-  const hasPendingFeedback = (feedbackInvitations ?? []).some((invitation) => !invitation.responded && Date.now() < new Date(invitation.invited_at).getTime() + 30 * 86_400_000);
   const { data: announcements } = await supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);
   const now = new Date().toISOString();
   const { data: dailyHours } = await supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle();
@@ -58,22 +64,30 @@ export default async function StudentDashboardPage() {
     <main className="dashboard-main dashboard-main--student-overview">
       <StudentRequestLiveRefresh active />
       <div className="page-heading">
-        <div><h1><AppIcon className="panel-heading-icon" name="home" />{t("Visão geral")}</h1></div>
+        <div><h1><AppIcon className="panel-heading-icon" name="home" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Visão geral")}</span></span></h1></div>
       </div>
 
-      {hasPendingFeedback && <section className="feedback-invite panel"><span aria-hidden="true">✦</span><div><p className="eyebrow">{t("Sua opinião faz diferença")}</p><h2>{t("Como foi sua experiência com o Pronto!?")}</h2><p>{t("Sua avaliação leva cerca de 3 minutos e ajuda a melhorar o sistema e o atendimento da BIB/FA.")}</p></div><Link className="button button--primary" href="/painel/avaliacao">{t("Responder avaliação")}</Link></section>}
+      <StudentFeedbackInvite />
 
       <section className={`dashboard-grid${activeRequest ? " dashboard-grid--active-request" : ""}`}>
         <article className="next-action">
           <div className="next-action__content">
-            {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label={t("Dados da solicitação")}><div className="analysis-case-header__top"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{activeRequest.protocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />{t("Enviada")} <RelativeDateTime value={activeRequest.submitted_at} /></span></div><div className="analysis-case-header__title"><strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />{t("Programa")}</dt><dd title={activeProgram?.name}>{t(programDisplayName(activeProgram))}</dd></div><div><dt><AppIcon name="document" />{t("Tipo de monografia")}</dt><dd>{t(monographDisplayName(activeProgram))}</dd></div></dl></header>}
-            <p className="eyebrow next-action__eyebrow"><AppIcon name={actionVisual} />{t("Sua próxima ação")}</p>
-            <h2>{activeRequest ? progress?.title : t("Sua solicitação")}</h2>
-            {!activeRequest && <p>{t("Tenha em mãos a matrícula atual, a versão final já aprovada e um link público para o trabalho completo.")}</p>}
-            {progress && <p className={`student-progress-message${progress.needsAction ? " student-progress-message--action" : ""}`} role="status">{progress.description}</p>}
-            {!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}
-            {activeRequest && progress ? <Link className="button button--primary button--with-icon" href={progress.actionHref}><AppIcon name="request" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
-            {!activeRequest && <p className="next-action__draft-note"><AppIcon name="document" /><span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span></p>}
+            {activeRequest?.status === "completed" && <div className="next-action__new-request"><p className="eyebrow"><AppIcon name="book" />{t("Novo vínculo acadêmico")}</p><h2>{t("Ingressou em outro curso ou grau?")}</h2><p>{t("Você pode usar esta mesma conta para pedir outra ficha com a matrícula do novo vínculo. A matrícula do protocolo concluído não pode ser reutilizada.")}</p><Link className="button button--primary button--with-icon" href="/painel/solicitacao/nova"><AppIcon name="document" />{t("Solicitar com nova matrícula")}</Link></div>}
+            {activeRequest?.status === "completed" ? <StudentCompletedRecord title={formatWorkTitle(activeRequest.title, activeRequest.subtitle)} protocol={activeRequest.protocol} program={t(programDisplayName(activeProgram))} completedAt={activeRequest.updated_at} href="/painel/solicitacao" labels={{ completed: t("Protocolo concluído"), protocol: t("Protocolo"), program: t("Programa"), completedAt: t("Concluída"), view: t("Ver protocolo") }} /> : <>
+            {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label={t("Dados da solicitação")}><div className="analysis-case-header__top"><div className="next-action__request-meta"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{activeRequest.protocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />{t("Enviada")} <RelativeDateTime value={activeRequest.submitted_at} /></span></div></div><div className="analysis-case-header__title"><strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />{t("Programa")}</dt><dd title={activeProgram?.name}>{t(programDisplayName(activeProgram))}</dd></div><div><dt><AppIcon name="document" />{t("Tipo de monografia")}</dt><dd>{t(monographDisplayName(activeProgram))}</dd></div></dl></header>}
+            <StudentOverviewAction
+              icon={actionVisual}
+              label={t("Sua próxima ação")}
+              title={activeRequest ? progress?.title ?? "" : t("Sua solicitação")}
+              description={activeRequest ? progress?.description ?? "" : t("Tenha em mãos a matrícula atual, a versão final já aprovada e um link público para o trabalho completo.")}
+              needsAction={!activeRequest || Boolean(progress?.needsAction)}
+              draft={!activeRequest}
+              stateLabel={!activeRequest || progress?.needsAction ? t("Ação necessária") : t("Acompanhar protocolo")}
+              action={activeRequest && progress ? <Link className={`button ${progress.needsAction ? "button--primary" : "button--secondary"} button--with-icon`} href={progress.actionHref}><AppIcon name="arrowRight" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
+              note={!activeRequest ? <span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span> : undefined}
+              help={helpArticle?.slug ? <Link href={`/ajuda/artigos/${helpArticle.slug}`} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{helpArticle.title}</Link> : undefined}
+            >{!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}</StudentOverviewAction>
+            </>}
           </div>
         </article>
         <aside className="dashboard-side">

@@ -10,7 +10,7 @@ export const generateMetadata = () => authPageMetadata("signup");
 export default async function SignupPage() {
   const language = await getInterfaceLanguage();
   return (
-    <AuthShell title="Crie sua conta" description="Sua conta é única. A matrícula será informada em cada nova solicitação.">
+    <AuthShell title="Crie sua conta" description="Cadastre seus dados uma vez. A matrícula será informada em cada nova solicitação.">
       <SignupForm />
       <p className="auth-card__footer">{uiText(language, "Já tem uma conta?")} <Link href="/entrar">{uiText(language, "Entrar")}</Link></p>
     </AuthShell>

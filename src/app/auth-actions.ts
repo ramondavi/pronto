@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { canChangeAuthenticatedEmail, isUfbaEmail, isValidBirthDate, normalizeEmail, normalizedSignupMetadata, validateEmailChange, validateSignupFields, type SignupErrors } from "@/domain/auth/account";
 import { validatePassword } from "@/domain/auth/password";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,16 @@ async function siteOrigin() {
     return "http://127.0.0.1:3100";
   }
   return process.env.NEXT_PUBLIC_SITE_URL ?? headerStore.get("origin") ?? "http://127.0.0.1:3100";
+}
+
+function recoveryEmailClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) throw new Error("Supabase recovery environment variables are not configured.");
+  // The email may be opened in a different browser from the one that requested it.
+  return createSupabaseClient(url, key, {
+    auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
 }
 
 export type SignupState = { errors: SignupErrors; formError: string | null };
@@ -65,11 +76,17 @@ export async function updateBirthDate(formData: FormData) {
   redirect(destination("/painel/conta", "message", "Data de nascimento salva."));
 }
 
-export async function login(formData: FormData) {
+async function loginWithPassword(formData: FormData, audience: "student" | "staff") {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
-  const next = formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
-  const loginError = (message: string) => `${destination("/entrar", "error", message)}${next === "/painel" ? "" : `&next=${encodeURIComponent(next)}`}`;
+  const next = audience === "student" && formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
+  const loginError = (message: string) => {
+    const params = new URLSearchParams();
+    if (audience === "staff") params.set("perfil", "equipe");
+    params.set("error", message);
+    if (next !== "/painel") params.set("next", next);
+    return `/entrar?${params}`;
+  };
   if (!isUfbaEmail(email) || !password) redirect(loginError("Informe e-mail institucional e senha."));
 
   const supabase = await createClient();
@@ -78,22 +95,72 @@ export async function login(formData: FormData) {
   if (error?.status && error.status >= 500) redirect(loginError("O serviço de autenticação está temporariamente indisponível. Tente novamente em instantes."));
   if (error || !data.user) redirect(loginError("E-mail ou senha inválidos, ou e-mail ainda não confirmado."));
 
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("status").eq("id", data.user.id).single();
-  if (profileError) redirect(loginError("Não foi possível conferir sua conta agora. Tente novamente em instantes."));
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("status, role").eq("id", data.user.id).single();
+  if (profileError) {
+    await supabase.auth.signOut();
+    redirect(loginError("Não foi possível conferir sua conta agora. Tente novamente em instantes."));
+  }
   if (!profile || profile.status !== "active") {
     await supabase.auth.signOut();
-    redirect(destination("/entrar", "error", "Esta conta não está ativa. Procure a biblioteca."));
+    redirect(loginError("Esta conta não está ativa. Procure a biblioteca."));
+  }
+  if ((audience === "student" && profile.role !== "student") || (audience === "staff" && profile.role === "student")) {
+    await supabase.auth.signOut();
+    redirect(loginError(audience === "student" ? "Esta é uma conta da biblioteca. Use o acesso da equipe." : "Esta é uma conta de estudante. Use o acesso de estudantes."));
   }
   redirect(next);
 }
 
-export async function requestPasswordReset(formData: FormData) {
+export async function login(formData: FormData) {
+  return loginWithPassword(formData, "student");
+}
+
+export async function loginStaff(formData: FormData) {
+  return loginWithPassword(formData, "staff");
+}
+
+export type StudentCodeRequestState = { status: "idle" | "sent" | "error"; email: string; message: string; sentAt: number; error: string };
+export type StudentCodeVerifyState = { error: string };
+
+export async function requestStudentCode(_previousState: StudentCodeRequestState, formData: FormData): Promise<StudentCodeRequestState> {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
-  if (!isUfbaEmail(email)) redirect(destination("/recuperar-senha", "error", "Use seu endereço institucional @ufba.br."));
+  const failure = (message: string): StudentCodeRequestState => _previousState.status === "sent"
+    ? { ..._previousState, error: message }
+    : { status: "error", email, message, sentAt: 0, error: message };
+  if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return failure("O acesso por código ainda não está disponível.");
+  if (!isUfbaEmail(email)) return failure("Use seu endereço institucional @ufba.br.");
   const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
-  if (error) redirect(destination("/recuperar-senha", "error", "Não foi possível enviar o link agora. Aguarde um instante e tente novamente."));
-  redirect(destination("/recuperar-senha", "message", "Se o endereço estiver cadastrado, enviaremos as instruções."));
+  const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error?.status === 429) return failure("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
+  if (error) return failure("Não foi possível enviar o código agora. Tente novamente em instantes.");
+  return { status: "sent", email, message: "Se esta for uma conta estudantil cadastrada, enviaremos um código para esse e-mail.", sentAt: Date.now(), error: "" };
+}
+
+export async function verifyStudentCode(_previousState: StudentCodeVerifyState, formData: FormData): Promise<StudentCodeVerifyState> {
+  if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return { error: "O acesso por código ainda não está disponível." };
+  const email = normalizeEmail(String(formData.get("email") ?? ""));
+  const token = String(formData.get("code") ?? "").trim();
+  if (!isUfbaEmail(email) || !/^\d{6,8}$/.test(token)) return { error: "Informe o código numérico recebido por e-mail." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+  if (error || !data.user) return { error: "Código inválido ou expirado. Confira o e-mail ou solicite outro código." };
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role, status").eq("id", data.user.id).single();
+  if (profileError || !profile || profile.role !== "student" || profile.status !== "active") {
+    await supabase.auth.signOut();
+    return { error: "Este acesso é exclusivo para estudantes com conta ativa." };
+  }
+  redirect("/painel");
+}
+
+export type PasswordResetRequestState = { status: "idle" | "sent" | "error"; sentAt: number; email: string; message: string };
+
+export async function requestPasswordReset(_previousState: PasswordResetRequestState, formData: FormData): Promise<PasswordResetRequestState> {
+  const email = normalizeEmail(String(formData.get("email") ?? ""));
+  if (!isUfbaEmail(email)) return { status: "error", sentAt: 0, email, message: "Use seu endereço institucional @ufba.br." };
+  const supabase = recoveryEmailClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/recuperacao` });
+  if (error) return { status: "error", sentAt: 0, email, message: "Não foi possível enviar o link agora. Aguarde um instante e tente novamente." };
+  return { status: "sent", sentAt: Date.now(), email, message: "Se o endereço estiver cadastrado, enviaremos as instruções." };
 }
 
 export async function confirmPasswordRecovery(formData: FormData) {
@@ -131,7 +198,7 @@ export async function requestAuthenticatedPasswordChange(_previousState: Passwor
     redirect(destination("/entrar", "error", "Não foi possível continuar. Entre novamente ou procure a biblioteca."));
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/confirm` });
+  const { error } = await recoveryEmailClient().auth.resetPasswordForEmail(user.email, { redirectTo: `${await siteOrigin()}/auth/recuperacao` });
   if (error) return { status: "error", sentAt: _previousState.sentAt };
   return { status: "sent", sentAt: Date.now() };
 }

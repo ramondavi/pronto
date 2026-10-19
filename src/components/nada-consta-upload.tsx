@@ -36,15 +36,16 @@ export function NadaConstaUpload({ requestId, document, preview = false, preview
     }
   }
   const canUpload = !document || document.status === "rejected";
+  const approved = document?.status === "approved";
   const status = t(document?.status === "approved" ? "Documento validado" : document?.status === "pending" ? "Em conferência pela biblioteca" : "Envie um novo arquivo");
   return <section className="panel nada-consta-panel" aria-labelledby="nada-consta-title">
-    <header className="nada-consta-heading"><span className="nada-consta-heading__icon"><AppIcon name="document" /></span><div><p className="eyebrow">{t("Próxima etapa do protocolo")}</p><h2 id="nada-consta-title">{t("Envio do Nada Consta")}</h2><p>{t("Assim que tiver o documento, envie o PDF por aqui. A biblioteca pode conferi-lo enquanto analisa seu trabalho.")}</p></div></header>
-    <aside className="nada-consta-observation" aria-label={t("Antes de solicitar o Nada Consta")}><AppIcon name="help" /><div><strong>{t("Antes de solicitar o Nada Consta")}</strong><p>{t("Solicite o documento no")} <a className="public-link-guidance__guide nada-consta-observation__inline-link" href="https://pergamum.bib.ufba.br/" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />Meu Pergamum</a>. {t("É preciso estar sem pendências com as bibliotecas da UFBA. Após a emissão, seu cadastro nas bibliotecas é encerrado, inclusive para empréstimos; por isso, faça a solicitação quando estiver concluindo o curso.")}</p><Link className="public-link-guidance__guide" href="/ajuda/artigos/emitir-nada-consta" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t("Veja o guia para emitir o Nada Consta")} ↗</Link></div></aside>
-    <ol className="nada-consta-steps" aria-label={t("Etapas do Nada Consta")}>
+    <header className="nada-consta-heading"><span className="nada-consta-heading__icon"><AppIcon name={approved ? "check" : "document"} /></span><div><p className="eyebrow">{t(approved ? "Etapa concluída" : "Próxima etapa do protocolo")}</p><h2 id="nada-consta-title">{t("Envio do Nada Consta")}</h2><p>{t(approved ? "O documento foi validado pela biblioteca. Nenhuma ação é necessária nesta etapa." : "Assim que tiver o documento, envie o PDF por aqui. A biblioteca pode conferi-lo enquanto analisa seu trabalho.")}</p></div></header>
+    {!approved && <aside className="nada-consta-observation" aria-label={t("Antes de solicitar o Nada Consta")}><AppIcon name="help" /><div><strong>{t("Antes de solicitar o Nada Consta")}</strong><p>{t("Solicite o documento no")} <a className="public-link-guidance__guide nada-consta-observation__inline-link" href="https://pergamum.bib.ufba.br/" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />Meu Pergamum</a>. {t("É preciso estar sem pendências com as bibliotecas da UFBA. Após a emissão, seu cadastro nas bibliotecas é encerrado, inclusive para empréstimos; por isso, faça a solicitação quando estiver concluindo o curso.")}</p><Link className="public-link-guidance__guide" href="/ajuda/artigos/emitir-nada-consta" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t("Veja o guia para emitir o Nada Consta")} ↗</Link></div></aside>}
+    {!approved && <ol className="nada-consta-steps" aria-label={t("Etapas do Nada Consta")}>
       <li><span className="nada-consta-steps__icon"><AppIcon name="document" /></span><div><strong>1. {t("Separe o documento")}</strong><p>{t("Tenha o PDF do Nada Consta, com até 5 MB.")}</p></div></li>
       <li><span className="nada-consta-steps__icon"><AppIcon name="upload" /></span><div><strong>2. {t("Envie o arquivo")}</strong><p>{t("Escolha o PDF abaixo e confirme o envio.")}</p></div></li>
       <li><span className="nada-consta-steps__icon"><AppIcon name="review" /></span><div><strong>3. {t("Aguarde a biblioteca")}</strong><p>{t("Você verá aqui o resultado da conferência.")}</p></div></li>
-    </ol>
+    </ol>}
     {document && <div className={`nada-consta-status nada-consta-status--${document.status}`} role="status"><AppIcon name={document.status === "approved" ? "check" : document.status === "rejected" ? "review" : "search"} /><div><strong>{status}</strong><span>{document.original_name} · {formatBytes(document.size_bytes)}</span>{document.rejection_reason && <p>{t("Motivo informado pela biblioteca:")} {document.rejection_reason}</p>}</div></div>}
     {canUpload && <div className="nada-consta-upload">
       <div className="nada-consta-upload__intro"><strong>{t(document?.status === "rejected" ? "Escolha um novo PDF para reenviar" : "Pronto para enviar?")}</strong><span>{t("O arquivo só será enviado quando você clicar em Enviar Nada Consta.")}</span></div>
@@ -53,7 +54,7 @@ export function NadaConstaUpload({ requestId, document, preview = false, preview
       {error && <p className="form-error" role="alert">{error}</p>}
       <button className="button button--primary button--with-icon" type="button" disabled={!file || busy} onClick={submit}><AppIcon name="upload" />{t(busy ? "Enviando…" : "Enviar Nada Consta")}</button>
     </div>}
-    <p className="nada-consta-next"><AppIcon name="shield" /><span>{t("A ficha fica disponível quando o trabalho é homologado e o Nada Consta é validado.")}</span></p>
+    {!approved && <p className="nada-consta-next"><AppIcon name="shield" /><span>{t("A ficha fica disponível quando o trabalho é homologado e o Nada Consta é validado.")}</span></p>}
   </section>;
 }
 

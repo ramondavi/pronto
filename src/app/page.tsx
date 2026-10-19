@@ -72,7 +72,7 @@ export default async function HomePage() {
               {!user && <div className="actions"><Link className="button button--primary button--with-icon" href="/entrar"><AppIcon name="account" />{t.signIn}</Link><Link className="button button--secondary button--with-icon" href="/cadastro"><AppIcon name="edit" />{t.register}</Link></div>}
             </div>
             <div className="hero__aside">
-              <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} copy={t.notice} />
+              <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} mobileHoursLabel={!dailyHours && language === "pt" ? "Padrão: seg. a sex., 8h às 21h" : undefined} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} copy={t.notice} />
               <div className="requirements">
                 <p className="eyebrow">{t.before}</p>
                 <h2>{t.requirementTitle}</h2>

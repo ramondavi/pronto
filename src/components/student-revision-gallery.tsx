@@ -37,7 +37,9 @@ export function StudentRevisionGallery({ revisions }: { revisions: StudentRevisi
     updateHeight();
     const observer = new ResizeObserver(updateHeight);
     observer.observe(card);
-    return () => observer.disconnect();
+    const completedStage = viewportRef.current?.closest("details");
+    completedStage?.addEventListener("toggle", updateHeight);
+    return () => { observer.disconnect(); completedStage?.removeEventListener("toggle", updateHeight); };
   }, [active, revisions]);
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {

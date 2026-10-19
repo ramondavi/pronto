@@ -34,6 +34,14 @@ const shellCopy = {
   it: { student: "Studente", cataloger: "Catalogatore", administrator: "Amministratore", overview: "Panoramica", queue: "Richieste", work: "I miei casi", admin: "Amministrazione", operation: "Operazioni", content: "Contenuto", control: "Controllo", account: "Il mio account", request: "Le mie richieste", deposit: "Autodeposito", public: "Apri sito pubblico", greeting: "Ciao", logout: "Esci", library: "Area biblioteca", studentArea: "Area studenti", adminSections: "Sezioni amministrative" },
 };
 const mobileMenuCopy = { pt: ["Abrir menu do painel", "Fechar menu do painel"], en: ["Open dashboard menu", "Close dashboard menu"], es: ["Abrir menú del panel", "Cerrar menú del panel"], de: ["Dashboardmenü öffnen", "Dashboardmenü schließen"], fr: ["Ouvrir le menu du tableau de bord", "Fermer le menu du tableau de bord"], it: ["Apri menu del pannello", "Chiudi menu del pannello"] } as const;
+const studentProfileCopy = {
+  pt: { open: "Abrir menu da conta", close: "Fechar menu da conta" },
+  en: { open: "Open account menu", close: "Close account menu" },
+  es: { open: "Abrir menú de la cuenta", close: "Cerrar menú de la cuenta" },
+  de: { open: "Kontomenü öffnen", close: "Kontomenü schließen" },
+  fr: { open: "Ouvrir le menu du compte", close: "Fermer le menu du compte" },
+  it: { open: "Apri menu account", close: "Chiudi menu account" },
+} as const;
 const logoutDialogCopy = {
   pt: { title: "Sair do painel?", description: "Sua sessão será encerrada.", stay: "Continuar no painel", exit: "Sair da conta" },
   en: { title: "Sign out?", description: "Your session will end.", stay: "Stay in dashboard", exit: "Sign out" },
@@ -120,6 +128,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const adminLocation = resolveAdminLocation(adminAreaParam ?? undefined, searchParams.get("aba") ?? undefined);
   const [expanded, setExpanded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
+  const mobileProfileRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLElement>(null);
   const previewDockRef = useRef<HTMLDivElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -143,7 +153,107 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     if (birthdayCloseTimer.current !== null) window.clearTimeout(birthdayCloseTimer.current);
     birthdayCloseTimer.current = window.setTimeout(() => { setBirthdayVisible(false); setBirthdayClosing(false); birthdayCloseTimer.current = null; }, 650);
   }, []);
-  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin" && adminAreaParam) setOpenAdminGroups((open) => new Set([...open, adminLocation.area])); setMobileMenuOpen(false); }, [pathname, adminAreaParam, adminLocation.area]);
+  useEffect(() => { if (pathname.startsWith("/painel/admin")) setAdminMenuOpen(true); if (pathname === "/painel/admin" && adminAreaParam) setOpenAdminGroups((open) => new Set([...open, adminLocation.area])); setMobileMenuOpen(false); setMobileProfileOpen(false); }, [pathname, adminAreaParam, adminLocation.area]);
+  useEffect(() => {
+    if (!mobileProfileOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !mobileProfileRef.current?.contains(event.target)) setMobileProfileOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setMobileProfileOpen(false); mobileProfileRef.current?.querySelector("button")?.focus(); }
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
+  }, [mobileProfileOpen]);
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Element && !event.target.closest("#menu-painel, .dashboard-nav__mobile-toggle")) setMobileMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
+  }, [mobileMenuOpen]);
+  useEffect(() => {
+    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text")];
+    if (!headings.length) return;
+    const measure = () => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      headings.forEach((heading) => {
+        const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
+        heading.classList.toggle("is-scrolling", distance > 2);
+        heading.style.setProperty("--heading-travel", `${-distance}px`);
+        heading.style.setProperty("--heading-duration", `${Math.min(7.5, Math.max(3.5, distance / 80 + 2.5))}s`);
+      });
+    };
+    const observer = new ResizeObserver(measure);
+    headings.forEach((heading) => { observer.observe(heading); if (heading.firstElementChild) observer.observe(heading.firstElementChild); });
+    const frame = window.requestAnimationFrame(measure);
+    return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [pathname, searchParams]);
+  useEffect(() => {
+    const timelines = new Set<HTMLElement>();
+    const manual = new WeakSet<HTMLElement>();
+    const started = new WeakMap<HTMLElement, number>();
+    const states = new Set<HTMLElement>();
+    let frame = 0;
+    const onManual = (event: Event) => manual.add(event.currentTarget as HTMLElement);
+    const onStateTouch = (event: PointerEvent) => {
+      if (event.pointerType === "touch") (event.currentTarget as HTMLElement).focus({ preventScroll: true });
+    };
+    const measure = () => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      timelines.forEach((timeline) => {
+        timeline.classList.toggle("is-scrollable", compact && timeline.scrollWidth - timeline.clientWidth > 4);
+      });
+    };
+    const observer = new ResizeObserver(measure);
+    const collect = () => {
+      document.querySelectorAll<HTMLElement>(".dashboard-main ol.queue-item__timeline").forEach((timeline) => {
+        if (timelines.has(timeline)) return;
+        timelines.add(timeline);
+        observer.observe(timeline);
+        timeline.tabIndex = 0;
+        timeline.addEventListener("pointerdown", onManual);
+        timeline.addEventListener("wheel", onManual);
+        timeline.addEventListener("keydown", onManual);
+        const state = timeline.closest<HTMLElement>(".queue-item__state");
+        if (state && !states.has(state)) { states.add(state); state.addEventListener("pointerdown", onStateTouch); }
+      });
+      measure();
+    };
+    const animate = (now: number) => {
+      const compact = window.matchMedia("(max-width: 560px)").matches;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (compact && !reduced && !document.hidden) timelines.forEach((timeline) => {
+        if (!timeline.isConnected || manual.has(timeline)) return;
+        const state = timeline.closest(".queue-item__state");
+        if (state && !state.matches(":hover, :focus-within")) { started.delete(timeline); return; }
+        const distance = timeline.scrollWidth - timeline.clientWidth;
+        if (distance <= 4) return;
+        const duration = Math.min(16_000, Math.max(10_000, distance / 45 * 1_000 + 7_000));
+        const pause = 1_500;
+        const endPause = 2_500;
+        const cycle = pause + duration + endPause + duration;
+        const elapsed = (now - (started.get(timeline) ?? now)) % cycle;
+        if (!started.has(timeline)) started.set(timeline, now);
+        const fraction = elapsed < pause ? 0 : elapsed < pause + duration ? (elapsed - pause) / duration : elapsed < pause + duration + endPause ? 1 : 1 - (elapsed - pause - duration - endPause) / duration;
+        timeline.scrollLeft = distance * fraction;
+      });
+      frame = window.requestAnimationFrame(animate);
+    };
+    const changes = new MutationObserver(collect);
+    const root = document.querySelector(".dashboard-main");
+    if (root) changes.observe(root, { childList: true, subtree: true });
+    collect();
+    frame = window.requestAnimationFrame(animate);
+    window.addEventListener("resize", measure);
+    return () => { window.cancelAnimationFrame(frame); changes.disconnect(); observer.disconnect(); window.removeEventListener("resize", measure); timelines.forEach((timeline) => { timeline.removeEventListener("pointerdown", onManual); timeline.removeEventListener("wheel", onManual); timeline.removeEventListener("keydown", onManual); }); states.forEach((state) => state.removeEventListener("pointerdown", onStateTouch)); };
+  }, [pathname, searchParams]);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -166,7 +276,18 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         rail.style.setProperty("--rail-bg-top", `${backgroundTop}px`);
         rail.style.setProperty("--rail-bg-height", `${Math.max(0, Math.min(visibleHeight, (shellBounds?.bottom ?? window.innerHeight) - fixedTop) - backgroundTop)}px`);
         rail.style.setProperty("--rail-preview-bottom", `${Math.max(16, window.innerHeight - (shellBounds?.bottom ?? window.innerHeight) + 16)}px`);
-        rail.style.setProperty("--rail-nav-top", `${visibleHeight * .5 * (1 - progress) + 160 * progress}px`);
+        const scrolledNavTop = Math.max(88, Math.min(160, visibleHeight * .22));
+        const preferredNavTop = visibleHeight * .5 * (1 - progress) + scrolledNavTop * progress;
+        const menu = rail.querySelector<HTMLElement>("nav.dashboard-nav__menu");
+        const previewSwitch = window.matchMedia("(min-width: 901px)").matches ? rail.querySelector<HTMLElement>(".dashboard-nav__preview-switch") : null;
+        const previewTop = previewSwitch ? previewSwitch.getBoundingClientRect().top - rail.getBoundingClientRect().top : visibleHeight;
+        if (previewSwitch) rail.style.setProperty("--rail-nav-available", `${Math.max(80, previewTop - 112)}px`);
+        else rail.style.removeProperty("--rail-nav-available");
+        const menuHeight = menu?.getBoundingClientRect().height ?? 0;
+        const bottomFactor = (1 + progress) / 2;
+        const topLimit = previewTop - 36 - menuHeight * bottomFactor;
+        const minimumTop = 76 + menuHeight * (1 - progress) / 2;
+        rail.style.setProperty("--rail-nav-top", `${previewSwitch ? Math.max(minimumTop, Math.min(preferredNavTop, topLimit)) : preferredNavTop}px`);
         rail.style.setProperty("--rail-nav-shift", `${-50 * (1 - progress)}%`);
       });
     };
@@ -178,6 +299,8 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     if (governmentBar) resizeObserver.observe(governmentBar);
     const header = shell?.querySelector(".dashboard-header");
     if (header) resizeObserver.observe(header);
+    const menu = railRef.current?.querySelector("nav.dashboard-nav__menu");
+    if (menu) resizeObserver.observe(menu);
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => { cancelAnimationFrame(frame); resizeObserver.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
@@ -222,19 +345,39 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   useEffect(() => {
     const dock = previewDockRef.current;
     if (!previewMode || !dock) return;
+    const content = dock.closest<HTMLElement>(".dashboard-content");
+    let observedPanel: HTMLElement | null = null;
     const updateClearance = () => {
+      const panel = content?.querySelector<HTMLElement>(".dashboard-main--student-preview") ?? null;
+      if (panel !== observedPanel) {
+        if (observedPanel) observer.unobserve(observedPanel);
+        if (panel) observer.observe(panel);
+        observedPanel = panel;
+      }
+      const bounds = panel?.getBoundingClientRect();
+      if (bounds) {
+        dock.style.setProperty("--student-preview-dock-center", `${bounds.left + bounds.width / 2}px`);
+        dock.style.setProperty("--student-preview-content-width", `${bounds.width}px`);
+        dock.classList.toggle("is-narrow", bounds.width <= 900);
+      }
       document.documentElement.style.setProperty("--student-preview-dock-clearance", `${Math.ceil(window.innerHeight - dock.getBoundingClientRect().top + 12)}px`);
     };
     const observer = new ResizeObserver(updateClearance);
     observer.observe(dock);
+    if (content) observer.observe(content);
+    const mutationObserver = new MutationObserver(updateClearance);
+    if (content) mutationObserver.observe(content, { childList: true, subtree: true });
     updateClearance();
     window.addEventListener("resize", updateClearance);
     return () => {
       observer.disconnect();
+      mutationObserver.disconnect();
       window.removeEventListener("resize", updateClearance);
+      dock.style.removeProperty("--student-preview-dock-center");
+      dock.style.removeProperty("--student-preview-content-width");
       document.documentElement.style.removeProperty("--student-preview-dock-clearance");
     };
-  }, [previewMode]);
+  }, [previewMode, pathname, searchParams]);
   const adminMenuVisible = adminMenuOpen;
   const activeClass = (href: string) => {
     const [targetPath, targetQuery] = href.split("?");
@@ -246,13 +389,22 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   };
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const greeting = greetingClock ? dailyGreeting(language, userId, greetingClock.day, greetingClock.hour) : "";
+  const studentProfileName = previewMode ? "Alex" : firstName;
+  const studentProfileFullName = previewMode ? "Alex Silva" : fullName;
   return (
-    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined}>
+    <div className="dashboard-shell dashboard-shell--compact" data-staff-panel={isStaff && !previewMode ? "true" : undefined} data-student-panel={!isStaff || previewMode ? "true" : undefined}>
       {(!isStaff || previewMode) && <ServiceDayRefresh closingTime={serviceStatus?.closingTime} />}
       <aside ref={railRef} className={`dashboard-nav${expanded ? "" : " dashboard-nav--compact"}`} onMouseEnter={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onMouseLeave={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(false); }} onFocusCapture={() => { if (window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine) and (any-pointer: fine)").matches) setExpanded(true); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
         <div className="dashboard-nav__top">
           <Link href="/" className="dashboard-nav__logo-link" aria-label="Pronto!" title="Pronto!"><span className="dashboard-nav__favicon"><span className="dashboard-nav__symbol" role="img" aria-label="Pronto!" title="Pronto!"><BrandPixels symbol /></span></span><span className="dashboard-nav__brand-logo"><Image className="brand__image brand__image--light" src="/logo-pronto-v9-light.png" alt="Pronto!" width={1570} height={368} priority /><Image className="brand__image brand__image--dark" src="/logo-pronto-v9-dark.png" alt="Pronto!" width={1570} height={368} priority /><BrandPixels /></span></Link>
-          <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => setMobileMenuOpen((open) => !open)}><span /><span /><span /></button>
+          <button className="dashboard-nav__mobile-toggle" type="button" aria-label={mobileMenuOpen ? closeMenuLabel : openMenuLabel} aria-expanded={mobileMenuOpen} aria-controls="menu-painel" onClick={() => { setMobileProfileOpen(false); setMobileMenuOpen((open) => !open); }}><span /><span /><span /></button>
+          <div className="dashboard-student-profile" ref={mobileProfileRef}>
+            <button className="dashboard-student-profile__trigger" type="button" aria-label={mobileProfileOpen ? studentProfileCopy[language].close : studentProfileCopy[language].open} aria-expanded={mobileProfileOpen} aria-controls="dashboard-student-profile-menu" onClick={() => { setMobileMenuOpen(false); setMobileProfileOpen((open) => !open); }}>{isStaff && !previewMode ? <LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small /> : <StudentAvatar name={studentProfileName} small />}</button>
+            <div className="dashboard-student-profile__menu" id="dashboard-student-profile-menu" hidden={!mobileProfileOpen}>
+              <div className="dashboard-student-profile__identity"><strong>{greeting || t.greeting}, {studentProfileName}</strong><small>{isStaff && !previewMode ? t[role as keyof typeof t] ?? role : t.student}</small></div>
+              <div className="dashboard-student-profile__actions"><Link href={previewMode ? previewHref("conta") : "/painel/conta"} onClick={() => setMobileProfileOpen(false)}><AppIcon name="account" />{t.account}</Link><button type="button" aria-label={t.logout} title={t.logout} onClick={() => { setMobileProfileOpen(false); setLogoutDialogOpen(true); }}><AppIcon name="logout" /></button></div>
+            </div>
+          </div>
         </div>
         {isStaff && !previewMode ? <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.library}>
           {canViewOverview && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel")} href="/painel" aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>}
@@ -262,7 +414,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
             : <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/calendario")} href="/painel/calendario" aria-label="Calendário da biblioteca" title="Calendário da biblioteca"><AppIcon className="dashboard-nav__icon" name="calendar" /><span className="dashboard-nav__label">Calendário da biblioteca</span></Link>)}
           {canChangeHours && (role !== "administrator" || !canViewCalendar) && <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/horarios")} href="/painel/horarios" aria-label="Horários da biblioteca" title="Horários da biblioteca"><AppIcon className="dashboard-nav__icon" name="clock" /><span className="dashboard-nav__label">Horários da biblioteca</span></Link>}
           {(adminSections.some((section) => section.tabs.some((tab) => canOpenAdminTab(tab.id, adminPermissions))) || adminPermissions.some((code) => code.startsWith("admin.feedback."))) && <div className="dashboard-nav__admin">
-            <button className={`dashboard-nav__admin-trigger${pathname.startsWith("/painel/admin") ? " is-active" : ""}`} type="button" onClick={() => setAdminMenuOpen((open) => !open)} aria-expanded={adminMenuVisible} aria-controls="submenu-administracao" aria-label="Abrir ou fechar subseções de Administração" title={t.admin}><SidebarIcon name="admin" /><span className="dashboard-nav__label">{t.admin}</span></button>
+            <button className={`dashboard-nav__admin-trigger${pathname.startsWith("/painel/admin") ? " is-active" : ""}`} type="button" onClick={() => { setOpenAdminGroups(new Set()); setAdminMenuOpen((open) => !open); }} aria-expanded={adminMenuVisible} aria-controls="submenu-administracao" aria-label="Abrir ou fechar subseções de Administração" title={t.admin}><SidebarIcon name="admin" /><span className="dashboard-nav__label">{t.admin}</span></button>
             <div className={`dashboard-nav__admin-menu${adminMenuVisible ? " is-visible" : ""}`} id="submenu-administracao" aria-label={t.adminSections} inert={!adminMenuVisible}>
               <div className="dashboard-nav__admin-menu-inner">
               {adminSections.filter((section) => section.tabs.some((tab) => canOpenAdminTab(tab.id, adminPermissions))).map((section) => <div className="dashboard-nav__admin-group" key={section.area}>
@@ -298,9 +450,12 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
           {isStaff && !previewMode && pathname !== "/painel" && pathname !== "/painel/" && <div className="dashboard-header__search"><StaffGlobalSearch /></div>}
           {(!isStaff || previewMode) && pathname !== "/painel" && pathname !== "/painel/" && (previewMode ? searchParams.get("tela") !== null && searchParams.get("tela") !== "inicio" : true) && serviceStatus && <ServiceStatusPeek className="dashboard-header__service-peek" title={serviceStatus.title} date={serviceStatus.date} now={serviceStatus.now} reason={serviceStatus.reason} message={serviceStatus.message} closed={serviceStatus.closed} hint={serviceStatus.closed ? translate("Passe o mouse para saber mais") : translate("Fechamento previsto hoje às {time}", { time: formatLibraryHour(serviceStatus.closingTime) })} hoursLabel={serviceStatus.specialHours ? translate("Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(serviceStatus.closingTime) }) : translate("Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={translate("Detalhes do funcionamento da biblioteca")} />}
           <div className="dashboard-header__actions">
-            {previewMode ? <div className="user-identity"><StudentAvatar name="Estudante" small /><span className="user-identity__copy"><Link className="user-greeting" href={previewHref("conta")}>{t.greeting}, Estudante</Link><span className="user-chip">{t.student}</span></span></div> : <>
-            <div className="user-identity">{isStaff ? <span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span> : <StudentAvatar name={firstName} small />}<span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
+            {isStaff && !previewMode ? <>
+            <div className="user-identity"><span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span><span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
             <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>
+            </> : <>
+            <div className="user-identity"><StudentAvatar name={studentProfileName} small /><span className="user-identity__copy"><Link className="user-greeting" href={previewMode ? previewHref("conta") : "/painel/conta"} title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${studentProfileName}` : `${t.greeting}, ${studentProfileName}`}</Link><span className="user-chip" title={studentProfileFullName}>{t.student}</span></span></div>
+            {previewMode ? <button className="logout-icon" type="button" onClick={() => setLogoutDialogOpen(true)} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button> : <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>}
             </>}
           </div>
           </div>
@@ -324,12 +479,11 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
       <dialog ref={logoutDialogRef} className="dashboard-logout-dialog pronto-modal" aria-labelledby="dashboard-logout-title" aria-describedby="dashboard-logout-description" onCancel={() => setLogoutDialogOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) setLogoutDialogOpen(false); }}>
         <div className="dashboard-logout-dialog__content">
           <ModalCloseButton onClick={() => setLogoutDialogOpen(false)} />
-          <p className="eyebrow">{t.logout}</p>
-          <h2 id="dashboard-logout-title">{logoutDialogCopy[language].title}</h2>
+          <div className="dashboard-logout-dialog__heading"><span className="dashboard-logout-dialog__icon"><AppIcon name="logout" /></span><div><p className="eyebrow">{t.logout}</p><h2 id="dashboard-logout-title">{logoutDialogCopy[language].title}</h2></div></div>
           <p id="dashboard-logout-description">{logoutDialogCopy[language].description}</p>
           <div className="dashboard-logout-dialog__actions">
-            <button className="button button--secondary" type="button" autoFocus onClick={() => setLogoutDialogOpen(false)}>{logoutDialogCopy[language].stay}</button>
-            <button className="button button--danger" type="submit" form="dashboard-logout-form">{logoutDialogCopy[language].exit}</button>
+            <button className="button button--secondary button--with-icon" type="button" autoFocus onClick={() => setLogoutDialogOpen(false)}><AppIcon name="check" />{logoutDialogCopy[language].stay}</button>
+            <button className="button button--danger button--with-icon" type="submit" form="dashboard-logout-form"><AppIcon name="logout" />{logoutDialogCopy[language].exit}</button>
           </div>
         </div>
       </dialog>

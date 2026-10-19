@@ -17,6 +17,7 @@ export function ServiceStatusPeek({ title, date, now, hoursLabel, reason, messag
   className?: string;
 }) {
   const [clock, setClock] = useState({ value: now, label: formatServiceTime(now) });
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     if (!closed) return;
     const update = () => {
@@ -28,8 +29,8 @@ export function ServiceStatusPeek({ title, date, now, hoursLabel, reason, messag
     document.addEventListener("visibilitychange", update);
     return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", update); };
   }, [closed, now]);
-  return <div className={`service-status-peek${closed ? " service-status-peek--closed" : ""} ${className}`}>
-    <div className="service-status-peek__trigger" role="group" tabIndex={closed ? 0 : undefined} aria-label={`${title}. ${closed ? detailsLabel : hint}`}><span className="service-status-peek__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : reason || message ? "calendar" : "check"} /></span><span className="service-status-peek__copy"><strong>{title}</strong><small>{hint}</small></span></div>
-    {closed && <div className="service-status-peek__panel"><div className="service-status-peek__time-row"><time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time><time dateTime={clock.value}>{clock.label}</time></div><p className="service-status-peek__hours"><AppIcon name="clock" />{hoursLabel}</p>{reason && <strong>{reason}</strong>}{message && <p>{message}</p>}</div>}
+  return <div className={`service-status-peek${closed ? " service-status-peek--closed" : ""}${expanded ? " is-expanded" : ""} ${className}`} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false); }}>
+    <button className="service-status-peek__trigger" type="button" aria-label={`${title}. ${detailsLabel}`} aria-expanded={expanded} onFocus={(event) => { if (event.currentTarget.matches(":focus-visible")) setExpanded(true); }} onClick={() => setExpanded((value) => !value)}><span className="service-status-peek__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : reason || message ? "calendar" : "check"} /></span><span className="service-status-peek__copy"><strong>{title}</strong><small>{hint}</small></span></button>
+    <div className="service-status-peek__panel"><strong>{title}</strong><div className="service-status-peek__time-row"><time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time><time dateTime={clock.value}>{clock.label}</time></div><p className="service-status-peek__hours"><AppIcon name="clock" />{hoursLabel}</p>{!closed && <p>{hint}</p>}{reason && <strong>{reason}</strong>}{message && <p>{message}</p>}</div>
   </div>;
 }

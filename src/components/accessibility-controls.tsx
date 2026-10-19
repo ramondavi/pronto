@@ -149,6 +149,8 @@ export function AccessibilityControls() {
         widget.style.setProperty("--access-widget-size", `${bounds.width}px`);
         widget.style.setProperty("--access-widget-height", `${bounds.height}px`);
         widget.style.setProperty("--access-widget-right", `${Math.max(0, document.documentElement.clientWidth - bounds.right - 1)}px`);
+        document.documentElement.style.setProperty("--access-widget-size", `${bounds.width}px`);
+        document.documentElement.style.setProperty("--access-widget-right", `${Math.max(0, document.documentElement.clientWidth - bounds.right - 1)}px`);
         widget.style.setProperty("--access-widget-top", `${Math.max(12, bounds.top - bounds.height - 10)}px`);
       });
     };
@@ -159,7 +161,7 @@ export function AccessibilityControls() {
     window.addEventListener("pointerup", positionBesideVlibras);
     discoveryTimer = window.setInterval(positionBesideVlibras, 300);
     positionBesideVlibras();
-    return () => { observer.disconnect(); resizeObserver.disconnect(); detachButton?.(); window.clearInterval(discoveryTimer); window.removeEventListener("resize", positionBesideVlibras); window.removeEventListener("scroll", positionBesideVlibras); window.removeEventListener("pointerup", positionBesideVlibras); cancelAnimationFrame(frame); };
+    return () => { observer.disconnect(); resizeObserver.disconnect(); detachButton?.(); window.clearInterval(discoveryTimer); window.removeEventListener("resize", positionBesideVlibras); window.removeEventListener("scroll", positionBesideVlibras); window.removeEventListener("pointerup", positionBesideVlibras); cancelAnimationFrame(frame); document.documentElement.style.removeProperty("--access-widget-size"); document.documentElement.style.removeProperty("--access-widget-right"); };
   }, []);
 
   function changeScale(next: TextScale) {
