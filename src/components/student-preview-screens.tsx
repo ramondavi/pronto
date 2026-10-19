@@ -21,12 +21,13 @@ import { StudentRevisionGallery } from "@/components/student-revision-gallery";
 import { StudentCompletedStage } from "@/components/student-completed-stage";
 import { StudentOverviewAction } from "@/components/student-overview-action";
 import { StudentPublicationRecord } from "@/components/student-publication-record";
-import { studentRequestProgress } from "@/lib/student-request-progress";
+import { studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
+import { StudentCompletedRecord } from "@/components/student-completed-record";
 import { studentPreviewProtocol, studentPreviewRequestId, studentPreviewRevisions, studentPreviewSnapshot, studentPreviewSubmittedAt, studentPreviewTimeline, type StudentPreviewScenario } from "@/lib/student-preview-fixtures";
 
 type Screen = "inicio" | "solicitacoes" | "solicitacao" | "correcao" | "autodeposito" | "avaliacao" | "conta";
 type Announcement = { id: string; title: string; message: string; type: string; starts_at: string; ends_at: string | null };
-type Props = { active: Screen; scenario: StudentPreviewScenario; programs: Program[]; announcements: Announcement[]; serviceStatus: { title: string; date: { value: string; label: string }; reason?: string | null; message?: string | null; closed: boolean; closingTime: string }; userId: string };
+type Props = { active: Screen; scenario: StudentPreviewScenario; programs: Program[]; announcements: Announcement[]; serviceStatus: { title: string; date: { value: string; label: string }; reason?: string | null; message?: string | null; closed: boolean; closingTime: string }; userId: string; helpArticles: { slug: string; title: string }[] };
 const heading: Record<Screen, string> = { inicio: "Visão geral", solicitacoes: "Minhas solicitações", solicitacao: "Nova solicitação", correcao: "Corrigir solicitação", autodeposito: "Autodepósito", avaliacao: "Avaliação do atendimento", conta: "Minha conta" };
 const statusLabels: Record<string, string> = { submitted: "Solicitação enviada", in_review: "Em análise", changes_requested: "Correções solicitadas", approved: "Ficha homologada", completed: "Concluída", canceled: "Cancelada" };
 const demoHref = (screen: Screen, scenario: StudentPreviewScenario) => `/painel/visao-estudante?tela=${screen}&estado=${scenario.id}`;
@@ -63,8 +64,11 @@ const demoFields: RepositoryCopyField[] = [
   { label: "Arquivo, formato e descrição", note: "Envie a versão final com a ficha, confira o formato exigido pelo RI e marque o arquivo principal.", group: "Conferir no RI" },
 ];
 
-export function StudentPreviewScreens({ active, scenario, programs, announcements, serviceStatus, userId }: Props) {
-  const progress = scenario.status ? studentRequestProgress(scenario.status, scenario.nada, scenario.homologated, "pt") : null;
+export function StudentPreviewScreens({ active, scenario, programs, announcements, serviceStatus, userId, helpArticles }: Props) {
+  const repositoryDepositEnabled = scenario.id !== "guia-desativado";
+  const progress = scenario.status ? studentRequestProgress(scenario.status, scenario.nada, scenario.homologated, "pt", repositoryDepositEnabled) : null;
+  const helpSlug = studentOverviewHelpSlug(scenario.status || null, scenario.nada, scenario.homologated, repositoryDepositEnabled);
+  const helpArticle = helpArticles.find((entry) => entry.slug === helpSlug);
   const revisions = studentPreviewRevisions(scenario);
   const timeline = studentPreviewTimeline(scenario);
   const hasRequest = Boolean(scenario.status);
@@ -88,7 +92,7 @@ export function StudentPreviewScreens({ active, scenario, programs, announcement
       <section className={`dashboard-grid${activeRequest ? " dashboard-grid--active-request" : ""}`}>
         <article className="next-action"><div className="next-action__content">
           {scenario.status === "completed" && <div className="next-action__new-request"><p className="eyebrow"><AppIcon name="book" />Novo vínculo acadêmico</p><h2>Ingressou em outro curso ou grau?</h2><p>Você pode usar esta mesma conta para pedir outra ficha com a matrícula do novo vínculo. A matrícula do protocolo concluído não pode ser reutilizada.</p><Link className="button button--primary button--with-icon" href={demoHref("solicitacao", scenario)}><AppIcon name="document" />Solicitar com nova matrícula</Link></div>}
-          {scenario.status === "completed" ? <div className="next-action__completed-record"><p className="eyebrow"><AppIcon name="check" />Protocolo concluído</p><strong>Exemplo de trabalho acadêmico: estudo de espaços públicos</strong><span>{studentPreviewProtocol} · Programa de demonstração</span><Link href={demoHref("solicitacoes", scenario)}>Ver protocolo</Link></div> : <>
+          {scenario.status === "completed" ? <StudentCompletedRecord title="Exemplo de trabalho acadêmico: estudo de espaços públicos" protocol={studentPreviewProtocol} program="Programa de demonstração" completedAt="2026-10-12T16:00:00.000Z" href={demoHref("solicitacoes", scenario)} labels={{ completed: "Protocolo concluído", protocol: "Protocolo", program: "Programa", completedAt: "Concluída", view: "Ver protocolo" }} /> : <>
           {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label="Dados da solicitação"><div className="analysis-case-header__top"><div className="next-action__request-meta"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{studentPreviewProtocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />Enviada <RelativeDateTime value={studentPreviewSubmittedAt} /></span></div></div><div className="analysis-case-header__title"><strong>Exemplo de trabalho acadêmico: estudo de espaços públicos</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />Programa</dt><dd>Programa de demonstração</dd></div><div><dt><AppIcon name="document" />Tipo de monografia</dt><dd>Dissertação</dd></div></dl></header>}
           <StudentOverviewAction
             icon={(!activeRequest ? "document" : scenario.status === "canceled" ? "archive" : scenario.status === "changes_requested" ? "edit" : !scenario.nada || scenario.nada === "rejected" ? "upload" : scenario.nada === "pending" ? "inbox" : released ? "document" : "book") as AppIconName}
@@ -99,7 +103,7 @@ export function StudentPreviewScreens({ active, scenario, programs, announcement
             draft={!activeRequest}
             stateLabel={!activeRequest || progress?.needsAction ? "Ação necessária" : "Acompanhar protocolo"}
             action={activeRequest ? <Link className={`button ${progress?.needsAction ? "button--primary" : "button--secondary"} button--with-icon`} href={demoHref(scenario.status === "changes_requested" ? "correcao" : "solicitacoes", scenario)}><AppIcon name="arrowRight" />{progress?.actionLabel ?? "Acompanhar protocolo"}</Link> : <StudentRequestShortcut userId={userId} className="button button--primary" programs={programs} preview previewHref={demoHref("solicitacao", scenario)} />}
-            note={!activeRequest ? <span>O rascunho é salvo automaticamente neste dispositivo para você continuar depois.</span> : undefined}
+            note={!activeRequest || helpArticle ? <>{!activeRequest && <span>O rascunho é salvo automaticamente neste dispositivo para você continuar depois.</span>}{helpArticle && <Link href={`/ajuda/artigos/${helpArticle.slug}`} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{helpArticle.title}</Link>}</> : undefined}
           >{!activeRequest && <StudentDraftSummary userId={userId} programs={programs} preview previewHref={demoHref("solicitacao", scenario)} />}</StudentOverviewAction>
           </>}
         </div></article>

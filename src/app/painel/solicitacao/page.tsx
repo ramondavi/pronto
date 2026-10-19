@@ -47,7 +47,7 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const { data: revisionData } = await supabase.from("request_revision_rounds").select("id, round_number, returned_at, responded_at, issues:request_field_issues(field_key, field_label, justification, original_value), corrections:request_corrections(field_key, corrected_value, submitted_at)").eq("request_id", request.id).order("round_number", { ascending: false });
   const { data: nadaConsta } = await supabase.from("nada_consta_documents").select("original_name, size_bytes, status, rejection_reason, validated_at").eq("request_id", request.id).order("uploaded_at", { ascending: false }).limit(1).maybeSingle();
   const { data: homologation } = await supabase.from("cataloging_card_homologations").select("snapshot, homologated_at, public_token").eq("request_id", request.id).maybeSingle();
-  const progress = studentRequestProgress(request.status, nadaConsta?.status ?? null, Boolean(homologation), language);
+  const progress = studentRequestProgress(request.status, nadaConsta?.status ?? null, Boolean(homologation), language, program?.repository_deposit_enabled === true);
   const justSubmitted = params.enviada === "1" && (!params.protocolo || params.protocolo === request.protocol) && request.status === "submitted";
   const [{data:publication},{data:timeline}]=await Promise.all([supabase.from("repository_publications").select("permanent_url,verified_at").eq("request_id",request.id).maybeSingle(),supabase.rpc("request_timeline",{target_request_id:request.id})]);
   const revisions = (revisionData ?? []) as unknown as StudentRevision[];

@@ -2017,6 +2017,9 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .dashboard-main--student-overview .next-action__focus--draft .next-action__focus-action, .dashboard-main--student-overview .next-action__focus--draft .student-request-shortcut { width: 100%; }
 .dashboard-main--student-overview .next-action__focus-note { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); font-size: .76rem; line-height: 1.4; }
 .dashboard-main--student-overview .next-action__focus-note svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
+.dashboard-main--student-overview .next-action__focus-note { flex-wrap: wrap; }
+.dashboard-main--student-overview .next-action__focus-note a { display: inline-flex; align-items: center; gap: 7px; color: var(--institutional); font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
+.dashboard-main--student-overview .next-action__focus-note a svg { width: 15px; height: 15px; }
 @media (max-width: 560px) { .dashboard-main--student-overview .next-action__focus-main { grid-template-columns: 1fr; } .dashboard-main--student-overview .next-action__focus-footer { align-items: stretch; flex-direction: column; } .dashboard-main--student-overview .next-action__focus-action, .dashboard-main--student-overview .next-action__focus-action .button { width: 100%; } }
 .dashboard-main--student-overview .calendar-panel { display: flex; flex-direction: column; gap: 14px; height: 100%; min-height: 0; padding: 24px; border-left: 1px solid var(--line); background: var(--institutional-soft); }
 .dashboard-main--student-overview .calendar-panel > strong { font-size: 1rem; }
@@ -2040,11 +2043,20 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .next-action__new-request .eyebrow svg, .next-action__completed-record .eyebrow svg { width: 17px; height: 17px; }
 .dashboard-main--student-overview .next-action__new-request h2 { font-size: clamp(1.4rem, 2.5vw, 2rem); }
 .next-action__new-request > p:not(.eyebrow) { color: var(--text-muted); font-size: .88rem; line-height: 1.5; }
-.next-action__completed-record { display: grid; justify-items: start; gap: 5px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); font-size: .82rem; }
-.next-action__completed-record :is(p, strong, span) { margin: 0; }
-.next-action__completed-record :is(.eyebrow, span) { color: var(--text-muted); }
-.next-action__completed-record strong { overflow-wrap: anywhere; }
-.next-action__completed-record a { margin-top: 4px; color: var(--institutional); font-weight: 700; }
+.next-action__completed-record { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: start; gap: 14px; padding: clamp(16px, 2.5vw, 22px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.next-action__completed-icon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.next-action__completed-icon svg { width: 21px; height: 21px; }
+.next-action__completed-body { display: grid; justify-items: start; gap: 10px; min-width: 0; }
+.next-action__completed-record :is(p, h3, dl, dt, dd) { margin: 0; }
+.next-action__completed-record .eyebrow { color: var(--institutional); }
+.next-action__completed-record h3 { max-width: 65ch; font-size: clamp(.95rem, 1.6vw, 1.1rem); line-height: 1.35; overflow-wrap: anywhere; }
+.next-action__completed-record dl { display: flex; flex-wrap: wrap; gap: 10px 22px; padding: 11px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--text-muted); font-size: .78rem; }
+.next-action__completed-record dl div { display: grid; gap: 2px; }
+.next-action__completed-record dt { display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; }
+.next-action__completed-record dt svg { width: 14px; height: 14px; }
+.next-action__completed-record dd { color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
+.next-action__completed-record .button { margin: 2px 0 0; }
+@media (max-width: 520px) { .next-action__completed-record { grid-template-columns: 1fr; } .next-action__completed-record dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } }
 .student-new-enrollment__icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
 .student-new-enrollment__icon svg { width: 21px; height: 21px; }
 .student-new-enrollment :is(.eyebrow, h2, p) { margin: 0; }
