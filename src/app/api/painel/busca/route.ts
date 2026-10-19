@@ -1,9 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { userAdminPermissions, userHasPermission } from "@/lib/staff-permissions";
 import { adminSections, adminTabHref, canOpenAdminTab } from "@/lib/admin-navigation";
+import { readableAuditAction } from "@/lib/audit-labels";
 
 type SearchResult = { id: string; type: string; title: string; detail: string; href: string };
 const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+const requestStatusLabels: Record<string, string> = { submitted: "Na fila", in_review: "Em análise", changes_requested: "Correções solicitadas", approved: "Ficha liberada", completed: "Concluído", canceled: "Cancelado" };
+const accountStatusLabels: Record<string, string> = { active: "Conta ativa", inactive: "Conta inativa", blocked: "Conta bloqueada" };
+const personRoleLabels: Record<string, string> = { author: "Autoria", advisor: "Orientação", coadvisor: "Coorientação", committee_member: "Banca examinadora" };
+const keywordLanguageLabels: Record<string, string> = { pt: "Português", en: "Inglês", es: "Espanhol", de: "Alemão", fr: "Francês", it: "Italiano" };
+const displayDate = (value: string) => /^\d{4}-\d{2}-\d{2}/.test(value) ? value.slice(0, 10).split("-").reverse().join("/") : value;
 
 export async function GET(request: Request) {
   const supabase = await createClient();
@@ -51,26 +57,26 @@ export async function GET(request: Request) {
     canSeeQueue ? supabase.from("academic_enrollments").select("id,registration_number,cataloging_requests(id,protocol)").ilike("registration_number", pattern).limit(6) : Promise.resolve({ data: null }),
   ]);
   const results: SearchResult[] = [];
-  for (const row of requests.data ?? []) results.push({ id: `request-${row.id}`, type: "Protocolo", title: `${row.protocol} · ${row.title}`, detail: row.subtitle || row.status, href: `/painel/atendimento/${row.id}` });
+  for (const row of requests.data ?? []) results.push({ id: `request-${row.id}`, type: "Protocolo", title: `${row.protocol} · ${row.title}`, detail: row.subtitle || requestStatusLabels[row.status] || "Consultar protocolo", href: `/painel/atendimento/${row.id}` });
   for (const row of metadata.data ?? []) results.push({ id: `metadata-${row.request_id}`, type: "CDU / Cutter do protocolo", title: [row.cdu_code, row.cutter_code].filter(Boolean).join(" · "), detail: "Abrir dados de catalogação", href: `/painel/atendimento/${row.request_id}` });
-  for (const row of requestPeople.data ?? []) results.push({ id: `request-person-${row.request_id}-${row.role}-${row.transcribed_name}`, type: "Pessoa no protocolo", title: row.transcribed_name, detail: row.authorized_name ?? row.role, href: `/painel/atendimento/${row.request_id}` });
-  for (const row of keywords.data ?? []) results.push({ id: `keyword-${row.request_id}-${row.term}`, type: "Palavra-chave do protocolo", title: row.term, detail: row.language, href: `/painel/atendimento/${row.request_id}` });
-  for (const row of programs.data ?? []) results.push({ id: `program-${row.id}`, type: "Programa e SLA", title: `${row.code} · ${row.name}`, detail: `Prazo: ${row.service_level_business_days} dias úteis`, href: adminTabHref("operacao", "programs") });
-  for (const row of programSettings.data ?? []) if (normalizeSearch(JSON.stringify(row)).includes(normalizeSearch(term)) && !results.some((item) => item.id === `program-${row.id}`)) results.push({ id: `program-setting-${row.id}`, type: "Configuração de programa", title: row.name, detail: `Código ${row.code} · SLA ${row.service_level_business_days} dias úteis`, href: adminTabHref("operacao", "programs") });
+  for (const row of requestPeople.data ?? []) results.push({ id: `request-person-${row.request_id}-${row.role}-${row.transcribed_name}`, type: "Pessoa no protocolo", title: row.transcribed_name, detail: row.authorized_name ? `Nome autorizado: ${row.authorized_name}` : personRoleLabels[row.role] || "Pessoa relacionada ao trabalho", href: `/painel/atendimento/${row.request_id}` });
+  for (const row of keywords.data ?? []) results.push({ id: `keyword-${row.request_id}-${row.term}`, type: "Palavra-chave do protocolo", title: row.term, detail: `Idioma: ${keywordLanguageLabels[row.language] || "não informado"}`, href: `/painel/atendimento/${row.request_id}` });
+  for (const row of programs.data ?? []) results.push({ id: `program-${row.id}`, type: "Programa", title: row.name, detail: `Prazo de atendimento: ${row.service_level_business_days} dias úteis`, href: adminTabHref("operacao", "programs") });
+  for (const row of programSettings.data ?? []) if (normalizeSearch(JSON.stringify(row)).includes(normalizeSearch(term)) && !results.some((item) => item.id === `program-${row.id}`)) results.push({ id: `program-setting-${row.id}`, type: "Configuração de programa", title: row.name, detail: `Prazo de atendimento: ${row.service_level_business_days} dias úteis`, href: adminTabHref("operacao", "programs") });
   for (const row of terms.data ?? []) results.push({ id: `term-${row.id}`, type: "Assunto", title: row.preferred_label_pt, detail: row.preferred_label_en ?? "Vocabulário controlado", href: adminTabHref("conteudo", "subjects") });
   for (const row of cdu.data ?? []) results.push({ id: `cdu-${row.cdu_code}`, type: "Catálogo CDU", title: row.cdu_code, detail: row.description, href: adminTabHref("conteudo", "cdu") });
   for (const row of notices.data ?? []) results.push({ id: `notice-${row.id}`, type: "Calendário e mural", title: row.title, detail: row.message, href: adminTabHref("operacao", "library") });
-  for (const row of datedNotices.data ?? []) results.push({ id: `dated-notice-${row.id}`, type: "Data do calendário", title: row.title, detail: `${date} · ${row.message}`, href: adminTabHref("operacao", "library") });
-  for (const row of hours.data ?? []) results.push({ id: `hours-${row.service_date}`, type: "Funcionamento", title: row.service_date, detail: `Fechamento às ${row.closing_time}`, href: adminTabHref("operacao", "library") });
-  for (const row of people.data ?? []) results.push({ id: `person-${row.id}`, type: "Conta", title: row.full_name, detail: `${row.email} · ${row.status}`, href: adminTabHref("operacao", "users") });
+  for (const row of datedNotices.data ?? []) results.push({ id: `dated-notice-${row.id}`, type: "Data do calendário", title: row.title, detail: `${displayDate(date ?? "")} · ${row.message}`, href: adminTabHref("operacao", "library") });
+  for (const row of hours.data ?? []) results.push({ id: `hours-${row.service_date}`, type: "Funcionamento", title: displayDate(row.service_date), detail: `Fechamento às ${row.closing_time}`, href: adminTabHref("operacao", "library") });
+  for (const row of people.data ?? []) results.push({ id: `person-${row.id}`, type: "Conta", title: row.full_name, detail: `${row.email} · ${accountStatusLabels[row.status] || "Consultar situação da conta"}`, href: adminTabHref("operacao", "users") });
   for (const row of help.data ?? []) results.push({ id: `help-${row.id}`, type: "Ajuda e FAQ", title: row.title, detail: row.summary ?? "", href: adminTabHref("conteudo", "faq") });
-  for (const row of templates.data ?? []) results.push({ id: `template-${row.id}`, type: "Modelo de resposta", title: row.label, detail: row.message, href: adminTabHref("conteudo", "service") });
+  for (const row of templates.data ?? []) results.push({ id: `template-${row.id}`, type: "Modelo de resposta", title: row.label, detail: "Consultar texto do modelo", href: adminTabHref("conteudo", "service") });
   for (const row of coordination.data ?? []) results.push({ id: `coordination-${row.id}`, type: "Coordenação", title: row.name, detail: row.email, href: adminTabHref("operacao", "programs") });
-  for (const row of sla.data ?? []) results.push({ id: `sla-${row.id}`, type: "SLA", title: `${row.business_days} dias úteis`, detail: "Configuração de prazo", href: adminTabHref("operacao", "programs") });
-  for (const row of audit.data ?? []) results.push({ id: `audit-${row.id}`, type: "Auditoria", title: row.action, detail: `${row.entity_type} · ${row.entity_id ?? ""}`, href: adminTabHref("controle", "audit") });
-  for (const row of retention.data ?? []) results.push({ id: `retention-${row.id}`, type: "Arquivos e retenção", title: row.original_name, detail: `Prazo: ${row.purge_after}`, href: adminTabHref("controle", "retention") });
+  for (const row of sla.data ?? []) results.push({ id: `sla-${row.id}`, type: "Prazo do programa", title: `${row.business_days} dias úteis`, detail: "Configuração do prazo de atendimento", href: adminTabHref("operacao", "programs") });
+  for (const row of audit.data ?? []) results.push({ id: `audit-${row.id}`, type: "Histórico de ações", title: readableAuditAction(row.action), detail: `Registrada em ${new Date(row.occurred_at).toLocaleDateString("pt-BR")}`, href: adminTabHref("controle", "audit") });
+  for (const row of retention.data ?? []) results.push({ id: `retention-${row.id}`, type: "Arquivos e retenção", title: row.original_name, detail: `Prazo: ${displayDate(row.purge_after)}`, href: adminTabHref("controle", "retention") });
   for (const row of enrollments.data ?? []) for (const request of row.cataloging_requests ?? []) results.push({ id: `registration-${row.id}-${request.id}`, type: "Matrícula do protocolo", title: row.registration_number, detail: request.protocol, href: `/painel/atendimento/${request.id}` });
-  for (const row of permissionDefinitions.data ?? []) results.push({ id: `permission-${row.code}`, type: "Permissão", title: row.action, detail: `${row.code} · ${row.description}`, href: adminTabHref("operacao", "permissions") });
+  for (const row of permissionDefinitions.data ?? []) results.push({ id: `permission-${row.code}`, type: "Permissão", title: `${row.screen} · ${row.action}`, detail: row.description, href: adminTabHref("operacao", "permissions") });
   if (normalizeSearch(`${profile.full_name} ${profile.email}`).includes(normalizeSearch(term))) results.push({ id: "own-account", type: "Minha conta", title: profile.full_name, detail: profile.email, href: "/painel/conta" });
   if (staffAccount.data && normalizeSearch(`${staffAccount.data.crb} ${staffAccount.data.professional_name} ${staffAccount.data.birthday_day}/${staffAccount.data.birthday_month}`).includes(normalizeSearch(term))) results.push({ id: "own-staff-account", type: "Minha conta", title: staffAccount.data.professional_name, detail: `CRB ${staffAccount.data.crb}`, href: "/painel/conta" });
   for (const section of adminSections) for (const tab of section.tabs) if (canOpenAdminTab(tab.id, adminPermissions) && normalizeSearch(`${tab.label} ${tab.description}`).includes(normalizeSearch(term))) results.push({ id: `setting-${tab.id}`, type: "Configuração", title: tab.label, detail: tab.description, href: adminTabHref(section.area, tab.id) });

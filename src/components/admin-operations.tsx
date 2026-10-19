@@ -13,6 +13,7 @@ import { formatLibraryHour, isLibraryClosureAnnouncement, serviceDayKey } from "
 import { StaffPermissionsAdmin, type PermissionDefinition, type PermissionOverride, type InheritedRole } from "./staff-permissions-admin";
 import { DailyClosingControl } from "./daily-closing-control";
 import { issueTemplateFields } from "@/lib/issue-template-fields";
+import { readableAuditAction, readableAuditEntity } from "@/lib/audit-labels";
 
 type User = {
   id: string;
@@ -93,6 +94,12 @@ const roleLabels: Record<string, string> = {
   cataloger: "Catalogador",
   administrator: "Administrador",
 };
+const academicLevelLabels: Record<string, string> = {
+  undergraduate: "Graduação",
+  specialization: "Especialização",
+  master: "Mestrado",
+  doctorate: "Doutorado",
+};
 const statusLabels: Record<string, string> = {
   active: "Ativa",
   blocked: "Bloqueada",
@@ -103,58 +110,6 @@ const indicatorStatusLabels: Record<string, string> = {
   approved: "Aprovadas", completed: "Encerradas", canceled: "Canceladas",
 };
 const indicatorDateLabel = (day: string) => day ? day.split("-").reverse().join("/") : "";
-const actionLabels: Record<string, string> = {
-  account_administration_changed: "Alterou uma conta",
-  author_birth_year_validation_revoked: "Revogou a validação do ano de nascimento",
-  card_equivalent_title_decided: "Definiu o uso do título equivalente na ficha",
-  card_notes_saved: "Salvou notas da ficha",
-  cataloging_card_homologated: "Homologou a ficha catalográfica",
-  cataloging_request_assumed: "Assumiu o atendimento",
-  cataloging_request_completed: "Encerrou o protocolo",
-  cataloging_request_reassigned: "Mudou o responsável pelo atendimento",
-  cataloging_request_released: "Devolveu o atendimento à fila",
-  cdu_code_description_created: "Cadastrou uma descrição CDU",
-  cdu_code_description_saved: "Atualizou uma descrição CDU",
-  controlled_term_admin_changed: "Alterou um assunto controlado",
-  coordination_configuration_changed: "Alterou a configuração da coordenação",
-  coordination_magic_link_invalidated: "Invalidou o acesso da coordenação",
-  coordination_magic_link_issued: "Emitiu o acesso da coordenação",
-  feedback_campaign_activated: "Ativou a pesquisa de avaliação",
-  frequently_asked_question_saved: "Salvou uma pergunta frequente",
-  issue_template_changed: "Alterou um modelo de resposta",
-  knowledge_base_entry_saved: "Salvou conteúdo da Central de ajuda",
-  library_announcement_saved: "Atualizou o mural da biblioteca",
-  library_daily_closing_changed: "Alterou o horário de fechamento",
-  local_test_protocol_deleted: "Excluiu um protocolo de teste local",
-  nada_consta_approved: "Aprovou o Nada Consta",
-  nada_consta_purged: "Expurgou o arquivo do Nada Consta",
-  nada_consta_rejected: "Devolveu o Nada Consta",
-  nada_consta_uploaded: "Enviou o Nada Consta",
-  program_operation_configuration_changed: "Alterou o programa e o SLA",
-  public_work_link_checked: "Conferiu o link público do trabalho",
-  repository_deposit_configuration_changed: "Alterou a configuração do autodepósito",
-  repository_deposit_started: "Iniciou o autodepósito",
-  repository_publication_verified: "Verificou a publicação no repositório",
-  request_analysis_completed: "Concluiu a análise do protocolo",
-  request_canceled_failed_declaration: "Cancelou o protocolo após conferir declarações",
-  request_changes_requested: "Solicitou correções ao estudante",
-  request_citation_validated: "Validou a referência bibliográfica",
-  request_corrections_submitted: "Reenviou as correções",
-  request_direct_correction_restored: "Restaurou um campo corrigido",
-  request_direct_corrections_reset: "Restaurou correções da análise",
-  request_field_corrected_by_staff: "Corrigiu um campo na análise",
-  request_priority_removed: "Retirou a prioridade do protocolo",
-  request_priority_set: "Marcou o protocolo como prioritário",
-  shared_file_changed: "Alterou o arquivo compartilhado",
-  staff_access_revoked: "Revogou o acesso de uma pessoa da equipe",
-  staff_account_provisioned: "Provisionou uma conta da equipe",
-  staff_inherited_role_changed: "Alterou a visão herdada da equipe",
-  staff_permission_changed: "Alterou uma permissão individual",
-  student_birth_date_corrected: "Corrigiu a data de nascimento de um estudante",
-  unused_controlled_term_deleted: "Excluiu um assunto não utilizado",
-};
-const readableAuditAction = (code: string) => actionLabels[code] ?? "Ação registrada";
-
 const salvadorDateTime = new Intl.DateTimeFormat("en-US", { timeZone: "America/Bahia", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 function announcementInputDate(value: string | null | undefined) {
   if (!value) return "";
@@ -685,7 +640,7 @@ export function AdminOperations(props: {
       (userStatus === "all" || user.status === userStatus),
   ).filter((user) => `${user.full_name} ${user.email}`.toLocaleLowerCase("pt-BR").includes(userSearch.trim().toLocaleLowerCase("pt-BR")));
   const filteredPrograms = programs.filter((program) =>
-    `${program.name} ${program.level}`.toLocaleLowerCase("pt-BR").includes(programSearch.trim().toLocaleLowerCase("pt-BR")) &&
+    `${program.name} ${program.level} ${academicLevelLabels[program.level] ?? ""}`.toLocaleLowerCase("pt-BR").includes(programSearch.trim().toLocaleLowerCase("pt-BR")) &&
     (programLevel === "all" || program.level === programLevel) &&
     (programGuide === "all" || program.repository_deposit_enabled === (programGuide === "enabled"))
   );
@@ -876,13 +831,13 @@ export function AdminOperations(props: {
         <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="settings" /></span><div><p className="eyebrow">Gestão acadêmica</p><h2>Configurações por programa</h2><p>Defina o prazo em dias úteis, o guia de autodepósito e o contato de coordenação de cada programa.</p></div></div>
         <SectionStats items={[{ icon: "book", value: programs.length, label: "programas ativos" }, { icon: "calendar", value: programs.filter((program) => program.service_level_business_days > 0).length, label: "prazos definidos" }, { icon: "upload", value: programs.filter((program) => program.repository_deposit_enabled).length, label: "guias RI ativos" }, { icon: "message", value: programs.filter((program) => program.coordination_contacts.some((contact) => contact.active)).length, label: "coordenações com contato" }]} />
         <div className="admin-section__subhead"><div><p className="eyebrow">Configuração</p><h3>Prazo, depósito e coordenação</h3></div><span>{filteredPrograms.length} de {programs.length} programas</span></div>
-        <div className="admin-programs__toolbar"><label>Buscar programa<input type="search" value={programSearch} onChange={(event) => setProgramSearch(event.target.value)} placeholder="Nome ou nível" /></label><label>Nível<select value={programLevel} onChange={(event) => setProgramLevel(event.target.value)}><option value="all">Todos os níveis</option>{programLevels.map((level) => <option value={level} key={level}>{level}</option>)}</select></label><label>Guia do RI<select value={programGuide} onChange={(event) => setProgramGuide(event.target.value)}><option value="all">Todos</option><option value="enabled">Ativo</option><option value="disabled">Desativado</option></select></label>{(programSearch || programLevel !== "all" || programGuide !== "all") && <button className="button button--secondary button--small" type="button" onClick={() => { setProgramSearch(""); setProgramLevel("all"); setProgramGuide("all"); }}>Limpar filtros</button>}</div>
+        <div className="admin-programs__toolbar"><label>Buscar programa<input type="search" value={programSearch} onChange={(event) => setProgramSearch(event.target.value)} placeholder="Nome ou nível" /></label><label>Nível<select value={programLevel} onChange={(event) => setProgramLevel(event.target.value)}><option value="all">Todos os níveis</option>{programLevels.map((level) => <option value={level} key={level}>{academicLevelLabels[level] ?? "Outro nível"}</option>)}</select></label><label>Guia do RI<select value={programGuide} onChange={(event) => setProgramGuide(event.target.value)}><option value="all">Todos</option><option value="enabled">Ativo</option><option value="disabled">Desativado</option></select></label>{(programSearch || programLevel !== "all" || programGuide !== "all") && <button className="button button--secondary button--small" type="button" onClick={() => { setProgramSearch(""); setProgramLevel("all"); setProgramGuide("all"); }}>Limpar filtros</button>}</div>
         <div className="admin-list">
           {filteredPrograms.map((p) => {
             const c = p.coordination_contacts.find((x) => x.active);
             return (
               <details className="admin-program" key={p.id}>
-                <summary className="admin-program__identity"><span className="admin-section__icon"><AppIcon name="book" /></span><span><strong>{p.name}</strong><small>{p.level} · SLA atual: {p.service_level_business_days ? `${p.service_level_business_days} ${p.service_level_business_days === 1 ? "dia útil" : "dias úteis"}` : "não definido"}</small></span><AppIcon className="admin-program__chevron" name="arrowRight" /></summary>
+                <summary className="admin-program__identity"><span className="admin-section__icon"><AppIcon name="book" /></span><span><strong>{p.name}</strong><small>{academicLevelLabels[p.level] ?? "Outro nível"} · Prazo atual: {p.service_level_business_days ? `${p.service_level_business_days} ${p.service_level_business_days === 1 ? "dia útil" : "dias úteis"}` : "não definido"}</small></span><AppIcon className="admin-program__chevron" name="arrowRight" /></summary>
               <form
                 className="admin-row admin-row--program"
                 onSubmit={(event) => { event.preventDefault(); void saveProgram(p, new FormData(event.currentTarget)); }}
@@ -1182,15 +1137,15 @@ export function AdminOperations(props: {
       <section className="panel admin-section">
         <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="document" /></span><div><p className="eyebrow">Rastreabilidade</p><h2>Histórico de ações</h2><p>Consulte quando uma ação ocorreu, quem a realizou e o registro associado.</p></div></div>
         <SectionStats items={[{ icon: "document", value: props.logs.length, label: "Ações carregadas" }, { icon: "account", value: new Set(props.logs.map((log) => log.profiles?.full_name).filter(Boolean)).size, label: "Pessoas identificadas" }]} />
-        <div className="admin-audit-toolbar"><label className="admin-audit-search">Buscar no histórico<input type="search" value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Ação, pessoa ou registro" /></label><label>Tipo de ação<select value={auditAction} onChange={(event) => setAuditAction(event.target.value)}><option value="all">Todas as ações</option>{auditActions.map((action) => <option key={action} value={action}>{readableAuditAction(action)}{actionLabels[action] ? "" : ` (${action})`}</option>)}</select></label><span>{filteredLogs.length} de {props.logs.length} registros</span></div>
+        <div className="admin-audit-toolbar"><label className="admin-audit-search">Buscar no histórico<input type="search" value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Ação, pessoa ou registro" /></label><label>Tipo de ação<select value={auditAction} onChange={(event) => setAuditAction(event.target.value)}><option value="all">Todas as ações</option>{auditActions.map((action) => <option key={action} value={action}>{readableAuditAction(action)}</option>)}</select></label><span>{filteredLogs.length} de {props.logs.length} registros</span></div>
         <div className="audit-table">
           {filteredLogs.length === 0 && <p className="admin-empty-state"><AppIcon name="document" />{props.logs.length === 0 ? "Nenhuma ação registrada até agora." : "Nenhuma ação corresponde aos filtros."}</p>}
           {filteredLogs.map((l) => (
             <article key={l.id}>
               <time>{new Date(l.occurred_at).toLocaleString("pt-BR")}</time>
-              <div className="admin-audit__action"><strong>{readableAuditAction(l.action)}</strong><code>{l.action}</code></div>
+              <div className="admin-audit__action"><strong>{readableAuditAction(l.action)}</strong></div>
               <span>
-                {l.profiles?.full_name ?? "Sistema"} · {l.entity_type}
+                {l.profiles?.full_name ?? "Sistema"} · {readableAuditEntity(l.entity_type)}
                 {l.entity_id ? ` · ${l.entity_id}` : ""}
               </span>
             </article>
