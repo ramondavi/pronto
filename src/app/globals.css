@@ -3531,9 +3531,14 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-template h3 { margin: 2px 0 0; font-size: 1rem; }
 .repository-guide__email-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .repository-guide__email-choice legend { margin-bottom: 8px; font-size: .82rem; font-weight: 750; }
-.repository-guide__email-choice label { display: flex; gap: 9px; align-items: start; min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; }
-.repository-guide__email-choice label.is-selected { border-color: var(--institutional); background: var(--institutional-soft); }
-.repository-guide__email-choice input { width: auto; margin: 3px 0 0; accent-color: var(--institutional); }
+.repository-guide__email-choice label { position: relative; display: flex; gap: 11px; align-items: center; min-width: 0; padding: 14px; border: 2px solid var(--line); border-radius: var(--radius); background: var(--surface); cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s; }
+.repository-guide__email-choice label:hover, .repository-guide__email-choice label:focus-within { border-color: var(--institutional); }
+.repository-guide__email-choice label:focus-within { outline: 2px solid var(--institutional); outline-offset: 2px; }
+.repository-guide__email-choice label.is-selected { border-color: var(--institutional); background: var(--institutional-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--institutional) 12%, transparent); }
+.repository-guide__email-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.repository-guide__email-option-icon { flex: none; width: 23px; height: 23px; color: var(--institutional); }
+.repository-guide__email-option-check { flex: none; width: 18px; height: 18px; margin-left: auto; color: var(--institutional); opacity: 0; }
+.repository-guide__email-choice label.is-selected .repository-guide__email-option-check { opacity: 1; }
 .repository-guide__email-choice label span { display: grid; gap: 2px; min-width: 0; }
 .repository-guide__email-choice label strong { overflow-wrap: anywhere; font-size: .79rem; }
 .repository-guide__email-choice label small { overflow-wrap: anywhere; color: var(--text-muted); font-size: .72rem; }
@@ -3553,6 +3558,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__welcome .repository-guide__message-preview p { margin: 0; color: var(--text); font-size: inherit; }
 .repository-guide__message-preview ul { margin: 0; padding-left: 1.5em; }
 .repository-guide__message-preview li { display: list-item; padding: 2px 0; border: 0; background: none; list-style: disc; }
+.repository-guide__message-plain { margin: 0; padding: clamp(14px, 2vw, 22px); color: var(--text); font: inherit; font-size: .84rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 .repository-guide__copy-message { justify-self: start; }
 .repository-guide__copy-message:disabled, .repository-guide__copy-message:disabled:hover { cursor: not-allowed; opacity: 1; transform: none; box-shadow: none; border: 1px solid var(--line); background: var(--surface); color: var(--text-muted); }
 .repository-guide__welcome-action { grid-column: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 17px 18px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius-sm); background: var(--institutional-soft); }
