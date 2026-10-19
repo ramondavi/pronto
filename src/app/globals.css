@@ -3543,20 +3543,24 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-template h3 { margin: 2px 0 0; font-size: 1rem; }
 .repository-guide__email-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .repository-guide__email-choice legend { margin-bottom: 8px; font-size: .82rem; font-weight: 750; }
-.repository-guide__email-choice label { position: relative; display: flex; gap: 11px; align-items: center; min-width: 0; padding: 14px; border: 2px solid var(--line); border-radius: var(--radius); background: var(--surface); cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s; }
-.repository-guide__email-choice label:hover, .repository-guide__email-choice label:focus-within { border-color: var(--institutional); }
-.repository-guide__email-choice label:focus-within { outline: 2px solid var(--institutional); outline-offset: 2px; }
-.repository-guide__email-choice label.is-selected { border-color: var(--institutional); background: var(--institutional-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--institutional) 12%, transparent); }
-.repository-guide__email-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.repository-guide__email-option { display: grid; grid-template-rows: minmax(68px, auto) 42px; gap: 6px; min-width: 0; padding: 8px; border: 2px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color .2s, background .2s, box-shadow .2s; }
+.repository-guide__email-option:hover, .repository-guide__email-option:focus-within { border-color: var(--institutional); }
+.repository-guide__email-option:focus-within { outline: 2px solid var(--institutional); outline-offset: 2px; }
+.repository-guide__email-option.is-selected { border-color: var(--institutional); background: var(--institutional-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--institutional) 12%, transparent); }
+.repository-guide__email-option label { position: relative; display: flex; gap: 11px; align-items: center; min-width: 0; padding: 6px; cursor: pointer; }
+.repository-guide__email-option input[type="radio"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .repository-guide__email-option-icon { flex: none; width: 23px; height: 23px; color: var(--institutional); }
 .repository-guide__email-option-check { flex: none; width: 18px; height: 18px; margin-left: auto; color: var(--institutional); opacity: 0; }
-.repository-guide__email-choice label.is-selected .repository-guide__email-option-check { opacity: 1; }
-.repository-guide__email-choice label span { display: grid; gap: 2px; min-width: 0; }
-.repository-guide__email-choice label strong { overflow-wrap: anywhere; font-size: .79rem; }
-.repository-guide__email-choice label small { overflow-wrap: anywhere; color: var(--text-muted); font-size: .72rem; }
-.repository-guide__other-email { display: grid; gap: 6px; font-size: .8rem; font-weight: 750; }
-.repository-guide__other-email input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; }
-.repository-guide__other-email input[aria-invalid="true"] { border-color: var(--danger); }
+.repository-guide__email-option.is-selected .repository-guide__email-option-check { opacity: 1; }
+.repository-guide__email-option label span { display: grid; gap: 2px; min-width: 0; }
+.repository-guide__email-option label strong { overflow-wrap: anywhere; font-size: .79rem; }
+.repository-guide__email-option label small { overflow-wrap: anywhere; color: var(--text-muted); font-size: .72rem; }
+.repository-guide__email-option-space { display: block; }
+.repository-guide__other-email-input { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; font-size: .8rem; }
+.repository-guide__other-email-input:disabled { visibility: hidden; }
+.repository-guide__other-email-input[aria-invalid="true"] { border-color: var(--danger); }
+.repository-guide__copy-language-note { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .78rem; line-height: 1.45; }
+.repository-guide__copy-language-note svg { flex: none; width: 18px; height: 18px; color: var(--institutional); }
 .repository-guide__access-subject { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
 .repository-guide__access-subject > div { display: grid; gap: 4px; min-width: 0; }
 .repository-guide__access-subject span, .repository-guide__access-message-heading > span { color: var(--institutional); font-size: .7rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
