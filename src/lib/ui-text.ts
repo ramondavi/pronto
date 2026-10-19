@@ -821,6 +821,7 @@ const text: Record<string, Translations> = {
   "Prévia sem formatação da mensagem": { en: "Plain text message preview", es: "Vista previa del mensaje sin formato", de: "Vorschau der unformatierten Nachricht", fr: "Aperçu du message sans mise en forme", it: "Anteprima del messaggio senza formattazione" },
   "Informe o e-mail do RI para copiar": { en: "Enter your RI email to copy", es: "Indique el correo del RI para copiar", de: "RI-E-Mail zum Kopieren eingeben", fr: "Indiquez l’adresse du RI pour copier", it: "Inserisci l’e-mail del RI per copiare" },
   "Confirme o e-mail do RI para copiar": { en: "Confirm your RI email to copy", es: "Confirme el correo del RI para copiar", de: "RI-E-Mail zum Kopieren bestätigen", fr: "Confirmez l’adresse du RI pour copier", it: "Conferma l’e-mail del RI per copiare" },
+  "Informe o e-mail cadastrado no RI para copiar": { en: "Enter the email registered with RI to copy", es: "Indique el correo registrado en el RI para copiar", de: "Zum Kopieren die beim RI registrierte E-Mail-Adresse eingeben", fr: "Indiquez l’adresse e-mail enregistrée auprès du RI pour copier", it: "Inserisci l’e-mail registrata nel RI per copiare" },
   "Mensagem copiada": { en: "Message copied", es: "Mensaje copiado", de: "Nachricht kopiert", fr: "Message copié", it: "Messaggio copiato" },
   "Copiar mensagem": { en: "Copy message", es: "Copiar mensaje", de: "Nachricht kopieren", fr: "Copier le message", it: "Copia messaggio" },
 };
