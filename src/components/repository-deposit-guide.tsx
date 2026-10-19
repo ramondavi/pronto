@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { useInterfaceLanguage } from "@/components/interface-language";
@@ -45,6 +45,11 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   const [error, setError] = useState("");
   const [emailChoice, setEmailChoice] = useState<"" | "same" | "other">("");
   const [otherEmail, setOtherEmail] = useState("");
+  const [otherEmailDraft, setOtherEmailDraft] = useState("");
+  const [editingOtherEmail, setEditingOtherEmail] = useState(false);
+  const [confirmingOtherEmail, setConfirmingOtherEmail] = useState(false);
+  const otherEmailInputRef = useRef<HTMLInputElement>(null);
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [copyFormat, setCopyFormat] = useState<"formatted" | "plain">("formatted");
   const repositoryEmail = emailChoice === "same" ? requesterEmail : emailChoice === "other" ? otherEmail.trim() : "";
   const emailReady = emailChoice !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(repositoryEmail);
@@ -54,6 +59,34 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   const accessText = repositoryAccessText(language);
   const portugueseSubject = repositoryAccessSubject(requesterName);
   const portugueseEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup);
+
+  useEffect(() => {
+    if (editingOtherEmail) otherEmailInputRef.current?.focus();
+  }, [editingOtherEmail]);
+
+  useEffect(() => () => {
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+  }, []);
+
+  function openOtherEmailEditor() {
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+    setConfirmingOtherEmail(false);
+    setOtherEmailDraft(otherEmail);
+    setEditingOtherEmail(true);
+  }
+
+  function confirmOtherEmail() {
+    const normalized = otherEmailDraft.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return;
+    setOtherEmail(normalized);
+    setOtherEmailDraft(normalized);
+    setEditingOtherEmail(false);
+    setConfirmingOtherEmail(true);
+    confirmationTimer.current = setTimeout(() => {
+      setConfirmingOtherEmail(false);
+      confirmationTimer.current = null;
+    }, 1400);
+  }
 
   async function copyAccessMessage() {
     if (!emailReady) return;
@@ -106,8 +139,8 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
         <div className="repository-guide__access-template">
           <div className="repository-guide__access-template-heading"><span className="repository-guide__access-template-icon"><AppIcon name="message" /></span><div><span className="eyebrow">{t("Pedido de acesso")}</span><h3>{t("Prepare o e-mail ao RI/UFBA")}</h3></div></div>
           <fieldset className="repository-guide__email-choice"><legend>{t("Qual e-mail você cadastrou no RI/UFBA?")}</legend>
-            <div className={`repository-guide__email-option${emailChoice === "same" ? " is-selected" : ""}`}><label htmlFor={`repository-email-same-${requestId}`}><input id={`repository-email-same-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "same"} onChange={() => setEmailChoice("same")} /><AppIcon className="repository-guide__email-option-icon" name="person" /><span><strong>{t("O mesmo e-mail do Pronto!")}</strong><small>{requesterEmail}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label></div>
-            <div className={`repository-guide__email-option repository-guide__email-option--other${emailChoice === "other" ? " is-selected" : ""}`}><label htmlFor={`repository-email-other-${requestId}`}><input id={`repository-email-other-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "other"} onChange={() => setEmailChoice("other")} /><AppIcon className="repository-guide__email-option-icon" name="message" /><span className="repository-guide__other-email-copy"><strong>{t("Outro e-mail")}</strong><small>{t("Informe o endereço usado no cadastro do RI/UFBA.")}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label><input className="repository-guide__other-email-input" type="email" autoComplete="email" placeholder={t("Digite o e-mail usado no RI/UFBA")} aria-label={t("E-mail cadastrado no RI/UFBA")} value={otherEmail} onChange={(event) => setOtherEmail(event.target.value)} aria-invalid={otherEmail.length > 0 && !emailReady} tabIndex={emailChoice === "other" ? 0 : -1} /></div>
+            <div className={`repository-guide__email-option${emailChoice === "same" ? " is-selected" : ""}`}><label htmlFor={`repository-email-same-${requestId}`}><input id={`repository-email-same-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "same"} onChange={() => { setEmailChoice("same"); setEditingOtherEmail(false); setConfirmingOtherEmail(false); }} /><AppIcon className="repository-guide__email-option-icon" name="person" /><span><strong>{t("O mesmo e-mail do Pronto!")}</strong><small>{requesterEmail}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label></div>
+            <div className={`repository-guide__email-option repository-guide__email-option--other${emailChoice === "other" ? " is-selected" : ""}${editingOtherEmail ? " is-editing" : ""}${confirmingOtherEmail ? " is-confirming" : ""}`}><label htmlFor={`repository-email-other-${requestId}`} onClick={() => { if (emailChoice === "other" && !editingOtherEmail && !confirmingOtherEmail) openOtherEmailEditor(); }}><input id={`repository-email-other-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "other"} onChange={() => { setEmailChoice("other"); openOtherEmailEditor(); }} /><AppIcon className="repository-guide__email-option-icon" name="message" /><span className="repository-guide__other-email-copy"><strong>{t("Outro e-mail")}</strong><small>{otherEmail || t("Informe o endereço usado no cadastro do RI/UFBA.")}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label><input ref={otherEmailInputRef} className="repository-guide__other-email-input" type="email" autoComplete="email" placeholder={t("Digite o e-mail usado no RI/UFBA")} aria-label={t("E-mail cadastrado no RI/UFBA")} value={otherEmailDraft} onChange={(event) => setOtherEmailDraft(event.target.value)} onBlur={confirmOtherEmail} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); event.currentTarget.blur(); } }} aria-invalid={otherEmailDraft.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(otherEmailDraft.trim())} tabIndex={editingOtherEmail ? 0 : -1} /><span className="repository-guide__other-email-feedback" role="status"><AppIcon name="check" />{t("E-mail aplicado à mensagem")}</span></div>
           </fieldset>
           {language !== "pt" && <p className="repository-guide__copy-language-note"><AppIcon name="message" />{t("O assunto e a mensagem aparecem no idioma selecionado para sua conferência. Ao copiar, o texto será em português para a equipe do RI/UFBA.")}</p>}
           <div className="repository-guide__access-subject"><div><span>{t("Assunto")}</span><strong>{accessSubject}</strong></div><button className="button button--secondary button--small button--with-icon" type="button" onClick={() => void copy("assunto do pedido", portugueseSubject)}><AppIcon name={copied === "assunto do pedido" ? "check" : "copy"} />{copied === "assunto do pedido" ? t("Copiado") : t("Copiar assunto")}</button></div>

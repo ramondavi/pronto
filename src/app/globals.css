@@ -3570,11 +3570,14 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__email-option label strong { overflow-wrap: anywhere; font-size: .79rem; }
 .repository-guide__email-option label small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; color: var(--text-muted); font-size: .72rem; }
 .repository-guide__other-email-copy { opacity: 1; visibility: visible; transition: opacity .22s ease, visibility 0s linear 0s; }
-.repository-guide__email-option--other.is-selected .repository-guide__other-email-copy { opacity: 0; visibility: hidden; transition-delay: 0s, .22s; }
+.repository-guide__email-option--other:is(.is-editing, .is-confirming) .repository-guide__other-email-copy { opacity: 0; visibility: hidden; transition-delay: 0s, .22s; }
 .repository-guide__other-email-input { position: absolute; top: 50%; right: 32px; left: 45px; box-sizing: border-box; width: calc(100% - 77px); height: 36px; min-width: 0; padding: 4px 9px; transform: translateY(-50%); border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; color: #171717; font: inherit; font-size: .8rem; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .22s ease, visibility 0s linear .22s; }
-.repository-guide__email-option--other.is-selected .repository-guide__other-email-input { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: .12s, 0s; }
+.repository-guide__email-option--other.is-editing .repository-guide__other-email-input { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: .12s, 0s; }
 .repository-guide__other-email-input::placeholder { color: #626a72; }
 .repository-guide__other-email-input[aria-invalid="true"] { border-color: var(--danger); }
+.repository-guide__other-email-feedback { position: absolute; top: 50%; right: 32px; left: 45px; display: flex; box-sizing: border-box; align-items: center; gap: 6px; min-height: 36px; padding: 4px 9px; transform: translateY(-50%); border: 1px solid var(--institutional); border-radius: var(--radius-sm); background: #fff; color: #171717; font-size: .76rem; font-weight: 750; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .22s ease, visibility 0s linear .22s; }
+.repository-guide__other-email-feedback svg { flex: none; width: 15px; height: 15px; color: #1a3b70; }
+.repository-guide__email-option--other.is-confirming .repository-guide__other-email-feedback { opacity: 1; visibility: visible; transition-delay: .12s, 0s; }
 .repository-guide__copy-language-note { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .78rem; line-height: 1.45; }
 .repository-guide__copy-language-note svg { flex: none; width: 18px; height: 18px; color: var(--institutional); }
 .repository-guide__access-subject { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
