@@ -7,6 +7,7 @@ import { AppIcon } from "./app-icon";
 import { SearchEmptyState } from "./search-empty-state";
 import { useInterfaceLanguage } from "./interface-language";
 import { helpCopy, helpCategoryLabel, helpKindLabel } from "@/lib/help-copy";
+import { uiText } from "@/lib/ui-text";
 
 export function HelpSearch({ compact = false, context, onAnswerSelect, openArticlesInNewTab = false }: { compact?: boolean; context?: string; onAnswerSelect?: (item: KnowledgeItem) => void; openArticlesInNewTab?: boolean }) {
   const { language } = useInterfaceLanguage();
@@ -67,7 +68,7 @@ export function HelpSearch({ compact = false, context, onAnswerSelect, openArtic
     <label id={`busca-${id}`} htmlFor={`busca-input-${id}`}>{compact ? t.compactSearch : t.search}</label>
     <div className="help-search__field"><input id={`busca-input-${id}`} type="search" value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); }} placeholder={t.placeholder} autoComplete="off" aria-autocomplete="list" aria-controls={query.trim().length >= 2 ? `sugestoes-${id}` : undefined} /><span aria-hidden="true">⌕</span></div>
     {query.trim().length >= 2 && <div className="help-search__suggestions" id={`sugestoes-${id}`} role="region" aria-live="polite">
-      {resolvedQuery !== query.trim() ? <div className="search-results-pending" aria-hidden="true" /> : failed ? <p>Não foi possível buscar agora. Tente novamente.</p> : results.length ? <ul>{results.map((item) => <li key={`${item.kind}-${item.id}`}>
+      {resolvedQuery !== query.trim() ? <div className="search-results-pending" aria-hidden="true" /> : failed ? <p>{uiText(language, "Não foi possível buscar agora. Tente novamente.")}</p> : results.length ? <ul>{results.map((item) => <li key={`${item.kind}-${item.id}`}>
         {item.slug ? <Link href={`/ajuda/artigos/${item.slug}`} target={openArticlesInNewTab ? "_blank" : undefined} rel={openArticlesInNewTab ? "noreferrer" : undefined}><small>{helpKindLabel(language, item.kind)} · {helpCategoryLabel(language, item.category)}</small><strong>{item.title}{openArticlesInNewTab && <AppIcon name="external" />}</strong><span>{item.summary}</span></Link>
           : item.kind === "Pergunta frequente" && !onAnswerSelect
             ? <a href={`#ajuda-${item.id}`} onClick={() => openFaq(item)}><small>{helpKindLabel(language, item.kind)} · {helpCategoryLabel(language, item.category)}</small><strong>{item.title}</strong><span>{item.summary}</span></a>

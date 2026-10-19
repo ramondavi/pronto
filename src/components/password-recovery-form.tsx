@@ -42,7 +42,7 @@ export function PasswordRecoveryForm() {
   }, [state.status, state.sentAt, state.email]);
 
   const counting = remaining > 0;
-  const label = pending ? "Enviando…" : counting ? `Link enviado · ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}` : wasSent ? "Enviar novo link" : uiText(language, "Enviar link de recuperação");
+  const label = pending ? uiText(language, "Enviando…") : counting ? `${uiText(language, "Link enviado")} · ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}` : wasSent ? uiText(language, "Enviar novo link") : uiText(language, "Enviar link de recuperação");
 
   return <div className="auth-recovery-form">
     <form className="form-stack" action={formAction}>
@@ -50,6 +50,6 @@ export function PasswordRecoveryForm() {
       <button className={`button button--primary button--full auth-recovery-form__button${counting ? " account-page__password-link-button--counting" : ""}`} type="submit" disabled={pending || counting} aria-live="polite"><span>{label}</span><AppIcon name={counting ? "check" : "arrowRight"} />{counting && <span className="account-page__password-link-progress" aria-hidden="true" style={{ width: `${remaining / cooldownSeconds * 100}%` }} />}</button>
     </form>
     {state.status === "error" && <AuthFeedback error={state.message} />}
-    {counting && <p className="auth-field-hint" role="status">{state.status === "sent" ? state.message : "Confira sua caixa de entrada e a pasta de spam."}</p>}
+    {counting && <p className="auth-field-hint" role="status">{state.status === "sent" ? uiText(language, state.message) : uiText(language, "Confira sua caixa de entrada e a pasta de spam.")}</p>}
   </div>;
 }

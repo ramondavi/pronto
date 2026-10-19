@@ -11,6 +11,7 @@ import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { ModalCloseButton } from "@/components/modal-close-button";
 import { formGuidance } from "@/domain/student-requests/form-guidance";
 import { useInterfaceLanguage } from "@/components/interface-language";
+import { uiText } from "@/lib/ui-text";
 import { studentPreparationKey } from "@/components/student-request-confirmations";
 
 export type Program = { id: string; code: string; name: string; level: string; work_type: string };
@@ -434,7 +435,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
       if (invalid) { jumpToField(invalid.step, invalid.field); return; }
       submitted.current = true;
       try { sessionStorage.removeItem(studentPreviewDraftKey); } catch { /* Nenhum dado real foi alterado. */ }
-      showPanelChange("Demonstração: nenhum pedido foi enviado.");
+      showPanelChange(uiText(interfaceLanguage, "Demonstração: nenhum pedido foi enviado."));
       if (previewSuccessHref) router.push(previewSuccessHref);
       return;
     }
@@ -573,7 +574,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
       </fieldset>
 
       <section className="form-section form-step form-step--5 review-panel" aria-label={text.review}><ReviewSummary items={reviewItems} onNavigate={jumpToField} text={text} subtitleNeedsReview={subtitleNeedsReview} subtitleIsGerman={draft.originalLanguage === "de"} /></section>
-      <nav className="request-analysis-sections__toolbar student-form-toolbar" aria-label="Navegação entre etapas da solicitação">
+      <nav className="request-analysis-sections__toolbar student-form-toolbar" aria-label={uiText(interfaceLanguage, "Navegação entre etapas da solicitação")}>
         <span>{uiLanguage === "pt" ? `Etapa ${activeStep} de ${steps.length}` : `${activeStep} / ${steps.length}`}</span>
         <div>
           {activeStep > 1 && <button disabled={submitting} className="request-analysis-sections__previous" type="button" onClick={() => navigateStep(activeStep - 1)}><AppIcon name="arrowRight" />{text.back}: {steps[activeStep - 2].label}</button>}

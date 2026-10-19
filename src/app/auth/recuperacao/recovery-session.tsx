@@ -2,10 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useInterfaceLanguage } from "@/components/interface-language";
+import { uiText } from "@/lib/ui-text";
 
 const invalidLink = "/recuperar-senha?error=O%20link%20n%C3%A3o%20est%C3%A1%20mais%20v%C3%A1lido.%20Solicite%20um%20novo%20link.";
 
 export function RecoverySession() {
+  const { language } = useInterfaceLanguage();
   const started = useRef(false);
 
   useEffect(() => {
@@ -28,5 +31,5 @@ export function RecoverySession() {
       .catch(() => window.location.replace(invalidLink));
   }, []);
 
-  return <p role="status">Verificando o link…</p>;
+  return <p role="status">{uiText(language, "Verificando o link…")}</p>;
 }
