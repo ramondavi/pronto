@@ -2072,6 +2072,8 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .dashboard-main--student-request .student-request-heading { align-items: center; flex-wrap: wrap; }
 .dashboard-main--student-request .student-request-heading__actions { align-items: center; flex-wrap: wrap; }
 .dashboard-main--student-request .student-request-heading__actions .request-status { min-height: 38px; border: 1px solid color-mix(in srgb, var(--institutional) 28%, var(--line)); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .78rem; }
+.dashboard-main--student-request .student-request-heading__actions .protocol-copy-button { text-decoration: none; }
+.dashboard-main--student-request .student-request-heading__actions .protocol-copy-button:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dashboard-main--student-request .student-draft-panel { gap: 18px; padding: clamp(20px, 3vw, 28px); border-top: 3px solid var(--institutional); }
 .dashboard-main--student-request .student-draft-panel > .eyebrow { margin: 0; }
 .dashboard-main--student-request .student-draft-panel__heading { display: grid; gap: 7px; }
