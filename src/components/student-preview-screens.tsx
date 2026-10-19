@@ -21,7 +21,7 @@ import { StudentRevisionGallery } from "@/components/student-revision-gallery";
 import { StudentCompletedStage } from "@/components/student-completed-stage";
 import { StudentOverviewAction } from "@/components/student-overview-action";
 import { StudentPublicationRecord } from "@/components/student-publication-record";
-import { studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
+import { studentHelpAllowedForProgram, studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
 import { StudentCompletedRecord } from "@/components/student-completed-record";
 import { StudentRequestStatus } from "@/components/student-request-status";
 import { StudentRequestHistoryEmpty } from "@/components/student-request-history-empty";
@@ -29,7 +29,7 @@ import { studentPreviewProtocol, studentPreviewRequestId, studentPreviewRevision
 
 type Screen = "inicio" | "solicitacoes" | "solicitacao" | "correcao" | "autodeposito" | "avaliacao" | "conta";
 type Announcement = { id: string; title: string; message: string; type: string; starts_at: string; ends_at: string | null };
-type Props = { active: Screen; scenario: StudentPreviewScenario; programs: Program[]; announcements: Announcement[]; serviceStatus: { title: string; date: { value: string; label: string }; reason?: string | null; message?: string | null; closed: boolean; closingTime: string }; userId: string; helpArticles: { slug: string; title: string }[] };
+type Props = { active: Screen; scenario: StudentPreviewScenario; programs: Program[]; announcements: Announcement[]; serviceStatus: { title: string; date: { value: string; label: string }; reason?: string | null; message?: string | null; closed: boolean; closingTime: string }; userId: string; helpArticles: { slug: string; title: string; category: string }[] };
 const heading: Record<Screen, string> = { inicio: "Visão geral", solicitacoes: "Minhas solicitações", solicitacao: "Nova solicitação", correcao: "Corrigir solicitação", autodeposito: "Autodepósito", avaliacao: "Avaliação do atendimento", conta: "Minha conta" };
 const statusLabels: Record<string, string> = { submitted: "Solicitação enviada", in_review: "Em análise", changes_requested: "Correções solicitadas", approved: "Ficha homologada", completed: "Concluída", canceled: "Cancelada" };
 const demoHref = (screen: Screen, scenario: StudentPreviewScenario) => `/painel/visao-estudante?tela=${screen}&estado=${scenario.id}`;
@@ -70,7 +70,8 @@ export function StudentPreviewScreens({ active, scenario, programs, announcement
   const repositoryDepositEnabled = scenario.id !== "guia-desativado";
   const progress = scenario.status ? studentRequestProgress(scenario.status, scenario.nada, scenario.homologated, "pt", repositoryDepositEnabled) : null;
   const helpSlug = studentOverviewHelpSlug(scenario.status || null, scenario.nada, scenario.homologated, repositoryDepositEnabled);
-  const helpArticle = helpArticles.find((entry) => entry.slug === helpSlug);
+  const helpCandidate = helpArticles.find((entry) => entry.slug === helpSlug);
+  const helpArticle = studentHelpAllowedForProgram(helpCandidate, repositoryDepositEnabled) ? helpCandidate : null;
   const revisions = studentPreviewRevisions(scenario);
   const timeline = studentPreviewTimeline(scenario);
   const hasRequest = Boolean(scenario.status);

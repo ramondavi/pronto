@@ -6,6 +6,13 @@ export type StudentRequestProgress = {
   needsAction: boolean;
 };
 
+export function studentHelpAllowedForProgram(article: { slug: string | null; category: string; title: string } | null | undefined, repositoryDepositEnabled: boolean): boolean {
+  if (!article?.slug) return false;
+  if (repositoryDepositEnabled) return true;
+  return article.category.toLocaleLowerCase("pt-BR") !== "autodepósito"
+    && !/(autodep[oó]sito|self.deposit|reposit[oó]rio|repository|ri[/-]ufba)/i.test(`${article.slug} ${article.title}`);
+}
+
 export function studentOverviewHelpSlug(status: string | null, nadaConstaStatus: string | null, hasHomologation: boolean, repositoryDepositEnabled: boolean): string | null {
   if (!status) return "preparar-solicitacao";
   if (status === "changes_requested") return "corrigir-solicitacao";

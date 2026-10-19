@@ -11,7 +11,7 @@ import { StudentDraftSummary } from "@/components/student-request-form";
 import { StaffActivityFeed, type StaffActivityEvent } from "@/components/staff-activity-feed";
 import { StaffAnnouncementsCalendar } from "@/components/staff-announcements-calendar";
 import { formatWorkTitle } from "@/lib/work-title";
-import { studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
+import { studentHelpAllowedForProgram, studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
 import { getPublishedKnowledge } from "@/lib/knowledge-service";
 import { StudentCompletedRecord } from "@/components/student-completed-record";
 import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
@@ -47,7 +47,8 @@ export default async function StudentDashboardPage() {
   const repositoryDepositEnabled = activeProgram?.repository_deposit_enabled === true;
   const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language, repositoryDepositEnabled) : null;
   const helpSlug = studentOverviewHelpSlug(activeRequest?.status ?? null, nadaConsta?.status ?? null, Boolean(homologation), repositoryDepositEnabled);
-  const helpArticle = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
+  const helpCandidate = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
+  const helpArticle = studentHelpAllowedForProgram(helpCandidate, repositoryDepositEnabled) ? helpCandidate : null;
   const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "canceled" ? "archive" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
   const { data: programs } = activeRequest ? { data: [] } : await supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true);
   const { data: announcements } = await supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);

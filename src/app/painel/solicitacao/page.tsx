@@ -13,7 +13,7 @@ import { RequestSlaEstimate } from "@/components/request-sla-estimate";
 import { AppIcon } from "@/components/app-icon";
 import { formatWorkTitle } from "@/lib/work-title";
 import { panelMetadata } from "@/lib/panel-metadata";
-import { studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
+import { studentHelpAllowedForProgram, studentOverviewHelpSlug, studentRequestProgress } from "@/lib/student-request-progress";
 import { getPublishedKnowledge } from "@/lib/knowledge-service";
 import { StudentRequestStatus } from "@/components/student-request-status";
 import { StudentRequestHistoryEmpty } from "@/components/student-request-history-empty";
@@ -52,7 +52,8 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const { data: homologation } = await supabase.from("cataloging_card_homologations").select("snapshot, homologated_at, public_token").eq("request_id", request.id).maybeSingle();
   const progress = studentRequestProgress(request.status, nadaConsta?.status ?? null, Boolean(homologation), language, program?.repository_deposit_enabled === true);
   const helpSlug = studentOverviewHelpSlug(request.status, nadaConsta?.status ?? null, Boolean(homologation), program?.repository_deposit_enabled === true);
-  const helpArticle = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
+  const helpCandidate = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
+  const helpArticle = studentHelpAllowedForProgram(helpCandidate, program?.repository_deposit_enabled === true) ? helpCandidate : null;
   const justSubmitted = params.enviada === "1" && (!params.protocolo || params.protocolo === request.protocol) && request.status === "submitted";
   const [{data:publication},{data:timeline}]=await Promise.all([supabase.from("repository_publications").select("permanent_url,verified_at").eq("request_id",request.id).maybeSingle(),supabase.rpc("request_timeline",{target_request_id:request.id})]);
   const revisions = (revisionData ?? []) as unknown as StudentRevision[];

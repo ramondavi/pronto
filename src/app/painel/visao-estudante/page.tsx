@@ -25,7 +25,7 @@ export default async function StudentPreviewPage({ searchParams }: { searchParam
     supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true).order("name"),
     supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100),
     studentServiceStatus(supabase),
-    ["inicio", "solicitacoes"].includes(active) ? getPublishedKnowledge().then((entries) => entries.filter((entry) => entry.kind === "article" && entry.slug).map((entry) => ({ slug: entry.slug!, title: entry.title }))) : Promise.resolve([]),
+    ["inicio", "solicitacoes"].includes(active) ? getPublishedKnowledge().then((entries) => entries.filter((entry) => entry.kind === "article" && entry.slug).map((entry) => ({ slug: entry.slug!, title: entry.title, category: entry.category }))) : Promise.resolve([]),
   ]);
   return <StudentPreviewScreens active={active} scenario={scenario} programs={programs ?? []} announcements={announcements ?? []} serviceStatus={serviceStatus} userId={user.id} helpArticles={helpArticles} />;
 }
