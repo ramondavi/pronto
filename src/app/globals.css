@@ -3529,7 +3529,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__state h2 { margin: 0 0 6px; font-size: 1.25rem; }
 .repository-guide__state p { margin: 0; color: var(--text-muted); font-size: .84rem; line-height: 1.5; }
 .repository-guide__welcome { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 18px 16px; margin-top: 24px; padding: clamp(22px, 3vw, 34px); border-top: 4px solid var(--institutional); background: linear-gradient(135deg, var(--surface-raised), var(--institutional-soft)); }
-.repository-guide__welcome-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--radius-sm); background: var(--institutional); color: #fff; }
+.repository-guide__welcome-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--radius-sm); background: var(--institutional); color: var(--surface-raised); }
 .repository-guide__welcome-icon svg { width: 25px; height: 25px; }
 .repository-guide__welcome h2, .repository-guide__hero h2, .repository-guide__section-heading h2 { margin: 3px 0 7px; font-size: clamp(1.3rem, 2.2vw, 1.75rem); line-height: 1.22; }
 .repository-guide__welcome p:not(.eyebrow), .repository-guide__hero-copy > p:last-child, .repository-guide__section-heading p:last-child { margin: 0; color: var(--text-muted); font-size: .85rem; line-height: 1.55; }
@@ -3540,7 +3540,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-steps { grid-column: 2; display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .repository-guide__access-steps > li { position: relative; display: grid; grid-template-columns: 30px 20px minmax(0, 1fr); align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
 .repository-guide__access-steps > li:not(:last-child)::after { content: ""; position: absolute; top: 100%; left: 29px; width: 2px; height: 10px; background: var(--institutional); }
-.repository-guide__access-number { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: var(--institutional); color: var(--institutional-on-dark); font-size: .78rem; font-weight: 850; }
+.repository-guide__access-number { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: var(--institutional); color: var(--surface-raised); font-size: .78rem; font-weight: 850; }
 .repository-guide__access-steps > li > svg { width: 19px; height: 19px; margin-top: 5px; color: var(--institutional); }
 .repository-guide__access-steps > li > div > strong { font-size: .84rem; }
 .repository-guide__access-steps > li > div > p { margin: 4px 0 0; font-size: .79rem; }
@@ -3581,7 +3581,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-message-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 9px; padding: 10px 13px; border-bottom: 1px solid var(--line); background: var(--institutional-soft); }
 .repository-guide__copy-format { display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
 .repository-guide__copy-format button { padding: 5px 9px; border: 0; border-radius: calc(var(--radius-sm) - 3px); background: transparent; color: var(--text-muted); font: inherit; font-size: .72rem; font-weight: 750; cursor: pointer; }
-.repository-guide__copy-format button.is-selected { background: var(--institutional); color: var(--institutional-on-dark); }
+.repository-guide__copy-format button.is-selected { background: var(--institutional); color: var(--surface-raised); }
 .repository-guide__message-preview { display: grid; gap: 13px; padding: clamp(14px, 2vw, 22px); font-size: .84rem; line-height: 1.55; overflow-wrap: anywhere; }
 .repository-guide__welcome .repository-guide__message-preview p { margin: 0; color: var(--text); font-size: inherit; }
 .repository-guide__message-preview ul { margin: 0; padding-left: 1.5em; }
