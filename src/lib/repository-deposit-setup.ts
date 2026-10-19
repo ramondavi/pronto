@@ -29,8 +29,28 @@ export function repositoryDepositSetup(code: string, fallback: RepositoryDeposit
   return setups[code] ?? fallback;
 }
 
-export function repositoryAccessEmail(name: string, email: string, setup: RepositoryDepositSetup): string {
+export function repositoryAccessSubject(name: string): string {
+  return `Solicitação de liberação para depósito no RI/UFBA - ${name}`;
+}
+
+export function repositoryAccessItems(name: string, email: string, setup: RepositoryDepositSetup): string[] {
   const parts = setup.collection.split(" > ");
-  const subcommunity = parts.length > 2 ? `Subcomunidade: ${parts[1]}\n` : "";
-  return `Prezada equipe do RI/UFBA,\n\nSolicito a liberação do meu acesso para depositar o trabalho abaixo.\n\nNome completo: ${name}\nE-mail cadastrado no RI/UFBA: ${email || "[preencha o e-mail usado no cadastro do RI/UFBA]"}\nComunidade: ${parts[0]}\n${subcommunity}Coleção: ${parts.at(-1)}\nTipo de documento: ${setup.documentType}\n\nAgradeço a atenção.\n${name}`;
+  return [
+    `Nome completo: ${name}`,
+    `E-mail cadastrado no RI/UFBA: ${email || "[confirme ou informe o e-mail cadastrado no RI/UFBA]"}`,
+    `Comunidade: ${parts[0]}`,
+    ...(parts.length > 2 ? [`Subcomunidade: ${parts[1]}`] : []),
+    `Coleção: ${parts.at(-1)}`,
+    `Tipo de documento: ${setup.documentType}`,
+  ];
+}
+
+export function repositoryAccessEmail(name: string, email: string, setup: RepositoryDepositSetup): string {
+  return `Prezada equipe do RI/UFBA,\n\nvenho por meio desta solicitar gentilmente a liberação do meu acesso para depositar o trabalho abaixo:\n\n${repositoryAccessItems(name, email, setup).map((item) => `• ${item}`).join("\n")}\n\nAgradeço a atenção.\n\nAtenciosamente,\n${name}`;
+}
+
+export function repositoryAccessEmailHtml(name: string, email: string, setup: RepositoryDepositSetup): string {
+  const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const items = repositoryAccessItems(name, email, setup).map((item) => `<li>${escape(item)}</li>`).join("");
+  return `<p>Prezada equipe do RI/UFBA,</p><p>venho por meio desta solicitar gentilmente a liberação do meu acesso para depositar o trabalho abaixo:</p><ul>${items}</ul><p>Agradeço a atenção.</p><p>Atenciosamente,<br>${escape(name)}</p>`;
 }

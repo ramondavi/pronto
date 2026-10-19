@@ -3498,20 +3498,45 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__access-heading span { color: var(--institutional); font-size: .72rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
 .repository-guide__access-heading h3 { margin: 3px 0 0; font-size: 1.05rem; }
 .repository-guide__access-steps { grid-column: 2; display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.repository-guide__access-steps li { position: relative; display: grid; grid-template-columns: 30px 20px minmax(0, 1fr); align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
-.repository-guide__access-steps li:not(:last-child)::after { content: ""; position: absolute; top: 100%; left: 29px; width: 2px; height: 10px; background: var(--institutional); }
+.repository-guide__access-steps > li { position: relative; display: grid; grid-template-columns: 30px 20px minmax(0, 1fr); align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.repository-guide__access-steps > li:not(:last-child)::after { content: ""; position: absolute; top: 100%; left: 29px; width: 2px; height: 10px; background: var(--institutional); }
 .repository-guide__access-number { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: var(--institutional); color: var(--institutional-on-dark); font-size: .78rem; font-weight: 850; }
-.repository-guide__access-steps li > svg { width: 19px; height: 19px; margin-top: 5px; color: var(--institutional); }
-.repository-guide__access-steps strong { font-size: .84rem; }
-.repository-guide__access-steps p { margin: 4px 0 0 !important; font-size: .79rem !important; }
+.repository-guide__access-steps > li > svg { width: 19px; height: 19px; margin-top: 5px; color: var(--institutional); }
+.repository-guide__access-steps > li > div > strong { font-size: .84rem; }
+.repository-guide__access-steps > li > div > p { margin: 4px 0 0; font-size: .79rem; }
 .repository-guide__access-steps a { color: var(--institutional); font-weight: 800; }
-.repository-guide__access-template { grid-column: 2; display: grid; gap: 12px; min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-.repository-guide__access-template h3 { margin: 3px 0 4px; font-size: 1rem; }
-.repository-guide__access-template p:not(.eyebrow) { margin: 0; }
-.repository-guide__access-template label { display: grid; gap: 6px; font-size: .82rem; font-weight: 700; }
-.repository-guide__access-template input, .repository-guide__access-template textarea { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: var(--surface-raised); color: var(--text); font: inherit; }
-.repository-guide__access-template textarea { resize: vertical; line-height: 1.5; font-size: .82rem; }
-.repository-guide__access-template .button { justify-self: start; }
+.repository-guide__access-step--email > div { min-width: 0; }
+.repository-guide__access-template { display: grid; gap: 16px; min-width: 0; margin-top: 16px; padding: clamp(14px, 2vw, 22px); border: 1px solid color-mix(in srgb, var(--institutional) 24%, var(--line)); border-radius: var(--radius); background: var(--surface-raised); }
+.repository-guide__access-template-heading { display: flex; align-items: center; gap: 12px; }
+.repository-guide__access-template-icon { display: grid; flex: none; width: 38px; height: 38px; place-items: center; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.repository-guide__access-template-icon svg { width: 21px; height: 21px; }
+.repository-guide__access-template h3 { margin: 2px 0 0; font-size: 1rem; }
+.repository-guide__email-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.repository-guide__email-choice legend { margin-bottom: 8px; font-size: .82rem; font-weight: 750; }
+.repository-guide__email-choice label { display: flex; gap: 9px; align-items: start; min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; }
+.repository-guide__email-choice label.is-selected { border-color: var(--institutional); background: var(--institutional-soft); }
+.repository-guide__email-choice input { width: auto; margin: 3px 0 0; accent-color: var(--institutional); }
+.repository-guide__email-choice label span { display: grid; gap: 2px; min-width: 0; }
+.repository-guide__email-choice label strong { overflow-wrap: anywhere; font-size: .79rem; }
+.repository-guide__email-choice label small { overflow-wrap: anywhere; color: var(--text-muted); font-size: .72rem; }
+.repository-guide__other-email { display: grid; gap: 6px; font-size: .8rem; font-weight: 750; }
+.repository-guide__other-email input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; }
+.repository-guide__other-email input[aria-invalid="true"] { border-color: var(--danger); }
+.repository-guide__access-subject { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.repository-guide__access-subject > div { display: grid; gap: 4px; min-width: 0; }
+.repository-guide__access-subject span, .repository-guide__access-message-heading > span { color: var(--institutional); font-size: .7rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+.repository-guide__access-subject strong { overflow-wrap: anywhere; font-size: .83rem; }
+.repository-guide__access-message { overflow: hidden; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.repository-guide__access-message-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 9px; padding: 10px 13px; border-bottom: 1px solid var(--line); background: var(--institutional-soft); }
+.repository-guide__copy-format { display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.repository-guide__copy-format button { padding: 5px 9px; border: 0; border-radius: calc(var(--radius-sm) - 3px); background: transparent; color: var(--text-muted); font: inherit; font-size: .72rem; font-weight: 750; cursor: pointer; }
+.repository-guide__copy-format button.is-selected { background: var(--institutional); color: var(--institutional-on-dark); }
+.repository-guide__message-preview { display: grid; gap: 13px; padding: clamp(14px, 2vw, 22px); font-size: .84rem; line-height: 1.55; overflow-wrap: anywhere; }
+.repository-guide__welcome .repository-guide__message-preview p { margin: 0; color: var(--text); font-size: inherit; }
+.repository-guide__message-preview ul { margin: 0; padding-left: 1.5em; }
+.repository-guide__message-preview li { display: list-item; padding: 2px 0; border: 0; background: none; list-style: disc; }
+.repository-guide__copy-message { justify-self: start; }
+.repository-guide__copy-message:disabled, .repository-guide__copy-message:disabled:hover { cursor: not-allowed; opacity: 1; transform: none; box-shadow: none; border: 1px solid var(--line); background: var(--surface); color: var(--text-muted); }
 .repository-guide__welcome-action { grid-column: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 17px 18px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius-sm); background: var(--institutional-soft); }
 .repository-guide__welcome-action > div { display: grid; gap: 3px; max-width: 390px; }
 .repository-guide__welcome-action strong { color: var(--text); font-size: .87rem; }
@@ -3667,7 +3692,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__reminders svg { flex: none; width: 19px; height: 19px; color: var(--institutional); }
 .repository-guide__reminders p { margin: 0; color: var(--text-muted); font-size: .79rem; line-height: 1.5; }
 .repository-guide__reminders strong { color: var(--text); }
-@media (max-width: 700px) { .repository-guide__welcome { grid-template-columns: 1fr; } .repository-guide__access-heading, .repository-guide__access-steps, .repository-guide__access-template, .repository-guide__welcome-action, .repository-guide__welcome > .form-error { grid-column: 1; } .repository-guide__steps, .repository-guide__reminders { grid-template-columns: 1fr; } .repository-guide__hero { align-items: stretch; flex-direction: column; } .repository-guide__hero > .button { align-self: flex-start; } }
+@media (max-width: 700px) { .repository-guide__welcome { grid-template-columns: 1fr; } .repository-guide__access-heading, .repository-guide__access-steps, .repository-guide__welcome-action, .repository-guide__welcome > .form-error { grid-column: 1; } .repository-guide__email-choice { grid-template-columns: 1fr; } .repository-guide__steps, .repository-guide__reminders { grid-template-columns: 1fr; } .repository-guide__hero { align-items: stretch; flex-direction: column; } .repository-guide__hero > .button { align-self: flex-start; } }
 @media (max-width: 480px) { .repository-guide__field { align-items: flex-start; flex-direction: column; } .repository-guide__field > .button { align-self: flex-start; } }
 @media (max-width: 480px) { .repository-guide__person-parts { grid-template-columns: 1fr; } }
 .program-settings { display: grid; gap: 12px; }
