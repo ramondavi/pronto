@@ -12,9 +12,10 @@ type Props = {
   action: ReactNode;
   children?: ReactNode;
   note?: ReactNode;
+  help?: ReactNode;
 };
 
-export function StudentOverviewAction({ title, description, icon, label, stateLabel, needsAction, draft = false, action, children, note }: Props) {
+export function StudentOverviewAction({ title, description, icon, label, stateLabel, needsAction, draft = false, action, children, note, help }: Props) {
   return <section className={`next-action__focus${needsAction ? " next-action__focus--required" : ""}${draft ? " next-action__focus--draft" : ""}`} aria-label={label}>
     <div className="next-action__focus-main">
       <span className="next-action__focus-icon" aria-hidden="true"><AppIcon name={icon} /></span>
@@ -30,5 +31,6 @@ export function StudentOverviewAction({ title, description, icon, label, stateLa
       <div className="next-action__focus-action">{action}</div>
     </div>
     {note && <div className="next-action__focus-note"><AppIcon name="document" />{note}</div>}
+    {help && <div className="next-action__focus-help">{help}</div>}
   </section>;
 }

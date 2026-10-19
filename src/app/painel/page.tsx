@@ -83,7 +83,8 @@ export default async function StudentDashboardPage() {
               draft={!activeRequest}
               stateLabel={!activeRequest || progress?.needsAction ? t("Ação necessária") : t("Acompanhar protocolo")}
               action={activeRequest && progress ? <Link className={`button ${progress.needsAction ? "button--primary" : "button--secondary"} button--with-icon`} href={progress.actionHref}><AppIcon name="arrowRight" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
-              note={!activeRequest || helpArticle?.slug ? <>{!activeRequest && <span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span>}{helpArticle?.slug && <Link href={`/ajuda/artigos/${helpArticle.slug}`} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{helpArticle.title}</Link>}</> : undefined}
+              note={!activeRequest ? <span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span> : undefined}
+              help={helpArticle?.slug ? <Link href={`/ajuda/artigos/${helpArticle.slug}`} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{helpArticle.title}</Link> : undefined}
             >{!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}</StudentOverviewAction>
             </>}
           </div>
