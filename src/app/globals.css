@@ -1980,11 +1980,12 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .dashboard-main--student-overview .dashboard-side { min-height: 0; align-content: stretch; }
 .dashboard-main--student-overview .next-action { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: clamp(22px, 3vw, 32px); border: 1px solid var(--line); border-top: 3px solid var(--institutional); border-radius: var(--radius); background: var(--surface-raised); }
 .dashboard-main--student-overview .next-action::before { position: absolute; inset: 0; background: var(--institutional); mask: url('/pattern-next-action.svg') 0 0 / 96px 96px repeat; opacity: .025; content: ""; pointer-events: none; }
-.dashboard-main--student-overview .next-action__content { position: relative; z-index: 1; gap: 12px; }
-.dashboard-main--student-overview .dashboard-grid--active-request .next-action__content { align-content: space-between; }
+.dashboard-main--student-overview .next-action__content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
+.dashboard-main--student-overview .dashboard-grid--active-request .next-action__content { align-content: initial; }
 .dashboard-main--student-overview .next-action__request-header { box-sizing: border-box; gap: 8px; width: 100%; margin: 0 0 5px; padding: 14px 16px; border-top: 1px solid var(--line); border-left: 3px solid var(--institutional); box-shadow: none; background: var(--surface); }
-.dashboard-main--student-overview .next-action__request-header .analysis-case-header__top { flex-wrap: wrap; gap: 5px 12px; }
-.dashboard-main--student-overview .next-action__submitted { display: inline-flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: .7rem; white-space: nowrap; }
+.dashboard-main--student-overview .next-action__request-header .analysis-case-header__top { align-items: center; }
+.dashboard-main--student-overview .next-action__request-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 15px; min-width: 0; }
+.dashboard-main--student-overview .next-action__submitted { display: inline-flex; align-items: center; gap: 5px; padding-left: 15px; border-left: 1px solid var(--line); color: var(--text-muted); font-size: .72rem; white-space: nowrap; }
 .dashboard-main--student-overview .next-action__submitted svg { width: 14px; height: 14px; color: var(--institutional); }
 .dashboard-main--student-overview .next-action__eyebrow { display: inline-flex; align-items: center; gap: 7px; }
 .dashboard-main--student-overview .next-action__eyebrow svg { width: 16px; height: 16px; }
@@ -1994,18 +1995,35 @@ input::placeholder { color: var(--text-muted); opacity: 0.75; }
 .dashboard-main--student-overview .next-action__request-header .analysis-case-header__details dt { display: flex; align-items: center; gap: 6px; }
 .dashboard-main--student-overview .next-action__request-header .analysis-case-header__details dt svg { flex: 0 0 15px; width: 15px; height: 15px; }
 .dashboard-main--student-overview .next-action__request-header .analysis-case-header__details dd { font-size: .78rem; }
+@media (max-width: 520px) { .dashboard-main--student-overview .next-action__submitted { padding-left: 0; border-left: 0; } }
 @media (max-width: 520px) { .dashboard-main--student-overview .next-action__request-header .analysis-case-header__details { grid-template-columns: 1fr; } }
 .dashboard-main--student-overview .next-action h2 { font-size: clamp(1.6rem, 2.6vw, 2.25rem); line-height: 1.17; overflow-wrap: anywhere; }
-.dashboard-main--student-overview .next-action__content > p:not(.eyebrow) { max-width: 66ch; font-size: .9rem; line-height: 1.55; }
-.dashboard-main--student-overview .next-action .next-action__draft-note { margin: 0; padding: 12px 0 0; font-size: .78rem; }
+.dashboard-main--student-overview .next-action__focus { display: flex; flex: 1 1 auto; flex-direction: column; gap: clamp(18px, 2.5vw, 26px); min-width: 0; padding: clamp(20px, 3vw, 30px); border: 1px solid color-mix(in srgb, var(--institutional) 20%, var(--line)); border-radius: var(--radius); background: linear-gradient(145deg, var(--surface), var(--institutional-soft)); }
+.dashboard-main--student-overview .next-action__focus--required { border-top: 3px solid var(--institutional); }
+.dashboard-main--student-overview .next-action__focus-main { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: clamp(14px, 2vw, 22px); min-width: 0; }
+.dashboard-main--student-overview .next-action__focus-icon { display: grid; width: clamp(46px, 5vw, 60px); height: clamp(46px, 5vw, 60px); place-items: center; border: 1px solid color-mix(in srgb, var(--institutional) 24%, var(--line)); border-radius: var(--radius-sm); background: var(--surface); color: var(--institutional); }
+.dashboard-main--student-overview .next-action__focus-icon svg { width: 27px; height: 27px; }
+.dashboard-main--student-overview .next-action__focus-copy { display: grid; gap: 10px; min-width: 0; }
+.dashboard-main--student-overview .next-action__eyebrow { margin: 0; }
+.dashboard-main--student-overview .next-action__focus-description { max-width: 62ch; color: var(--text-muted); font-size: clamp(.88rem, 1.5vw, 1rem); line-height: 1.55; }
+.dashboard-main--student-overview .next-action__focus-details { min-width: 0; }
+.dashboard-main--student-overview .next-action__focus-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); }
+.dashboard-main--student-overview .next-action__focus-state { display: inline-flex; align-items: center; gap: 7px; color: var(--text-muted); font-size: .78rem; font-weight: 750; }
+.dashboard-main--student-overview .next-action__focus--required .next-action__focus-state { color: var(--institutional); }
+.dashboard-main--student-overview .next-action__focus-state svg { width: 17px; height: 17px; }
+.dashboard-main--student-overview .next-action__focus-action { display: flex; flex-wrap: wrap; gap: 10px; min-width: 0; }
+.dashboard-main--student-overview .next-action__focus-action .button { margin: 0; }
+.dashboard-main--student-overview .next-action__focus--draft .next-action__focus-footer { align-items: stretch; flex-direction: column; }
+.dashboard-main--student-overview .next-action__focus--draft .next-action__focus-action, .dashboard-main--student-overview .next-action__focus--draft .student-request-shortcut { width: 100%; }
+.dashboard-main--student-overview .next-action__focus-note { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); font-size: .76rem; line-height: 1.4; }
+.dashboard-main--student-overview .next-action__focus-note svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
+@media (max-width: 560px) { .dashboard-main--student-overview .next-action__focus-main { grid-template-columns: 1fr; } .dashboard-main--student-overview .next-action__focus-footer { align-items: stretch; flex-direction: column; } .dashboard-main--student-overview .next-action__focus-action, .dashboard-main--student-overview .next-action__focus-action .button { width: 100%; } }
 .dashboard-main--student-overview .calendar-panel { display: flex; flex-direction: column; gap: 14px; height: 100%; min-height: 0; padding: 24px; border-left: 1px solid var(--line); background: var(--institutional-soft); }
 .dashboard-main--student-overview .calendar-panel > strong { font-size: 1rem; }
 .dashboard-main--student-overview .calendar-panel > p { font-size: .82rem; }
 .dashboard-main--student-overview .calendar-panel .staff-calendar { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; width: 100%; }
 .dashboard-main--student-overview .calendar-panel .staff-calendar__grid { flex: 1 1 auto; grid-auto-rows: minmax(28px, 1fr); }
 .dashboard-main--student-overview .calendar-panel .staff-calendar__grid button { min-height: 27px; }
-.dashboard-main--student-overview .student-progress-message { padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
-.dashboard-main--student-overview .student-progress-message--action { border-left: 3px solid var(--institutional); }
 body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top: 0; padding-top: 30px; }
 .dashboard-main--student-request { width: min(960px, calc(100% - 64px)); }
 .dashboard-main--student-request > :is(.student-draft-panel, .student-new-enrollment, .request-cancellation-notice, .pending-action, .request-summary, .nada-consta-panel, .publication-record, .revision-history, .student-request-history) { margin-top: var(--student-section-gap); }

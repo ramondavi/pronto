@@ -21,6 +21,7 @@ import { RelativeDateTime } from "@/components/relative-date-time";
 import { ServiceStatusBanner } from "@/components/service-status-banner";
 import { userHasPermission } from "@/lib/staff-permissions";
 import { StaffGlobalSearch } from "@/components/staff-global-search";
+import { StudentOverviewAction } from "@/components/student-overview-action";
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
@@ -42,7 +43,7 @@ export default async function StudentDashboardPage() {
   const language = await getInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const progress = activeRequest ? studentRequestProgress(activeRequest.status, nadaConsta?.status ?? null, Boolean(homologation), language) : null;
-  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
+  const actionVisual: AppIconName = !activeRequest ? "document" : activeRequest.status === "canceled" ? "archive" : activeRequest.status === "changes_requested" ? "edit" : !nadaConsta || nadaConsta.status === "rejected" ? "upload" : nadaConsta.status === "pending" ? "inbox" : activeRequest.status === "approved" && homologation ? "document" : "book";
   const { data: programs } = activeRequest ? { data: [] } : await supabase.from("academic_programs").select("id,code,name,level,work_type").eq("active", true);
   const { data: announcements } = await supabase.from("library_announcements").select("id,title,message,type,starts_at,ends_at").eq("active", true).order("starts_at", { ascending: false }).limit(100);
   const now = new Date().toISOString();
@@ -72,14 +73,18 @@ export default async function StudentDashboardPage() {
               <span>{activeRequest.protocol} · {t(programDisplayName(activeProgram))}</span>
               <Link href="/painel/solicitacao">{t("Ver protocolo")}</Link>
             </div> : <>
-            {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label={t("Dados da solicitação")}><div className="analysis-case-header__top"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{activeRequest.protocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />{t("Enviada")} <RelativeDateTime value={activeRequest.submitted_at} /></span></div><div className="analysis-case-header__title"><strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />{t("Programa")}</dt><dd title={activeProgram?.name}>{t(programDisplayName(activeProgram))}</dd></div><div><dt><AppIcon name="document" />{t("Tipo de monografia")}</dt><dd>{t(monographDisplayName(activeProgram))}</dd></div></dl></header>}
-            <p className="eyebrow next-action__eyebrow"><AppIcon name={actionVisual} />{t("Sua próxima ação")}</p>
-            <h2>{activeRequest ? progress?.title : t("Sua solicitação")}</h2>
-            {!activeRequest && <p>{t("Tenha em mãos a matrícula atual, a versão final já aprovada e um link público para o trabalho completo.")}</p>}
-            {progress && <p className={`student-progress-message${progress.needsAction ? " student-progress-message--action" : ""}`} role="status">{progress.description}</p>}
-            {!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}
-            {activeRequest && progress ? <Link className="button button--primary button--with-icon" href={progress.actionHref}><AppIcon name="request" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
-            {!activeRequest && <p className="next-action__draft-note"><AppIcon name="document" /><span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span></p>}
+            {activeRequest && <header className="analysis-case-header next-action__request-header" aria-label={t("Dados da solicitação")}><div className="analysis-case-header__top"><div className="next-action__request-meta"><span className="queue-item__protocol analysis-case-header__protocol"><AppIcon name="document" />{activeRequest.protocol}</span><span className="next-action__submitted"><AppIcon name="calendar" />{t("Enviada")} <RelativeDateTime value={activeRequest.submitted_at} /></span></div></div><div className="analysis-case-header__title"><strong>{formatWorkTitle(activeRequest.title, activeRequest.subtitle)}</strong></div><dl className="analysis-case-header__details"><div><dt><AppIcon name="book" />{t("Programa")}</dt><dd title={activeProgram?.name}>{t(programDisplayName(activeProgram))}</dd></div><div><dt><AppIcon name="document" />{t("Tipo de monografia")}</dt><dd>{t(monographDisplayName(activeProgram))}</dd></div></dl></header>}
+            <StudentOverviewAction
+              icon={actionVisual}
+              label={t("Sua próxima ação")}
+              title={activeRequest ? progress?.title ?? "" : t("Sua solicitação")}
+              description={activeRequest ? progress?.description ?? "" : t("Tenha em mãos a matrícula atual, a versão final já aprovada e um link público para o trabalho completo.")}
+              needsAction={!activeRequest || Boolean(progress?.needsAction)}
+              draft={!activeRequest}
+              stateLabel={!activeRequest || progress?.needsAction ? t("Ação necessária") : t("Acompanhar protocolo")}
+              action={activeRequest && progress ? <Link className={`button ${progress.needsAction ? "button--primary" : "button--secondary"} button--with-icon`} href={progress.actionHref}><AppIcon name="arrowRight" />{progress.actionLabel}</Link> : <StudentRequestShortcut userId={user.id} className="button button--primary" programs={programs ?? []} />}
+              note={!activeRequest ? <span>{t("O rascunho é salvo automaticamente neste dispositivo para você continuar depois.")}</span> : undefined}
+            >{!activeRequest && <StudentDraftSummary userId={user.id} programs={programs ?? []} />}</StudentOverviewAction>
             </>}
           </div>
         </article>
