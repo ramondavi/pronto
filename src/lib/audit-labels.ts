@@ -66,4 +66,3 @@ const entityLabels: Record<string, string> = {
 };
 
 export const readableAuditEntity = (code: string) => entityLabels[code] ?? "Registro relacionado";
-
