@@ -3528,10 +3528,14 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__state > span svg { width: 21px; height: 21px; }
 .repository-guide__state h2 { margin: 0 0 6px; font-size: 1.25rem; }
 .repository-guide__state p { margin: 0; color: var(--text-muted); font-size: .84rem; line-height: 1.5; }
-.repository-guide__protocol { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 7px; max-width: 100%; margin: 14px 0 0; padding: 8px 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font-size: .82rem; line-height: 1.3; }
-.repository-guide__protocol svg { flex: none; width: 16px; height: 16px; color: var(--institutional); }
-.repository-guide__protocol span { color: var(--text-muted); }
-.repository-guide__protocol strong { overflow-wrap: anywhere; }
+.repository-guide__page-heading { align-items: center; gap: 20px; }
+.repository-guide__page-heading > div:first-child { min-width: 0; }
+.repository-guide__protocol { display: inline-flex; flex: none; align-items: center; gap: 11px; min-height: 62px; max-width: 100%; margin: 0; padding: 10px 16px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); line-height: 1.25; }
+.repository-guide__protocol svg { flex: none; width: 23px; height: 23px; color: var(--institutional); }
+.repository-guide__protocol span { display: grid; gap: 2px; min-width: 0; }
+.repository-guide__protocol small { color: var(--text-muted); font-size: .75rem; font-weight: 700; }
+.repository-guide__protocol strong { overflow-wrap: anywhere; color: var(--text); font-size: 1.02rem; }
+@media (max-width: 560px) { .dashboard-main .repository-guide__page-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; } .repository-guide__protocol { min-height: 52px; padding: 7px 9px; gap: 7px; } .repository-guide__protocol svg { width: 18px; height: 18px; } .repository-guide__protocol small { font-size: .68rem; } .repository-guide__protocol strong { font-size: .84rem; } }
 .repository-guide__welcome { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 18px 16px; margin-top: 24px; padding: clamp(22px, 3vw, 34px); border-top: 4px solid var(--institutional); background: linear-gradient(135deg, var(--surface-raised), var(--institutional-soft)); }
 .repository-guide__welcome-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--radius-sm); background: var(--institutional); color: var(--surface-raised); }
 .repository-guide__welcome-icon svg { width: 25px; height: 25px; }
