@@ -8,6 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 19 de outubro de 2026
 
+- A documentação deixa de repetir o nome da ferramenta de desenvolvimento fora do crédito público aprovado.
 - A prévia reúne as melhorias de navegação, responsividade, autenticação, solicitação, acompanhamento, autodepósito e ajuda para publicação no Pronto!; as telas públicas e do estudante, inclusive a demonstração, completam os textos nos seis idiomas disponíveis.
 - A navegação entre abas administrativas preserva a transição sem alterar estado durante a renderização; os testes de geração de PDF e recuperação de senha acompanham os fluxos atuais.
 
@@ -89,7 +90,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 - Os índices da Administração ganharam botões de voltar e transição lateral ao entrar em uma área ou aba; os títulos dos submenus laterais agora apenas expandem ou recolhem. Corrigida a abertura da página de avaliações quando a campanha ainda não possui datas definidas.
 - O catálogo de permissões passou a incluir as ações administrativas, inclusive gestão de contas, provisionamento, expurgo e ativação ou exportação da pesquisa. A navegação e as operações no banco passam a respeitar essas concessões; a gestão das próprias permissões continua exclusiva de administradores ativos.
 - A página inicial ganhou mais respiro no cabeçalho e mantém a animação de “fichas catalográficas” nas seis línguas. A administração separa permissões individuais da aba Contas, com busca, resumo, filtros, áreas e cartões recolhidos ao abrir. Operação, Conteúdo e Controle ganharam páginas de índice acessíveis pela barra lateral e pelos breadcrumbs.
-- A marca do Pronto! foi atualizada em cabeçalhos, painel, compartilhamento e e-mail; favicon e ícone de instalação usam seus quadrados sem fundo. O logo da biblioteca foi refeito para os temas claro e escuro e ganhou no rodapé uma animação do lema “Arquitetura, Urbanismo e muito +”. O crédito de *vibe coding* voltou a ligar ao Codex.
+- A marca do Pronto! foi atualizada em cabeçalhos, painel, compartilhamento e e-mail; favicon e ícone de instalação usam seus quadrados sem fundo. O logo da biblioteca foi refeito para os temas claro e escuro e ganhou no rodapé uma animação do lema “Arquitetura, Urbanismo e muito +”. O crédito de *vibe coding* no rodapé mantém o destino aprovado.
 - O servidor de desenvolvimento verifica se está no repositório público correto antes de iniciar, prevenindo a abertura acidental de uma cópia antiga.
 - Ampliado o tempo da verificação de acessibilidade da página inicial no CI para acomodar sua renderização e análise completas.
 - A concessão ou o bloqueio de acesso mais recente agora prevalece de forma consistente, mesmo quando duas alterações ocorrem na mesma transação.
