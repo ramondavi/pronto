@@ -2,7 +2,6 @@ import { AppIcon } from "@/components/app-icon";
 import { RelativeDateTime } from "@/components/relative-date-time";
 
 type Labels = {
-  status: string;
   reason: string;
   missingReason: string;
   details: string;
@@ -23,7 +22,7 @@ export function CanceledRequestNotice({ title, program, registration, submittedA
   return <section className="panel request-cancellation-notice" aria-labelledby="canceled-request-title">
     <div className="request-cancellation-notice__heading">
       <span className="request-cancellation-notice__icon" aria-hidden="true"><AppIcon name="close" /></span>
-      <div><p className="eyebrow">{labels.status}</p><h2 id="canceled-request-title">{labels.reason}</h2></div>
+      <div><h2 id="canceled-request-title">{labels.reason}</h2></div>
     </div>
     <div className="request-cancellation-notice__reason">
       <AppIcon name="review" />

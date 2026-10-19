@@ -2071,6 +2071,7 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 @media (max-width: 760px) { .student-new-enrollment { grid-template-columns: auto minmax(0, 1fr); } .student-new-enrollment .button { grid-column: 1 / -1; justify-self: start; max-width: 100%; white-space: normal; } }
 .dashboard-main--student-request .student-request-heading { align-items: center; flex-wrap: wrap; }
 .dashboard-main--student-request .student-request-heading__actions { align-items: center; flex-wrap: wrap; }
+.dashboard-main--student-request .student-request-heading__actions > * { align-self: center; }
 .dashboard-main--student-request .student-request-heading__actions .request-status { min-height: 38px; border: 1px solid color-mix(in srgb, var(--institutional) 28%, var(--line)); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .78rem; }
 .dashboard-main--student-request .student-request-heading__actions .protocol-copy-button { text-decoration: none; }
 .dashboard-main--student-request .student-request-heading__actions .protocol-copy-button:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -2102,6 +2103,8 @@ body:has(.dashboard-main--student-overview) .dashboard-daily-quote { margin-top:
 .student-delivery-case-header .analysis-case-header__details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .student-delivery-case-header .progress-badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border-radius: var(--radius-sm); font-size: .75rem; font-weight: 800; }
 .student-delivery-case-header .progress-badge svg { width: 16px; height: 16px; }
+.student-delivery-case-header .analysis-case-header__top .eyebrow { display: inline-flex; align-items: center; gap: 7px; color: var(--institutional); }
+.student-delivery-case-header .analysis-case-header__top .eyebrow svg { width: 16px; height: 16px; }
 @media (max-width: 760px) { .student-delivery-case-header .analysis-case-header__details { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .student-delivery-case-header .analysis-case-header__details { grid-template-columns: 1fr; } }
 
@@ -3332,9 +3335,9 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .homologation-panel { display: grid; gap: 18px; margin-top: 20px; }
 .homologation-panel p { margin: 5px 0 0; color: var(--text-muted); }
 .homologation-actions { display: flex; justify-content: flex-end; gap: 10px; }
-.student-request-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.student-request-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .student-request-heading h1 { width: fit-content; max-width: 100%; white-space: nowrap; font-size: clamp(1.75rem, 3vw, 2.5rem); }
-.student-request-heading__actions { display: flex; align-items: flex-end; flex: 0 0 auto; justify-content: flex-end; gap: 12px; }
+.student-request-heading__actions { display: flex; align-items: center; flex: 0 0 auto; justify-content: flex-end; gap: 12px; }
 .student-request-heading__actions .request-status, .student-request-heading__actions .button { display: inline-flex; align-items: center; min-height: 39px; white-space: nowrap; }
 @media (max-width: 700px) { .student-request-heading { align-items: flex-start; flex-direction: column; }.student-request-heading__actions { flex-wrap: wrap; justify-content: flex-start; } }
 .nada-consta-panel { display: grid; gap: 22px; margin-top: 28px; overflow: hidden; border-top: 4px solid var(--institutional); }
@@ -3532,12 +3535,12 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__state p { margin: 0; color: var(--text-muted); font-size: .84rem; line-height: 1.5; }
 .repository-guide__page-heading { align-items: center; gap: 20px; }
 .repository-guide__page-heading > div:first-child { min-width: 0; }
-.repository-guide__protocol { display: inline-flex; flex: none; align-items: center; gap: 11px; min-height: 62px; max-width: 100%; margin: 0; padding: 10px 16px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); line-height: 1.25; }
+.repository-guide__protocol { display: inline-flex; flex: none; align-items: center; gap: 11px; width: auto; height: 62px; max-width: 100%; margin: 0; padding: 8px 16px; border: 1px solid color-mix(in srgb, var(--institutional) 25%, var(--line)); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); line-height: 1.25; }
 .repository-guide__protocol svg { flex: none; width: 23px; height: 23px; color: var(--institutional); }
 .repository-guide__protocol span { display: grid; gap: 2px; min-width: 0; }
 .repository-guide__protocol small { color: var(--text-muted); font-size: .75rem; font-weight: 700; }
-.repository-guide__protocol strong { overflow-wrap: anywhere; color: var(--text); font-size: 1.02rem; }
-@media (max-width: 560px) { .dashboard-main .repository-guide__page-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; } .repository-guide__protocol { min-height: 52px; padding: 7px 9px; gap: 7px; } .repository-guide__protocol svg { width: 18px; height: 18px; } .repository-guide__protocol small { font-size: .68rem; } .repository-guide__protocol strong { font-size: .84rem; } }
+.repository-guide__protocol strong { overflow: hidden; color: var(--text); font-size: 1.02rem; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 560px) { .dashboard-main .repository-guide__page-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; } .repository-guide__protocol { height: 48px; padding: 5px 9px; gap: 7px; } .repository-guide__protocol svg { width: 18px; height: 18px; } .repository-guide__protocol small { font-size: .68rem; } .repository-guide__protocol strong { font-size: .84rem; } }
 .repository-guide__welcome { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 18px 16px; margin-top: 24px; padding: clamp(22px, 3vw, 34px); border-top: 4px solid var(--institutional); background: linear-gradient(135deg, var(--surface-raised), var(--institutional-soft)); }
 .repository-guide__welcome-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--radius-sm); background: var(--institutional); color: var(--surface-raised); }
 .repository-guide__welcome-icon svg { width: 25px; height: 25px; }
