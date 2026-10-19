@@ -6,6 +6,11 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 19 de outubro de 2026
+
+- A prévia reúne as melhorias de navegação, responsividade, autenticação, solicitação, acompanhamento, autodepósito e ajuda para publicação no Pronto!; as telas públicas e do estudante, inclusive a demonstração, completam os textos nos seis idiomas disponíveis.
+- A navegação entre abas administrativas preserva a transição sem alterar estado durante a renderização; os testes de geração de PDF e recuperação de senha acompanham os fluxos atuais.
+
 ### 18 de outubro de 2026
 
 - A gestão de Ajuda e FAQ avisa quais conteúdos ainda precisam de tradução, lista os idiomas pendentes e abre cada item diretamente com rolagem suave.

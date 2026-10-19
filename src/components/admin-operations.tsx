@@ -26,7 +26,7 @@ type User = {
   student_profiles: { birth_date: string | null }[];
 };
 type StaffProfile = { professional_name: string; crb: string };
-let pendingAdminTabScroll: { area: AdminArea; target: string; left: number } | null = null;
+const adminTabScrollKey = "pronto-admin-tab-scroll";
 function firstStaffProfile(value: User["staff_profiles"]): StaffProfile | null {
   return Array.isArray(value) ? value[0] ?? null : value;
 }
@@ -675,10 +675,10 @@ export function AdminOperations(props: {
       const end = tabs.scrollLeft < tabs.scrollWidth - tabs.clientWidth - 2;
       setTabOverflow((current) => current.start === start && current.end === end ? current : { start, end });
     };
-    const transition = pendingAdminTabScroll;
+    let transition: { area: AdminArea; target: string; left: number } | null = null;
+    try { transition = JSON.parse(sessionStorage.getItem(adminTabScrollKey) ?? "null"); sessionStorage.removeItem(adminTabScrollKey); } catch { /* Navegação continua sem animação pendente. */ }
     const continuing = transition?.area === props.area && transition.target === activeTab;
-    if (continuing) tabs.scrollLeft = transition.left;
-    pendingAdminTabScroll = null;
+    if (continuing && transition) tabs.scrollLeft = transition.left;
     const resizeObserver = new ResizeObserver(updateOverflow);
     resizeObserver.observe(tabs);
     tabs.addEventListener("scroll", updateOverflow, { passive: true });
@@ -690,7 +690,7 @@ export function AdminOperations(props: {
   }, [activeTab, props.area, adminTabs.length]);
   const navigateAdminTab = (id: string) => {
     if (id === activeTab) return;
-    pendingAdminTabScroll = { area: props.area, target: id, left: adminTabsRef.current?.scrollLeft ?? 0 };
+    try { sessionStorage.setItem(adminTabScrollKey, JSON.stringify({ area: props.area, target: id, left: adminTabsRef.current?.scrollLeft ?? 0 })); } catch { /* Navegação continua sem animação pendente. */ }
     router.push(adminTabHref(props.area, id), { scroll: false });
   };
   const selectAdjacentAdminTab = (direction: -1 | 1) => {

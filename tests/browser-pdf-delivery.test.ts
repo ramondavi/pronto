@@ -20,7 +20,7 @@ test("inserts a new card page with the work page dimensions", async () => {
 });
 
 test("inserts the card after the confirmed title page and stays browser-only", () => {
-  assert.match(component,/insertPage\(titlePage, \[width, height\]\)/);
+  assert.match(component,/insertPage\(titlePageNumber, \[width, height\]\)/);
   assert.match(component,/mesmo arquivo analisado pela biblioteca/);
   assert.match(component,/workFile\.arrayBuffer\(\)/);
   assert.doesNotMatch(component,/fetch\(|storage\.from|FormData/);

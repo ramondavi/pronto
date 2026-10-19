@@ -9,10 +9,11 @@ const confirm = readFileSync("src/app/auth/confirm/route.ts", "utf8");
 const config = readFileSync("supabase/config.toml", "utf8");
 
 test("password recovery starts and completes PKCE on the server", () => {
-  assert.match(form, /action=\{requestPasswordReset\}/);
+  assert.match(form, /useActionState\(requestPasswordReset,/);
+  assert.match(form, /action=\{formAction\}/);
   assert.match(actions, /export async function requestPasswordReset/);
   assert.match(actions, /resetPasswordForEmail\(email/);
-  assert.match(actions, /\/auth\/confirm/);
+  assert.match(actions, /\/auth\/recuperacao/);
   assert.match(confirm, /\/confirmar-recuperacao/);
   assert.match(confirm, /token_hash/);
   assert.match(callback, /exchangeCodeForSession\(code\)/);
