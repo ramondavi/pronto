@@ -56,6 +56,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={interfaceLanguage === "pt" ? "pt-BR" : interfaceLanguage} translate="no" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
+        <meta name="google-site-verification" content="PmvJq_StIaeihiD5npLFGUPk46eJu_O4x1qK_onknnc" />
         <meta name="google" content="notranslate" />
         <ThemeScript />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "Pronto!", url: metadataBase.toString(), inLanguage: interfaceLanguage === "pt" ? "pt-BR" : interfaceLanguage, publisher: { "@type": "Organization", name: "Universidade Federal da Bahia", url: "https://ufba.br" } }) }} />
