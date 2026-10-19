@@ -26,8 +26,8 @@ export default async function OpenGraphImage() {
   return new ImageResponse(
     <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", overflow: "hidden", background: "#eff5f9" }}>
       {squares.map((square, index) => <div key={index} style={{ position: "absolute", left: square.left, top: square.top, width: square.side, height: square.side, borderRadius: 6, background: square.color }} />)}
-      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 1020, height: 350, border: "1px solid #d5e3ec", borderRadius: 24, background: "#ffffff", boxShadow: "0 18px 48px rgba(31, 73, 112, 0.12)" }}>
-        <img src={logoSrc} alt="" width={870} height={197} style={{ objectFit: "contain" }} />
+      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 570, height: 400, border: "1px solid #d5e3ec", borderRadius: 24, background: "#ffffff", boxShadow: "0 18px 48px rgba(31, 73, 112, 0.12)" }}>
+        <img src={logoSrc} alt="" width={500} height={114} style={{ objectFit: "contain", position: "relative", left: 48, top: -7 }} />
       </div>
     </div>,
     size,
