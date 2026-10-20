@@ -9,6 +9,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 ### 19 de outubro de 2026
 
 - A página pública inclui a tag de verificação para acompanhar sua indexação no Google Search Console.
+- A imagem de compartilhamento mantém o logotipo completo na miniatura quadrada usada pelo WhatsApp.
 - A documentação deixa de repetir o nome da ferramenta de desenvolvimento fora do crédito público aprovado.
 - A prévia reúne as melhorias de navegação, responsividade, autenticação, solicitação, acompanhamento, autodepósito e ajuda para publicação no Pronto!; as telas públicas e do estudante, inclusive a demonstração, completam os textos nos seis idiomas disponíveis.
 - A navegação entre abas administrativas preserva a transição sem alterar estado durante a renderização; os testes de geração de PDF e recuperação de senha acompanham os fluxos atuais.

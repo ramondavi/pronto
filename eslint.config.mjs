@@ -3,7 +3,7 @@ import nextTypeScript from "eslint-config-next/typescript";
 import { globalIgnores } from "eslint/config";
 
 const config = [
-  globalIgnores([".next/**", "drizzle/**", "next-env.d.ts", "supabase/.temp/**"]),
+  globalIgnores([".next/**", "drizzle/**", "next-env.d.ts", "supabase/.temp/**", "out/**", "coverage/**", "playwright-report/**", "test-results/**", "output/**", "tmp/**"]),
   ...nextCoreWebVitals,
   ...nextTypeScript,
   {
