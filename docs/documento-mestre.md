@@ -790,3 +790,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 
 - Referência visual aprovada em 21/10: bloco do QR final no canto inferior esquerdo da página, margens esquerda e inferior de 20 pontos, QR vetorial de 58 pontos com legenda logo abaixo. Substitui o alinhamento anterior à margem da linha da ficha.
 - Degradês do feed: quando houver rolagem, aparecem durante hover, foco de teclado ou rolagem recente. Fora da interação, persistem somente na borda onde um cartão estiver parcialmente cortado pela área visível. O superior sempre some no topo e o inferior sempre some no fim; havendo espaço vazio ou intervalo entre cartões na borda, ela fica sem degradê em repouso.
+
+- Nos cabeçalhos da preparação do RI, diferenciar etapa pulada de etapa ainda bloqueada. Conta já confirmada na etapa 0 dispensa a etapa 1; conta e liberação corretas dispensam as etapas 1 a 3. Mostrar a justificativa abaixo do título, sem instruir a liberar uma etapa dispensada. Etapas bloqueadas indicam a resposta necessária na etapa 0, a confirmação da conta na etapa 1 ou a liberação na etapa 2, conforme o fluxo vigente.

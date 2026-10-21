@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Etapas dispensadas do preparo do RI indicam que foram puladas conforme a resposta da etapa 0, com justificativa; etapas ainda bloqueadas apontam a confirmação realmente necessária, evitando retornos desnecessários.
+
 - QR vetorial reposicionado no canto inferior esquerdo, com margens iguais e tamanho ajustado à referência. Degradês do feed acompanham interação e cartões cortados, desaparecendo no topo e no fim respectivos.
 
 - O preparo do RI remove o aviso de respostas salvas e permite optar por um lembrete por e-mail no segundo dia útil durante a espera de cadastro, liberação ou correção. A pessoa pode cancelar antes do envio; avançar no fluxo cancela lembretes pendentes.

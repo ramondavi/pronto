@@ -7024,3 +7024,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__reminder input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--institutional); }
 .repository-preparation__reminder svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
 .repository-preparation__reminder small { display: block; margin-top: 4px; color: var(--text-muted); font-size: .7rem; line-height: 1.5; }
+
+.repository-preparation .repository-preparation__step--skipped .browser-pdf-delivery__step-heading:disabled { opacity: 1; cursor: default; }
+.repository-preparation__step--skipped .browser-pdf-delivery__step-heading > svg { color: var(--text-muted); }
