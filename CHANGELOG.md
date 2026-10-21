@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Ações finais do preparo do autodepósito mais compactas, com destaque do guia somente após clicar no login. Traduções completas das novas orientações, respostas, modais, lembretes e confirmação de envio para os cinco idiomas adicionais do Pronto!.
+
 - O acesso destacado ao RI acompanha a resposta inicial: aparece como cadastro ou login no cabeçalho, ou como primeiro passo ao lado do início do guia quando a liberação já está correta.
 
 - Desativar o guia de um programa oculta o fluxo de autodepósito também para o acervo retrospectivo, bloqueando acesso direto e operações no banco. O guia passa a registrar a declaração de submissão para aguardar validação da Biblioteca. A ficha mostra até três autores na responsabilidade, separados por vírgula; com mais de três, primeiro autor e ... [et al.].

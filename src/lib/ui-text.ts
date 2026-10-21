@@ -1,3 +1,4 @@
+import { repositoryUiText } from "@/lib/repository-ui-text";
 import type { InterfaceLanguage } from "@/lib/interface-language";
 
 type Translations = Record<Exclude<InterfaceLanguage, "pt">, string>;
@@ -880,6 +881,6 @@ const text: Record<string, Translations> = {
 };
 
 export function uiText(language: InterfaceLanguage, source: string, values?: Record<string, string | number>): string {
-  const translated = language === "pt" ? source : text[source]?.[language] ?? source;
+  const translated = language === "pt" ? source : text[source]?.[language] ?? repositoryUiText[source]?.[language] ?? source;
   return values ? translated.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`)) : translated;
 }
