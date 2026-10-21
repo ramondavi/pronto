@@ -12,7 +12,7 @@ const LINE_HEIGHT = 12.6;
 const PARAGRAPH_GAP = LINE_HEIGHT;
 
 export type CardPdfColors = { background?: string; text?: string; publicUrl?: string; publicEmblem?: PDFImage };
-export const CARD_PUBLIC_LINK_BOUNDS = { x: 29, y: 20, width: 78, height: 84 } as const;
+export const CARD_PUBLIC_LINK_BOUNDS = { x: CARD_LEFT, y: 20, width: 50, height: 56 } as const;
 
 export function addCardPublicLink(page: PDFPage, url: string, bounds: { x: number; y: number; width: number; height: number } = CARD_PUBLIC_LINK_BOUNDS) {
   const context = page.doc.context;
@@ -30,7 +30,7 @@ export function addCardPublicLink(page: PDFPage, url: string, bounds: { x: numbe
 function drawCardQr(page: PDFPage, url: string, ink: RGB, emblem?: PDFImage) {
   const { x, y, width, height } = CARD_PUBLIC_LINK_BOUNDS;
   const qr = QRCode.create(url, { errorCorrectionLevel: "H" });
-  const size = 78;
+  const size = 50;
   const left = x + (width - size) / 2;
   const bottom = y + height - size;
   const moduleSize = size / (qr.modules.size + 8);
