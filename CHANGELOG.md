@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Grupos de três opções do preparo do RI passam a três colunas iguais em telas amplas, mantendo uma coluna em telas pequenas.
+
 - Etapas concluídas do preparo do RI mostram quadrado verde com check, como na geração da ficha. O número reaparece quando uma alteração desfaz a confirmação; etapas puladas mantêm sua indicação própria.
 
 - O contato durante a espera por confirmação do RI recebe campo de e-mail proporcional, cópia alinhada e orientação separada; removido o botão Escrever ao RI/UFBA.

@@ -816,3 +816,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Nos avisos de espera por confirmação/liberação do RI, apresentar o contato como campo compacto com rótulo, e-mail e cópia alinhados; orientação contextual em área própria abaixo, sem cartões de aviso aninhados. Retirar o botão “Escrever ao RI/UFBA”; preservar o endereço destacado e a cópia.
 
 - Indicadores de etapas do preparo do RI seguem a geração da ficha: conclusão substitui o número por check branco em quadrado verde. A etapa 0 conclui ao registrar a situação; a 1 exige conta confirmada; a 2 exige pedido enviado e liberação conferida; a 3 exige conferência final. O indicador é derivado das respostas atuais e dos pré-requisitos, voltando ao número quando a conclusão for desfeita. Etapas puladas preservam a indicação de dispensa, sem check de conclusão.
+
+- No preparo do RI, grupos com três opções usam três colunas iguais lado a lado acima de 700 px, sem ampliar a última opção para uma linha inteira. Em telas pequenas, preservar uma coluna; grupos com duas opções mantêm duas colunas em telas amplas.
