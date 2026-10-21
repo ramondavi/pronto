@@ -50,7 +50,7 @@ export function CatalogingCardHomologation({ requestId, snapshot, homologatedAt,
     <div className="cataloging-homologation__top">
       <div className="cataloging-homologation__decision">
         <div className="cataloging-homologation__heading"><AppIcon name={homologatedAt ? "check" : "review"} /><div><strong>{homologatedAt ? "Ficha homologada" : "Homologação da ficha"}</strong><p>{homologatedAt ? `Decisão registrada em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(homologatedAt))}.` : "Registre a versão da ficha aprovada pela biblioteca."}</p></div></div>
-        {!homologatedAt && canHomologate && <label className="check"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> Conferi os nomes, a descrição física, os assuntos, a CDU, o Cutter e o conteúdo da ficha.</label>}
+        {!homologatedAt && canHomologate && <label data-no-field-help className="check"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> Conferi os nomes, a descrição física, os assuntos, a CDU, o Cutter e o conteúdo da ficha.</label>}
         {error && <p className="form-error" role="alert">{error}</p>}
       </div>
       <div className="cataloging-homologation__controls">
@@ -58,7 +58,7 @@ export function CatalogingCardHomologation({ requestId, snapshot, homologatedAt,
           <div className={homologatedAt ? "is-ready" : ""}><AppIcon name={homologatedAt ? "check" : "review"} /><span>Ficha</span><strong>{homologatedAt ? "Homologada" : "Por homologar"}</strong></div>
           <div className={nadaConstaApproved ? "is-ready" : ""}><AppIcon name={nadaConstaApproved ? "check" : "document"} /><span>Nada Consta</span><strong>{nadaConstaApproved ? "Aprovado" : "Por aprovar"}</strong></div>
         </div>
-        {!homologatedAt && <button className="button button--primary cataloging-homologation__action" type="button" disabled={!canHomologate || !confirmed || busy} onClick={() => setConfirming(true)}><span><strong>{busy ? "Homologando…" : "Homologar ficha catalográfica"}</strong>{!canHomologate && pendingReason && <small className={pendingReason.startsWith("Complete os campos pendentes") ? "is-compact" : undefined}>{pendingReason}</small>}{canHomologate && !confirmed && <small>Confirme a revisão à esquerda.</small>}</span><AppIcon name={canHomologate ? "check" : "lock"} /></button>}
+        {!homologatedAt && <button className="button button--primary cataloging-homologation__action" type="button" disabled={!canHomologate || !confirmed || busy} onClick={() => setConfirming(true)}><span><strong>{busy ? "Homologando…" : "Homologar ficha catalográfica"}</strong>{!canHomologate && pendingReason && <small className={pendingReason.startsWith("Complete os campos pendentes") ? "is-compact" : undefined}>{pendingReason}</small>}{canHomologate && !confirmed && <small>Marque a confirmação de revisão.</small>}</span><AppIcon name={canHomologate ? "check" : "lock"} /></button>}
         <p className="cataloging-homologation__release">Liberação: ficha homologada + Nada Consta aprovado.</p>
       </div>
     </div>

@@ -32,4 +32,6 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 
 - Vercel confirmou Ready para o commit `9053cbf`, deployment `JDRTseiGvQZEAroGFGWj8wLLD4gU`, na branch `codex/ajustes-administracao-remota`. Inclui correção do hover; nenhuma publicação em produção ou abertura de PR.
 
-- Em preparação: organização móvel da fila e análise, revisão navegável dos campos, atualização do protocolo aberto após correções e conteúdos didáticos do acervo retrospectivo com programa fixo. Sem novas migrações nesta alteração. Testes adiados até solicitação de PR.
+- Publicado na prévia (`2652f20`): organização móvel da fila e análise, revisão navegável dos campos, atualização do protocolo aberto após correções e conteúdos didáticos do acervo retrospectivo com programa fixo. Sem novas migrações nesta alteração. Testes adiados até solicitação de PR.
+
+- Publicação dos ajustes da fila/acervo confirmada pela Vercel como Ready: `FPnwaxk7hb9QXCvyJuDKH8jgdwpZ`, commit `2652f20`, branch de publicação `codex/ajustes-administracao-remota`. Sem testes funcionais nesta etapa, conforme combinado.

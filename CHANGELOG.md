@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 20 de outubro de 2026
 
+- A homologação usa orientação de confirmação adequada a qualquer largura e dispensa ajuda nesse checkbox; o menu móvel se alinha ao botão de abertura. A seleção de tipos de nota conforme AACR2 foi registrada como pendência futura.
+
 - Cartões da fila, ordenação, títulos, ajudas e menus recebem ajustes para telas pequenas. A análise ganha revisão dos campos com atalhos e atualização automática das correções recebidas, preservando edições em outros campos.
 - O acervo retrospectivo ganha orientações por etapa, identificação da secretaria como responsável pelo envio e RAU+E definida na submissão; o encerramento é apresentado como ação da Biblioteca.
 
