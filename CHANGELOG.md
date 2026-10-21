@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Informar destino incorreto no modal da etapa 0 seleciona automaticamente a resposta de liberação em outro destino e abre a correção. O roteiro dos modais começa pelo login no RI/UFBA e pelo botão Iniciar um novo depósito.
+
 - O cadastro no RI aguarda 120 segundos e então pergunta se a conta foi confirmada, sem avanço automático. Respostas de espera exibem contato e lembrete opcional com data e hora; pedidos de liberação/correção seguem a mesma confirmação explícita, sem temporizador. Orientações e modais recebem passos numerados, e o retorno redundante foi removido.
 
 - Etapas dispensadas do preparo do RI indicam que foram puladas conforme a resposta da etapa 0, com justificativa; etapas ainda bloqueadas apontam a confirmação realmente necessária, evitando retornos desnecessários.

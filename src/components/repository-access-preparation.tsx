@@ -177,9 +177,11 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
     destinationDialog.current?.close();
   }
   function requestDestinationCorrection() {
+    const fromInitialStep = pendingDecision?.context === "access";
     setPendingDecision(null);
     destinationDialog.current?.close();
-    wrongDestination();
+    if (fromInitialStep) route("wrong");
+    else wrongDestination();
   }
   function confirmDestination() {
     const decision = pendingDecision;
@@ -256,10 +258,11 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
     <dialog ref={destinationDialog} className="pronto-modal account-confirm-dialog repository-preparation__destination-dialog" aria-labelledby={destinationTitle} onCancel={(event) => { event.preventDefault(); dismissDestination(); }}>
       <ModalCloseButton onClick={dismissDestination} />
       <div className="account-confirm-dialog__heading"><span><AppIcon name="review" /></span><h2 id={destinationTitle}>{t(pendingDecision?.wrong ? "Seu acesso precisa de correção?" : pendingDecision?.context === "final" ? "Seu acesso está correto para começar?" : pendingDecision?.context === "release" ? "Confira a liberação recebida" : "Confirme seu acesso para este trabalho")}</h2></div>
-      <p>{t(pendingDecision?.wrong ? "Compare o acesso disponível na sua conta com os dois valores esperados abaixo." : "Abra sua conta no RI/UFBA e faça estas duas verificações antes de confirmar.")}</p>
+      <p>{t(pendingDecision?.wrong ? "Compare o acesso disponível na sua conta com os dois valores esperados abaixo." : "Siga estes passos no RI/UFBA antes de confirmar seu acesso.")}</p>
       <ol className="repository-preparation__verification">
-        <li><span className="repository-preparation__verification-number">1</span><div><h3><AppIcon name="hierarchy" />{t("Confira a coleção")}</h3><p>{t("Na tela “Depósito: Escolha uma coleção”, verifique se o campo “Coleção” permite escolher este caminho completo:")}</p><strong className="repository-preparation__expected">{setup.collection}</strong></div></li>
-        <li><span className="repository-preparation__verification-number">2</span><div><h3><AppIcon name="document" />{t("Confira o tipo de documento")}</h3><p>{t("Na primeira tela “Depósito: descreva este item”, verifique se o campo “Tipo de documento” permite selecionar:")}</p><strong className="repository-preparation__expected">{setup.documentType}</strong></div></li>
+        <li><span className="repository-preparation__verification-number">1</span><div><h3><AppIcon name="person" />{t("Faça login e inicie um depósito")}</h3><p>{t("Entre na sua conta do RI/UFBA. Em Meu espaço, clique no botão verde “Iniciar um novo depósito”.")}</p><a className="button button--secondary button--small button--with-icon" href="https://repositorio.ufba.br/mydspace" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t("Fazer login no RI/UFBA")}</a></div></li>
+        <li><span className="repository-preparation__verification-number">2</span><div><h3><AppIcon name="hierarchy" />{t("Confira a coleção")}</h3><p>{t("Na tela “Depósito: Escolha uma coleção”, verifique se o campo “Coleção” permite escolher este caminho completo:")}</p><strong className="repository-preparation__expected">{setup.collection}</strong></div></li>
+        <li><span className="repository-preparation__verification-number">3</span><div><h3><AppIcon name="document" />{t("Confira o tipo de documento")}</h3><p>{t("Na primeira tela “Depósito: descreva este item”, verifique se o campo “Tipo de documento” permite selecionar:")}</p><strong className="repository-preparation__expected">{setup.documentType}</strong></div></li>
       </ol>
       <aside className="repository-preparation__info"><AppIcon name="help" /><p>{t(pendingDecision?.wrong ? "Se o acesso disponível for diferente do destino esperado, confirme abaixo para preparar o pedido de correção ao RI/UFBA. Se quiser rever o que informou, volte à resposta." : "Confirme se consegue iniciar o depósito com esses dois valores. Se o acesso estiver em outro destino, escolha pedir a correção. Se ainda não conseguiu conferir, feche esta janela para voltar à pergunta.")}</p></aside>
       <div className="account-confirm-dialog__actions"><button type="button" className="button button--secondary" onClick={pendingDecision?.wrong ? dismissDestination : requestDestinationCorrection}>{t(pendingDecision?.wrong ? "Voltar e rever minha resposta" : "Não, preciso corrigir o acesso")}</button><button type="button" className="button button--primary" onClick={confirmDestination}>{t(pendingDecision?.wrong ? "Sim, preciso solicitar a correção" : "Sim, os dois valores estão corretos")}</button></div>
