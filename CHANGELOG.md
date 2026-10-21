@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Removida a confirmação redundante de login no rodapé: após conferir o destino na janela da etapa 0, a pessoa pode iniciar diretamente o guia.
+
 - O Passo 1 do acesso ao RI exige confirmação de login por checkbox antes de mostrar o início do guia; ícones ampliados e alinhados à esquerda nas duas fases.
 
 - Orientação final do preparo do RI volta à coluna esquerda do botão, com quebra de linha e alinhamento vertical centralizado.

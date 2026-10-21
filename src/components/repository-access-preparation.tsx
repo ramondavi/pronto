@@ -36,8 +36,6 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const [savedSnapshot, setSavedSnapshot] = useState("");
   const [hasConflict, setHasConflict] = useState(false);
   const [clock, setClock] = useState(() => Date.now());
-  const [repositoryLoginOpened, setRepositoryLoginOpened] = useState(false);
-  const [repositoryLoginConfirmed, setRepositoryLoginConfirmed] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
   const destinationDialog = useRef<HTMLDialogElement>(null);
@@ -125,8 +123,6 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   }, [loaded, snapshot, persist]);
   function update(next: AccessPreparation, step?: number) {
     setState(next);
-    setRepositoryLoginOpened(false);
-    setRepositoryLoginConfirmed(false);
     if (step !== undefined) setTimeout(() => document.getElementById(`repository-preparation-${step}`)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" }), 320);
   }
   function scrollToStart() {
@@ -243,7 +239,6 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const directStart = loaded && state.route === "ready";
   const showHeaderAccess = loaded && state.route !== "" && !directStart;
   const creatingAccount = state.route === "none";
-  const showLoginStep = directStart && !repositoryLoginConfirmed;
   const repositoryAccessButton = <a key={state.route} className="button button--primary repository-preparation__login repository-preparation__start--highlight" href="https://repositorio.ufba.br/mydspace" target="_blank" rel="noopener noreferrer"><AppIcon name={creatingAccount ? "account" : "external"} /><span><strong>{t(creatingAccount ? "Fazer cadastro no RI/UFBA" : "Fazer login no RI/UFBA")}</strong><small>{t(creatingAccount ? "Abra o RI/UFBA e faça seu cadastro. Depois, volte aqui para confirmar a conta e continuar as etapas." : "Faça login na nova aba. Depois, volte aqui e alterne entre as abas para conferir cada etapa.")}</small></span></a>;
 
   return <section className="panel repository-preparation"><header className={`repository-preparation__header${showHeaderAccess ? "" : " repository-preparation__header--without-access"}`}><div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="upload" /></span><div><p className="eyebrow">{t("Antes de começar")}</p><h2>{t("Prepare sua conta e a liberação para depositar no RI/UFBA")}</h2><p>{t("Responda às perguntas de cada etapa. Sua resposta define o próximo passo; reabra uma etapa para conferir ou alterar o que informou.")}</p></div></div>{showHeaderAccess && repositoryAccessButton}</header>
@@ -268,14 +263,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
       </div></AnimatedPreparationContent></div></div></div>
       </section>;
     })}</div>
-    <footer className="repository-preparation__footer"><div className="repository-preparation__notice"><AppIcon name={ready ? "check" : "help"} /><p>{t(ready ? "Liberação para depositar confirmada. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas respostas ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação para depositar.")}</p></div><div className="repository-preparation__actions">{showLoginStep ? <div role="group" aria-label={t("Passo 1")} className={`repository-preparation__login-confirmation${ready && !starting && !hasConflict ? " repository-preparation__action--pulse" : ""}`}><button ref={startButtonRef} className="button button--primary cataloging-homologation__action" disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => {
-      window.open("https://repositorio.ufba.br/mydspace", "_blank", "noopener,noreferrer");
-      setRepositoryLoginOpened(true);
-    }}><AppIcon name="external" /><span><small className="repository-preparation__action-step">{t("Passo 1")}</small><strong>{t("Fazer login no RI/UFBA")}</strong><small>{t("Entre na nova aba e volte para confirmar o login abaixo.")}</small></span></button><label className="repository-preparation__login-check"><input type="checkbox" checked={repositoryLoginConfirmed} disabled={!repositoryLoginOpened || !ready || starting || hasConflict} onChange={(event) => {
-      if (!event.target.checked) return;
-      setRepositoryLoginConfirmed(true);
-      requestAnimationFrame(() => startButtonRef.current?.focus({ preventScroll: true }));
-    }} /><span>{t("Confirmo que fiz login no RI/UFBA")}</span></label></div> : <button ref={startButtonRef} className={`button button--primary cataloging-homologation__action${directStart && ready && !starting && !hasConflict ? " repository-preparation__action--pulse" : ""}`} disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><AppIcon name={ready ? "upload" : "lock"} /><span>{directStart && <small className="repository-preparation__action-step">{t("Passo 2")}</small>}<strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação para depositar no destino correto para começar." : "Confirme a conta e a liberação para depositar no RI/UFBA para começar.")}</small>}</span></button>}</div><small role="status">{t(preview ? "Demonstração: respostas não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando respostas…" : "")}</small></footer>
+    <footer className="repository-preparation__footer"><div className="repository-preparation__notice"><AppIcon name={ready ? "check" : "help"} /><p>{t(ready ? "Liberação para depositar confirmada. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas respostas ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação para depositar.")}</p></div><div className="repository-preparation__actions"><button ref={startButtonRef} className={`button button--primary cataloging-homologation__action${directStart && ready && !starting && !hasConflict ? " repository-preparation__action--pulse" : ""}`} disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><AppIcon name={ready ? "upload" : "lock"} /><span><strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação para depositar no destino correto para começar." : "Confirme a conta e a liberação para depositar no RI/UFBA para começar.")}</small>}</span></button></div><small role="status">{t(preview ? "Demonstração: respostas não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando respostas…" : "")}</small></footer>
     <dialog ref={destinationDialog} className="pronto-modal account-confirm-dialog repository-preparation__destination-dialog" aria-labelledby={destinationTitle} onCancel={(event) => { event.preventDefault(); dismissDestination(); }}>
       <ModalCloseButton onClick={dismissDestination} label={t("Fechar janela")} />
       <div className="account-confirm-dialog__heading"><span><AppIcon name="review" /></span><h2 id={destinationTitle}>{t(pendingDecision?.wrong ? "Sua liberação para depositar precisa de correção?" : pendingDecision?.context === "final" ? "Sua liberação para depositar está correta para começar?" : pendingDecision?.context === "release" ? "Confira a liberação para depositar recebida" : "Confirme a liberação para depositar este trabalho")}</h2></div>

@@ -7102,21 +7102,13 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__header--without-access { grid-template-columns: minmax(0,1fr); }
 .repository-preparation__actions { display: grid; justify-content: end; grid-template-columns: minmax(230px,340px); gap: 14px; }
 .repository-preparation__actions .cataloging-homologation__action { max-width: none; min-width: 0; scroll-margin-block: 40px; }
-.repository-preparation__action-step { display: block; font-size: .72rem; font-weight: 700; margin-bottom: 4px; }
 @media (max-width: 700px) { .repository-preparation__actions { grid-template-columns: minmax(0,1fr); } }
 .repository-preparation__actions .cataloging-homologation__action > span > strong { white-space: normal; }
 
 
 .repository-preparation__actions > .button { min-height: 64px; padding: 10px 14px; font-size: .82rem; }
-.repository-preparation__actions .repository-preparation__action-step { margin-bottom: 2px; font-size: .67rem; }
 .repository-preparation__action--pulse { animation: preparation-start-highlight 1s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .repository-preparation__action--pulse { animation: none; outline: 3px solid var(--institutional); outline-offset: 4px; } }
 
 .repository-preparation__actions .cataloging-homologation__action { justify-content: flex-start; gap: 14px; padding: 12px 16px; }
 .repository-preparation__actions .cataloging-homologation__action > svg { flex: 0 0 26px; width: 26px; height: 26px; }
-.repository-preparation__login-confirmation { min-width: 0; border: 1px solid var(--text); border-radius: var(--radius-sm); background: var(--text); color: var(--bg); }
-.repository-preparation__login-confirmation > .button { width: 100%; border: 0; border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: transparent; color: inherit; font-size: .82rem; }
-.repository-preparation__login-confirmation > .button:hover { background: color-mix(in srgb,var(--bg) 10%,transparent); color: inherit; transform: none; box-shadow: none; }
-.repository-preparation__login-check { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding: 11px 16px; border-top: 1px solid color-mix(in srgb,var(--bg) 25%,transparent); color: inherit; font-size: .73rem; font-weight: 600; line-height: 1.45; cursor: pointer; }
-.repository-preparation__login-check input { flex: 0 0 16px; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--institutional); }
-.repository-preparation__login-check:has(input:disabled) { opacity: .65; cursor: not-allowed; }
