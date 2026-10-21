@@ -75,7 +75,7 @@ O estudante só pode solicitar ficha para trabalho já apresentado/defendido e a
 - Decisão aprovada em 20/10/2026: conta institucional dedicada da secretária, concedida por administrador, pode solicitar várias fichas simultâneas exclusivamente para trabalhos já defendidos e aprovados de edições anteriores da RAU+E. O e-mail por si só não concede acesso.
 - A secretária representa os autores, sem usar seu próprio CPF, nascimento ou nome como dados de autoria; informa os metadados e a matrícula do vínculo acadêmico de cada trabalho. A conta institucional deve estar confirmada.
 - Esses protocolos têm dispensa explícita de Nada Consta, preservam a homologação bibliotecária e permitem correções e entrega individual das fichas. A exceção fica registrada no protocolo e não alcança estudantes comuns.
-- A secretária informa no Pronto! a URL permanente de cada publicação no RI/UFBA. A biblioteca confere o endereço informado antes de concluir cada protocolo.
+- A secretária informa no Pronto! a URL permanente de cada publicação no RI/UFBA. O depósito retrospectivo permanece disponível independentemente da ativação do guia dos pedidos comuns do programa. A biblioteca confere o endereço informado antes de concluir cada protocolo.
 - Após concluir o lote, um administrador confirma o encerramento do acesso; todos os protocolos devem estar concluídos ou cancelados e ao menos um concluído. A conta fica inativa, com histórico preservado. Não há encerramento automático entre remessas.
 
 ### 4.2. Bibliotecário Catalogador

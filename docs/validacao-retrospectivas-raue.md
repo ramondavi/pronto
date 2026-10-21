@@ -1,26 +1,26 @@
 # Acesso provisório da secretaria da RAU+E
 
-Preparado em 20/10/2026, sobre a master `dbfe82c`, em área isolada. A decisão de dispensar Nada Consta e encerrar o acesso por confirmação administrativa foi aprovada nesta conversa.
+Preparado em 20/10/2026 sobre a master `dbfe82c`, em área isolada. A dispensa de Nada Consta e o encerramento administrativo do lote foram aprovados pelo responsável.
 
-## Escopo
+## Escopo e provisionamento
 
-- Conta institucional confirmada, dedicada ao lote e concedida por administrador.
-- Vários protocolos simultâneos, exclusivamente da RAU+E, com autoria própria de cada trabalho e dispensa persistida de Nada Consta.
-- Ficha homologada pela biblioteca; URL do RI informada pela secretaria e conferida pela biblioteca antes da conclusão.
-- Encerramento administrativo após terminar as remessas, com pelo menos um protocolo concluído e nenhum aberto; inativação imediata por RLS e preservação do histórico.
-- A conta real indicada pelo responsável ainda não foi provisionada nem ativada remotamente. Nenhum dado ou segredo de produção foi consultado.
+- Conta institucional confirmada e dedicada ao lote, concedida por administrador em Administração → Operação → Contas → Acesso provisório da secretaria da RAU+E.
+- A conta deve existir no Supabase da prévia antes da concessão; o administrador informa seu nome e e-mail. O endereço sozinho não concede acesso.
+- Vários protocolos simultâneos exclusivamente da RAU+E, com autoria própria de cada trabalho, dispensa persistida de Nada Consta e homologação bibliotecária.
+- A secretaria informa a URL permanente do RI; a biblioteca confere antes de concluir. O depósito retrospectivo independe da ativação do guia dos pedidos comuns.
+- O administrador encerra o lote após terminar as remessas, com ao menos um protocolo concluído e nenhum aberto. A conta fica inativa por RLS, preservando o histórico.
+- Por orientação do responsável, não foi criada conta real, definida senha ou enviado convite à secretaria. O próprio responsável fará o provisionamento na prévia; a produção ficará para publicação posterior.
 
-## Evidências locais
+## Publicação e evidências
 
-- 123 testes da aplicação aprovados; verificação de tipos aprovada; lint sem erros, com 14 avisos preexistentes nos componentes existentes.
-- Compilação de produção aprovada pelo método padrão. A raiz de resolução das dependências foi ajustada temporariamente para o teste da área isolada e restaurada ao terminar; a configuração versionada permanece preservada.
-- Todas as migrações de esquema executadas em PostgreSQL em memória (PGlite). Serviços de Auth e Storage foram representados por estruturas locais; cron, rede, Vault e entrega real de e-mails não foram executados.
-- Os 24 casos de `supabase/tests/database/retrospective_raue.test.sql` passaram nesse banco: concessão administrativa, isolamento de contas, dois pedidos ativos, ausência de nascimento fictício, restrição à RAU+E, limite preservado para estudantes comuns, entrega sem Nada Consta, URL do RI, conferência profissional e inativação.
-- Prévia com respostas fictícias de autenticação e dados: lista de protocolos, abertura do formulário sem nascimento pessoal, envio de um terceiro pedido, rejeição de URL externa e aceitação de URL do RI; computador e celular sem excesso horizontal. Esta etapa não usa o Supabase hospedado.
-- Captura consolidada: `tmp/retrospective-preview/consolidada.png`; capturas individuais na mesma pasta. O ambiente de desenvolvimento apresentou aviso de hidratação em comportamento já existente do cabeçalho.
+- Publicado na branch `codex/ajustes-administracao-remota`, associada ao endereço de prévia indicado pelo responsável. A Vercel confirmou a implantação como Preview.
+- Conferido o endereço público de banco específico dessa branch: projeto Supabase Pronto! Prévia. O banco principal foi preservado.
+- As migrações `202610210000_retrospective_raue.sql` e `202610210001_retrospective_repository_access.sql` foram aplicadas somente na prévia, no escopo autorizado pelo responsável. A segunda preserva a migração incorporada e corrige o bloqueio encontrado com o guia comum desativado.
+- 123 testes da aplicação aprovados; verificação de tipos e lint aprovados, sem novos avisos. A compilação padrão da entrega inicial passou localmente e na Vercel; a correção complementar é acompanhada pela implantação da mesma branch.
+- Os 24 casos de `supabase/tests/database/retrospective_raue.test.sql` passaram também no banco remoto de prévia, com pgTAP real, em transação revertida. Incluem isolamento, vários pedidos, nascimento, limitação dos estudantes comuns, entrega sem Nada Consta, depósito com guia comum desativado, conferência profissional e inativação.
+- O executor pg_prove depende do Docker indisponível; o mesmo SQL de teste foi executado pela consulta oficial do banco, capturando cada resultado pgTAP e revertendo todos os dados fictícios. Resultado: 24 verificações, zero falhas.
+- A prévia local com respostas fictícias de Auth e dados foi conferida em computador e celular: lista, formulário sem nascimento pessoal, terceiro pedido e rejeição/aceitação de URL. Captura: `tmp/retrospective-preview/consolidada.png`. Houve aviso preexistente de hidratação do cabeçalho no desenvolvimento.
 
-## Ativação futura
+## Limites
 
-A migração `202610210000_retrospective_raue.sql` deve ser revisada e aplicada antes do novo código. Ela cria as concessões e os relatos de publicação, marca os pedidos retrospectivos e adapta as funções de submissão, entrega e encerramento. O CPF continua obrigatório para perfis estudantis comuns; somente a representação administrativa dedicada admite sua ausência. Nenhuma conta recebe acesso apenas pelo endereço de e-mail.
-
-A aplicação remota exige explicação de impacto e confirmação explícita. Depois dela, conferir a conta institucional confirmada, conceder o acesso na gestão de contas e testar a integração e as comunicações na hospedagem. Não foi aberto PR nesta etapa.
+A confirmação de recebimento de e-mails, a entrada com a conta real da secretaria e a publicação em produção não foram executadas. Não houve envio de convite. Os testes não modificaram dados reais, segredos ou configuração dos pedidos comuns. Não foi aberto PR nesta etapa.

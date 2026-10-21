@@ -57,7 +57,7 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
   const { data: revisionData } = await supabase.from("request_revision_rounds").select("id, round_number, returned_at, responded_at, issues:request_field_issues(field_key, field_label, justification, original_value), corrections:request_corrections(field_key, corrected_value, submitted_at)").eq("request_id", request.id).order("round_number", { ascending: false });
   const { data: nadaConsta } = await supabase.from("nada_consta_documents").select("original_name, size_bytes, status, rejection_reason, validated_at").eq("request_id", request.id).order("uploaded_at", { ascending: false }).limit(1).maybeSingle();
   const { data: homologation } = await supabase.from("cataloging_card_homologations").select("snapshot, homologated_at, public_token").eq("request_id", request.id).maybeSingle();
-  const baseProgress = studentRequestProgress(request.status, request.retrospective ? "approved" : nadaConsta?.status ?? null, Boolean(homologation), language, program?.repository_deposit_enabled === true);
+  const baseProgress = studentRequestProgress(request.status, request.retrospective ? "approved" : nadaConsta?.status ?? null, Boolean(homologation), language, request.retrospective || program?.repository_deposit_enabled === true);
   const helpSlug = studentOverviewHelpSlug(request.status, nadaConsta?.status ?? null, Boolean(homologation), program?.repository_deposit_enabled === true);
   const helpCandidate = helpSlug ? (await getPublishedKnowledge()).find((entry) => entry.kind === "article" && entry.slug === helpSlug) : null;
   const helpArticle = studentHelpAllowedForProgram(helpCandidate, program?.repository_deposit_enabled === true) ? helpCandidate : null;
@@ -103,7 +103,7 @@ export default async function StudentRequestPage({ searchParams }: { searchParam
       {request.status !== "approved" && <p className="student-delivery-case-header__sla"><AppIcon name="calendar" />{t("Prazo de referência")}: <RequestSlaEstimate submittedAt={request.submitted_at} businessDays={program?.service_level_business_days ?? null} closures={closures} status={request.status} /></p>}
     </header> : null}
     {cardReleased && homologation?.snapshot && <BrowserPdfDelivery snapshot={homologation.snapshot as unknown as CatalogingCardSnapshot} publicToken={homologation.public_token} />}
-    {cardReleased && program?.repository_deposit_enabled && <BrowserPdfDeliveryFollowup repositoryDepositEnabled href={request.retrospective ? `/painel/autodeposito?pedido=${request.id}` : undefined} />}
+    {cardReleased && (request.retrospective || program?.repository_deposit_enabled) && <BrowserPdfDeliveryFollowup repositoryDepositEnabled href={request.retrospective ? `/painel/autodeposito?pedido=${request.id}` : undefined} />}
     {request.status !== "completed" && correctionsPending && revisionStage}
     {request.status !== "completed" && nadaStage}
     {request.status !== "completed" && !correctionsPending && revisionStage}

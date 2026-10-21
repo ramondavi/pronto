@@ -20,6 +20,9 @@ create function pg_temp.retrospective_payload(registration text, work_title text
  'cancellationAcknowledged',true,'sharedFileUnchangedConfirmed',true,'defendedAndApproved',true,'finalFileConfirmed',true,'approvalPageConfirmed',true);
 $$;
 
+-- A configuração real da prévia mantém o guia comum da RAU+E desativado.
+update public.academic_programs set repository_deposit_enabled=false where code='athdc-specialization';
+
 set local role authenticated;
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000003';
 select ok(not public.has_retrospective_access(),'estudante comum não recebe exceção');
@@ -51,6 +54,9 @@ alter table public.cataloging_card_homologations enable trigger user;
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000001';
 update public.cataloging_requests set status='approved' where title='Retrospectivo primeiro';
 update public.cataloging_requests set status='canceled' where title='Retrospectivo segundo';
+-- A configuração real da prévia mantém o guia comum da RAU+E desativado.
+update public.academic_programs set repository_deposit_enabled=false where code='athdc-specialization';
+
 set local role authenticated;
 select throws_ok($$select public.end_retrospective_access('a1000000-0000-4000-8000-000000000002')$$,'P0001','retrospective_batch_not_finished','administrador não encerra lote com protocolo aberto');
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000002';

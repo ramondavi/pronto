@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 20 de outubro de 2026
 
+- O depósito dos pedidos retrospectivos da RAU+E permanece disponível mesmo quando o guia dos pedidos comuns está desativado.
+
 - A secretaria da RAU+E recebe acesso provisório para várias fichas retrospectivas, com dispensa de Nada Consta, indicação individual das publicações no RI e inativação administrativa após concluir o lote.
 
 ### 19 de outubro de 2026
