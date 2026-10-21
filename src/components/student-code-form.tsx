@@ -13,7 +13,7 @@ const initialVerify: StudentCodeVerifyState = { error: "" };
 const cooldownSeconds = 90;
 const storageKey = "pronto-student-code";
 
-export function StudentCodeForm() {
+export function StudentCodeForm({ next }: { next?: string }) {
   const { language } = useInterfaceLanguage();
   const t = (source: string) => uiText(language, source);
   const [request, sendCode, sending] = useActionState(requestStudentCode, initialRequest);
@@ -47,31 +47,31 @@ export function StudentCodeForm() {
 
   if (activeEmail) return <div className="auth-flow">
     <p className="auth-feedback" role="status"><AppIcon name="check" />{t(request.status === "sent" ? request.message : "Digite o código enviado ao seu e-mail institucional.")}</p>
-    <form className="form-stack auth-form" action={confirmCode}>
+    <form className="form-stack auth-form" action={confirmCode}>{next && <input type="hidden" name="next" value={next} />}
       <input type="hidden" name="email" value={activeEmail} />
       <label>{t("Código recebido por e-mail")}<input className="auth-code-input" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,8}" maxLength={8} required autoFocus placeholder={t("Digite o código")} /></label>
       {verification.error && <p className="auth-feedback auth-feedback--error" role="alert">{t(verification.error)}</p>}
       <button className="button button--primary button--full" type="submit" disabled={confirming}>{confirming ? t("Conferindo…") : t("Confirmar código")}</button>
     </form>
-    <form className="auth-resend" action={sendCode}>
+    <form className="auth-resend" action={sendCode}>{next && <input type="hidden" name="next" value={next} />}
       <input type="hidden" name="email" value={activeEmail} />
       <p>{t("Não recebeu o e-mail?")}</p>
       <button className={`button button--secondary button--full auth-code-resend__button${counting ? " account-page__password-link-button--counting" : ""}`} type="submit" disabled={sending || counting} aria-live="polite"><span>{sendLabel}</span><AppIcon name={counting ? "check" : "arrowRight"} />{counting && <span className="account-page__password-link-progress" aria-hidden="true" style={{ width: `${remaining / cooldownSeconds * 100}%` }} />}</button>
       {request.error && <p className="auth-feedback auth-feedback--error" role="alert">{t(request.error)}</p>}
     </form>
     <div className="auth-flow__links">
-      <button className="auth-flow__back" type="button" onClick={() => { sessionStorage.removeItem(storageKey); window.location.assign("/entrar/codigo"); }}><AppIcon name="undo" />{t("Usar outro e-mail")}</button>
-      <Link className="auth-flow__back" href="/entrar"><AppIcon name="undo" />{t("Voltar ao login com senha")}</Link>
+      <button className="auth-flow__back" type="button" onClick={() => { sessionStorage.removeItem(storageKey); window.location.assign(next ? `/entrar/codigo?next=${encodeURIComponent(next)}` : "/entrar/codigo"); }}><AppIcon name="undo" />{t("Usar outro e-mail")}</button>
+      <Link className="auth-flow__back" href={next ? `/entrar?next=${encodeURIComponent(next)}` : "/entrar"}><AppIcon name="undo" />{t("Voltar ao login com senha")}</Link>
     </div>
   </div>;
 
   return <div className="auth-flow">
-    <form className="form-stack auth-form" action={sendCode}>
+    <form className="form-stack auth-form" action={sendCode}>{next && <input type="hidden" name="next" value={next} />}
       <label>{t("E-mail institucional")}<InstitutionalEmailInput /></label>
       <p className="auth-field-hint">{t("Use o e-mail da sua conta estudantil cadastrada.")}</p>
       {request.error && <p className="auth-feedback auth-feedback--error" role="alert">{t(request.error)}</p>}
       <button className="button button--primary button--full" type="submit" disabled={sending}>{sending ? t("Enviando…") : t("Enviar código")}</button>
     </form>
-    <Link className="auth-flow__back" href="/entrar"><AppIcon name="undo" />{t("Voltar ao login com senha")}</Link>
+    <Link className="auth-flow__back" href={next ? `/entrar?next=${encodeURIComponent(next)}` : "/entrar"}><AppIcon name="undo" />{t("Voltar ao login com senha")}</Link>
   </div>;
 }

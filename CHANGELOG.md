@@ -8,6 +8,12 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 20 de outubro de 2026
 
+- O TFG passa a admitir até três autores, com ordenação como na RAU+E. Na secretaria, a matrícula é identificada como a do primeiro autor, a representante não pode integrar a autoria e o protocolo enviado oferece novo pedido em destaque. O botão de envio preserva contraste ao passar o mouse.
+
+- Em preparação: relação de depósitos posteriores ao encerramento, com confirmação histórica, lembretes individuais ou em lotes após habilitação do guia e registro da URL conferida pela biblioteca.
+- Pessoas já autenticadas são encaminhadas ao painel ao abrir a entrada; o guia do trabalho é preservado como destino após o login.
+- Título e descrição públicos passam a identificar fichas catalográficas e autodepósito, com metadados de busca e compartilhamento consistentes.
+
 - O depósito dos pedidos retrospectivos da RAU+E permanece disponível mesmo quando o guia dos pedidos comuns está desativado.
 
 - A secretaria da RAU+E recebe acesso provisório para várias fichas retrospectivas, com dispensa de Nada Consta, indicação individual das publicações no RI e inativação administrativa após concluir o lote.

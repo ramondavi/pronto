@@ -97,6 +97,8 @@ export const catalogingRequests = pgTable("cataloging_requests", {
   academicEnrollmentId: uuid("academic_enrollment_id").references(() => academicEnrollments.id, { onDelete: "restrict" }).notNull(),
   protocol: text("protocol").notNull().unique(),
   retrospective: boolean("retrospective").default(false).notNull(),
+  repositoryGuideEnabledAtCompletion: boolean("repository_guide_enabled_at_completion"),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
   status: requestStatus("status").default("submitted").notNull(),
   assignedTo: uuid("assigned_to").references(() => profiles.id, { onDelete: "restrict" }),
   assignedAt: timestamp("assigned_at", { withTimezone: true }),
@@ -460,4 +462,11 @@ export const staffMessages = pgTable("staff_messages", {
   body: text("body").notNull(),
   readAt: timestamp("read_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const repositoryDepositReminders = pgTable("repository_deposit_reminders", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  outboxId: uuid("outbox_id").notNull().unique().references(() => emailOutbox.id, { onDelete: "restrict" }),
+  queuedBy: uuid("queued_by").notNull().references(() => profiles.id),
+  queuedAt: timestamp("queued_at", { withTimezone: true }).defaultNow().notNull(),
 });

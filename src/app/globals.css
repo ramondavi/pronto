@@ -6727,3 +6727,19 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .retrospective-overview__requests li:last-child { border-bottom: 0; }
 .retrospective-overview__requests li > div { min-width: 0; flex: 1 1 240px; overflow-wrap: anywhere; }
 .retrospective-overview__requests li > span { font-size: .85rem; }
+
+/* Acompanhamento de depósitos de atendimentos já concluídos. */
+.deposit-followup-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-content: start; }
+.deposit-followup-page > *, .deposit-followup-page .page-heading > div { min-width: 0; }
+.deposit-followup__selection, .deposit-followup__actions, .deposit-followup__pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.deposit-followup__list { list-style: none; padding: 0; margin: 16px 0; }
+.deposit-followup__row { padding: 20px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.deposit-followup__heading { display: flex; align-items: start; gap: 12px; }
+.deposit-followup__heading > div { min-width: 0; }
+.deposit-followup__row p { margin: 8px 0; }
+.deposit-followup__pagination { justify-content: space-between; }
+
+/* Keep the enabled submission action readable when the toolbar hover rule applies. */
+.student-form-toolbar .student-form-toolbar__submit:not(:disabled):is(:hover, :focus-visible) { background: #14315e; border-color: #14315e; color: #fff; }
+.student-form-toolbar .student-form-toolbar__submit:not(:disabled):is(:hover, :focus-visible) svg { color: currentColor; }
+:root[data-contrast="high"] .student-form-toolbar .student-form-toolbar__submit:not(:disabled):is(:hover, :focus-visible) { background: #ff0; border-color: #ff0; color: #000; }

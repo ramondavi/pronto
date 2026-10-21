@@ -17,7 +17,7 @@ import { benefitIcons, homeBenefitsCopy } from "@/lib/home-benefits-copy";
 import { uiText } from "@/lib/ui-text";
 
 const catalogPhrases = {
-  pt: "Fichas Catalográficas",
+  pt: "Fichas catalográficas",
   en: "Catalog Record",
   es: "fichas catalográficas",
   de: "Katalogeinträge",
@@ -69,7 +69,7 @@ export default async function HomePage() {
               <p className="eyebrow">Biblioteca da Faculdade de Arquitetura · UFBA</p>
               <p className="hero__lead">{catalogPosition < 0 ? t.lead : <><span className="sr-only">{t.lead}</span><span aria-hidden="true">{t.lead.slice(0, catalogPosition)}<HeroClassificationPhrase text={catalogPhrase} />{t.lead.slice(catalogPosition + catalogPhrase.length)}</span></>}</p>
               <p className="hero__description">{t.description}</p>
-              {!user && <div className="actions"><Link className="button button--primary button--with-icon" href="/entrar"><AppIcon name="account" />{t.signIn}</Link><Link className="button button--secondary button--with-icon" href="/cadastro"><AppIcon name="edit" />{t.register}</Link></div>}
+              {!user && <div className="actions" data-nosnippet><Link className="button button--primary button--with-icon" href="/entrar"><AppIcon name="account" />{t.signIn}</Link><Link className="button button--secondary button--with-icon" href="/cadastro"><AppIcon name="edit" />{t.register}</Link></div>}
             </div>
             <div className="hero__aside">
               <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} mobileHoursLabel={!dailyHours && language === "pt" ? "Padrão: seg. a sex., 8h às 21h" : undefined} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} copy={t.notice} />
