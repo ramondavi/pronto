@@ -92,6 +92,29 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
   const savedAnalysisDraft = useRef(initialDraft ? JSON.stringify(initialDraft) : "");
   const analysisDraftQueue = useRef<Promise<void>>(Promise.resolve());
 
+  const sourceVersion = JSON.stringify(sourceValues);
+  const previousSource = useRef(sourceValues);
+  const correctionVersion = JSON.stringify(studentCorrections.map(({ field_key, submitted_at }) => ({ field_key, submitted_at })));
+  const previousCorrections = useRef(correctionVersion);
+  useEffect(() => {
+    const next: Record<string, string> = JSON.parse(sourceVersion);
+    const previous: StudentCorrection[] = JSON.parse(previousCorrections.current);
+    const arrived: StudentCorrection[] = JSON.parse(correctionVersion);
+    const resubmitted = arrived.filter((entry) => !previous.some((old) => old.field_key === entry.field_key && old.submitted_at === entry.submitted_at)).map((entry) => entry.field_key);
+    const changed = Object.keys(next).filter((key) => previousSource.current[key] !== next[key] || resubmitted.includes(key));
+    previousCorrections.current = correctionVersion;
+    previousSource.current = next;
+    if (!changed.length) return;
+    setValues((current) => ({ ...current, ...Object.fromEntries(changed.map((key) => [key, next[key]])) }));
+    setValidated((current) => current.filter((key) => !changed.includes(key)));
+    setSelectedFields((current) => current.filter((key) => !changed.includes(key)));
+    setEditing((current) => current.filter((key) => !changed.includes(key)));
+    setCorrected((current) => current.filter((key) => !changed.includes(key)));
+    setOriginalValues((current) => Object.fromEntries(Object.entries(current).filter(([key]) => !changed.includes(key))));
+    setIssueDetails((current) => Object.fromEntries(Object.entries(current).filter(([key]) => !changed.includes(key))));
+    setReviewCompletedAt(initialReviewCompletedAt);
+    showPanelChange("Dados atualizados. Confira as informações reenviadas.");
+  }, [sourceVersion, correctionVersion, initialReviewCompletedAt]);
   useEffect(() => setReady(true), []);
   useEffect(() => {
     if (!ready || !editable || reviewCompletedAt || savedAnalysisDraft.current === analysisDraftSnapshot) return;
@@ -315,6 +338,15 @@ export function RequestAnalysisWorkspace({ requestId, initialAnalysisNotes, init
   const citationBlock = <section className="panel analysis-citation"><div><h2><AppIcon name="book" />Referência do trabalho</h2><p>Confira o texto e ajuste o negrito, se necessário.</p></div>{suggestedCitation ? <><CitationInlineEditor value={citation} editable={citationEditable} onChange={(next) => { setCitation(next); setCitationApproved(false); }} /><div className="analysis-citation__footer"><span className={citationApproved ? "review-cataloging-summary__status is-ready" : "review-cataloging-summary__status"}>{citationApproved ? "Referência validada" : "Aguardando validação"}</span>{citationEditable && <button className="button button--secondary button--small" type="button" disabled={citationSaving || citation.trim().length < 20} onClick={validateCitation}><AppIcon name="check" />{citationSaving ? "Validando…" : citationApproved ? "Revalidar referência" : "Validar referência"}</button>}</div>{citationError && <p className="form-error" role="alert">{citationError}</p>}</> : <p className="field-help">Faltam dados essenciais ou este programa ainda não tem modelo aprovado para gerar a referência.</p>}</section>;
   return <><section className="analysis-workspace">
     <div className="analysis-workspace__heading"><div><h2>Dados do trabalho</h2><p>Confira os dados enviados pelo estudante antes de validar ou pedir ajustes.</p></div><span className="sr-only" role="status">{state === "error" ? "Não foi possível salvar. Verifique os dados ou a conexão." : state === "saving" ? "Salvando alterações" : ""}</span></div>
+    <section className="analysis-submission-review" aria-label="Revisão dos dados enviados">
+      <div className={`review-action-summary review-action-summary--${selectedFields.length || (!reviewCompletedAt && fields.some((field) => !validated.includes(field.key) && !corrected.includes(field.key))) ? "pending" : "ok"}`}><span className="review-action-summary__icon"><AppIcon name="review" /></span><span className="review-action-summary__text"><strong>Revisão dos dados enviados</strong><small>{reviewCompletedAt ? fields.length : fields.filter((field) => validated.includes(field.key) || corrected.includes(field.key)).length} de {fields.length} campos conferidos · {selectedFields.length} ajustes marcados. Selecione um campo para conferir ou revisar.</small></span></div>
+      <ul className="analysis-submission-review__list">{fields.map((field) => {
+        const pending = selectedFields.includes(field.key);
+        const checked = validated.includes(field.key) || corrected.includes(field.key) || Boolean(reviewCompletedAt);
+        const resubmitted = studentCorrections.some((correction) => correction.field_key === field.key && valueForInput(correction.corrected_value) === values[field.key]);
+        return <li key={field.key}><button type="button" data-state={pending ? "pending" : checked ? "checked" : "unchecked"} onClick={() => window.dispatchEvent(new CustomEvent("request-analysis:navigate", { detail: { tab: "metadata", fieldId: `review-field-${field.key}` } }))}><AppIcon name={pending ? "message" : checked ? "check" : "review"} /><span><strong>{field.label}</strong><small>{pending ? "Ajuste marcado para envio" : checked ? "Conferido" : resubmitted ? "Correção recebida · conferir novamente" : "Por conferir"}</small></span><AppIcon name="arrowRight" /></button></li>;
+      })}</ul>
+    </section>
     <div className="analysis-workspace__layout"><div className="analysis-workspace__main">
       {pendingFields.length > 0 && <section className="analysis-field-group analysis-field-group--pending"><h3><AppIcon name="message" /> Ajustes solicitados <span>{pendingFields.length}</span></h3><div className="field-review-list">{pendingFields.map(renderField)}</div></section>}
       {uncheckedFields.length > 0 && <section className="analysis-field-group"><h3><AppIcon name="review" /> Por conferir <span>{uncheckedFields.length}</span></h3><div className="field-review-list">{uncheckedFields.map(renderField)}</div></section>}

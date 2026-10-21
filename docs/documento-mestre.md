@@ -736,3 +736,11 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - O título público é “Pronto! | Fichas catalográficas e Autodepósito”. Descrição do site, Open Graph e Twitter: “Serviço da Biblioteca da Faculdade de Arquitetura da UFBA para solicitar ficha catalográfica e orientar o autodepósito no RI/UFBA.” Mecanismos de busca podem escolher outro trecho e dependem de nova indexação.
 
 - Submissão pela secretaria da RAU+E: o rótulo da matrícula identifica expressamente a matrícula do primeiro autor do trabalho. A conta da secretaria é somente responsável pelo envio, nunca fonte de nome ou nascimento de autor; a inclusão do próprio nome da representante como autor é recusada. Depois do protocolo enviado, um botão destacado leva diretamente a nova solicitação retrospectiva.
+
+
+### Ajustes de usabilidade de 20/10/2026
+
+- Em telas pequenas, os cartões da fila mantêm o estado em área própria; responsável técnico e menu ficam alinhados, com ação principal em largura disponível. Textos e menus respeitam os limites da tela. Títulos internos longos usam o letreiro após medição do conteúdo efetivamente carregado; preferência por movimento reduzido permite rolagem manual.
+- A revisão dos dados na análise bibliotecária adota o padrão da revisão estudantil, adaptado à conferência profissional: lista de campos por conferir, conferidos, ajustes marcados e correções recebidas, com acesso direto ao respectivo campo. Na revisão da ficha, o resumo reúne vínculo, descrição, pessoas, palavras-chave, datas/descrição física e arquivo/declarações, mantendo grupos conferidos recolhidos e atalhos às etapas correspondentes. Não substitui validação, homologação ou decisões profissionais.
+- Correções recebidas atualizam o protocolo aberto por notificação/Realtime, com consulta periódica de contingência. Campos reenviados voltam à conferência; valores locais antigos desses campos deixam de prevalecer. Anotações e edições nos demais campos são preservadas.
+- Na submissão da secretaria, a RAU+E vem definida e não pode ser trocada. Os conteúdos específicos do acervo retrospectivo ficam em português; identificam responsável pelo envio separadamente dos autores e usam “Biblioteca” nas orientações sobre encerramento do acesso. Acompanhamento e guia explicam análise, correção, recebimento da ficha, depósito e indicação da URL por trabalho.

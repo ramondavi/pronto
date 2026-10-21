@@ -1,4 +1,5 @@
 export type QueueRequest = {
+  retrospective?: boolean;
   id: string;
   protocol: string;
   status: string;

@@ -101,6 +101,7 @@ export function StaffNotifications({ userId, onUnreadChange, previewCount }: { u
   }, []);
 
   const signalNewNotice = useCallback((notice: Notice) => {
+    if (notice.request_id) window.dispatchEvent(new CustomEvent("staff:request-updated", { detail: { requestId: notice.request_id } }));
     void playSound();
     setRinging(true);
     if (document.visibilityState === "visible") {
@@ -162,7 +163,7 @@ export function StaffNotifications({ userId, onUnreadChange, previewCount }: { u
   }, [unlockAudio]);
   useEffect(() => {
     const channel = supabase.channel(`staff-notifications-${userId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "staff_notifications", filter: `recipient_id=eq.${userId}` }, (payload) => { void refresh(filter, visible); if (payload.eventType === "INSERT" && payload.new.kind === "nada_consta_uploaded") window.dispatchEvent(new CustomEvent("staff:nada-consta-uploaded", { detail: { requestId: payload.new.request_id } })); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "staff_notifications", filter: `recipient_id=eq.${userId}` }, (payload) => { void refresh(filter, visible); if (payload.eventType === "INSERT" && payload.new.request_id) window.dispatchEvent(new CustomEvent("staff:request-updated", { detail: { requestId: payload.new.request_id } })); if (payload.eventType === "INSERT" && payload.new.kind === "nada_consta_uploaded") window.dispatchEvent(new CustomEvent("staff:nada-consta-uploaded", { detail: { requestId: payload.new.request_id } })); })
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
   }, [supabase, userId, filter, visible, refresh]);

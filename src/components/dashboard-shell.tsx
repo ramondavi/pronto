@@ -179,21 +179,33 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
   }, [mobileMenuOpen]);
   useEffect(() => {
-    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text")];
-    if (!headings.length) return;
+    const headings = new Set<HTMLElement>();
+    let frame = 0;
     const measure = () => {
-      const compact = window.matchMedia("(max-width: 560px)").matches;
+      const compact = window.matchMedia("(max-width: 700px)").matches;
       headings.forEach((heading) => {
+        if (!heading.isConnected) { headings.delete(heading); return; }
         const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
         heading.classList.toggle("is-scrolling", distance > 2);
         heading.style.setProperty("--heading-travel", `${-distance}px`);
-        heading.style.setProperty("--heading-duration", `${Math.min(7.5, Math.max(3.5, distance / 80 + 2.5))}s`);
+        heading.style.setProperty("--heading-duration", `${Math.min(9, Math.max(4, distance / 45 + 2))}s`);
       });
     };
-    const observer = new ResizeObserver(measure);
-    headings.forEach((heading) => { observer.observe(heading); if (heading.firstElementChild) observer.observe(heading.firstElementChild); });
-    const frame = window.requestAnimationFrame(measure);
-    return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
+    const resize = new ResizeObserver(measure);
+    const collect = () => {
+      document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text").forEach((heading) => {
+        if (headings.has(heading)) return;
+        headings.add(heading); resize.observe(heading);
+        if (heading.firstElementChild) resize.observe(heading.firstElementChild);
+      });
+      cancelAnimationFrame(frame); frame = requestAnimationFrame(measure);
+    };
+    const mutations = new MutationObserver(collect);
+    mutations.observe(document.querySelector(".dashboard-content") ?? document.body, { childList: true, subtree: true, characterData: true });
+    collect();
+    document.fonts.ready.then(measure);
+    window.addEventListener("resize", measure);
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); mutations.disconnect(); window.removeEventListener("resize", measure); };
   }, [pathname, searchParams]);
   useEffect(() => {
     const timelines = new Set<HTMLElement>();
