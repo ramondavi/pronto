@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Na preparação com conta e liberação corretas, uma única ação pulsante abre o login do RI e depois se transforma no botão de iniciar o guia.
+
 - Ações finais do preparo do autodepósito mais compactas, com destaque do guia somente após clicar no login. Traduções completas das novas orientações, respostas, modais, lembretes e confirmação de envio para os cinco idiomas adicionais do Pronto!.
 
 - O acesso destacado ao RI acompanha a resposta inicial: aparece como cadastro ou login no cabeçalho, ou como primeiro passo ao lado do início do guia quando a liberação já está correta.

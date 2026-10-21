@@ -49,3 +49,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: acesso destacado ao RI contextualizado pela etapa 0 do Antes de começar; inicialmente oculto, cadastro/login no cabeçalho com destaque ou login como Passo 1 ao lado do guia como Passo 2. Sem migração. Testes e validação visual permanecem adiados até solicitação de PR.
 
 - 21/10/2026: ações finais do preparo do RI compactadas; pulso do guia começa no clique de login. Catálogo de traduções das novas telas e modais em src/lib/repository-ui-text.ts, integrado a uiText; datas dos lembretes localizadas e prévia de correção traduzida, cópia em português preservada. Sem migração. Testes adiados até solicitação de PR.
+
+- 21/10/2026: ações finais do caminho direto ao guia substituídas por um botão com duas fases locais: abrir login do RI em nova aba e depois iniciar guia. Ambas pulsantes; alterar respostas volta ao Passo 1. Sem migração; testes adiados até o PR.
