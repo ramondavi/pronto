@@ -51,3 +51,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: ações finais do preparo do RI compactadas; pulso do guia começa no clique de login. Catálogo de traduções das novas telas e modais em src/lib/repository-ui-text.ts, integrado a uiText; datas dos lembretes localizadas e prévia de correção traduzida, cópia em português preservada. Sem migração. Testes adiados até solicitação de PR.
 
 - 21/10/2026: ações finais do caminho direto ao guia substituídas por um botão com duas fases locais: abrir login do RI em nova aba e depois iniciar guia. Ambas pulsantes; alterar respostas volta ao Passo 1. Sem migração; testes adiados até o PR.
+
+- 21/10/2026: orientação final do preparo do RI alinhada à esquerda do botão, com quebra de linha na própria coluna e alinhamento vertical central. Sem migração; testes adiados até o PR.

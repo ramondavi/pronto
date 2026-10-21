@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Orientação final do preparo do RI volta à coluna esquerda do botão, com quebra de linha e alinhamento vertical centralizado.
+
 - Na preparação com conta e liberação corretas, uma única ação pulsante abre o login do RI e depois se transforma no botão de iniciar o guia.
 
 - Ações finais do preparo do autodepósito mais compactas, com destaque do guia somente após clicar no login. Traduções completas das novas orientações, respostas, modais, lembretes e confirmação de envio para os cinco idiomas adicionais do Pronto!.

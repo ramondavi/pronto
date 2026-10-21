@@ -6954,7 +6954,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__footer { grid-template-columns: minmax(0,1fr) minmax(230px,340px); align-items: center; gap: 12px 20px; }
 .repository-preparation__notice { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
 .repository-preparation__notice > svg { flex: 0 0 20px; width: 20px; height: 20px; margin-top: 2px; color: var(--institutional); }
-.repository-preparation__notice p { font-size: .8rem; line-height: 1.55; }
+.repository-preparation__notice p { min-width: 0; font-size: .8rem; line-height: 1.55; overflow-wrap: anywhere; text-wrap: pretty; }
 .repository-preparation__footer > small { grid-column: 1 / -1; color: var(--text-muted); font-size: .7rem; }
 .repository-preparation__footer > .button { min-width: 0; scroll-margin-block: 40px; }
 .repository-preparation__footer > .button:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
@@ -7100,7 +7100,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-guide__submission > .button { justify-self: stretch; }
 
 .repository-preparation__header--without-access { grid-template-columns: minmax(0,1fr); }
-.repository-preparation__footer { grid-template-columns: minmax(0,1fr); }
 .repository-preparation__actions { display: grid; justify-content: end; grid-template-columns: minmax(230px,340px); gap: 14px; }
 .repository-preparation__actions .cataloging-homologation__action { max-width: none; min-width: 0; scroll-margin-block: 40px; }
 .repository-preparation__action-step { display: block; font-size: .72rem; font-weight: 700; margin-bottom: 4px; }
