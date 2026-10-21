@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { FinalDecisionDialog } from "@/components/final-decision-dialog";
-import { enqueueDepositReminders } from "@/app/painel/depositos-pendentes/actions";
+import { enqueueDepositReminders } from "@/app/painel/admin/deposit-actions";
 
 export type DepositFollowupRow = {
   request_id: string; protocol: string; title: string; student_name: string; student_email: string;
@@ -27,7 +27,7 @@ export function RepositoryDepositFollowup({ data, programs, programId, search, p
   const [message, setMessage] = useState("");
   const selectedIds = data.rows.filter((row) => row.can_send && selection.has(row.request_id)).map((row) => row.request_id);
   const count = all ? data.sendable : selectedIds.length;
-  const pageHref = (target: number) => `/painel/depositos-pendentes?${new URLSearchParams({ programa: programId, busca: search, pagina: String(target) })}`;
+  const pageHref = (target: number) => `/painel/admin?${new URLSearchParams({ area: "controle", aba: "deposits", programa: programId, busca: search, pagina: String(target) })}`;
   function select(id: string, checked: boolean) {
     setAll(false);
     setSelection((current) => { const next = new Set(current); if (checked) next.add(id); else next.delete(id); return next; });
@@ -59,7 +59,7 @@ export function RepositoryDepositFollowup({ data, programs, programId, search, p
   }
   return <>
     <section className="panel"><h2>Trabalhos concluídos sem depósito</h2><p>Esta relação reúne atendimentos concluídos sem publicação registrada no RI/UFBA, quando o guia estava desativado. Registros antigos sem evidência precisam de confirmação histórica da biblioteca.</p><p>O envio só fica disponível após habilitar o guia do programa. O atendimento permanece concluído; o estudante acessa os metadados homologados na mesma conta.</p>
-      <form className="form-stack" method="get"><label>Programa<select name="programa" defaultValue={programId}><option value="">Todos os programas</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label><label>Aluno, e-mail, título ou protocolo<input name="busca" defaultValue={search} maxLength={150} /></label><button className="button button--secondary">Filtrar</button></form>
+      <form className="form-stack" method="get" action="/painel/admin"><input type="hidden" name="area" value="controle" /><input type="hidden" name="aba" value="deposits" /><label>Programa<select name="programa" defaultValue={programId}><option value="">Todos os programas</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label><label>Aluno, e-mail, título ou protocolo<input name="busca" defaultValue={search} maxLength={150} /></label><button className="button button--secondary">Filtrar</button></form>
     </section>
     <section className="panel deposit-followup" aria-label="Relação de depósitos pendentes"><h2>{data.total} {data.total === 1 ? "trabalho na relação" : "trabalhos na relação"}</h2><p>{data.sendable} {data.sendable === 1 ? "lembrete disponível para envio" : "lembretes disponíveis para envio"}.</p>
       {canManage && <div className="deposit-followup__selection"><label className="check"><input type="checkbox" checked={all} disabled={busy || !data.sendable} onChange={(event) => { setAll(event.target.checked); setSelection(new Set()); }} />Selecionar todos os elegíveis deste filtro ({data.sendable})</label><button type="button" className="button button--primary" disabled={busy || !count} onClick={() => setDecision({ kind: "send", ids: selectedIds, all, count })}>Enviar lembretes ({count})</button></div>}

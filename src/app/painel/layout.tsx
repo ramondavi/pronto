@@ -48,18 +48,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: acknowledgement } = await supabase.from("privacy_notice_acknowledgements").select("id").eq("profile_id", user.id).eq("notice_version", PRIVACY_NOTICE_VERSION).maybeSingle();
   const retrospective = profile.role === "student" && await hasRetrospectiveAccess();
   const staff = profile.role === "cataloger" || profile.role === "administrator";
-  const [canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, canViewDepositFollowup] = staff ? await Promise.all([
+  const [canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar] = staff ? await Promise.all([
     userHasPermission(supabase, "library.hours.change", profile.role),
     userHasPermission(supabase, "staff.overview.view", profile.role),
     userHasPermission(supabase, "staff.queue.view", profile.role),
     userHasPermission(supabase, "student.preview", profile.role),
     userHasPermission(supabase, "library.calendar.view", profile.role),
     userHasPermission(supabase, "library.calendar.manage", profile.role),
-    userHasPermission(supabase, "staff.case.view", profile.role),
-  ]) : [false, false, false, false, false, false, false];
+  ]) : [false, false, false, false, false, false];
   const adminPermissions = staff ? await userAdminPermissions(supabase, profile.role) : [];
   const serviceStatus = profile.role === "student" || canPreviewStudent ? await studentServiceStatus(supabase) : undefined;
-  const access = { canViewDepositFollowup, canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
+  const access = { canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
   if (!acknowledgement) {
     return <PanelInterfaceLanguageScope staff={staff}><DashboardShell retrospective={retrospective} fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access} showNotifications={false}><main className="dashboard-main dashboard-main--narrow" aria-hidden="true" /><PrivacyAcknowledgement /></DashboardShell></PanelInterfaceLanguageScope>;
   }

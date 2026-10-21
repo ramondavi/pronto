@@ -747,3 +747,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Na submissão da secretaria, a RAU+E vem definida e não pode ser trocada. Os conteúdos específicos do acervo retrospectivo ficam em português; identificam responsável pelo envio separadamente dos autores e usam “Biblioteca” nas orientações sobre encerramento do acesso. Acompanhamento e guia explicam análise, correção, recebimento da ficha, depósito e indicação da URL por trabalho.
 
 - Na homologação, a orientação para marcar a confirmação da revisão não depende da posição do checkbox na tela; esse checkbox não recebe botão de ajuda. Em telas pequenas, o menu de navegação expandido compartilha a margem horizontal do botão que o abre.
+
+- Em 21/10/2026, Depósitos pendentes passa a integrar Administração → Controle, com filtros e paginação preservados e redirecionamento do endereço anterior. A mudança de localização preserva as permissões de consulta e de envio existentes.

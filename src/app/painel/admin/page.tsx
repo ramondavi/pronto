@@ -1,3 +1,4 @@
+import { RepositoryFollowupPage } from "@/components/repository-deposit-followup-page";
 import { RetrospectiveAccessAdmin, type RetrospectiveAccount } from "@/components/retrospective-access-admin";
 import { AppIcon } from "@/components/app-icon";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import type { PermissionOverride } from "@/components/staff-permissions-admin";
 import { userAdminPermissions } from "@/lib/staff-permissions";
 import { legacyIssueTemplateFields } from "@/lib/issue-template-fields";
 import { supportedLanguages, type InterfaceLanguage } from "@/lib/interface-language";
-type AdminSearchParams = { area?: string; aba?: string; conteudo?: string; idioma?: string };
+type AdminSearchParams = { area?: string; aba?: string; conteudo?: string; idioma?: string; programa?: string; busca?: string; pagina?: string };
 export async function generateMetadata({ searchParams }: { searchParams: Promise<AdminSearchParams> }) { const { area, aba } = await searchParams; return panelMetadata("/painel/admin", { area, tab: aba }); }
 
 function AdminIndex({ section, permissions }: { section?: (typeof adminSections)[number]; permissions: string[] }) {
@@ -45,6 +46,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     return <AdminIndex section={params.area ? section : undefined} permissions={permissions} />;
   }
   if (!canOpenAdminTab(tab, permissions)) redirect("/painel/admin");
+  if (tab === "deposits") return <RepositoryFollowupPage searchParams={Promise.resolve({ programa: params.programa, busca: params.busca, pagina: params.pagina })} />;
   const canViewCalendar = permissions.includes("library.calendar.view") || permissions.includes("library.calendar.manage");
   const [users, candidates, programs, announcements, templates, logs, purge, faqs, cduDescriptions, knowledge, dailyHours, permissionDefinitions, permissionOverrides, inheritedRoles] = await Promise.all([
     tab === "users" || tab === "permissions" ? supabase.from("profiles").select("id,full_name,email,role,status,created_at,staff_profiles(professional_name,crb),student_profiles(birth_date)").order("full_name") : Promise.resolve({ data: null }),

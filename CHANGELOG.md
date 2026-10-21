@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 21 de outubro de 2026
+
+- Depósitos pendentes passa para Administração → Controle, preservando filtros, ações e permissões.
+
 ### 20 de outubro de 2026
 
 - A homologação usa orientação de confirmação adequada a qualquer largura e dispensa ajuda nesse checkbox; o menu móvel se alinha ao botão de abertura. A seleção de tipos de nota conforme AACR2 foi registrada como pendência futura.
