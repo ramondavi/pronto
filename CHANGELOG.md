@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Orientações de cadastro no RI passam a três passos visuais com ícones, títulos curtos e ações de abrir o repositório e consultar o tutorial junto ao primeiro passo.
+
 - O cabeçalho do Antes de começar oferece login destacado no RI com orientação para as verificações. Os blocos de contato incluem botão discreto de copiar o e-mail do repositório.
 
 - Textos do Antes de começar especificam liberação para depositar e destino do depósito nos rótulos, respostas, orientações e modais, sem acrescentar blocos de explicação.

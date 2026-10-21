@@ -7066,3 +7066,15 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-email-contact__copy { flex: 0 0 30px; display: inline-grid; place-items: center; width: 30px; min-height: 30px; padding: 5px; }
 .repository-email-contact__copy svg { width: 16px; height: 16px; }
 @media (max-width: 800px) { .repository-preparation__header { grid-template-columns: minmax(0,1fr); gap: 14px; } }
+
+.repository-preparation__instructions .repository-preparation__registration-steps { gap: 16px; padding: 0; list-style: none; }
+.repository-preparation__registration-steps > li { display: grid; grid-template-columns: 34px minmax(0,1fr); align-items: start; gap: 11px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.repository-preparation__registration-steps > li:last-child { padding-bottom: 0; border-bottom: 0; }
+.repository-preparation__registration-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.repository-preparation__registration-icon svg { width: 20px; height: 20px; }
+.repository-preparation__registration-steps h4 { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 6px; color: var(--text); font-size: .86rem; line-height: 1.4; }
+.repository-preparation__registration-steps h4 > span { color: var(--institutional); font-size: .74rem; font-variant-numeric: tabular-nums; }
+.repository-preparation__registration-steps p { color: var(--text-muted); font-size: .8rem; line-height: 1.6; }
+.repository-preparation__registration-steps .repository-preparation__registration-links { padding-top: 10px; border-top: 0; }
+.repository-preparation__registration-steps .repository-preparation__registration-links .button { flex: 0 1 auto; }
+@media (max-width: 500px) { .repository-preparation__registration-steps .repository-preparation__registration-links .button { flex: 1 1 160px; } }
