@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Coleção e tipo de documento confirmados ficam nas etapas 1 e 2 do guia. Campos com botão de copiar bloqueiam seleção e cópia manual, incluindo nomes e datas; a cópia continua pelos botões próprios.
+
 - Dados para copiar e conferir passam a integrar a etapa 3 do roteiro do RI; a confirmação de envio fica na etapa 8, mantendo a sequência do guia.
 
 - Guia sem atalho redundante de abertura do RI, com oito etapas conectadas na ordem de execução. A retomada respeita o início registrado e a preparação válida, evitando reiniciar automaticamente em Antes de começar.

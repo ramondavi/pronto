@@ -3748,7 +3748,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .repository-guide__date-parts, .repository-guide__person-parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 5px; }
 .repository-guide__date-parts > div, .repository-guide__person-parts > div { position: relative; display: grid; gap: 4px; min-width: 0; }
 .repository-guide__date-parts > div > span, .repository-guide__person-parts > div > span { color: var(--text-muted); font-size: .68rem; font-weight: 750; }
-.repository-guide__date-parts select, .repository-guide__date-parts input, .repository-guide__person-parts strong { width: 100%; min-height: 39px; padding: 8px 31px 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-family: inherit; font-size: .8rem; font-weight: 750; line-height: 1.3; }
+.repository-guide__date-parts select, .repository-guide__date-parts .repository-guide__date-value, .repository-guide__person-parts strong { width: 100%; min-height: 39px; padding: 8px 31px 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-family: inherit; font-size: .8rem; font-weight: 750; line-height: 1.3; }
 .repository-guide__date-parts select:disabled { opacity: 1; color: var(--text); }
 .repository-guide__person-parts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .repository-guide__person-parts strong { display: flex; align-items: center; overflow-wrap: anywhere; }
@@ -7008,7 +7008,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__answer:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .repository-preparation__destination-dialog .field-help { display: flex; align-items: flex-start; gap: 7px; margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-size: .73rem; line-height: 1.5; }
 .repository-preparation__destination-dialog .field-help svg { flex: 0 0 16px; width: 16px; height: 16px; }
-.repository-guide__copy-only { -webkit-user-select: none; user-select: none; }
+.repository-guide__copy-only, .repository-guide__copy-only * { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; }
 @media (prefers-reduced-motion: reduce) { .repository-preparation__fold, .repository-preparation__resize, .repository-preparation__chevron, .repository-preparation__progress > span { transition: none; } }
 
 .repository-preparation__option { display: flex; flex-direction: column; min-width: 0; }

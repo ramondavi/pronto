@@ -63,3 +63,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: removido botão do RI no cabeçalho; roteiro com oito etapas verticais e conectores. Página consulta preparação salva para inicializar guia já iniciado sem regressar automaticamente; chave inclui destino para reiniciar corretamente se ele mudar. Atualização periódica da disponibilidade preservada. Traduções atualizadas; sem migração. Testes e validação visual adiados até PR.
 
 - 21/10/2026: dados de preenchimento posicionados na etapa 3 e confirmação de envio na etapa 8, dentro do roteiro conectado. Orientações gerais junto aos dados antes do upload. Sem migração; sem capturas a pedido do usuário; testes adiados até PR.
+
+- 21/10/2026: coleção na etapa 1 e tipo de documento na etapa 2; excluído grupo de destino da etapa 3. Valores com botões de cópia protegidos contra seleção/cópia/corte/arraste; dia/ano como texto em vez de input e contato do RI protegido também. Sem migração ou capturas; testes adiados até PR.
