@@ -6988,3 +6988,8 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 @keyframes preparation-start-highlight { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px color-mix(in srgb,var(--institutional) 25%,transparent),0 4px 18px color-mix(in srgb,var(--institutional) 20%,transparent); } }
 @keyframes preparation-screen-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .repository-preparation__start--highlight { animation: none; outline: 3px solid var(--institutional); outline-offset: 4px; } .repository-preparation__screen { animation: none; } .repository-preparation__timer-ring rect { transition: none; } }
+
+.repository-preparation__destination-dialog { width: min(560px, calc(100vw - 32px)); }
+.repository-preparation__destination-dialog dd { overflow-wrap: anywhere; }
+
+.repository-preparation__destination-dialog .repository-preparation__info { margin-top: 16px; }

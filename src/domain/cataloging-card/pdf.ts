@@ -1,4 +1,4 @@
-import { PDFHexString, PDFName, PDFString, rgb, type PDFFont, type PDFImage, type PDFPage, type RGB } from "pdf-lib";
+import { PDFHexString, PDFName, PDFString, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage, type RGB } from "pdf-lib";
 import QRCode from "qrcode";
 import { buildCardContent, prefixBeforeFourthAuthorLetter, type CardPreviewOptions, type CatalogingCardSnapshot } from "./types.ts";
 
@@ -12,7 +12,7 @@ const LINE_HEIGHT = 12.6;
 const PARAGRAPH_GAP = LINE_HEIGHT;
 
 export type CardPdfColors = { background?: string; text?: string; publicUrl?: string; publicEmblem?: PDFImage };
-export const CARD_PUBLIC_LINK_BOUNDS = { x: 29, y: 15, width: 56, height: 69 } as const;
+export const CARD_PUBLIC_LINK_BOUNDS = { x: 29, y: 20, width: 78, height: 84 } as const;
 
 export function addCardPublicLink(page: PDFPage, url: string, bounds: { x: number; y: number; width: number; height: number } = CARD_PUBLIC_LINK_BOUNDS) {
   const context = page.doc.context;
@@ -30,7 +30,7 @@ export function addCardPublicLink(page: PDFPage, url: string, bounds: { x: numbe
 function drawCardQr(page: PDFPage, url: string, ink: RGB, emblem?: PDFImage) {
   const { x, y, width, height } = CARD_PUBLIC_LINK_BOUNDS;
   const qr = QRCode.create(url, { errorCorrectionLevel: "H" });
-  const size = 50;
+  const size = 78;
   const left = x + (width - size) / 2;
   const bottom = y + height - size;
   const moduleSize = size / (qr.modules.size + 8);
@@ -49,11 +49,11 @@ function drawCardQr(page: PDFPage, url: string, ink: RGB, emblem?: PDFImage) {
         width: moduleSize,
         height: moduleSize,
         color: ink,
-        opacity: ISSUANCE_OPACITY,
+        opacity: 1,
       });
     }
   }
-  if (emblem) page.drawImage(emblem, { x: centerX - emblemWidth / 2, y: centerY - emblemHeight / 2, width: emblemWidth, height: emblemHeight, opacity: ISSUANCE_OPACITY });
+  if (emblem) page.drawImage(emblem, { x: centerX - emblemWidth / 2, y: centerY - emblemHeight / 2, width: emblemWidth, height: emblemHeight, opacity: 1 });
   return { caption: "DISPONÍVEL NO RI/UFBA", qrX: left, qrY: bottom, qrSize: size };
 }
 
@@ -97,16 +97,21 @@ export function drawCatalogingCard(page: PDFPage, snapshot: CatalogingCardSnapsh
   page.drawText(cduText, { x: CARD_RIGHT - regular.widthOfTextAtSize(cduText, FONT_SIZE), y: cduY, size: FONT_SIZE, font: regular, color: ink });
   page.drawLine({ start: { x: CARD_LEFT, y: bottomLine }, end: { x: CARD_RIGHT, y: bottomLine }, thickness: 1.4, color: ink });
   center(page, content.technicalResponsibility, bottomLine - 22, FONT_SIZE, regular, ink);
-  const issuance = "Ficha emitida eletronicamente pelo Pronto! e validada por Bibliotecário(a).";
+  const issuance = "Ficha validada por bibliotecário(a) e emitida eletronicamente pelo ";
+  const brand = "Pronto!";
+  const italic = page.doc.embedStandardFont(StandardFonts.HelveticaOblique);
   const issuanceSize = 7;
   const iconWidth = 9;
   const gap = 5;
-  const startX = (A4_PAGE[0] - iconWidth - gap - regular.widthOfTextAtSize(issuance, issuanceSize)) / 2;
+  const startX = (A4_PAGE[0] - iconWidth - gap - (regular.widthOfTextAtSize(issuance + ".", issuanceSize) + italic.widthOfTextAtSize(brand, issuanceSize))) / 2;
   const iconY = 25;
   page.drawCircle({ x: startX + 4.5, y: iconY + 5, size: 4.2, borderWidth: 0.65, borderColor: ink, borderOpacity: ISSUANCE_OPACITY });
   page.drawLine({ start: { x: startX + 2.5, y: iconY + 5 }, end: { x: startX + 4, y: iconY + 3.5 }, thickness: 0.75, color: ink, opacity: ISSUANCE_OPACITY });
   page.drawLine({ start: { x: startX + 4, y: iconY + 3.5 }, end: { x: startX + 6.7, y: iconY + 6.5 }, thickness: 0.75, color: ink, opacity: ISSUANCE_OPACITY });
   page.drawText(issuance, { x: startX + iconWidth + gap, y: iconY + 1.5, size: issuanceSize, font: regular, color: ink, opacity: ISSUANCE_OPACITY });
+  const brandX = startX + iconWidth + gap + regular.widthOfTextAtSize(issuance, issuanceSize);
+  page.drawText(brand, { x: brandX, y: iconY + 1.5, size: issuanceSize, font: italic, color: ink, opacity: ISSUANCE_OPACITY });
+  page.drawText(".", { x: brandX + italic.widthOfTextAtSize(brand, issuanceSize), y: iconY + 1.5, size: issuanceSize, font: regular, color: ink, opacity: ISSUANCE_OPACITY });
   if (colors.publicUrl) {
     const { caption, qrX, qrY, qrSize } = drawCardQr(page, colors.publicUrl, ink, colors.publicEmblem);
     const size = Math.min(5.5, qrSize / regular.widthOfTextAtSize(caption, 1));

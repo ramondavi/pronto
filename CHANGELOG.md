@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- A ficha final recebe QR maior e sem transparência, alinhado à indicação de emissão revisada, com Pronto! em itálico. O preparo do RI confere coleção e tipo de documento em modal padrão antes de registrar a decisão.
+
 - A preparação do RI concentra o destino nas decisões de conferência, registra respostas em primeira pessoa e mantém as decisões encadeadas em área estável. A confirmação após as instruções de cadastro tem contagem de 120 segundos; a liberação direta destaca o botão do guia.
 
 - O preparo do autodepósito recebe cartões e decisões mais compactos, ícones visíveis, cabeçalhos alinhados e ação final organizada; confirmar acesso na etapa 0 leva suavemente ao botão do guia.
