@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Dados para copiar e conferir passam a integrar a etapa 3 do roteiro do RI; a confirmação de envio fica na etapa 8, mantendo a sequência do guia.
+
 - Guia sem atalho redundante de abertura do RI, com oito etapas conectadas na ordem de execução. A retomada respeita o início registrado e a preparação válida, evitando reiniciar automaticamente em Antes de começar.
 
 - Guia do RI revisado para continuar a preparação sem repetir verificações de conta, liberação e destino. Envios já registrados direcionam ao acompanhamento no RI em vez de nova submissão. Textos atualizados em todos os idiomas.
