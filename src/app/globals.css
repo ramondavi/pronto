@@ -7098,3 +7098,12 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-guide__submission { display: grid; gap: 16px; }
 .repository-guide__submission .admin-section__lead { margin-bottom: 0; }
 .repository-guide__submission > .button { justify-self: stretch; }
+
+.repository-preparation__header--without-access { grid-template-columns: minmax(0,1fr); }
+.repository-preparation__footer { grid-template-columns: minmax(0,1fr); }
+.repository-preparation__actions { display: grid; justify-content: end; grid-template-columns: minmax(230px,340px); gap: 14px; }
+.repository-preparation__actions--paired { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
+.repository-preparation__actions .cataloging-homologation__action { max-width: none; min-width: 0; scroll-margin-block: 40px; }
+.repository-preparation__action-step { display: block; font-size: .72rem; font-weight: 700; margin-bottom: 4px; }
+@media (max-width: 700px) { .repository-preparation__actions, .repository-preparation__actions--paired { grid-template-columns: minmax(0,1fr); } }
+.repository-preparation__actions .cataloging-homologation__action > span > strong { white-space: normal; }
