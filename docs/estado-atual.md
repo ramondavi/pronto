@@ -35,3 +35,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Publicado na prévia (`2652f20`): organização móvel da fila e análise, revisão navegável dos campos, atualização do protocolo aberto após correções e conteúdos didáticos do acervo retrospectivo com programa fixo. Sem novas migrações nesta alteração. Testes adiados até solicitação de PR.
 
 - Publicação dos ajustes da fila/acervo confirmada pela Vercel como Ready: `FPnwaxk7hb9QXCvyJuDKH8jgdwpZ`, commit `2652f20`, branch de publicação `codex/ajustes-administracao-remota`. Sem testes funcionais nesta etapa, conforme combinado.
+
+- Em preparação: padronização visual do acervo retrospectivo e de Depósitos pendentes na estrutura completa de Administração. Migração 202610210004 aplicada somente na prévia em 21/10/2026, pela autorização continuada do usuário. Adiciona quatro permissões delegáveis, preservando as exigências anteriores de consulta de protocolo e finalização. O Supabase confirmou a aplicação; não houve envio de lembretes. Migração agora imutável.

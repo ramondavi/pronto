@@ -32,12 +32,12 @@ export const adminTabPermissions: Record<AdminTab, readonly string[]> = {
   subjects: ["admin.subjects.view", "admin.subjects.manage"],
   cdu: ["admin.cdu.view", "admin.cdu.manage"],
   stats: ["admin.stats.view"],
-  deposits: ["staff.case.view"],
+  deposits: ["admin.deposits.view"],
   retention: ["admin.retention.view", "admin.retention.manage"],
   audit: ["admin.audit.view"],
 };
 
-export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate"])];
+export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate", "admin.deposits.send", "admin.deposits.history", "admin.deposits.publication"])];
 
 export function canOpenAdminTab(tab: AdminTab, permissions: readonly string[]) {
   return adminTabPermissions[tab].some((code) => permissions.includes(code));

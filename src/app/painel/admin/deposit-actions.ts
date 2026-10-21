@@ -17,6 +17,6 @@ export async function enqueueDepositReminders(input: { ids: string[]; all: boole
     target_request_ids: [...new Set(input.ids)], program_filter: input.programId || null,
     search_text: input.search.slice(0, 150), all_matching: input.all, site_origin: origin,
   });
-  if (error) return { queued: 0, remaining: 0, error: "Não foi possível agendar os lembretes. Confira se o guia está habilitado e se sua conta tem permissão para finalizar atendimentos." };
+  if (error) return { queued: 0, remaining: 0, error: "Não foi possível agendar os lembretes. Confira se o guia está habilitado e se sua conta tem permissão para enviar lembretes." };
   return { queued: Number(data?.queued ?? 0), remaining: Number(data?.remaining ?? 0), error: null };
 }

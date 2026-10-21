@@ -751,3 +751,9 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Em 21/10/2026, Depósitos pendentes passa a integrar Administração → Controle, com filtros e paginação preservados e redirecionamento do endereço anterior. A mudança de localização preserva as permissões de consulta e de envio existentes.
 
 - Ajustes de 21/10/2026: na secretaria da RAU+E, a retomada sem matrícula válida abre o vínculo acadêmico; o programa aparece selecionado em campo desabilitado, sem aviso adicional. O feed tem degradê nas duas extremidades da rolagem. A espera do painel alterna frases curtas do universo dos livros com fade; movimento reduzido conserva uma mensagem estática.
+
+
+### Padronização e permissões — 21/10/2026
+
+- Layouts do acervo retrospectivo e Depósitos pendentes seguem os componentes de interface do Pronto!: cabeçalhos com ícones, títulos e textos curtos, indicadores, estados padronizados, cartões com identidade e ações separadas, campos e botões compartilhados. O seletor de ordenação conserva o mesmo menu do sistema; o alinhamento do valor fechado é corrigido sem substituí-lo pelo estilo nativo.
+- Depósitos pendentes usa a estrutura completa de Administração → Controle, incluindo as mesmas guias das outras telas. A gestão de permissões passa a listar quatro atribuições independentes: consultar pendências (`admin.deposits.view`), enviar lembretes (`admin.deposits.send`), confirmar condição histórica (`admin.deposits.history`) e registrar publicação (`admin.deposits.publication`). A consulta mantém a exigência de `staff.case.view`; as escritas também preservam `staff.request.close` e exigem consulta à nova tela. Os perfis profissionais mantêm seus padrões anteriores; restrições individuais continuam sendo avaliadas no banco.
