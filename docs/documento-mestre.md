@@ -812,3 +812,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Simplificação aprovada da etapa 0: retirar o quarto botão “Tenho liberação para depositar, mas para outro destino”, pois o modal da opção de conta/liberação já identifica essa situação. Manter as três opções iniciais, a rota interna de destino errado, seu resumo em primeira pessoa e o encaminhamento para correção ao indicar a divergência no modal. Substitui a orientação anterior de exibir quatro opções.
 
 - No passo de criar a conta, não repetir o botão de abrir RI/UFBA já destacado no cabeçalho. Exibir somente link pequeno, sem borda, com ícone de livro proporcional e texto “Dúvida sobre como fazer seu cadastro no RI/UFBA? Veja o tutorial.”. Substitui os botões agrupados anteriormente previstos para esse passo.
+
+- Nos avisos de espera por confirmação/liberação do RI, apresentar o contato como campo compacto com rótulo, e-mail e cópia alinhados; orientação contextual em área própria abaixo, sem cartões de aviso aninhados. Retirar o botão “Escrever ao RI/UFBA”; preservar o endereço destacado e a cópia.

@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O contato durante a espera por confirmação do RI recebe campo de e-mail proporcional, cópia alinhada e orientação separada; removido o botão Escrever ao RI/UFBA.
+
 - As orientações de cadastro removem o botão duplicado de abrir o RI e apresentam o tutorial como link discreto, sem borda, com ícone proporcional.
 
 - A etapa 0 remove a opção redundante de liberação em outro destino; essa situação continua identificada pelo modal de conferência e encaminhada ao pedido de correção.

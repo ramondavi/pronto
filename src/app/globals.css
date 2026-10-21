@@ -7076,3 +7076,15 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__tutorial-link { display: inline-flex; align-items: flex-start; gap: 6px; margin-top: 9px; color: var(--institutional); font-size: .73rem; font-weight: 600; line-height: 1.5; text-decoration: underline; text-underline-offset: 3px; }
 .repository-preparation__tutorial-link svg { flex: 0 0 15px; width: 15px; height: 15px; margin-top: 1px; }
 .repository-preparation__tutorial-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.repository-preparation__wait-contact { display: grid; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.repository-preparation__wait-contact .repository-email-contact { gap: 7px; margin: 0; padding: 0; border: 0; background: none; }
+.repository-preparation__wait-contact .repository-email-contact__row { flex-wrap: nowrap; justify-content: space-between; gap: 10px; padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.repository-preparation__wait-contact .repository-email-contact__row > a { min-width: 0; font-size: .86rem; line-height: 1.5; }
+.repository-preparation__wait-contact .repository-email-contact__row > a svg { flex: 0 0 17px; width: 17px; height: 17px; }
+.repository-preparation__wait-contact .repository-email-contact__copy { margin: 0; }
+.repository-preparation__wait-guidance { display: flex; align-items: flex-start; gap: 9px; }
+.repository-preparation__wait-guidance > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 1px; color: var(--institutional); }
+.repository-preparation__wait-guidance > div { min-width: 0; }
+.repository-preparation__wait-guidance strong { display: block; margin-bottom: 4px; font-size: .82rem; line-height: 1.5; }
+.repository-preparation__wait-guidance p { color: var(--text-muted); font-size: .78rem; line-height: 1.6; }
