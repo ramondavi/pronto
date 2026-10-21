@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- A etapa 0 remove a opção redundante de liberação em outro destino; essa situação continua identificada pelo modal de conferência e encaminhada ao pedido de correção.
+
 - A divisória do cabeçalho Antes de começar passa abaixo do título e do botão do RI em toda a largura; o botão orienta voltar ao Pronto! e alternar entre as abas durante as verificações.
 
 - Orientações de cadastro no RI passam a três passos visuais com ícones, títulos curtos e ações de abrir o repositório e consultar o tutorial junto ao primeiro passo.

@@ -808,3 +808,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Orientações de criação e confirmação da conta no RI apresentam três passos visuais numerados e com ícones: criar a conta, confirmar pelo e-mail recebido e continuar no Pronto!. Abrir RI e tutorial ficam junto do primeiro passo, com hierarquia principal/secundária; os demais orientam caixa de entrada/spam e a resposta após a contagem, preservando o fluxo aprovado.
 
 - A divisória do cabeçalho do preparo do RI pertence ao contêiner completo, abaixo do texto e do botão de login, sem interrupção. O texto interno do botão orienta fazer login na nova aba, voltar ao Pronto! e alternar entre as abas para conferir cada etapa.
+
+- Simplificação aprovada da etapa 0: retirar o quarto botão “Tenho liberação para depositar, mas para outro destino”, pois o modal da opção de conta/liberação já identifica essa situação. Manter as três opções iniciais, a rota interna de destino errado, seu resumo em primeira pessoa e o encaminhamento para correção ao indicar a divergência no modal. Substitui a orientação anterior de exibir quatro opções.
