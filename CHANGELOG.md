@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O preparo do autodepósito recebe cartões e decisões mais compactos, ícones visíveis, cabeçalhos alinhados e ação final organizada; confirmar acesso na etapa 0 leva suavemente ao botão do guia.
+
 - A conferência de acesso ao RI mostra a coleção pelo caminho completo e o tipo de documento separadamente, acompanhando os campos vistos pelo estudante no repositório.
 
 - A preparação do autodepósito passa a conduzir decisões condicionais sobre cadastro, pedido e liberação no destino correto, com pedido de correção quando houver divergência e retomada por trabalho na conta. As mensagens de carregamento alternam mais rapidamente.

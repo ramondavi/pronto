@@ -19,6 +19,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const [hasConflict, setHasConflict] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
+  const startButtonRef = useRef<HTMLButtonElement>(null);
   const revision = useRef(0);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const blocked = useRef(false);
@@ -78,9 +79,16 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
     setState(next);
     if (step !== undefined) requestAnimationFrame(() => document.getElementById(`repository-preparation-${step}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
   }
+  function scrollToStart() {
+    requestAnimationFrame(() => {
+      startButtonRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+      startButtonRef.current?.focus({ preventScroll: true });
+    });
+  }
   function route(value: AccessPreparation["route"]) {
-    if (state.route === value) { update({ ...state, expanded: [value === "none" ? 1 : value === "ready" ? 0 : 2] }); return; }
-    update({ ...emptyAccessPreparation, route: value, request: value === "wrong" ? "correction" : "", requestPhase: value === "wrong" ? "compose" : "choice", expanded: [value === "none" ? 1 : value === "ready" ? 0 : 2] }, value === "none" ? 1 : value === "ready" ? 0 : 2);
+    if (state.route === value) { update({ ...state, expanded: [value === "none" ? 1 : value === "ready" ? 0 : 2] }); if (value === "ready") scrollToStart(); return; }
+    update({ ...emptyAccessPreparation, route: value, request: value === "wrong" ? "correction" : "", requestPhase: value === "wrong" ? "compose" : "choice", expanded: [value === "none" ? 1 : value === "ready" ? 0 : 2] }, value === "ready" ? undefined : value === "none" ? 1 : 2);
+    if (value === "ready") scrollToStart();
   }
   function account(value: AccessPreparation["account"]) {
     const changed = state.account !== value && !(["has","confirmed"].includes(state.account) && ["has","confirmed"].includes(value));
@@ -120,7 +128,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
       </div>}
       </section>;
     })}</div>
-    <footer className="repository-preparation__footer"><p>{t(ready ? "Acesso confirmado. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas decisões ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação.")}</p><button className="button button--primary cataloging-homologation__action" disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><span><strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação no destino correto para começar." : "Confirme a conta e a liberação no RI/UFBA para começar.")}</small>}</span><AppIcon name={ready ? "upload" : "lock"} /></button><small role="status">{t(preview ? "Demonstração: decisões não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando decisões…" : loaded && !error ? "Decisões salvas na sua conta." : "")}</small></footer>
+    <footer className="repository-preparation__footer"><div className="repository-preparation__notice"><AppIcon name={ready ? "check" : "help"} /><p>{t(ready ? "Acesso confirmado. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas decisões ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação.")}</p></div><button ref={startButtonRef} className="button button--primary cataloging-homologation__action" disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><span><strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação no destino correto para começar." : "Confirme a conta e a liberação no RI/UFBA para começar.")}</small>}</span><AppIcon name={ready ? "upload" : "lock"} /></button><small role="status">{t(preview ? "Demonstração: decisões não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando decisões…" : loaded && !error ? "Decisões salvas na sua conta." : "")}</small></footer>
     {(error || beginError) && <div className="auth-feedback auth-feedback--error" role="alert"><p>{t(error || beginError)}</p><button type="button" className="button button--secondary button--small" onClick={() => window.location.reload()}>{t("Recarregar decisões")}</button></div>}
   </section>;
 }

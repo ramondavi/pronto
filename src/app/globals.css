@@ -6921,3 +6921,44 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__ri-field > span svg { width: 16px; height: 16px; color: var(--institutional); }
 .repository-preparation .repository-preparation__ri-value { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--field); color: var(--text); font-size: .84rem; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
 .repository-preparation__ri-field small { color: var(--text-muted); line-height: 1.5; }
+
+/* Preparation uses the shared card and decision styles without the PDF editor indentation. */
+.repository-preparation { gap: 18px; }
+.repository-preparation > .admin-section__lead { margin-bottom: 0; }
+.repository-preparation__steps { gap: 10px; }
+.repository-preparation .browser-pdf-delivery__step { padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.repository-preparation .browser-pdf-delivery__step.is-active { background: var(--surface-raised); border-color: color-mix(in srgb, var(--institutional) 35%, var(--line)); }
+.repository-preparation .browser-pdf-delivery__step-heading { grid-template-columns: 30px minmax(0,1fr) 18px; gap: 12px; padding: 14px 16px; }
+.repository-preparation .browser-pdf-delivery__step-heading > svg { width: 18px; height: 18px; color: var(--institutional); }
+.repository-preparation .browser-pdf-delivery__step.is-active .repository-preparation__number { border-color: var(--institutional); background: var(--institutional); color: var(--bg); }
+.repository-preparation .browser-pdf-delivery__step-heading:disabled .repository-preparation__number { background: var(--surface); color: var(--text-muted); }
+.repository-preparation .browser-pdf-delivery__step-body { gap: 14px; padding: 0 16px 16px; }
+.repository-preparation__choices { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
+.repository-preparation__choices > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+.repository-preparation .repository-preparation__choice { display: grid; grid-template-columns: 22px minmax(0,1fr) 17px; align-items: center; gap: 10px; min-height: 80px; padding: 12px; }
+.repository-preparation .repository-preparation__choice > svg:first-child { display: block; width: 22px; height: 22px; }
+.repository-preparation .repository-preparation__choice > svg:last-child { display: block; opacity: 0; width: 17px; height: 17px; }
+.repository-preparation .repository-preparation__choice.is-selected > svg:last-child { opacity: 1; }
+.repository-preparation .repository-preparation__choice.is-selected { border-width: 1px; box-shadow: inset 0 0 0 1px var(--institutional); }
+.repository-preparation__choice small { line-height: 1.45; }
+.repository-preparation__destination { gap: 12px; padding: 14px; }
+.repository-preparation__ri-field { grid-template-columns: 140px minmax(0,1fr); gap: 6px 12px; align-items: center; }
+.repository-preparation__ri-field > span { align-self: start; padding-top: 10px; }
+.repository-preparation__ri-field > small { grid-column: 2; font-size: .72rem; }
+.repository-preparation .repository-preparation__ri-value { padding: 9px 12px; font-size: .8rem; }
+.repository-preparation__footer { grid-template-columns: minmax(0,1fr) minmax(230px,340px); align-items: center; gap: 12px 20px; }
+.repository-preparation__notice { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+.repository-preparation__notice > svg { flex: 0 0 20px; width: 20px; height: 20px; margin-top: 2px; color: var(--institutional); }
+.repository-preparation__notice p { font-size: .8rem; line-height: 1.55; }
+.repository-preparation__footer > small { grid-column: 1 / -1; color: var(--text-muted); font-size: .7rem; }
+.repository-preparation__footer > .button { min-width: 0; scroll-margin-block: 40px; }
+.repository-preparation__footer > .button:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+.repository-preparation .repository-guide__access-template { margin: 0; }
+@media (max-width: 700px) {
+ .repository-preparation .browser-pdf-delivery__step-heading { padding: 12px; gap: 10px; }
+ .repository-preparation .browser-pdf-delivery__step-body { padding: 0 12px 12px; }
+ .repository-preparation__choices, .repository-preparation__footer, .repository-preparation__ri-field { grid-template-columns: minmax(0,1fr); }
+ .repository-preparation__ri-field > span { padding-top: 0; }
+ .repository-preparation__ri-field > small { grid-column: 1; }
+ .repository-preparation .repository-preparation__choice { min-height: 74px; }
+}

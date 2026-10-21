@@ -772,3 +772,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - As frases do carregamento passam a trocar a cada 2,5 segundos, com fade curto e mensagem estática quando há preferência por movimento reduzido.
 
 - Na preparação do RI, apresentar o destino como o estudante o vê: “Coleção” com o caminho completo e “Tipo de documento” em campo separado, indicando as respectivas telas do RI. Não fragmentar o caminho em vários campos de comunidade e subcomunidade na conferência do estudante. Isso altera a apresentação, preservando os destinos definidos por programa e os dados do pedido de acesso.
+
+- Na preparação do autodepósito, usar cartões compactos com cabeçalho em três áreas (número, texto, ícone), decisões com ícones sempre visíveis e ação final alinhada. A escolha de conta e acesso corretos na etapa 0 rola suavemente e posiciona o foco no botão do guia; movimento reduzido evita a animação.
