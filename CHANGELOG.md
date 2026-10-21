@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- A conferência de acesso ao RI mostra a coleção pelo caminho completo e o tipo de documento separadamente, acompanhando os campos vistos pelo estudante no repositório.
+
 - A preparação do autodepósito passa a conduzir decisões condicionais sobre cadastro, pedido e liberação no destino correto, com pedido de correção quando houver divergência e retomada por trabalho na conta. As mensagens de carregamento alternam mais rapidamente.
 
 - Acervo retrospectivo e Depósitos pendentes adotam os componentes de cabeçalhos, indicadores, cartões, guias e ações do painel. As quatro atribuições de depósitos passam a aparecer na gestão de permissões, com autorização no banco. O dropdown de ordenação volta ao estilo compartilhado do Pronto!.

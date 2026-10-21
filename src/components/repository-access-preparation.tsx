@@ -100,8 +100,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
     catch { setError("Não foi possível salvar a confirmação. Recarregue as decisões antes de iniciar o guia."); }
     finally { setStarting(false); }
   }
-  const parts = setup.collection.split(" > ");
-  const destination = <div className="repository-preparation__destination"><strong><AppIcon name="book" />{t("Destino deste trabalho no RI/UFBA")}</strong><dl><div><dt>{t("Comunidade")}</dt><dd>{parts[0]}</dd></div>{parts.length > 2 && <div><dt>{t("Subcomunidade")}</dt><dd>{parts.slice(1,-1).join(" > ")}</dd></div>}<div><dt>{t("Coleção")}</dt><dd>{parts.at(-1)}</dd></div><div><dt>{t("Tipo de documento")}</dt><dd>{setup.documentType}</dd></div></dl></div>;
+  const destination = <div className="repository-preparation__destination"><strong><AppIcon name="book" />{t("Confira estas opções no RI/UFBA")}</strong><div className="repository-preparation__ri-field"><span><AppIcon name="book" />{t("Coleção")}</span><p className="repository-preparation__ri-value">{setup.collection}</p><small>{t('Na tela “Depósito: Escolha uma coleção”, procure esta opção completa na lista.')}</small></div><div className="repository-preparation__ri-field"><span><AppIcon name="document" />{t("Tipo de documento")}</span><p className="repository-preparation__ri-value">{setup.documentType}</p><small>{t('Na tela “Depósito: descreva este item”, confira esta opção no campo “Tipo de documento”.')}</small></div></div>;
   function choice(label: string, description: string, icon: AppIconName, selected: boolean, onClick: () => void) {
     return <button className={`browser-pdf-delivery__color-option repository-preparation__choice${selected ? " is-selected" : ""}`} type="button" aria-pressed={selected} disabled={!loaded || starting} onClick={onClick}><AppIcon name={icon} /><span><strong>{t(label)}</strong><small>{t(description)}</small></span><AppIcon name="check" /></button>;
   }

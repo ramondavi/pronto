@@ -6915,3 +6915,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__footer p { margin: 0; color: var(--text-muted); line-height: 1.6; }
 .repository-preparation__footer .cataloging-homologation__action { width: 100%; max-width: 480px; }
 @media (max-width: 700px) { .repository-preparation__destination dl > div { grid-template-columns: minmax(0,1fr); gap: 4px; } .repository-preparation__choice { align-items: flex-start; } }
+
+.repository-preparation__ri-field { display: grid; gap: 8px; min-width: 0; }
+.repository-preparation__ri-field > span { display: flex; align-items: center; gap: 7px; color: var(--text); font-size: .8rem; font-weight: 750; }
+.repository-preparation__ri-field > span svg { width: 16px; height: 16px; color: var(--institutional); }
+.repository-preparation .repository-preparation__ri-value { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--field); color: var(--text); font-size: .84rem; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
+.repository-preparation__ri-field small { color: var(--text-muted); line-height: 1.5; }
