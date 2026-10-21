@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { RepositoryAccessPreparation } from "@/components/repository-access-preparation";
 import { createClient } from "@/lib/supabase/client";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
 import { useInterfaceLanguage } from "@/components/interface-language";
@@ -32,7 +33,7 @@ const steps: { title: string; description: string; icon: AppIconName }[] = [
   { title: "Conclusão", description: "Acompanhe o andamento pelo e-mail e pelo “Meu espaço” no RI.", icon: "check" },
 ];
 
-export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, requesterEmail, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; requesterEmail: string; preview?: boolean }) {
+export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, requesterEmail, destinationKey, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; requesterEmail: string; destinationKey?: string; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (value: string) => uiText(language, value);
   const fieldLabel = (label: string) => {
@@ -40,6 +41,8 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
     return numbered ? `${t(numbered[1])} ${numbered[2]}` : t(label);
   };
   const [started, setStarted] = useState(startedAt);
+  const [reviewingPreparation, setReviewingPreparation] = useState(true);
+  const [correctingAccess, setCorrectingAccess] = useState(false);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
   const [error, setError] = useState("");
@@ -53,12 +56,13 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   const [copyFormat, setCopyFormat] = useState<"formatted" | "plain">("formatted");
   const repositoryEmail = emailChoice === "same" ? requesterEmail : emailChoice === "other" ? otherEmail.trim() : "";
   const emailReady = emailChoice !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(repositoryEmail);
-  const accessSubject = repositoryAccessSubject(requesterName, language);
-  const accessEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup, language);
+  const correctionRequest = "Solicito a correção da minha liberação para depositar no destino indicado abaixo. O acesso disponível na minha conta está em outro destino.";
+  const accessSubject = correctingAccess ? `Correção de liberação para depósito no RI/UFBA - ${requesterName}` : repositoryAccessSubject(requesterName, language);
+  const accessEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup, language).replace(repositoryAccessText(language).request, correctingAccess ? correctionRequest : repositoryAccessText(language).request);
   const accessItems = repositoryAccessItems(requesterName, repositoryEmail, setup, language);
-  const accessText = repositoryAccessText(language);
-  const portugueseSubject = repositoryAccessSubject(requesterName);
-  const portugueseEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup);
+  const accessText = { ...repositoryAccessText(language), ...(correctingAccess ? { request: correctionRequest } : {}) };
+  const portugueseSubject = correctingAccess ? `Correção de liberação para depósito no RI/UFBA - ${requesterName}` : repositoryAccessSubject(requesterName);
+  const portugueseEmail = repositoryAccessEmail(requesterName, repositoryEmail, setup).replace(repositoryAccessText().request, correctingAccess ? correctionRequest : repositoryAccessText().request);
 
   useEffect(() => {
     if (editingOtherEmail) otherEmailInputRef.current?.focus();
@@ -92,7 +96,7 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
     if (!emailReady) return;
     try {
       if (copyFormat === "formatted" && typeof ClipboardItem !== "undefined") {
-        const html = repositoryAccessEmailHtml(requesterName, repositoryEmail, setup);
+        const html = repositoryAccessEmailHtml(requesterName, repositoryEmail, setup).replace(repositoryAccessText().request, correctingAccess ? correctionRequest : repositoryAccessText().request);
         await navigator.clipboard.write([new ClipboardItem({
           "text/plain": new Blob([portugueseEmail], { type: "text/plain" }),
           "text/html": new Blob([html], { type: "text/html" }),
@@ -105,13 +109,14 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   }
 
   async function begin() {
-    if (preview) { setStarted(new Date().toISOString()); return; }
+    if (preview) { setStarted(new Date().toISOString()); return true; }
     setBusy(true);
     setError("");
     const { data, error: rpcError } = await createClient().rpc("start_repository_deposit", { target_request_id: requestId });
     if (rpcError) setError(t("Não foi possível registrar o início. Atualize a página e tente novamente."));
     else setStarted(String(data));
     setBusy(false);
+    return !rpcError;
   }
 
   async function copy(label: string, value: string) {
@@ -129,15 +134,8 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
     } catch { setError(t("Não foi possível copiar. Selecione o texto e copie manualmente.")); }
   }
 
-  if (!started) return <section className="panel repository-guide__welcome" aria-labelledby="repository-welcome-title">
-    <span className="repository-guide__welcome-icon"><AppIcon name="upload" /></span>
-    <div><p className="eyebrow">{t("Próxima etapa")}</p><h2 id="repository-welcome-title">{t("Faça o autodepósito no RI/UFBA")}</h2><p>{t("Antes de depositar, prepare seu acesso ao repositório. Siga as etapas abaixo na ordem indicada.")}</p></div>
-    <div className="repository-guide__access-heading"><span>{t("Antes de começar")}</span><h3>{t("Prepare seu acesso em 3 etapas")}</h3></div>
-    <ol className="repository-guide__access-steps" aria-label={t("Como obter acesso para depositar no RI")}>
-      <li><span className="repository-guide__access-number">1</span><AppIcon name="person" /><div><strong>{t("Crie sua conta")}</strong><p>{t("Se ainda não tiver conta, cadastre-se no")} <a href="https://repositorio.ufba.br/" target="_blank" rel="noopener noreferrer">RI/UFBA</a> {t("com o e-mail que pretende usar no repositório. Recomendamos usar seu e-mail institucional @ufba.br. Se precisar, consulte o")} <a href="https://repositorio.ufba.br/files/TUTORIAL_CADASTRO_DE_USUARIOS.PDF" target="_blank" rel="noopener noreferrer">{t("tutorial de cadastro")}</a>.</p></div></li>
-      <li className="repository-guide__access-step--email"><span className="repository-guide__access-number">2</span><AppIcon name="message" /><div><strong>{t("Solicite a liberação")}</strong><p>{t("Confira o modelo abaixo e envie a solicitação para")} <a href="mailto:repositorio@ufba.br">repositorio@ufba.br</a>. {t("Use o e-mail cadastrado no RI/UFBA; a equipe confirmará a coleção e o tipo de documento liberados.")}</p>
-        <div className="repository-guide__access-template">
-          <div className="repository-guide__access-template-heading"><span className="repository-guide__access-template-icon"><AppIcon name="message" /></span><div><span className="eyebrow">{t("Pedido de acesso")}</span><h3>{t("Prepare o e-mail ao RI/UFBA")}</h3></div></div>
+  const emailTemplate = <div className="repository-guide__access-template">
+          <div className="repository-guide__access-template-heading"><span className="repository-guide__access-template-icon"><AppIcon name="message" /></span><div><span className="eyebrow">{t(correctingAccess ? "Correção de acesso" : "Pedido de acesso")}</span><h3>{t("Prepare o e-mail ao RI/UFBA")}</h3></div></div>
           <fieldset className="repository-guide__email-choice"><legend>{t("Qual e-mail você cadastrou no RI/UFBA?")}</legend>
             <div className={`repository-guide__email-option${emailChoice === "same" ? " is-selected" : ""}`}><label htmlFor={`repository-email-same-${requestId}`}><input id={`repository-email-same-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "same"} onChange={() => { setEmailChoice("same"); setEditingOtherEmail(false); setConfirmingOtherEmail(false); }} /><AppIcon className="repository-guide__email-option-icon" name="person" /><span><strong>{t("O mesmo e-mail do Pronto!")}</strong><small>{requesterEmail}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label></div>
             <div className={`repository-guide__email-option repository-guide__email-option--other${emailChoice === "other" ? " is-selected" : ""}${editingOtherEmail ? " is-editing" : ""}${confirmingOtherEmail ? " is-confirming" : ""}`}><label htmlFor={`repository-email-other-${requestId}`} onClick={(event) => { if (emailChoice === "other") { event.preventDefault(); if (!editingOtherEmail) openOtherEmailEditor(); } }}><input id={`repository-email-other-${requestId}`} type="radio" name="repository-email-choice" checked={emailChoice === "other"} onChange={() => { setEmailChoice("other"); openOtherEmailEditor(); }} /><AppIcon className="repository-guide__email-option-icon" name="message" /><span className="repository-guide__other-email-copy"><strong>{t("Outro e-mail")}</strong><small>{otherEmail || t("Informe o endereço usado no cadastro do RI/UFBA.")}</small></span><AppIcon className="repository-guide__email-option-check" name="check" /></label><input ref={otherEmailInputRef} className="repository-guide__other-email-input" type="email" autoComplete="email" placeholder={t("Digite o e-mail usado no RI/UFBA")} aria-label={t("E-mail cadastrado no RI/UFBA")} value={otherEmailDraft} onChange={(event) => setOtherEmailDraft(event.target.value)} onBlur={confirmOtherEmail} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); event.currentTarget.blur(); } }} aria-invalid={otherEmailDraft.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(otherEmailDraft.trim())} tabIndex={editingOtherEmail ? 0 : -1} /><span className="repository-guide__other-email-feedback" role="status"><AppIcon name="check" />{t("E-mail aplicado à mensagem")}</span></div>
@@ -146,15 +144,11 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
           <div className="repository-guide__access-subject"><div><span>{t("Assunto")}</span><strong>{accessSubject}</strong></div><button className="button button--secondary button--small button--with-icon" type="button" onClick={() => void copy("assunto do pedido", portugueseSubject)}><AppIcon name={copied === "assunto do pedido" ? "check" : "copy"} />{copied === "assunto do pedido" ? t("Copiado") : t("Copiar assunto")}</button></div>
           <div className="repository-guide__access-message"><div className="repository-guide__access-message-heading"><span>{t("Mensagem")}</span><div className="repository-guide__copy-format" role="group" aria-label={t("Formato da cópia da mensagem")}><button type="button" className={copyFormat === "formatted" ? "is-selected" : ""} aria-pressed={copyFormat === "formatted"} onClick={() => setCopyFormat("formatted")}>{t("Formatada")}</button><button type="button" className={copyFormat === "plain" ? "is-selected" : ""} aria-pressed={copyFormat === "plain"} onClick={() => setCopyFormat("plain")}>{t("Sem formatação")}</button></div></div>{copyFormat === "plain" ? <pre className="repository-guide__message-plain" aria-label={t("Prévia sem formatação da mensagem")}>{accessEmail}</pre> : <div className="repository-guide__message-preview" aria-label={t("Prévia da mensagem")}><p>{accessText.greeting}</p><p>{accessText.request}</p><ul>{accessItems.map((item) => <li key={item}>{item}</li>)}</ul><p>{accessText.thanks}</p><p>{accessText.closing}<br />{requesterName}</p></div>}</div>
           <button className="button button--primary button--with-icon repository-guide__copy-message" type="button" disabled={!emailReady} onClick={() => void copyAccessMessage()}><AppIcon name={copied === "pedido de acesso" ? "check" : emailReady ? "copy" : "lock"} />{t(!emailReady ? "Informe o e-mail cadastrado no RI para copiar" : copied === "pedido de acesso" ? "Mensagem copiada" : "Copiar mensagem")}</button>
-        </div>
-      </div></li>
-      <li><span className="repository-guide__access-number">3</span><AppIcon name="calendar" /><div><strong>{t("Aguarde a confirmação do RI")}</strong><p>{t("Só inicie o depósito após a equipe liberar seu acesso. A liberação vale por")} <strong>{t("30 dias")}</strong>; {t("se vencer, solicite outra por e-mail.")}</p></div></li>
-    </ol>
-    <div className="repository-guide__welcome-action"><div><strong>{t("Recebeu a liberação?")}</strong><small>{t("Tenha em mãos o PDF final com a ficha. O guia ajudará você a preencher o depósito.")}</small></div><button className="button button--primary button--with-icon" type="button" disabled={busy} onClick={() => void begin()}><AppIcon name="arrowRight" />{t(busy ? "Registrando início…" : "Começar guia de depósito")}</button></div>
-    {error && <p className="form-error" role="alert">{error}</p>}
-  </section>;
+        </div>;
 
-  return <div className="repository-guide">
+  if (!started || reviewingPreparation) return <RepositoryAccessPreparation requestId={requestId} setup={setup} destinationKey={destinationKey ?? JSON.stringify(["preview",setup.collection,setup.documentType])} preview={preview} emailTemplate={emailTemplate} emailState={{ emailChoice, otherEmail }} onRestoreEmail={(value) => { setEmailChoice(value.emailChoice); setOtherEmail(value.otherEmail); setOtherEmailDraft(value.otherEmail); }} onCorrectionChange={setCorrectingAccess} onBegin={async () => { if (await begin()) setReviewingPreparation(false); }} beginError={error} />;
+
+  return <div className="repository-guide"><button className="button button--secondary button--with-icon" type="button" disabled={busy} onClick={() => setReviewingPreparation(true)}><AppIcon name="undo" />{t("Rever preparação do acesso")}</button>
     <section className="panel repository-guide__hero" aria-labelledby="repository-guide-title"><div className="repository-guide__hero-copy"><p className="eyebrow"><AppIcon name="check" />{t("Início registrado em")} {new Intl.DateTimeFormat(language, { dateStyle: "short", timeStyle: "short" }).format(new Date(started))}</p><h2 id="repository-guide-title">{t("Deposite seu trabalho no RI/UFBA")}</h2><p>{t("Abra o RI em outra aba. Use o roteiro e os dados desta página enquanto preenche o depósito.")}</p></div><a className="button button--primary button--with-icon" href="https://repositorio.ufba.br/submit" target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t("Abrir RI/UFBA")}</a></section>
 
     <section className="repository-guide__section" aria-labelledby="repository-steps-title"><div className="repository-guide__section-heading"><span className="repository-guide__section-icon"><AppIcon name="hierarchy" /></span><div><p className="eyebrow">{t("Roteiro")}</p><h2 id="repository-steps-title">{t("O que fazer no RI")}</h2><p>{t("Siga a ordem apresentada pelo repositório.")}</p></div></div><ol className="repository-guide__steps">{steps.map((step, index) => <li className="panel repository-guide__step" key={step.title}><span className="repository-guide__step-number">{String(index + 1).padStart(2, "0")}</span><AppIcon name={step.icon} /><div><h3>{t(step.title)}</h3><p>{t(step.description)}</p></div></li>)}</ol></section>

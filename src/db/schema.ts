@@ -470,3 +470,11 @@ export const repositoryDepositReminders = pgTable("repository_deposit_reminders"
   queuedBy: uuid("queued_by").notNull().references(() => profiles.id),
   queuedAt: timestamp("queued_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const repositoryAccessPreparations = pgTable("repository_access_preparations", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  state: jsonb("state").notNull().default({}),
+  destination: jsonb("destination").notNull(),
+  revision: integer("revision").notNull().default(1),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
