@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- Desativar o guia de um programa oculta o fluxo de autodepósito também para o acervo retrospectivo, bloqueando acesso direto e operações no banco. O guia passa a registrar a declaração de submissão para aguardar validação da Biblioteca. A ficha mostra até três autores na responsabilidade, separados por vírgula; com mais de três, primeiro autor e ... [et al.].
+
 - Etapas que aguardam confirmação da conta ou liberação/correção do RI usam quadrado azul com relógio, distinguindo a espera da conclusão com check verde.
 
 - Grupos de três opções do preparo do RI passam a três colunas iguais em telas amplas, mantendo uma coluna em telas pequenas.

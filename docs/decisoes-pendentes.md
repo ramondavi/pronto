@@ -33,3 +33,9 @@ Este arquivo contém somente pontos que o Documento-Mestre Consolidado ainda nã
 
 - Testar o envio pela hospedagem e confirmar a configuração SMTP do Supabase Auth antes do lançamento público.
 - Executar a validação assistida com estudantes e bibliotecários e registrar o aceite sem dados pessoais.
+
+
+## Fluxo de publicação no RI — discussão de 21/10/2026
+
+- O bibliotecário já registra URL/Handle ao encerrar; nos retrospectivos, o fluxo vigente também exige a URL informada pela secretaria e o início do guia. Avaliar permitir que a Biblioteca registre e valide a publicação antes dessas ações. Proposta ainda não aprovada: estudante/secretaria declara o envio, Biblioteca valida e informa o Handle definitivo; dispensar a dependência da URL fornecida pelo solicitante. Alternativa: aceitar URL sugerida pelo estudante, sempre dependente de validação bibliotecária.
+- Para programas com depósito obrigatório, avaliar acompanhamento separado de “aguardando envio” e “aguardando validação”, lembretes após liberação da ficha e encerramento somente com publicação verificada. Definir a obrigação institucional por programa; a declaração de envio não comprova publicação. Não implementar automaticamente esta proposta.

@@ -58,7 +58,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ]) : [false, false, false, false, false, false];
   const adminPermissions = staff ? await userAdminPermissions(supabase, profile.role) : [];
   const serviceStatus = profile.role === "student" || canPreviewStudent ? await studentServiceStatus(supabase) : undefined;
-  const access = { canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
+  const { data: repositoryRequests } = profile.role === "student" ? await supabase.from("cataloging_requests").select("id,academic_enrollments(academic_programs(repository_deposit_enabled))").order("submitted_at", { ascending: false }) : { data: [] };
+  const repositoryAccess = (repositoryRequests ?? []).map((request) => {
+    const enrollment = Array.isArray(request.academic_enrollments) ? request.academic_enrollments[0] : request.academic_enrollments;
+    const program = enrollment && (Array.isArray(enrollment.academic_programs) ? enrollment.academic_programs[0] : enrollment.academic_programs);
+    return { id: request.id, enabled: program?.repository_deposit_enabled === true };
+  });
+  const access = { repositoryAccess, canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
   if (!acknowledgement) {
     return <PanelInterfaceLanguageScope staff={staff}><DashboardShell retrospective={retrospective} fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access} showNotifications={false}><main className="dashboard-main dashboard-main--narrow" aria-hidden="true" /><PrivacyAcknowledgement /></DashboardShell></PanelInterfaceLanguageScope>;
   }

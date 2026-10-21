@@ -83,7 +83,8 @@ export function buildCardContent(snapshot: CatalogingCardSnapshot, options: Card
   const title = withoutFinalPunctuation(required(snapshot.request.title, "Título do trabalho"));
   const subtitle = snapshot.request.subtitle ? ` : ${lowerInitial(withoutFinalPunctuation(snapshot.request.subtitle))}` : "";
   const equivalentTitle = snapshot.request.includeEquivalentTitle && snapshot.request.equivalentTitle ? ` = ${withoutFinalPunctuation(snapshot.request.equivalentTitle)}` : "";
-  const responsibilityName = required(author?.transcribedName, "Nome do autor no trabalho", 3);
+  const responsibilityNames = authors.length ? authors.slice(0, 3).map((person) => withoutFinalPunctuation(required(person.transcribedName, "Nome do autor no trabalho", 3))) : [required(author?.transcribedName, "Nome do autor no trabalho", 3)];
+  const responsibilityName = authors.length > 3 ? `${responsibilityNames[0]} ... [et al.]` : responsibilityNames.filter(Boolean).join(", ");
   const responsibility = responsibilityName ? ` / ${withoutFinalPunctuation(responsibilityName)}.` : ".";
   const place = required(snapshot.request.publicationPlace ?? "Salvador", "Local de publicação", 2);
   const depositYear = snapshot.request.depositYear && snapshot.request.depositYear >= 1900 && snapshot.request.depositYear >= (snapshot.request.defenseYear ?? 0) ? String(snapshot.request.depositYear) : preview ? "[Ano de depósito]" : "";
@@ -146,6 +147,7 @@ export function buildCardContent(snapshot: CatalogingCardSnapshot, options: Card
   return {
     authorizedAuthor: authorName ? `${withoutFinalPunctuation(authorName)}${author?.birthYear && author.birthYearValidated && author.authorizedName.trim().length >= 3 && !authorizedNameNeedsReview(authorName) ? `, ${author.birthYear}-` : "."}` : "",
     titleStatement,
+    responsibility,
     physicalDescription,
     academicNote,
     notes,

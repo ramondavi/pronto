@@ -329,6 +329,8 @@ export const repositoryDepositProgress = pgTable("repository_deposit_progress", 
   requestId: uuid("request_id").references(() => catalogingRequests.id, { onDelete: "restrict" }).notNull().unique(),
   startedBy: uuid("started_by").references(() => profiles.id, { onDelete: "restrict" }).notNull(),
   startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+  submittedBy: uuid("submitted_by").references(() => profiles.id, { onDelete: "restrict" }),
   ...timestamps,
 });
 

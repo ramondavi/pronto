@@ -7094,3 +7094,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__number svg { width: 17px; height: 17px; }
 
 .repository-preparation .browser-pdf-delivery__step.is-waiting .repository-preparation__number { background: var(--institutional); border-color: var(--institutional); color: var(--bg); }
+
+.repository-guide__submission { display: grid; gap: 16px; }
+.repository-guide__submission .admin-section__lead { margin-bottom: 0; }
+.repository-guide__submission > .button { justify-self: stretch; }
