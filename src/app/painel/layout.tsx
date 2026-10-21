@@ -1,3 +1,4 @@
+import { hasRetrospectiveAccess } from "@/lib/retrospective-access";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -45,6 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     : staffBirthday?.birthday_month && staffBirthday.birthday_day
       ? `${String(staffBirthday.birthday_month).padStart(2, "0")}-${String(staffBirthday.birthday_day).padStart(2, "0")}` : null;
   const { data: acknowledgement } = await supabase.from("privacy_notice_acknowledgements").select("id").eq("profile_id", user.id).eq("notice_version", PRIVACY_NOTICE_VERSION).maybeSingle();
+  const retrospective = profile.role === "student" && await hasRetrospectiveAccess();
   const staff = profile.role === "cataloger" || profile.role === "administrator";
   const [canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar] = staff ? await Promise.all([
     userHasPermission(supabase, "library.hours.change", profile.role),
@@ -58,7 +60,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const serviceStatus = profile.role === "student" || canPreviewStudent ? await studentServiceStatus(supabase) : undefined;
   const access = { canChangeHours, canViewOverview, canViewQueue, canPreviewStudent, canViewCalendar, canManageCalendar, adminPermissions };
   if (!acknowledgement) {
-    return <PanelInterfaceLanguageScope staff={staff}><DashboardShell fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access} showNotifications={false}><main className="dashboard-main dashboard-main--narrow" aria-hidden="true" /><PrivacyAcknowledgement /></DashboardShell></PanelInterfaceLanguageScope>;
+    return <PanelInterfaceLanguageScope staff={staff}><DashboardShell retrospective={retrospective} fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access} showNotifications={false}><main className="dashboard-main dashboard-main--narrow" aria-hidden="true" /><PrivacyAcknowledgement /></DashboardShell></PanelInterfaceLanguageScope>;
   }
-  return <PanelInterfaceLanguageScope staff={staff}><DashboardShell fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access}>{children}</DashboardShell></PanelInterfaceLanguageScope>;
+  return <PanelInterfaceLanguageScope staff={staff}><DashboardShell retrospective={retrospective} fullName={profile.full_name} role={profile.role} userId={user.id} avatarChoice={profile.avatar_choice} birthday={birthday} serviceStatus={serviceStatus} {...access}>{children}</DashboardShell></PanelInterfaceLanguageScope>;
 }

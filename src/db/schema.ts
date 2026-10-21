@@ -63,9 +63,24 @@ export const staffInheritedRoles = pgTable("staff_inherited_roles", {
 export const studentProfiles = pgTable("student_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
   profileId: uuid("profile_id").references(() => profiles.id, { onDelete: "cascade" }).notNull().unique(),
-  cpf: text("cpf").notNull().unique(),
+  cpf: text("cpf").unique(),
   birthDate: date("birth_date"),
   ...timestamps,
+});
+
+export const retrospectiveAccounts = pgTable("retrospective_accounts", {
+  profileId: uuid("profile_id").primaryKey().references(() => profiles.id, { onDelete: "restrict" }),
+  grantedBy: uuid("granted_by").notNull().references(() => profiles.id),
+  grantedAt: timestamp("granted_at", { withTimezone: true }).defaultNow().notNull(),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  endedBy: uuid("ended_by").references(() => profiles.id),
+});
+
+export const retrospectiveDepositReports = pgTable("retrospective_deposit_reports", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  permanentUrl: text("permanent_url").notNull(),
+  reportedBy: uuid("reported_by").notNull().references(() => profiles.id),
+  reportedAt: timestamp("reported_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const academicEnrollments = pgTable("academic_enrollments", {
@@ -81,6 +96,7 @@ export const catalogingRequests = pgTable("cataloging_requests", {
   studentProfileId: uuid("student_profile_id").references(() => studentProfiles.id, { onDelete: "restrict" }).notNull(),
   academicEnrollmentId: uuid("academic_enrollment_id").references(() => academicEnrollments.id, { onDelete: "restrict" }).notNull(),
   protocol: text("protocol").notNull().unique(),
+  retrospective: boolean("retrospective").default(false).notNull(),
   status: requestStatus("status").default("submitted").notNull(),
   assignedTo: uuid("assigned_to").references(() => profiles.id, { onDelete: "restrict" }),
   assignedAt: timestamp("assigned_at", { withTimezone: true }),

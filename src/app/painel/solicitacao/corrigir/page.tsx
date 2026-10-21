@@ -18,9 +18,12 @@ import { uiText } from "@/lib/ui-text";
 type RawRequest = { id: string; protocol: string; title: string; subtitle: string | null; submitted_at: string; equivalent_title: string | null; other_titles: string[]; public_work_url: string; volume_information: string | null; library_note: string | null; enrollment: { registration_number: string; academic_program_id: string; program: { code: string; name: string; work_type: string } | { code: string; name: string; work_type: string }[] | null } | { registration_number: string; academic_program_id: string; program: { code: string; name: string; work_type: string } | { code: string; name: string; work_type: string }[] | null }[] | null; people: { role: string; transcribed_name: string }[]; keywords: { language: string; term: string; position: number }[] };
 const first = <T,>(value: T | T[] | null): T | null => Array.isArray(value) ? value[0] ?? null : value;
 
-export default async function CorrectStudentRequestPage() {
+export default async function CorrectStudentRequestPage({ searchParams }: { searchParams: Promise<{ pedido?: string }> }) {
+  const { pedido } = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase.from("cataloging_requests").select(`id, protocol, title, subtitle, submitted_at, equivalent_title, other_titles, public_work_url, volume_information, library_note, enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(registration_number, academic_program_id, program:academic_programs(code, name, work_type)), people:request_people(role, transcribed_name), keywords:request_keywords(language, term, position)`).eq("status", "changes_requested").maybeSingle();
+  let query = supabase.from("cataloging_requests").select(`id, protocol, title, subtitle, submitted_at, equivalent_title, other_titles, public_work_url, volume_information, library_note, enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(registration_number, academic_program_id, program:academic_programs(code, name, work_type)), people:request_people(role, transcribed_name), keywords:request_keywords(language, term, position)`).eq("status", "changes_requested");
+  if (pedido) query = query.eq("id", pedido);
+  const { data } = await query.order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   if (!data) redirect("/painel/solicitacao");
   const request = data as unknown as RawRequest;
   const { data: revision } = await supabase.from("request_revision_rounds").select("id, returned_at").eq("request_id", request.id).is("responded_at", null).order("round_number", { ascending: false }).limit(1).maybeSingle();

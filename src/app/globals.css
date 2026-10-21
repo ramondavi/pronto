@@ -6716,3 +6716,14 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .request-form .declarations .check input { margin-top: 3px; }
   .request-form .public-link-guidance__guide { align-items: flex-start; overflow-wrap: anywhere; }
 }
+
+/* Acompanhamento dos trabalhos retrospectivos apresentados pela secretaria. */
+.retrospective-overview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-content: start; }
+.retrospective-overview > *, .retrospective-overview .page-heading > div { min-width: 0; }
+.retrospective-overview .page-heading { margin-bottom: 0; }
+.retrospective-overview h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 12px; }
+.retrospective-overview__requests { list-style: none; padding: 0; margin: 0; }
+.retrospective-overview__requests li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.retrospective-overview__requests li:last-child { border-bottom: 0; }
+.retrospective-overview__requests li > div { min-width: 0; flex: 1 1 240px; overflow-wrap: anywhere; }
+.retrospective-overview__requests li > span { font-size: .85rem; }

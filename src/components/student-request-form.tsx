@@ -166,7 +166,7 @@ function errorText(copy: Copy, code: string) {
   return translatedErrors[language][code] ?? translatedErrors[language].unknown_error;
 }
 
-export function StudentRequestForm({ programs, userId, requesterName, usedRegistrations = [], openReview = false, preview = false, previewSuccessHref }: { programs: Program[]; userId: string; requesterName: string; usedRegistrations?: string[]; openReview?: boolean; preview?: boolean; previewSuccessHref?: string }) {
+export function StudentRequestForm({ programs, userId, requesterName, usedRegistrations = [], retrospective = false, openReview = false, preview = false, previewSuccessHref }: { programs: Program[]; userId: string; requesterName: string; usedRegistrations?: string[]; retrospective?: boolean; openReview?: boolean; preview?: boolean; previewSuccessHref?: string }) {
   const router = useRouter();
   const draftKey = studentRequestDraftKey(userId);
   const [draft, setDraft] = useState<StudentRequestDraft>(emptyStudentRequestDraft);
@@ -255,7 +255,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
   };
   const detectedAuthorIndex = matchingRequesterAuthorIndex(requesterName, [draft.people.author, ...draft.people.additionalAuthors]);
   const requesterAuthorIndex = draft.people.birthYearAuthorIndex ?? detectedAuthorIndex;
-  const draftForReview = { ...draft, people: { ...draft.people, birthYearAuthorIndex: requesterAuthorIndex } };
+  const draftForReview = { ...draft, people: { ...draft.people, birthYearAcknowledged: retrospective ? false : draft.people.birthYearAcknowledged, birthYearAuthorIndex: retrospective ? null : requesterAuthorIndex } };
   const registrationUsed = usedRegistrations.includes(draft.registrationNumber.trim());
   const reviewItems = getReviewItems(draftForReview, programs, text).map((item) => item.field === "registration" && registrationUsed ? { ...item, valid: false, issue: errorText(text, "registration_already_used") } : item);
   const submissionReady = ready && reviewItems.every((item) => item.valid);
@@ -447,7 +447,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     setError(undefined);
     try {
       await draftSaveQueue.current.catch(() => undefined);
-      const payload = compactDraft({ ...draftForReview, extentUnit: isMpCecre ? "volumes" : "pages", people: { ...draftForReview.people, additionalAuthors: isRaue ? draft.people.additionalAuthors : [] } });
+      const payload = compactDraft({ ...draftForReview, extentUnit: isMpCecre ? "volumes" : "pages", people: { ...draftForReview.people, birthYearAcknowledged: retrospective ? false : draftForReview.people.birthYearAcknowledged, birthYearAuthorIndex: retrospective ? null : draftForReview.people.birthYearAuthorIndex, additionalAuthors: isRaue ? draft.people.additionalAuthors : [] } });
       const supabase = createClient();
       const { data, error: rpcError } = await supabase.rpc("open_student_request_v12", { payload });
       if (rpcError) {
@@ -464,7 +464,8 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
       try { localStorage.removeItem(draftKey); localStorage.removeItem(studentPreparationKey(userId)); } catch { /* The request is already saved on the server. */ }
       showPanelChange("Solicitação enviada");
       const protocol = Array.isArray(data) ? data[0]?.generated_protocol : undefined;
-      router.push(`/painel/solicitacao?enviada=1${protocol ? `&protocolo=${encodeURIComponent(protocol)}` : ""}`);
+      const requestId = Array.isArray(data) ? data[0]?.request_id : undefined;
+      router.push(`/painel/solicitacao?enviada=1${retrospective && requestId ? `&pedido=${encodeURIComponent(requestId)}` : ""}${protocol ? `&protocolo=${encodeURIComponent(protocol)}` : ""}`);
       router.refresh();
     } catch {
       setError("unknown_error");
@@ -504,9 +505,9 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
           <h3 id="request-people-heading">{text.people}</h3>
           <div className="form-subsection__fields">
             {isRaue ? <AuthorFields values={[draft.people.author, ...draft.people.additionalAuthors]} onChange={(authors, resetSelection) => set("people", { ...draft.people, author: authors[0] ?? "", additionalAuthors: authors.slice(1), birthYearAuthorIndex: resetSelection ? null : draft.people.birthYearAuthorIndex, birthYearAcknowledged: resetSelection ? false : draft.people.birthYearAcknowledged })} text={text} /> : <div className="form-field"><label data-review-field="author"><FieldTitle icon="person">{text.author}</FieldTitle><DirectNameInput value={draft.people.author} onChange={(value) => set("people", { ...draft.people, author: value })} text={text} /></label></div>}
-            <label className="check check--birth-year" data-review-field="birth-year-acknowledgement"><input type="checkbox" checked={draft.people.birthYearAcknowledged} onChange={(e) => set("people", { ...draft.people, birthYearAcknowledged: e.target.checked })} /><span>{text.birthYearAck}</span></label>
+            {!retrospective && <label className="check check--birth-year" data-review-field="birth-year-acknowledgement"><input type="checkbox" checked={draft.people.birthYearAcknowledged} onChange={(e) => set("people", { ...draft.people, birthYearAcknowledged: e.target.checked })} /><span>{text.birthYearAck}</span></label>}
             <FieldNote>{text.birthYearNote}</FieldNote>
-            {isRaue && draft.people.additionalAuthors.length > 0 && draft.people.birthYearAcknowledged && <label data-review-field="birth-year-author"><FieldTitle icon="person">{requesterAuthorCopy[uiLanguage].label}</FieldTitle><select required value={requesterAuthorIndex ?? ""} onChange={(event) => set("people", { ...draft.people, birthYearAuthorIndex: event.target.value === "" ? null : Number(event.target.value) })}><option value="">{requesterAuthorCopy[uiLanguage].placeholder}</option>{[draft.people.author, ...draft.people.additionalAuthors].map((author, index) => <option key={index} value={index}>{text.authorNumber.replace("{number}", String(index + 1))}: {author.trim() || "—"}</option>)}</select><span className="field-help">{detectedAuthorIndex !== null && draft.people.birthYearAuthorIndex === null ? requesterAuthorCopy[uiLanguage].automatic : requesterAuthorCopy[uiLanguage].note}</span></label>}
+            {!retrospective && isRaue && draft.people.additionalAuthors.length > 0 && draft.people.birthYearAcknowledged && <label data-review-field="birth-year-author"><FieldTitle icon="person">{requesterAuthorCopy[uiLanguage].label}</FieldTitle><select required value={requesterAuthorIndex ?? ""} onChange={(event) => set("people", { ...draft.people, birthYearAuthorIndex: event.target.value === "" ? null : Number(event.target.value) })}><option value="">{requesterAuthorCopy[uiLanguage].placeholder}</option>{[draft.people.author, ...draft.people.additionalAuthors].map((author, index) => <option key={index} value={index}>{text.authorNumber.replace("{number}", String(index + 1))}: {author.trim() || "—"}</option>)}</select><span className="field-help">{detectedAuthorIndex !== null && draft.people.birthYearAuthorIndex === null ? requesterAuthorCopy[uiLanguage].automatic : requesterAuthorCopy[uiLanguage].note}</span></label>}
           </div>
         </section>
         <section className="form-subsection" aria-labelledby="request-title-heading">

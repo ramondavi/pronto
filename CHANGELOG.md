@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 20 de outubro de 2026
+
+- A secretaria da RAU+E recebe acesso provisório para várias fichas retrospectivas, com dispensa de Nada Consta, indicação individual das publicações no RI e inativação administrativa após concluir o lote.
+
 ### 19 de outubro de 2026
 
 - A página pública inclui a tag de verificação para acompanhar sua indexação no Google Search Console.

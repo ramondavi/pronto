@@ -1,0 +1,9 @@
+import Link from "next/link";
+import { AppIcon } from "@/components/app-icon";
+
+export type RetrospectiveRequest = { id: string; protocol: string; title: string; status: string };
+const labels: Record<string, string> = { submitted: "Enviada", in_review: "Em análise", changes_requested: "Correções solicitadas", approved: "Ficha homologada", completed: "Concluída", canceled: "Cancelada" };
+
+export function RetrospectiveOverview({ requests }: { requests: RetrospectiveRequest[] }) {
+  return <main className="dashboard-main dashboard-main--narrow retrospective-overview"><div className="page-heading"><div><p className="eyebrow">Secretaria da RAU+E · Acesso provisório</p><h1><AppIcon className="panel-heading-icon" name="archive" /><span className="panel-heading-text"><span className="panel-heading-text__inner">Acervo retrospectivo</span></span></h1></div></div><section className="panel"><h2>Fichas de edições anteriores</h2><p>Abra um pedido por trabalho já defendido e aprovado. Você pode acompanhar vários pedidos ao mesmo tempo. Esses protocolos estão dispensados do Nada Consta.</p><p>Após receber cada ficha e depositar o trabalho, informe a URL do RI/UFBA no respectivo protocolo. A biblioteca confere a publicação. Ao concluir todo o lote, solicite ao administrador o encerramento deste acesso.</p><Link className="button button--primary" href="/painel/solicitacao/nova">Nova solicitação retrospectiva</Link></section><section className="panel student-request-history"><h2>Trabalhos do lote</h2>{!requests.length ? <p>Nenhum pedido enviado. Comece pela nova solicitação retrospectiva.</p> : <ul className="retrospective-overview__requests">{requests.map((request) => <li key={request.id}><div><Link href={`/painel/solicitacao?pedido=${request.id}`}><strong>{request.protocol}</strong> · {request.title}</Link></div><span>{labels[request.status] ?? request.status}</span></li>)}</ul>}</section></main>;
+}
