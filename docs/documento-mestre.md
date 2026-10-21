@@ -814,3 +814,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - No passo de criar a conta, não repetir o botão de abrir RI/UFBA já destacado no cabeçalho. Exibir somente link pequeno, sem borda, com ícone de livro proporcional e texto “Dúvida sobre como fazer seu cadastro no RI/UFBA? Veja o tutorial.”. Substitui os botões agrupados anteriormente previstos para esse passo.
 
 - Nos avisos de espera por confirmação/liberação do RI, apresentar o contato como campo compacto com rótulo, e-mail e cópia alinhados; orientação contextual em área própria abaixo, sem cartões de aviso aninhados. Retirar o botão “Escrever ao RI/UFBA”; preservar o endereço destacado e a cópia.
+
+- Indicadores de etapas do preparo do RI seguem a geração da ficha: conclusão substitui o número por check branco em quadrado verde. A etapa 0 conclui ao registrar a situação; a 1 exige conta confirmada; a 2 exige pedido enviado e liberação conferida; a 3 exige conferência final. O indicador é derivado das respostas atuais e dos pré-requisitos, voltando ao número quando a conclusão for desfeita. Etapas puladas preservam a indicação de dispensa, sem check de conclusão.

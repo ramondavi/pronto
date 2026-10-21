@@ -7088,3 +7088,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__wait-guidance > div { min-width: 0; }
 .repository-preparation__wait-guidance strong { display: block; margin-bottom: 4px; font-size: .82rem; line-height: 1.5; }
 .repository-preparation__wait-guidance p { color: var(--text-muted); font-size: .78rem; line-height: 1.6; }
+
+.repository-preparation .browser-pdf-delivery__step.is-complete .repository-preparation__number { background: var(--success); border-color: var(--success); color: #fff; }
+.repository-preparation__number svg { width: 17px; height: 17px; }
