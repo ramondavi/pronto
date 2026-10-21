@@ -53,3 +53,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: ações finais do caminho direto ao guia substituídas por um botão com duas fases locais: abrir login do RI em nova aba e depois iniciar guia. Ambas pulsantes; alterar respostas volta ao Passo 1. Sem migração; testes adiados até o PR.
 
 - 21/10/2026: orientação final do preparo do RI alinhada à esquerda do botão, com quebra de linha na própria coluna e alinhamento vertical central. Sem migração; testes adiados até o PR.
+
+- 21/10/2026: Passo 1 exige declaração de login concluído por checkbox na mesma superfície visual da ação; abrir o RI apenas habilita a confirmação. Passo 2 surge ao marcar. Ícones à esquerda com 26 px. Traduções incluídas; sem migração e testes adiados até o PR.

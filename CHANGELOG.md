@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O Passo 1 do acesso ao RI exige confirmação de login por checkbox antes de mostrar o início do guia; ícones ampliados e alinhados à esquerda nas duas fases.
+
 - Orientação final do preparo do RI volta à coluna esquerda do botão, com quebra de linha e alinhamento vertical centralizado.
 
 - Na preparação com conta e liberação corretas, uma única ação pulsante abre o login do RI e depois se transforma no botão de iniciar o guia.

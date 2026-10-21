@@ -1261,5 +1261,19 @@ export const repositoryUiText: Record<string, Record<Exclude<InterfaceLanguage, 
     "de": "Wird bestätigt…",
     "fr": "Confirmation…",
     "it": "Conferma in corso…"
+  },
+  "Entre na nova aba e volte para confirmar o login abaixo.": {
+    "en": "Sign in in the new tab, then return to confirm your sign-in below.",
+    "es": "Inicie sesión en la nueva pestaña y vuelva para confirmarlo abajo.",
+    "de": "Melden Sie sich im neuen Tab an und bestätigen Sie anschließend hier unten Ihre Anmeldung.",
+    "fr": "Connectez-vous dans le nouvel onglet, puis revenez confirmer votre connexion ci-dessous.",
+    "it": "Accedi nella nuova scheda, poi torna per confermare l’accesso qui sotto."
+  },
+  "Confirmo que fiz login no RI/UFBA": {
+    "en": "I confirm that I signed in to RI/UFBA",
+    "es": "Confirmo que inicié sesión en el RI/UFBA",
+    "de": "Ich bestätige, dass ich mich im RI/UFBA angemeldet habe",
+    "fr": "Je confirme m’être connecté au RI/UFBA",
+    "it": "Confermo di aver effettuato l’accesso al RI/UFBA"
   }
 };
