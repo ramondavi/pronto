@@ -5451,7 +5451,11 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .notice--closed .notice__detail { white-space: normal; }
 .dashboard-header__service-title time { padding: 1px 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
 .staff-overview-main .staff-feed__posts { gap: 0; mask-image: none; }
-.staff-overview-main .staff-feed[data-scrollable="true"] .staff-feed__posts { mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 28px), transparent); }
+.staff-overview-main .staff-feed[data-scrollable="true"] .staff-feed__posts { --feed-fade-top: 0px; --feed-fade-bottom: 0px; mask-image: linear-gradient(to bottom, transparent, #000 var(--feed-fade-top), #000 calc(100% - var(--feed-fade-bottom)), transparent); }
+.staff-overview-main .staff-feed[data-scrollable="true"]:is(:hover,:has(:focus-visible),[data-scrolling="true"],[data-cut-top="true"]) .staff-feed__posts { --feed-fade-top: 24px; }
+.staff-overview-main .staff-feed[data-scrollable="true"]:is(:hover,:has(:focus-visible),[data-scrolling="true"],[data-cut-bottom="true"]) .staff-feed__posts { --feed-fade-bottom: 28px; }
+.staff-overview-main .staff-feed[data-at-top="true"] .staff-feed__posts { --feed-fade-top: 0px !important; }
+.staff-overview-main .staff-feed[data-at-bottom="true"] .staff-feed__posts { --feed-fade-bottom: 0px !important; }
 .staff-overview-main .staff-feed { position: relative; }
 .staff-feed__scroll-controls { display: none; }
 .staff-overview-main .staff-feed__scroll-controls { position: absolute; z-index: 2; left: 50%; bottom: 12px; display: flex; align-items: center; justify-content: center; max-width: calc(100% - 24px); pointer-events: none; transform: translateX(-50%); }

@@ -45,6 +45,9 @@ export function StaffActivityFeed({ initialEvents, userId, initialLoadError = fa
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(initialLoadError);
   const [canScroll, setCanScroll] = useState(false);
+  const [feedEdges, setFeedEdges] = useState({ atTop: true, atBottom: true, cutTop: false, cutBottom: false });
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollFadeTimerRef = useRef<number | null>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [enteringIds, setEnteringIds] = useState<Set<string>>(() => new Set());
@@ -56,6 +59,29 @@ export function StaffActivityFeed({ initialEvents, userId, initialLoadError = fa
   const entranceTimersRef = useRef<Set<number>>(new Set());
   const scrollHintTimerRef = useRef<number | null>(null);
   const suppressScrollHintRef = useRef(false);
+  const updateFeedEdges = useCallback(() => {
+    const posts = postsRef.current;
+    if (!posts) return;
+    const scrollable = posts.scrollHeight > posts.clientHeight + 2;
+    const top = posts.getBoundingClientRect().top + posts.clientTop;
+    const bottom = top + posts.clientHeight;
+    const cards = Array.from(posts.querySelectorAll<HTMLElement>(".staff-feed__post"));
+    const next = {
+      atTop: posts.scrollTop <= 2,
+      atBottom: posts.scrollTop + posts.clientHeight >= posts.scrollHeight - 2,
+      cutTop: false,
+      cutBottom: false,
+    };
+    for (const card of cards) {
+      const rect = card.getBoundingClientRect();
+      if (rect.top < top - 1 && rect.bottom > top + 1) next.cutTop = true;
+      if (rect.top < bottom - 1 && rect.bottom > bottom + 1) next.cutBottom = true;
+    }
+    setCanScroll(scrollable);
+    setHasScrolled(!next.atTop);
+    if (!scrollable) setShowScrollHint(false);
+    setFeedEdges((current) => current.atTop === next.atTop && current.atBottom === next.atBottom && current.cutTop === next.cutTop && current.cutBottom === next.cutBottom ? current : next);
+  }, []);
   const hideScrollHint = useCallback(() => {
     if (scrollHintTimerRef.current !== null) window.clearTimeout(scrollHintTimerRef.current);
     scrollHintTimerRef.current = null;
@@ -129,13 +155,13 @@ export function StaffActivityFeed({ initialEvents, userId, initialLoadError = fa
   useEffect(() => {
     const posts = postsRef.current;
     if (!posts) return;
-    const update = () => { const scrollable = posts.scrollHeight > posts.clientHeight + 2; setCanScroll(scrollable); if (!scrollable) setShowScrollHint(false); };
+    const update = updateFeedEdges;
     update();
     const observer = new ResizeObserver(update);
     observer.observe(posts);
     Array.from(posts.children).forEach((child) => observer.observe(child));
     return () => observer.disconnect();
-  }, [events.length]);
+  }, [events.length, updateFeedEdges]);
   useEffect(() => {
     const posts = postsRef.current;
     const side = posts?.closest(".staff-overview-main")?.querySelector<HTMLElement>(".staff-overview-main__side");
@@ -153,12 +179,12 @@ export function StaffActivityFeed({ initialEvents, userId, initialLoadError = fa
     window.addEventListener("resize", update);
     return () => { observer.disconnect(); window.removeEventListener("resize", update); posts.style.removeProperty("--feed-initial-card-height"); };
   }, [events.length]);
-  useEffect(() => () => { if (scrollHintTimerRef.current !== null) window.clearTimeout(scrollHintTimerRef.current); }, []);
+  useEffect(() => () => { if (scrollHintTimerRef.current !== null) window.clearTimeout(scrollHintTimerRef.current); if (scrollFadeTimerRef.current !== null) window.clearTimeout(scrollFadeTimerRef.current); }, []);
 
 
-  return <section className="staff-feed" aria-label="Novidades dos atendimentos" data-scrollable={canScroll} onMouseEnter={revealScrollHint} onMouseLeave={() => { suppressScrollHintRef.current = false; hideScrollHint(); }} onFocusCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) revealScrollHint(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) { if (!event.currentTarget.matches(":hover")) suppressScrollHintRef.current = false; hideScrollHint(); } }}>
+  return <section className="staff-feed" aria-label="Novidades dos atendimentos" data-scrollable={canScroll} data-at-top={feedEdges.atTop} data-at-bottom={feedEdges.atBottom} data-cut-top={feedEdges.cutTop} data-cut-bottom={feedEdges.cutBottom} data-scrolling={isScrolling} onMouseEnter={revealScrollHint} onMouseLeave={() => { suppressScrollHintRef.current = false; hideScrollHint(); }} onFocusCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) revealScrollHint(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) { if (!event.currentTarget.matches(":hover")) suppressScrollHintRef.current = false; hideScrollHint(); } }}>
     {error && <p className="notice notice--error" role="alert">Não foi possível carregar as atualizações. Nova tentativa automática em instantes.</p>}
-    {events.length ? <div className="staff-feed__posts" ref={postsRef} tabIndex={0} aria-label="Publicações recentes. Role para ver mais." onScroll={(event) => { hideScrollHint(); setHasScrolled(event.currentTarget.scrollTop > 2); }}>{events.map((event) => {
+    {events.length ? <div className="staff-feed__posts" ref={postsRef} tabIndex={0} aria-label="Publicações recentes. Role para ver mais." onScroll={() => { hideScrollHint(); updateFeedEdges(); setIsScrolling(true); if (scrollFadeTimerRef.current !== null) window.clearTimeout(scrollFadeTimerRef.current); scrollFadeTimerRef.current = window.setTimeout(() => { setIsScrolling(false); scrollFadeTimerRef.current = null; }, 700); }}>{events.map((event) => {
       const description = descriptions[event.action];
       if (!description) return null;
       const staff = event.actor_role === "cataloger" || event.actor_role === "administrator";

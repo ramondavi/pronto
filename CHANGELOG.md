@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- QR vetorial reposicionado no canto inferior esquerdo, com margens iguais e tamanho ajustado à referência. Degradês do feed acompanham interação e cartões cortados, desaparecendo no topo e no fim respectivos.
+
 - O preparo do RI remove o aviso de respostas salvas e permite optar por um lembrete por e-mail no segundo dia útil durante a espera de cadastro, liberação ou correção. A pessoa pode cancelar antes do envio; avançar no fluxo cancela lembretes pendentes.
 
 - QR vetorial reduzido e alinhado à margem da ficha; frases de carregamento a cada 1,6 segundo. O preparo do RI usa perguntas e respostas com expansão suave, modal contextual com orientação dos campos do RI e barra interna durante a espera; a prévia do e-mail permite cópia apenas pelos botões.
