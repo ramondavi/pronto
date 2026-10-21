@@ -478,3 +478,14 @@ export const repositoryAccessPreparations = pgTable("repository_access_preparati
   revision: integer("revision").notNull().default(1),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const repositoryPreparationReminders = pgTable("repository_preparation_reminders", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  generation: uuid("generation").defaultRandom().notNull(),
+  waitingKind: text("waiting_kind").notNull(),
+  destination: jsonb("destination").notNull(),
+  status: text("status").default("scheduled").notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  outboxId: uuid("outbox_id").references(() => emailOutbox.id, { onDelete: "restrict" }),
+});

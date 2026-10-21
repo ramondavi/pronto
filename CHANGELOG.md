@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O preparo do RI remove o aviso de respostas salvas e permite optar por um lembrete por e-mail no segundo dia útil durante a espera de cadastro, liberação ou correção. A pessoa pode cancelar antes do envio; avançar no fluxo cancela lembretes pendentes.
+
 - QR vetorial reduzido e alinhado à margem da ficha; frases de carregamento a cada 1,6 segundo. O preparo do RI usa perguntas e respostas com expansão suave, modal contextual com orientação dos campos do RI e barra interna durante a espera; a prévia do e-mail permite cópia apenas pelos botões.
 
 - A ficha final recebe QR maior e sem transparência, alinhado à indicação de emissão revisada, com Pronto! em itálico. O preparo do RI confere coleção e tipo de documento em modal padrão antes de registrar a decisão.

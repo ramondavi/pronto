@@ -7010,3 +7010,13 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__destination-dialog .field-help svg { flex: 0 0 16px; width: 16px; height: 16px; }
 .repository-guide__copy-only { -webkit-user-select: none; user-select: none; }
 @media (prefers-reduced-motion: reduce) { .repository-preparation__fold, .repository-preparation__resize, .repository-preparation__chevron, .repository-preparation__progress > span { transition: none; } }
+
+.repository-preparation__option { display: flex; flex-direction: column; min-width: 0; }
+.repository-preparation__option > .repository-preparation__choice { flex: 1; width: 100%; }
+.repository-preparation__option--waiting { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.repository-preparation .repository-preparation__option--waiting > .repository-preparation__choice { border: 0; border-radius: 0; }
+.repository-preparation__reminder { padding: 12px; border-top: 1px solid var(--line); background: var(--surface); }
+.repository-preparation__reminder label { display: flex; align-items: flex-start; gap: 8px; font-size: .76rem; cursor: pointer; }
+.repository-preparation__reminder input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--institutional); }
+.repository-preparation__reminder svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
+.repository-preparation__reminder small { display: block; margin-top: 4px; color: var(--text-muted); font-size: .7rem; line-height: 1.5; }

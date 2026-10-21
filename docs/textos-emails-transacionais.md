@@ -109,3 +109,10 @@ A conta institucional **[e-mail institucional]** foi confirmada e está aguardan
 Acesse **Administração → Equipe e acessos** para atribuir o perfil adequado.
 
 Só faça o provisionamento após confirmar que a pessoa integra a equipe autorizada da Biblioteca.
+
+
+## Lembrete opcional de preparação do RI — 21/10/2026
+
+Assunto: Pronto! | Continue a preparação do autodepósito
+
+Enviado apenas por opção do estudante, no segundo dia útil, uma vez por espera. Identifica o trabalho e o protocolo, lembra de conferir a criação/confirmacão da conta, a liberação ou a correção do acesso, conforme a resposta registrada, e oferece o link para retomar o guia. Orienta verificar o e-mail ou a conta do RI e esclarece que o lembrete não confirma a resolução nem constitui prazo de resposta do RI. Cancelado antes do envio ao resolver ou substituir a espera. Usa o modelo transacional institucional existente.

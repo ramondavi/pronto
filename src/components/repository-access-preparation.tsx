@@ -28,6 +28,9 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const t = (text: string) => uiText(language, text);
   const [state, setState] = useState<AccessPreparation>({ ...emptyAccessPreparation });
   const [loaded, setLoaded] = useState(false);
+  const [reminder, setReminder] = useState<{ status: string; due_at?: string } | null>(null);
+  const [reminderBusy, setReminderBusy] = useState(false);
+  const [reminderError, setReminderError] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedSnapshot, setSavedSnapshot] = useState("");
   const [hasConflict, setHasConflict] = useState(false);
@@ -49,6 +52,18 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const stages = accessStages(state);
   const ready = accessReady(state);
   const correction = state.request === "correction";
+  const waitingKind = state.route === "none" && state.account === "create" ? "account" : ["account", "wrong", "none"].includes(state.route) && state.requestSent && state.release !== "granted" ? state.request === "correction" ? "correction" : "release" : "";
+  useEffect(() => {
+    let active = true;
+    setReminder(null); setReminderError("");
+    if (!loaded || !waitingKind || preview) return;
+    void createClient().from("repository_preparation_reminders").select("status,due_at,waiting_kind,destination").eq("request_id", requestId).maybeSingle().then(({ data, error }) => {
+      if (!active) return;
+      if (error) { setReminderError("Não foi possível consultar o lembrete. Tente novamente antes de sair."); return; }
+      if (data?.waiting_kind === waitingKind && JSON.stringify(data.destination) === destinationKey) setReminder(data);
+    });
+    return () => { active = false; };
+  }, [loaded, waitingKind, requestId, destinationKey, preview]);
   const waitRemaining = state.account === "create" && state.accountWaitStartedAt ? Math.max(0, 120 - Math.floor(Math.max(0, clock - state.accountWaitStartedAt) / 1000)) : 0;
   useEffect(() => {
     if (loaded && state.account === "create" && !state.accountWaitStartedAt) setState((current) => ({ ...current, accountWaitStartedAt: Date.now() }));
@@ -141,6 +156,21 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
     catch { setError("Não foi possível salvar a confirmação. Recarregue as decisões antes de iniciar o guia."); }
     finally { setStarting(false); }
   }
+  async function toggleReminder(enabled: boolean) {
+    if (preview || reminderBusy || !waitingKind || blocked.current) return;
+    setReminderBusy(true); setReminderError("");
+    try {
+      await persist(snapshot);
+      const { data, error } = await createClient().rpc("set_repository_preparation_reminder", { target_request_id: requestId, enabled });
+      if (error) throw error;
+      setReminder(data);
+    } catch { setReminderError("Não foi possível alterar o lembrete. Se ele já estiver sendo enviado, não poderá ser cancelado. Tente novamente."); }
+    finally { setReminderBusy(false); }
+  }
+  function reminderOption() {
+    const checked = !!reminder && ["scheduled", "queued", "delivered"].includes(reminder.status);
+    return <div className="repository-preparation__reminder"><label><input type="checkbox" checked={checked} disabled={!loaded || starting || preview || reminderBusy || hasConflict || reminder?.status === "delivered"} onChange={(event) => void toggleReminder(event.target.checked)} /><AppIcon name="bell" /><span><strong>{t("Quero ser lembrado por e-mail")}</strong><small>{t(reminderBusy ? "Atualizando lembrete…" : reminder?.status === "delivered" ? "Lembrete enviado para o e-mail da sua conta do Pronto!." : checked && reminder?.due_at ? `Um e-mail em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Bahia" }).format(new Date(reminder.due_at))}. Você pode cancelar antes do envio.` : "Um único e-mail no segundo dia útil seguinte, pelo calendário da Biblioteca. Você pode cancelar antes do envio.")}</small></span></label>{reminderError && <p className="form-error" role="alert">{t(reminderError)}</p>}</div>;
+  }
   function dismissDestination() {
     pendingDecision?.decline();
     setPendingDecision(null);
@@ -154,14 +184,15 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   }
   function choice(label: string, description: string, icon: AppIconName, selected: boolean, onClick: () => void, checkDestination = false, timed = false, onDecline: () => void = () => undefined) {
     const waiting = timed && waitRemaining > 0;
-    return <button className={`browser-pdf-delivery__color-option repository-preparation__choice${selected ? " is-selected" : ""}${waiting ? " is-counting" : ""}`} type="button" aria-pressed={selected} disabled={!loaded || starting || waiting} onClick={() => { if (!checkDestination) { onClick(); return; } setPendingDecision({ label, wrong: icon === "edit", confirm: onClick, decline: selected ? onDecline : () => undefined }); destinationDialog.current?.showModal(); }}><AppIcon name={waiting ? "clock" : icon} /><span><strong>{t(label)}</strong><small>{t(description)}</small>{waiting && <span className="repository-preparation__timer"><strong>{Math.floor(waitRemaining/60)}:{String(waitRemaining%60).padStart(2,"0")}</strong><span>{t("A confirmação da conta normalmente leva cerca de 2 minutos. Confira seu e-mail enquanto aguarda.")}</span></span>}</span><AppIcon name="check" />{waiting && <span className="repository-preparation__progress" role="progressbar" aria-label={t("Tempo até liberar a confirmação")} aria-valuemin={0} aria-valuemax={120} aria-valuenow={120 - waitRemaining}><span style={{ width: `${(120 - waitRemaining) / 120 * 100}%` }} /></span>}</button>;
+    const showReminder = !!waitingKind && ((icon === "clock" && selected) || timed);
+    return <div className={`repository-preparation__option${showReminder ? " repository-preparation__option--waiting" : ""}`}><button className={`browser-pdf-delivery__color-option repository-preparation__choice${selected ? " is-selected" : ""}${waiting ? " is-counting" : ""}`} type="button" aria-pressed={selected} disabled={!loaded || starting || waiting} onClick={() => { if (!checkDestination) { onClick(); return; } setPendingDecision({ label, wrong: icon === "edit", confirm: onClick, decline: selected ? onDecline : () => undefined }); destinationDialog.current?.showModal(); }}><AppIcon name={waiting ? "clock" : icon} /><span><strong>{t(label)}</strong><small>{t(description)}</small>{waiting && <span className="repository-preparation__timer"><strong>{Math.floor(waitRemaining/60)}:{String(waitRemaining%60).padStart(2,"0")}</strong><span>{t("A confirmação da conta normalmente leva cerca de 2 minutos. Confira seu e-mail enquanto aguarda.")}</span></span>}</span><AppIcon name="check" />{waiting && <span className="repository-preparation__progress" role="progressbar" aria-label={t("Tempo até liberar a confirmação")} aria-valuemin={0} aria-valuemax={120} aria-valuenow={120 - waitRemaining}><span style={{ width: `${(120 - waitRemaining) / 120 * 100}%` }} /></span>}</button>{showReminder && reminderOption()}</div>;
   }
   function backDecision() {
     if (state.account === "create") update({ ...state, account: "" });
     else update({ ...state, requestPhase: state.requestPhase === "verify" && ["compose","correction"].includes(state.request) ? "compose" : "choice" });
   }
 
-  const verify = <><button type="button" className="repository-preparation__answer" onClick={backDecision}><AppIcon name="check" /><span>{t("Já enviei meu pedido ao RI/UFBA")}<small>{t("Rever resposta")}</small></span><AppIcon name="edit" /></button><h3>{t("A liberação já foi concedida para este destino?")}</h3><aside className="repository-preparation__info"><AppIcon name="message" /><p>{t("Confira a resposta por e-mail ou entre na sua conta do RI/UFBA. Conseguir iniciar um depósito no destino indicado significa que o acesso já foi liberado.")}</p></aside><p className="field-help">{t("A liberação vale por 30 dias. Se vencer, solicite a renovação por e-mail ao RI/UFBA.")}</p><div className="repository-preparation__choices">{choice("Já fui liberado para o destino correto", "Conferi o e-mail ou o acesso na minha conta do RI/UFBA.", "check", state.release === "granted", () => update({ ...state, release: "granted", final: state.release === "granted" ? state.final : "", expanded: [3] }, 3), true, false, () => update({ ...state, release: "", final: "", expanded: [2] }))}{choice("Ainda estou aguardando a liberação", "Vou voltar depois para conferir o acesso.", "clock", state.release === "waiting", () => update({ ...state, release: "waiting", final: "", expanded: [] }))}{choice("A liberação está em outro destino", "Preciso pedir a correção do acesso ao RI/UFBA.", "edit", state.release === "wrong", wrongDestination, true, false, () => update({ ...state, release: "", final: "" }))}</div></>;
+  const verify = <><button type="button" className="repository-preparation__answer" onClick={backDecision}><AppIcon name="check" /><span>{t("Já enviei meu pedido ao RI/UFBA")}<small>{t("Rever resposta")}</small></span><AppIcon name="edit" /></button><h3>{t("A liberação já foi concedida para este destino?")}</h3><aside className="repository-preparation__info"><AppIcon name="message" /><p>{t("Confira a resposta por e-mail ou entre na sua conta do RI/UFBA. Conseguir iniciar um depósito no destino indicado significa que o acesso já foi liberado.")}</p></aside><p className="field-help">{t("A liberação vale por 30 dias. Se vencer, solicite a renovação por e-mail ao RI/UFBA.")}</p><div className="repository-preparation__choices">{choice("Já fui liberado para o destino correto", "Conferi o e-mail ou o acesso na minha conta do RI/UFBA.", "check", state.release === "granted", () => update({ ...state, release: "granted", final: state.release === "granted" ? state.final : "", expanded: [3] }, 3), true, false, () => update({ ...state, release: "", final: "", expanded: [2] }))}{choice("Ainda estou aguardando a liberação", "Vou voltar depois para conferir o acesso.", "clock", state.release === "waiting", () => update({ ...state, release: "waiting", final: "", expanded: [2] }))}{choice("A liberação está em outro destino", "Preciso pedir a correção do acesso ao RI/UFBA.", "edit", state.release === "wrong", wrongDestination, true, false, () => update({ ...state, release: "", final: "" }))}</div></>;
   const titles = ["Como está seu acesso?", "Criar e confirmar a conta", "Solicitar e conferir a liberação", "Conferir antes de começar"];
   const summaries = [state.route === "ready" ? "Tenho conta confirmada e liberação no destino correto" : state.route === "none" ? "Não tenho conta confirmada nem liberação" : state.route === "wrong" ? "Tenho liberação, mas o destino está errado" : state.route === "account" ? "Tenho conta confirmada, mas não tenho liberação" : "Ainda não informei minha situação", ["has","confirmed"].includes(state.account) ? "Minha conta está criada e confirmada" : state.account === "create" ? "Ainda preciso criar ou confirmar minha conta" : "Ainda não confirmei minha conta", state.release === "granted" ? "Já fui liberado para o destino correto" : state.release === "wrong" ? "Minha liberação está no destino errado" : state.release === "waiting" ? "Ainda estou aguardando a liberação" : state.requestSent ? "Já enviei o pedido; preciso conferir a liberação" : state.request === "compose" || state.request === "correction" ? "Ainda preciso enviar o pedido ao RI/UFBA" : "Ainda não informei se enviei o pedido", state.final === "confirmed" ? "Confirmei minha conta e a liberação correta" : state.final === "waiting" ? "Ainda não consegui confirmar a liberação" : "Ainda preciso fazer a conferência final"];
 
@@ -180,7 +211,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
       </nav>}</div></div></div>
       </section>;
     })}</div>
-    <footer className="repository-preparation__footer"><div className="repository-preparation__notice"><AppIcon name={ready ? "check" : "help"} /><p>{t(ready ? "Acesso confirmado. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas respostas ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação.")}</p></div><button ref={startButtonRef} className={`button button--primary cataloging-homologation__action${highlightStart ? " repository-preparation__start--highlight" : ""}`} disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><span><strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação no destino correto para começar." : "Confirme a conta e a liberação no RI/UFBA para começar.")}</small>}</span><AppIcon name={ready ? "upload" : "lock"} /></button><small role="status">{t(preview ? "Demonstração: respostas não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando respostas…" : loaded && !error ? "Respostas salvas na sua conta." : "")}</small></footer>
+    <footer className="repository-preparation__footer"><div className="repository-preparation__notice"><AppIcon name={ready ? "check" : "help"} /><p>{t(ready ? "Acesso confirmado. Tenha em mãos o PDF final com a ficha catalográfica. O guia ajudará a preencher os dados e concluir o depósito no RI/UFBA." : "Você pode sair e voltar depois. Suas respostas ficam salvas neste trabalho. Confira o e-mail ou sua conta no RI/UFBA antes de confirmar a liberação.")}</p></div><button ref={startButtonRef} className={`button button--primary cataloging-homologation__action${highlightStart ? " repository-preparation__start--highlight" : ""}`} disabled={!loaded || !ready || starting || hasConflict} type="button" onClick={() => void begin()}><span><strong>{t(starting ? "Abrindo guia…" : "Começar o guia do autodepósito")}</strong>{!ready && <small>{t(state.release === "wrong" || correction ? "Confirme a liberação no destino correto para começar." : "Confirme a conta e a liberação no RI/UFBA para começar.")}</small>}</span><AppIcon name={ready ? "upload" : "lock"} /></button><small role="status">{t(preview ? "Demonstração: respostas não são salvas na conta." : saving || (loaded && savedSnapshot !== snapshot) ? "Salvando respostas…" : "")}</small></footer>
     <dialog ref={destinationDialog} className="pronto-modal account-confirm-dialog repository-preparation__destination-dialog" aria-labelledby={destinationTitle} onCancel={(event) => { event.preventDefault(); dismissDestination(); }}>
       <ModalCloseButton onClick={dismissDestination} />
       <div className="account-confirm-dialog__heading"><span><AppIcon name="review" /></span><h2 id={destinationTitle}>{t(pendingDecision?.wrong ? "Sua liberação está em outro destino?" : "Seu acesso está liberado neste destino?")}</h2></div>
