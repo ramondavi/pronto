@@ -6995,8 +6995,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__resize-content { display: flow-root; }
 .repository-preparation__chevron { transition: transform .25s ease; }
 .repository-preparation__chevron.is-expanded { transform: rotate(180deg); }
-.repository-preparation__registration-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-block: 2px; }
-.repository-preparation__registration-links .button { flex: 1 1 190px; justify-content: center; }
 .repository-preparation .repository-preparation__choice.is-counting,
 .repository-preparation .repository-preparation__choice.is-counting:hover,
 .repository-preparation .repository-preparation__choice.is-counting:active { background: var(--surface); color: var(--text-muted); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; padding-bottom: 24px; }
@@ -7031,7 +7029,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__instruction-heading h3 { font-size: .95rem; }
 .repository-preparation__instruction-heading p { margin-top: 6px !important; color: var(--text-muted); font-size: .8rem; line-height: 1.6; }
 .repository-preparation__instructions ol { display: grid; gap: 9px; margin: 0; padding-left: 22px; font-size: .8rem; line-height: 1.6; }
-.repository-preparation__instructions .repository-preparation__registration-links { padding-top: 12px; border-top: 1px solid var(--line); }
 .repository-preparation__info .button { margin-top: 10px; }
 .repository-preparation__registration-details > summary { display: flex; align-items: center; gap: 9px; padding: 10px 0; cursor: pointer; list-style: none; color: var(--institutional); font-size: .8rem; font-weight: 750; }
 .repository-preparation__registration-details > summary::-webkit-details-marker { display: none; }
@@ -7075,6 +7072,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-preparation__registration-steps h4 { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 6px; color: var(--text); font-size: .86rem; line-height: 1.4; }
 .repository-preparation__registration-steps h4 > span { color: var(--institutional); font-size: .74rem; font-variant-numeric: tabular-nums; }
 .repository-preparation__registration-steps p { color: var(--text-muted); font-size: .8rem; line-height: 1.6; }
-.repository-preparation__registration-steps .repository-preparation__registration-links { padding-top: 10px; border-top: 0; }
-.repository-preparation__registration-steps .repository-preparation__registration-links .button { flex: 0 1 auto; }
-@media (max-width: 500px) { .repository-preparation__registration-steps .repository-preparation__registration-links .button { flex: 1 1 160px; } }
+
+.repository-preparation__tutorial-link { display: inline-flex; align-items: flex-start; gap: 6px; margin-top: 9px; color: var(--institutional); font-size: .73rem; font-weight: 600; line-height: 1.5; text-decoration: underline; text-underline-offset: 3px; }
+.repository-preparation__tutorial-link svg { flex: 0 0 15px; width: 15px; height: 15px; margin-top: 1px; }
+.repository-preparation__tutorial-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }

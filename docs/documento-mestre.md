@@ -810,3 +810,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - A divisória do cabeçalho do preparo do RI pertence ao contêiner completo, abaixo do texto e do botão de login, sem interrupção. O texto interno do botão orienta fazer login na nova aba, voltar ao Pronto! e alternar entre as abas para conferir cada etapa.
 
 - Simplificação aprovada da etapa 0: retirar o quarto botão “Tenho liberação para depositar, mas para outro destino”, pois o modal da opção de conta/liberação já identifica essa situação. Manter as três opções iniciais, a rota interna de destino errado, seu resumo em primeira pessoa e o encaminhamento para correção ao indicar a divergência no modal. Substitui a orientação anterior de exibir quatro opções.
+
+- No passo de criar a conta, não repetir o botão de abrir RI/UFBA já destacado no cabeçalho. Exibir somente link pequeno, sem borda, com ícone de livro proporcional e texto “Dúvida sobre como fazer seu cadastro no RI/UFBA? Veja o tutorial.”. Substitui os botões agrupados anteriormente previstos para esse passo.
