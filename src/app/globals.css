@@ -7112,3 +7112,9 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .repository-preparation__actions .cataloging-homologation__action { justify-content: flex-start; gap: 14px; padding: 12px 16px; }
 .repository-preparation__actions .cataloging-homologation__action > svg { flex: 0 0 26px; width: 26px; height: 26px; }
+
+.repository-guide__steps { grid-template-columns: minmax(0,1fr); gap: 16px; padding-left: 44px; }
+.repository-guide__step { position: relative; grid-template-columns: 24px minmax(0,1fr); gap: 12px; }
+.repository-guide__step:not(:last-child)::before { content: ""; position: absolute; top: 31px; bottom: -47px; left: -32px; width: 2px; background: color-mix(in srgb,var(--institutional) 45%,var(--line)); pointer-events: none; }
+.repository-guide__step-number { position: absolute; z-index: 1; left: -44px; top: 18px; display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 1px solid var(--institutional); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.repository-guide__step > svg { width: 23px; height: 23px; }

@@ -59,3 +59,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: removidos login, checkbox e numeração de passos do rodapé; ação final inicia diretamente o guia após a conferência do modal. Preservados login no modal, pulso, ícone à esquerda e traduções. Sem migração; testes adiados até o PR.
 
 - 21/10/2026: conteúdo do guia dá continuidade ao Antes de começar: roteiro combina seleção do destino, valores como referência sem repetir liberação/conferência, orientações de preenchimento e conclusão mais diretas. Cabeçalho e painel final distinguem envio registrado e apontam acompanhamento em Meu espaço; traduções atualizadas. Sem migração; testes adiados até o PR.
+
+- 21/10/2026: removido botão do RI no cabeçalho; roteiro com oito etapas verticais e conectores. Página consulta preparação salva para inicializar guia já iniciado sem regressar automaticamente; chave inclui destino para reiniciar corretamente se ele mudar. Atualização periódica da disponibilidade preservada. Traduções atualizadas; sem migração. Testes e validação visual adiados até PR.

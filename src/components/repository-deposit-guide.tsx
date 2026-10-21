@@ -25,7 +25,8 @@ const groups: { title: RepositoryFieldGroup; icon: AppIconName }[] = [
 ];
 
 const steps: { title: string; description: string; icon: AppIconName }[] = [
-  { title: "Início do depósito", description: "Selecione no RI a coleção e o tipo de documento já confirmados em Antes de começar.", icon: "book" },
+  { title: "Coleção", description: "Selecione a coleção já confirmada em Antes de começar.", icon: "book" },
+  { title: "Tipo de documento", description: "Selecione o tipo de documento já confirmado para este trabalho.", icon: "document" },
   { title: "Descrição", description: "Preencha os campos com os dados disponíveis abaixo. Complete no RI resumo, área CNPq, acesso e embargo, quando houver.", icon: "edit" },
   { title: "Arquivo", description: "Envie o PDF final com a ficha catalográfica e marque-o como arquivo principal. Siga o formato exigido pelo RI.", icon: "upload" },
   { title: "Verificação", description: "Na revisão final do RI, confira os dados preenchidos e o PDF enviado. Corrija o que for necessário antes de concluir.", icon: "review" },
@@ -34,7 +35,7 @@ const steps: { title: string; description: string; icon: AppIconName }[] = [
   { title: "Conclusão", description: "Finalize o envio no RI. Depois, registre a conclusão no botão ao final deste guia.", icon: "check" },
 ];
 
-export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, requesterEmail, destinationKey, submittedAt = null, publicationVerified = false, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; requesterEmail: string; destinationKey?: string; submittedAt?: string | null; publicationVerified?: boolean; preview?: boolean }) {
+export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, requesterName, requesterEmail, destinationKey, submittedAt = null, publicationVerified = false, preparationReady = false, preview = false }: { requestId: string; startedAt: string | null; fields: RepositoryCopyField[]; setup: RepositoryDepositSetup; requesterName: string; requesterEmail: string; destinationKey?: string; submittedAt?: string | null; publicationVerified?: boolean; preparationReady?: boolean; preview?: boolean }) {
   const { language } = useInterfaceLanguage();
   const t = (value: string) => uiText(language, value);
   const fieldLabel = (label: string) => {
@@ -43,7 +44,7 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   };
   const submissionFinished = Boolean(submittedAt) || publicationVerified;
   const [started, setStarted] = useState(startedAt);
-  const [reviewingPreparation, setReviewingPreparation] = useState(true);
+  const [reviewingPreparation, setReviewingPreparation] = useState(() => !startedAt || !preparationReady);
   const [correctingAccess, setCorrectingAccess] = useState(false);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
@@ -152,7 +153,7 @@ export function RepositoryDepositGuide({ requestId, startedAt, fields, setup, re
   if (!started || reviewingPreparation) return <RepositoryAccessPreparation requestId={requestId} setup={setup} destinationKey={destinationKey ?? JSON.stringify(["preview",setup.collection,setup.documentType])} preview={preview} emailTemplate={emailTemplate} emailState={{ emailChoice, otherEmail }} onRestoreEmail={(value) => { setEmailChoice(value.emailChoice); setOtherEmail(value.otherEmail); setOtherEmailDraft(value.otherEmail); }} onCorrectionChange={setCorrectingAccess} onBegin={async () => { if (await begin()) setReviewingPreparation(false); }} beginError={error} />;
 
   return <div className="repository-guide"><button className="button button--secondary button--with-icon" type="button" disabled={busy} onClick={() => setReviewingPreparation(true)}><AppIcon name="undo" />{t("Rever preparação para depositar")}</button>
-    <section className="panel repository-guide__hero" aria-labelledby="repository-guide-title"><div className="repository-guide__hero-copy"><p className="eyebrow"><AppIcon name="check" />{t("Início registrado em")} {new Intl.DateTimeFormat(language, { dateStyle: "short", timeStyle: "short" }).format(new Date(started))}</p><h2 id="repository-guide-title">{t(submissionFinished ? "Consulte seu depósito no RI/UFBA" : "Continue seu depósito no RI/UFBA")}</h2><p>{t(submissionFinished ? "O envio já foi registrado. Use Meu espaço no RI para acompanhar a submissão; os dados deste guia continuam disponíveis para consulta." : "Conta e destino já foram confirmados em Antes de começar. Continue na aba do RI e use este guia durante o preenchimento.")}</p></div><a className="button button--primary button--with-icon" href={submissionFinished ? "https://repositorio.ufba.br/mydspace" : "https://repositorio.ufba.br/submit"} target="_blank" rel="noopener noreferrer"><AppIcon name="external" />{t(submissionFinished ? "Acompanhar no RI/UFBA" : "Acessar depósito no RI/UFBA")}</a></section>
+    <section className="panel repository-guide__hero" aria-labelledby="repository-guide-title"><div className="repository-guide__hero-copy"><p className="eyebrow"><AppIcon name="check" />{t("Início registrado em")} {new Intl.DateTimeFormat(language, { dateStyle: "short", timeStyle: "short" }).format(new Date(started))}</p><h2 id="repository-guide-title">{t(submissionFinished ? "Consulte seu depósito no RI/UFBA" : "Continue seu depósito no RI/UFBA")}</h2><p>{t(submissionFinished ? "O envio já foi registrado. Use Meu espaço no RI para acompanhar a submissão; os dados deste guia continuam disponíveis para consulta." : "Conta e destino já foram confirmados em Antes de começar. Continue na aba do RI e use este guia durante o preenchimento.")}</p></div></section>
 
     <section className="repository-guide__section" aria-labelledby="repository-steps-title"><div className="repository-guide__section-heading"><span className="repository-guide__section-icon"><AppIcon name="hierarchy" /></span><div><p className="eyebrow">{t("Roteiro")}</p><h2 id="repository-steps-title">{t("O que fazer no RI")}</h2><p>{t("Siga a ordem apresentada pelo repositório.")}</p></div></div><ol className="repository-guide__steps">{steps.map((step, index) => <li className="panel repository-guide__step" key={step.title}><span className="repository-guide__step-number">{String(index + 1).padStart(2, "0")}</span><AppIcon name={step.icon} /><div><h3>{t(step.title)}</h3><p>{t(step.title === "Conclusão" && submissionFinished ? "Envio já informado. Acompanhe a validação em Meu espaço no RI/UFBA." : step.description)}</p></div></li>)}</ol></section>
 

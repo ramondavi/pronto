@@ -1,3 +1,4 @@
+import { accessReady, restoreAccessPreparation } from "@/domain/repository-deposit/preparation";
 import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel/autodeposito"); }
 import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
@@ -31,17 +32,20 @@ export default async function RepositoryDepositPage({ searchParams }: { searchPa
   if (!request) redirect("/painel/solicitacao");
   const enrollment = first(request.enrollment); const program = first(enrollment?.program);
   if (!program?.repository_deposit_enabled) redirect(`/painel/solicitacao?pedido=${request.id}`);
-  const [{ data: nada }, { data: homologation }, { data: progress }, { data: citation }, { data: workDates }] = await Promise.all([
+  const [{ data: nada }, { data: homologation }, { data: progress }, { data: citation }, { data: workDates }, { data: preparation }] = await Promise.all([
     supabase.from("nada_consta_documents").select("status").eq("request_id", request.id).eq("status", "approved").maybeSingle(),
     supabase.from("cataloging_card_homologations").select("snapshot").eq("request_id", request.id).maybeSingle(),
     supabase.from("repository_deposit_progress").select("started_at,submitted_at").eq("request_id", request.id).maybeSingle(),
     supabase.rpc("get_validated_request_citation", { target_request_id: request.id }),
     supabase.from("request_card_details").select("deposit_date,defense_date").eq("request_id", request.id).maybeSingle(),
+    supabase.rpc("load_repository_access_preparation", { target_request_id: request.id }),
   ]);
   const { data: publication } = await supabase.from("repository_publications").select("verified_at").eq("request_id", request.id).maybeSingle();
   const { data: completedGuideAccess } = await supabase.rpc("can_access_completed_repository_guide", { target_request_id: request.id });
   const available = ((request.status === "approved" && (request.retrospective || nada?.status === "approved")) || completedGuideAccess === true) && Boolean(homologation?.snapshot);
   if (!available) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="review" /></span><div><h2>{t("Aguarde a liberação da ficha")}</h2><p>{t("O guia ficará disponível após a homologação da ficha e a aprovação do Nada Consta.")}</p></div></section></main>;
+  const preparationReady = preparation?.destination_current === true && accessReady(restoreAccessPreparation(preparation.state));
+  const destinationKey = JSON.stringify([program.code, program.repository_collection_label, program.repository_document_type_label]);
   const setup = repositoryDepositSetup(program.code, { collection: program.repository_collection_label ?? "", documentType: program.repository_document_type_label ?? "" });
   const snapshot = homologation!.snapshot as unknown as CatalogingCardSnapshot;
   const people = [...snapshot.people].sort((a,b) => (a.position ?? 0)-(b.position ?? 0));
@@ -83,5 +87,5 @@ export default async function RepositoryDepositPage({ searchParams }: { searchPa
     { label: "Relação com outros documentos", note: "Preencha quando o trabalho tiver vínculo com outro documento ou publicação.", group: "Conferir no RI" },
     { label: "Arquivo, formato e descrição", note: "Envie a versão final com a ficha, confira o formato exigido pelo RI e marque o arquivo principal.", group: "Conferir no RI" },
   ];
-  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading repository-guide__page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><p className="repository-guide__protocol"><AppIcon name="document" /><span><small>{t("Protocolo")}</small><strong>{snapshot.request.protocol}</strong></span></p></div><StudentFeedbackInvite /><StudentRequestLiveRefresh active /><RepositoryDepositGuide key={request.id} requestId={request.id} startedAt={progress?.started_at ?? null} submittedAt={progress?.submitted_at ?? null} publicationVerified={Boolean(publication?.verified_at)} fields={fields} setup={setup} destinationKey={JSON.stringify([program.code, program.repository_collection_label, program.repository_document_type_label])} requesterName={profile.full_name ?? ""} requesterEmail={user.email ?? ""} /></main>;
+  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading repository-guide__page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><p className="repository-guide__protocol"><AppIcon name="document" /><span><small>{t("Protocolo")}</small><strong>{snapshot.request.protocol}</strong></span></p></div><StudentFeedbackInvite /><StudentRequestLiveRefresh active /><RepositoryDepositGuide key={`${request.id}:${destinationKey}`} requestId={request.id} preparationReady={preparationReady} startedAt={progress?.started_at ?? null} submittedAt={progress?.submitted_at ?? null} publicationVerified={Boolean(publication?.verified_at)} fields={fields} setup={setup} destinationKey={destinationKey} requesterName={profile.full_name ?? ""} requesterEmail={user.email ?? ""} /></main>;
 }

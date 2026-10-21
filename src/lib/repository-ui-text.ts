@@ -1408,5 +1408,19 @@ export const repositoryUiText: Record<string, Record<Exclude<InterfaceLanguage, 
     "de": "Kopieren Sie die von der Bibliothek geprüfte Literaturangabe in das Feld „Citação“ im RI.",
     "fr": "Copiez la référence validée par la Bibliothèque dans le champ « Citação » du RI.",
     "it": "Copia il riferimento validato dalla Biblioteca nel campo “Citação” del RI."
+  },
+  "Selecione a coleção já confirmada em Antes de começar.": {
+    "en": "Select the collection already confirmed in Before you start.",
+    "es": "Seleccione la colección ya confirmada en Antes de comenzar.",
+    "de": "Wählen Sie die unter Bevor Sie beginnen bereits bestätigte Sammlung.",
+    "fr": "Sélectionnez la collection déjà confirmée dans Avant de commencer.",
+    "it": "Seleziona la collezione già confermata in Prima di iniziare."
+  },
+  "Selecione o tipo de documento já confirmado para este trabalho.": {
+    "en": "Select the document type already confirmed for this work.",
+    "es": "Seleccione el tipo de documento ya confirmado para este trabajo.",
+    "de": "Wählen Sie den für diese Arbeit bereits bestätigten Dokumenttyp.",
+    "fr": "Sélectionnez le type de document déjà confirmé pour ce travail.",
+    "it": "Seleziona il tipo di documento già confermato per questo lavoro."
   }
 };
