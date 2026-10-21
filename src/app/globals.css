@@ -5451,7 +5451,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .notice--closed .notice__detail { white-space: normal; }
 .dashboard-header__service-title time { padding: 1px 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
 .staff-overview-main .staff-feed__posts { gap: 0; mask-image: none; }
-.staff-overview-main .staff-feed[data-scrollable="true"] .staff-feed__posts:is(:hover,:focus-within) { mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 28px), rgba(0, 0, 0, .85)); }
+.staff-overview-main .staff-feed[data-scrollable="true"] .staff-feed__posts { mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 28px), transparent); }
 .staff-overview-main .staff-feed { position: relative; }
 .staff-feed__scroll-controls { display: none; }
 .staff-overview-main .staff-feed__scroll-controls { position: absolute; z-index: 2; left: 50%; bottom: 12px; display: flex; align-items: center; justify-content: center; max-width: calc(100% - 24px); pointer-events: none; transform: translateX(-50%); }
@@ -6827,3 +6827,17 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
   .dashboard-shell .dashboard-nav nav.dashboard-nav__menu { left: var(--mobile-navigation-inset); right: auto; max-width: min(320px, calc(100vw - 2 * var(--mobile-navigation-inset))); }
 }
 @media (max-width: 560px) { .dashboard-shell { --mobile-navigation-inset: 16px; } }
+
+/* Native single-select keeps its selected label vertically centered. */
+.queue-sort select:not([multiple]):not([size]) { appearance: none; display: block; box-sizing: border-box; height: 46px; min-height: 46px; margin: 0; padding: 0 38px 0 12px; line-height: normal; vertical-align: middle; }
+.loading-book-messages { display: grid; min-height: 1.5em; max-width: 100%; }
+.loading-book-messages__phrase { grid-area: 1 / 1; opacity: 0; animation: loading-book-message 20s linear infinite; }
+.loading-book-messages__phrase:nth-child(2) { animation-delay: 4s; }
+.loading-book-messages__phrase:nth-child(3) { animation-delay: 8s; }
+.loading-book-messages__phrase:nth-child(4) { animation-delay: 12s; }
+.loading-book-messages__phrase:nth-child(5) { animation-delay: 16s; }
+@keyframes loading-book-message { 0% { opacity: 0; } 2%, 17% { opacity: 1; } 20%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .loading-book-messages__phrase { animation: none; display: none; }
+  .loading-book-messages__phrase:first-child { display: block; opacity: 1; }
+}

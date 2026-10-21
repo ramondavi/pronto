@@ -169,6 +169,11 @@ function errorText(copy: Copy, code: string) {
   return translatedErrors[language][code] ?? translatedErrors[language].unknown_error;
 }
 
+function restoredRequestStep(draft: StudentRequestDraft, candidate: number, retrospective: boolean) {
+  if (retrospective && !/^[0-9]{3,30}$/.test(draft.registrationNumber.trim())) return 1;
+  return Math.min(5, Math.max(1, Number.isInteger(candidate) ? candidate : 1));
+}
+
 export function StudentRequestForm({ programs, userId, requesterName, usedRegistrations = [], retrospective = false, openReview = false, preview = false, previewSuccessHref }: { programs: Program[]; userId: string; requesterName: string; usedRegistrations?: string[]; retrospective?: boolean; openReview?: boolean; preview?: boolean; previewSuccessHref?: string }) {
   const router = useRouter();
   const draftKey = studentRequestDraftKey(userId);
@@ -304,9 +309,10 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
         const stored = sessionStorage.getItem(studentPreviewDraftKey);
         if (stored) {
           const parsed = JSON.parse(stored);
-          setDraft(restoreStudentRequestDraft(parsed.draft ?? parsed));
+          const restored = restoreStudentRequestDraft(parsed.draft ?? parsed);
+          setDraft(restored);
           const step = openReview ? 5 : Number(parsed.activeStep) || 1;
-          setActiveStep(Math.min(5, Math.max(1, step)));
+          setActiveStep(restoredRequestStep(restored, step, retrospective));
           setFurthestStep(Math.min(5, Math.max(1, Number(parsed.furthestStep) || step)));
         }
       } catch { /* A demonstração começa com o formulário vazio. */ }
@@ -324,11 +330,11 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
         const parsed = useLocal ? localPayload : data?.payload;
         if (parsed && active) {
           const restored = restoreStudentRequestDraft(parsed.draft ?? parsed);
-          const step = openReview ? 5 : Number.isInteger(parsed.activeStep) && parsed.activeStep >= 1 && parsed.activeStep <= 5 ? parsed.activeStep : 1;
+          const step = restoredRequestStep(restored, openReview ? 5 : Number(parsed.activeStep), retrospective);
           const visited = Number.isInteger(parsed.furthestStep) && parsed.furthestStep >= step && parsed.furthestStep <= 5 ? parsed.furthestStep : step;
           setDraft(restored); setActiveStep(step); setFurthestStep(visited);
           setSavedSnapshot(useLocal ? "" : JSON.stringify({ draft: restored, activeStep: step, furthestStep: visited }));
-        } else if (openReview && active) setActiveStep(5);
+        } else if (openReview && active && !retrospective) setActiveStep(5);
       } catch {
         if (active) {
           try {
@@ -337,7 +343,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
               const parsed = JSON.parse(stored);
               const restored = restoreStudentRequestDraft(parsed.draft ?? parsed);
               setDraft(restored);
-              setActiveStep(openReview ? 5 : parsed.activeStep ?? 1);
+              setActiveStep(restoredRequestStep(restored, openReview ? 5 : Number(parsed.activeStep), retrospective));
               setFurthestStep(parsed.furthestStep ?? 1);
             }
           } catch { /* O preenchimento permanece disponível nesta tela. */ }
@@ -348,7 +354,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
     }
     void loadDraft();
     return () => { active = false; };
-  }, [draftKey, openReview, preview, userId]);
+  }, [draftKey, openReview, preview, userId, retrospective]);
 
   function persistDraft(value: string) {
     try { localStorage.setItem(draftKey, JSON.stringify({ ...JSON.parse(value), savedAt: new Date().toISOString() })); } catch { /* A cópia local é opcional. */ }
@@ -502,7 +508,7 @@ export function StudentRequestForm({ programs, userId, requesterName, usedRegist
       <fieldset disabled={submitting} className="form-section form-step form-step--1">
         <legend className="sr-only">{steps[0].label}</legend>
         <div className="form-row">
-          {retrospective ? <div className="retrospective-program" data-review-field="program"><FieldTitle icon="book">Programa do acervo retrospectivo</FieldTitle><p className="retrospective-program__value">RAU+E · Residência em Arquitetura, Urbanismo e Engenharia</p><small className="field-help">Programa definido pela Biblioteca para este acesso provisório.</small></div> : <><div className="request-program-field" data-review-field="program"><label htmlFor="request-program-select"><FieldTitle icon="book">{text.program}</FieldTitle></label><span className="request-program-field__mobile-label"><FieldTitle icon="book">{text.program}</FieldTitle></span><details className="request-program-picker" ref={programPickerRef} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }}><summary aria-label={`${text.program}: ${selectedProgram?.name ?? text.select}`}><span>{selectedProgram ? `${levelLabels[uiLanguage][selectedProgram.level] ?? selectedProgram.level} · ${selectedProgram.name}` : text.select}</span></summary><div className="request-program-picker__options" role="listbox" aria-label={text.program}>{programs.map((program) => <button type="button" role="option" aria-selected={draft.academicProgramId === program.id} key={program.id} onClick={() => { selectProgram(program.id); programPickerRef.current?.querySelector<HTMLElement>("summary")?.focus(); }}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</button>)}</div></details><select id="request-program-select" required value={draft.academicProgramId} onChange={(e) => selectProgram(e.target.value)}><option value="">{text.select}</option>{programs.map((program) => <option key={program.id} value={program.id}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</option>)}</select></div></>}
+          {retrospective ? <label className="retrospective-program" data-review-field="program"><FieldTitle icon="book">{text.program}</FieldTitle><select disabled aria-label={text.program} value={programs.find((program) => program.code === "athdc-specialization")?.id ?? ""}><option value={programs.find((program) => program.code === "athdc-specialization")?.id ?? ""}>RAU+E · Residência em Arquitetura, Urbanismo e Engenharia</option></select></label> : <><div className="request-program-field" data-review-field="program"><label htmlFor="request-program-select"><FieldTitle icon="book">{text.program}</FieldTitle></label><span className="request-program-field__mobile-label"><FieldTitle icon="book">{text.program}</FieldTitle></span><details className="request-program-picker" ref={programPickerRef} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }}><summary aria-label={`${text.program}: ${selectedProgram?.name ?? text.select}`}><span>{selectedProgram ? `${levelLabels[uiLanguage][selectedProgram.level] ?? selectedProgram.level} · ${selectedProgram.name}` : text.select}</span></summary><div className="request-program-picker__options" role="listbox" aria-label={text.program}>{programs.map((program) => <button type="button" role="option" aria-selected={draft.academicProgramId === program.id} key={program.id} onClick={() => { selectProgram(program.id); programPickerRef.current?.querySelector<HTMLElement>("summary")?.focus(); }}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</button>)}</div></details><select id="request-program-select" required value={draft.academicProgramId} onChange={(e) => selectProgram(e.target.value)}><option value="">{text.select}</option>{programs.map((program) => <option key={program.id} value={program.id}>{levelLabels[uiLanguage][program.level] ?? program.level} · {program.name}</option>)}</select></div></>}
           <label data-review-field="registration"><FieldTitle icon="account">{text.registration}</FieldTitle><input required type="text" inputMode="numeric" pattern="[0-9]{3,30}" minLength={3} maxLength={30} value={draft.registrationNumber} onChange={(e) => set("registrationNumber", e.target.value.replace(/[^0-9]/g, ""))} placeholder={text.registration} aria-invalid={registrationUsed} aria-describedby={registrationUsed ? "registration-used-error" : undefined} />{registrationUsed && <span className="signup-field-error" id="registration-used-error">{errorText(text, "registration_already_used")}</span>}</label>
         </div>
         <FieldNote>{text.enrollmentNote}</FieldNote>

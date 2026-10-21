@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- A submissão da secretaria retoma pela matrícula quando ela falta e mostra a RAU+E selecionada em campo inativo. Ajustados degradê inferior do feed, alinhamento do seletor de ordenação e frases de carregamento com transição suave.
+
 - Depósitos pendentes passa para Administração → Controle, preservando filtros, ações e permissões.
 
 ### 20 de outubro de 2026

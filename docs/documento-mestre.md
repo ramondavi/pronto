@@ -749,3 +749,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Na homologação, a orientação para marcar a confirmação da revisão não depende da posição do checkbox na tela; esse checkbox não recebe botão de ajuda. Em telas pequenas, o menu de navegação expandido compartilha a margem horizontal do botão que o abre.
 
 - Em 21/10/2026, Depósitos pendentes passa a integrar Administração → Controle, com filtros e paginação preservados e redirecionamento do endereço anterior. A mudança de localização preserva as permissões de consulta e de envio existentes.
+
+- Ajustes de 21/10/2026: na secretaria da RAU+E, a retomada sem matrícula válida abre o vínculo acadêmico; o programa aparece selecionado em campo desabilitado, sem aviso adicional. O feed tem degradê nas duas extremidades da rolagem. A espera do painel alterna frases curtas do universo dos livros com fade; movimento reduzido conserva uma mensagem estática.
