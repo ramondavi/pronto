@@ -1275,5 +1275,138 @@ export const repositoryUiText: Record<string, Record<Exclude<InterfaceLanguage, 
     "de": "Ich bestätige, dass ich mich im RI/UFBA angemeldet habe",
     "fr": "Je confirme m’être connecté au RI/UFBA",
     "it": "Confermo di aver effettuato l’accesso al RI/UFBA"
+  },
+  "Início do depósito": {
+    "en": "Start of deposit",
+    "es": "Inicio del depósito",
+    "de": "Beginn der Einreichung",
+    "fr": "Début du dépôt",
+    "it": "Inizio del deposito"
+  },
+  "Selecione no RI a coleção e o tipo de documento já confirmados em Antes de começar.": {
+    "en": "In RI, select the collection and document type already confirmed in Before you start.",
+    "es": "En el RI, seleccione la colección y el tipo de documento ya confirmados en Antes de comenzar.",
+    "de": "Wählen Sie im RI die Sammlung und den Dokumenttyp, die Sie unter Bevor Sie beginnen bereits bestätigt haben.",
+    "fr": "Dans le RI, sélectionnez la collection et le type de document déjà confirmés dans Avant de commencer.",
+    "it": "Nel RI, seleziona la collezione e il tipo di documento già confermati in Prima di iniziare."
+  },
+  "Preencha os campos com os dados disponíveis abaixo. Complete no RI resumo, área CNPq, acesso e embargo, quando houver.": {
+    "en": "Fill in the fields using the information below. Complete the abstract, CNPq area, access and any embargo directly in RI.",
+    "es": "Complete los campos con los datos disponibles abajo. Rellene en el RI el resumen, el área CNPq, el acceso y el embargo, cuando corresponda.",
+    "de": "Füllen Sie die Felder mit den unten verfügbaren Daten aus. Ergänzen Sie im RI Zusammenfassung, CNPq-Fachgebiet, Zugang und gegebenenfalls Sperrfrist.",
+    "fr": "Remplissez les champs avec les données ci-dessous. Complétez dans le RI le résumé, le domaine CNPq, l'accès et l'éventuel embargo.",
+    "it": "Compila i campi con i dati disponibili sotto. Completa nel RI il riassunto, l'area CNPq, l'accesso e l'eventuale embargo."
+  },
+  "Envie o PDF final com a ficha catalográfica e marque-o como arquivo principal. Siga o formato exigido pelo RI.": {
+    "en": "Upload the final PDF with the catalog record and mark it as the main file. Follow the format required by RI.",
+    "es": "Envíe el PDF final con la ficha catalográfica y márquelo como archivo principal. Respete el formato exigido por el RI.",
+    "de": "Laden Sie die endgültige PDF-Datei mit Katalogeintrag hoch und markieren Sie sie als Hauptdatei. Beachten Sie das vom RI verlangte Format.",
+    "fr": "Envoyez le PDF final avec la notice de catalogage et marquez-le comme fichier principal. Respectez le format exigé par le RI.",
+    "it": "Invia il PDF finale con la scheda catalografica e contrassegnalo come file principale. Rispetta il formato richiesto dal RI."
+  },
+  "Na revisão final do RI, confira os dados preenchidos e o PDF enviado. Corrija o que for necessário antes de concluir.": {
+    "en": "During RI's final review, check the information entered and the uploaded PDF. Make any corrections before finishing.",
+    "es": "En la revisión final del RI, compruebe los datos y el PDF enviado. Corrija lo necesario antes de finalizar.",
+    "de": "Prüfen Sie bei der abschließenden Kontrolle im RI Ihre Angaben und die hochgeladene PDF-Datei. Nehmen Sie vor dem Abschluss erforderliche Korrekturen vor.",
+    "fr": "Lors de la vérification finale dans le RI, relisez les données saisies et le PDF envoyé. Corrigez ce qui est nécessaire avant de terminer.",
+    "it": "Nella revisione finale del RI, verifica i dati inseriti e il PDF inviato. Correggi ciò che serve prima di concludere."
+  },
+  "Leia as opções e escolha a licença adequada ao seu trabalho diretamente no RI.": {
+    "en": "Read the options and choose the appropriate license for your work directly in RI.",
+    "es": "Lea las opciones y elija la licencia adecuada para su trabajo directamente en el RI.",
+    "de": "Lesen Sie die Optionen und wählen Sie die passende Lizenz für Ihre Arbeit direkt im RI.",
+    "fr": "Lisez les options et choisissez la licence adaptée à votre travail directement dans le RI.",
+    "it": "Leggi le opzioni e scegli la licenza adatta al tuo lavoro direttamente nel RI."
+  },
+  "Finalize o envio no RI. Depois, registre a conclusão no botão ao final deste guia.": {
+    "en": "Finish submitting in RI. Then record completion using the button at the end of this guide.",
+    "es": "Finalice el envío en el RI. Después registre la conclusión con el botón al final de esta guía.",
+    "de": "Schließen Sie die Einreichung im RI ab. Erfassen Sie den Abschluss anschließend über die Schaltfläche am Ende dieses Leitfadens.",
+    "fr": "Terminez l'envoi dans le RI. Enregistrez ensuite la fin de l'envoi avec le bouton en bas de ce guide.",
+    "it": "Completa l'invio nel RI. Poi registra il completamento con il pulsante alla fine di questa guida."
+  },
+  "Consulte seu depósito no RI/UFBA": {
+    "en": "View your RI/UFBA submission",
+    "es": "Consulte su depósito en el RI/UFBA",
+    "de": "Einreichung im RI/UFBA ansehen",
+    "fr": "Consultez votre dépôt au RI/UFBA",
+    "it": "Consulta il tuo deposito nel RI/UFBA"
+  },
+  "Continue seu depósito no RI/UFBA": {
+    "en": "Continue your RI/UFBA deposit",
+    "es": "Continúe su depósito en el RI/UFBA",
+    "de": "Einreichung im RI/UFBA fortsetzen",
+    "fr": "Poursuivez votre dépôt au RI/UFBA",
+    "it": "Continua il deposito nel RI/UFBA"
+  },
+  "O envio já foi registrado. Use Meu espaço no RI para acompanhar a submissão; os dados deste guia continuam disponíveis para consulta.": {
+    "en": "Your submission has been recorded. Use “Meu espaço” in RI to track it; this guide's information remains available for reference.",
+    "es": "El envío ya está registrado. Use “Meu espaço” en el RI para seguir la solicitud; los datos de esta guía siguen disponibles para consulta.",
+    "de": "Ihre Einreichung wurde erfasst. Verfolgen Sie sie unter „Meu espaço“ im RI. Die Angaben dieses Leitfadens stehen weiterhin zum Nachschlagen bereit.",
+    "fr": "Votre envoi a été enregistré. Utilisez « Meu espaço » dans le RI pour le suivre ; les données de ce guide restent consultables.",
+    "it": "L'invio è già registrato. Usa “Meu espaço” nel RI per seguirlo; i dati di questa guida restano disponibili per la consultazione."
+  },
+  "Conta e destino já foram confirmados em Antes de começar. Continue na aba do RI e use este guia durante o preenchimento.": {
+    "en": "Your account and destination were confirmed in Before you start. Continue in the RI tab and use this guide as you fill in the form.",
+    "es": "Su cuenta y el destino ya se confirmaron en Antes de comenzar. Continúe en la pestaña del RI y use esta guía al completar los campos.",
+    "de": "Ihr Konto und Ihr Ablageziel wurden unter Bevor Sie beginnen bestätigt. Fahren Sie im RI-Tab fort und nutzen Sie diesen Leitfaden beim Ausfüllen.",
+    "fr": "Votre compte et la destination ont été confirmés dans Avant de commencer. Continuez dans l'onglet du RI et utilisez ce guide pendant la saisie.",
+    "it": "L'account e la destinazione sono già stati confermati in Prima di iniziare. Continua nella scheda del RI e usa questa guida durante la compilazione."
+  },
+  "Acompanhar no RI/UFBA": {
+    "en": "Track in RI/UFBA",
+    "es": "Consultar seguimiento en el RI/UFBA",
+    "de": "Im RI/UFBA nachverfolgen",
+    "fr": "Suivre dans le RI/UFBA",
+    "it": "Segui nel RI/UFBA"
+  },
+  "Acessar depósito no RI/UFBA": {
+    "en": "Open deposit in RI/UFBA",
+    "es": "Acceder al depósito en el RI/UFBA",
+    "de": "Einreichung im RI/UFBA öffnen",
+    "fr": "Accéder au dépôt dans le RI/UFBA",
+    "it": "Apri il deposito nel RI/UFBA"
+  },
+  "Durante o depósito": {
+    "en": "During deposit",
+    "es": "Durante el depósito",
+    "de": "Während der Einreichung",
+    "fr": "Pendant le dépôt",
+    "it": "Durante il deposito"
+  },
+  "Copie os dados disponíveis para os campos correspondentes no RI. As orientações junto a cada campo indicam o que completar diretamente no repositório.": {
+    "en": "Copy the available information into the corresponding RI fields. The instructions beside each field explain what to complete directly in the repository.",
+    "es": "Copie los datos disponibles en los campos correspondientes del RI. Las instrucciones junto a cada campo indican qué completar directamente en el repositorio.",
+    "de": "Kopieren Sie die verfügbaren Daten in die entsprechenden RI-Felder. Die Hinweise bei den Feldern erklären, was Sie direkt im Repositorium ergänzen müssen.",
+    "fr": "Copiez les données disponibles dans les champs correspondants du RI. Les instructions près de chaque champ indiquent quoi compléter directement dans le dépôt.",
+    "it": "Copia i dati disponibili nei campi corrispondenti del RI. Le istruzioni accanto a ogni campo indicano cosa completare direttamente nel repository."
+  },
+  "Destino já confirmado": {
+    "en": "Destination already confirmed",
+    "es": "Destino ya confirmado",
+    "de": "Ablageziel bereits bestätigt",
+    "fr": "Destination déjà confirmée",
+    "it": "Destinazione già confermata"
+  },
+  "Seu envio está registrado no Pronto!. Aguarde a validação da Biblioteca no RI/UFBA; o resultado será informado pelo e-mail cadastrado no repositório.": {
+    "en": "Your submission is recorded in Pronto!. Wait for Library validation in RI/UFBA; the outcome will be sent to the email registered in the repository.",
+    "es": "Su envío está registrado en Pronto!. Espere la validación de la Biblioteca en el RI/UFBA; el resultado se comunicará al correo registrado en el repositorio.",
+    "de": "Ihre Einreichung ist in Pronto! erfasst. Warten Sie auf die Validierung durch die Bibliothek im RI/UFBA. Das Ergebnis erhalten Sie unter der im Repositorium registrierten E-Mail-Adresse.",
+    "fr": "Votre envoi est enregistré dans Pronto!. Attendez la validation de la Bibliothèque dans le RI/UFBA ; le résultat sera communiqué à l'adresse e-mail enregistrée dans le dépôt.",
+    "it": "L'invio è registrato in Pronto!. Attendi la validazione della Biblioteca nel RI/UFBA; l'esito sarà comunicato all'e-mail registrata nel repository."
+  },
+  "Envio já informado. Acompanhe a validação em Meu espaço no RI/UFBA.": {
+    "en": "Submission already reported. Track validation under “Meu espaço” in RI/UFBA.",
+    "es": "Envío ya informado. Siga la validación en “Meu espaço” del RI/UFBA.",
+    "de": "Einreichung bereits gemeldet. Verfolgen Sie die Validierung unter „Meu espaço“ im RI/UFBA.",
+    "fr": "Envoi déjà signalé. Suivez la validation dans « Meu espaço » au RI/UFBA.",
+    "it": "Invio già segnalato. Segui la validazione in “Meu espaço” nel RI/UFBA."
+  },
+  "Copie a referência validada pela Biblioteca para o campo Citação no RI.": {
+    "en": "Copy the Library-validated reference into the “Citação” field in RI.",
+    "es": "Copie la referencia validada por la Biblioteca en el campo “Citação” del RI.",
+    "de": "Kopieren Sie die von der Bibliothek geprüfte Literaturangabe in das Feld „Citação“ im RI.",
+    "fr": "Copiez la référence validée par la Bibliothèque dans le champ « Citação » du RI.",
+    "it": "Copia il riferimento validato dalla Biblioteca nel campo “Citação” del RI."
   }
 };
