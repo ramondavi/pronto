@@ -7049,3 +7049,10 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 @media (prefers-reduced-motion: reduce) { .repository-preparation__registration-details > summary > svg:last-child { transition: none; } }
 
 .repository-preparation__registration-details > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--radius-sm); }
+
+.repository-email-contact { display: grid; gap: 6px; padding: 12px 14px; margin-bottom: 14px; border: 1px solid color-mix(in srgb,var(--institutional) 35%,var(--line)); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); }
+.repository-email-contact > span { color: var(--text-muted); font-size: .73rem; font-weight: 700; }
+.repository-email-contact > a { display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; color: var(--institutional); font-size: 1rem; text-decoration: underline; text-underline-offset: 3px; }
+.repository-email-contact svg { flex: 0 0 19px; width: 19px; height: 19px; }
+.repository-email-contact strong { overflow-wrap: anywhere; }
+.repository-email-contact a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }

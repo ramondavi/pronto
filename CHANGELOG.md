@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O endereço repositorio@ufba.br aparece em destaque antes das orientações de espera e da preparação de mensagens de liberação ou correção do RI.
+
 - Informar destino incorreto no modal da etapa 0 seleciona automaticamente a resposta de liberação em outro destino e abre a correção. O roteiro dos modais começa pelo login no RI/UFBA e pelo botão Iniciar um novo depósito.
 
 - O cadastro no RI aguarda 120 segundos e então pergunta se a conta foi confirmada, sem avanço automático. Respostas de espera exibem contato e lembrete opcional com data e hora; pedidos de liberação/correção seguem a mesma confirmação explícita, sem temporizador. Orientações e modais recebem passos numerados, e o retorno redundante foi removido.

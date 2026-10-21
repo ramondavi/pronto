@@ -1,5 +1,6 @@
 "use client";
 
+import { RepositoryEmailContact } from "@/components/repository-email-contact";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ModalCloseButton } from "@/components/modal-close-button";
 import { createClient } from "@/lib/supabase/client";
@@ -200,7 +201,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   }
 
   function waitingNotice(kind: "account" | "release" | "correction") {
-    return <aside className="repository-preparation__info repository-preparation__info--warning"><AppIcon name="message" /><div><strong>{t(kind === "account" ? "Ainda não recebeu a confirmação do cadastro?" : kind === "correction" ? "Ainda aguarda a correção do acesso?" : "Ainda aguarda a liberação?")}</strong><p>{t(kind === "account" ? "Escreva para repositorio@ufba.br, informe que seu cadastro ainda não foi confirmado e peça a verificação. Informe o e-mail usado no cadastro." : "Você pode continuar outro dia. Confira seu e-mail e o acesso na conta do RI/UFBA; para acompanhar o pedido, escreva para repositorio@ufba.br informando o e-mail cadastrado e o destino solicitado.")}</p><a className="button button--secondary button--small button--with-icon" href="mailto:repositorio@ufba.br"><AppIcon name="message" />{t("Escrever ao RI/UFBA")}</a></div></aside>;
+    return <aside className="repository-preparation__info repository-preparation__info--warning"><AppIcon name="message" /><div><RepositoryEmailContact label={t("Contato da equipe do RI/UFBA")} /><strong>{t(kind === "account" ? "Ainda não recebeu a confirmação do cadastro?" : kind === "correction" ? "Ainda aguarda a correção do acesso?" : "Ainda aguarda a liberação?")}</strong><p>{t(kind === "account" ? "Escreva para o endereço acima, informe que seu cadastro ainda não foi confirmado e peça a verificação. Informe o e-mail usado no cadastro." : "Você pode continuar outro dia. Confira seu e-mail e o acesso na conta do RI/UFBA; para acompanhar o pedido, escreva para o endereço acima informando o e-mail cadastrado e o destino solicitado.")}</p><a className="button button--secondary button--small button--with-icon" href="mailto:repositorio@ufba.br"><AppIcon name="message" />{t("Escrever ao RI/UFBA")}</a></div></aside>;
   }
   const verify = <>
     <button type="button" className="repository-preparation__answer" onClick={backDecision}><AppIcon name="check" /><span>{t(correction ? "Já enviei o pedido de correção" : "Já enviei o pedido de liberação")}<small>{t("Rever resposta")}</small></span><AppIcon name="edit" /></button>
