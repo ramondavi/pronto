@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 21 de outubro de 2026
 
+- O cabeçalho do Antes de começar oferece login destacado no RI com orientação para as verificações. Os blocos de contato incluem botão discreto de copiar o e-mail do repositório.
+
 - Textos do Antes de começar especificam liberação para depositar e destino do depósito nos rótulos, respostas, orientações e modais, sem acrescentar blocos de explicação.
 
 - O endereço repositorio@ufba.br aparece em destaque antes das orientações de espera e da preparação de mensagens de liberação ou correção do RI.

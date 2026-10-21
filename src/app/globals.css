@@ -6928,7 +6928,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 /* Preparation uses the shared card and decision styles without the PDF editor indentation. */
 .repository-preparation { gap: 18px; }
-.repository-preparation > .admin-section__lead { margin-bottom: 0; }
+.repository-preparation__header > .admin-section__lead { margin-bottom: 0; }
 .repository-preparation__steps { gap: 10px; }
 .repository-preparation .browser-pdf-delivery__step { padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
 .repository-preparation .browser-pdf-delivery__step.is-active { background: var(--surface-raised); border-color: color-mix(in srgb, var(--institutional) 35%, var(--line)); }
@@ -7052,7 +7052,17 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .repository-email-contact { display: grid; gap: 6px; padding: 12px 14px; margin-bottom: 14px; border: 1px solid color-mix(in srgb,var(--institutional) 35%,var(--line)); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); }
 .repository-email-contact > span { color: var(--text-muted); font-size: .73rem; font-weight: 700; }
-.repository-email-contact > a { display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; color: var(--institutional); font-size: 1rem; text-decoration: underline; text-underline-offset: 3px; }
+.repository-email-contact__row > a { display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; color: var(--institutional); font-size: 1rem; text-decoration: underline; text-underline-offset: 3px; }
 .repository-email-contact svg { flex: 0 0 19px; width: 19px; height: 19px; }
 .repository-email-contact strong { overflow-wrap: anywhere; }
 .repository-email-contact a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.repository-preparation__header { display: grid; grid-template-columns: minmax(0,1fr) minmax(250px,320px); align-items: center; gap: 20px; }
+.repository-preparation__login { display: grid; grid-template-columns: 22px minmax(0,1fr); align-items: center; gap: 11px; min-width: 0; padding: 14px; text-align: left; white-space: normal; }
+.repository-preparation__login > svg { width: 22px; height: 22px; }
+.repository-preparation__login > span { display: grid; gap: 5px; }
+.repository-preparation__login small { font-size: .73rem; font-weight: 500; line-height: 1.5; }
+.repository-email-contact__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.repository-email-contact__copy { flex: 0 0 30px; display: inline-grid; place-items: center; width: 30px; min-height: 30px; padding: 5px; }
+.repository-email-contact__copy svg { width: 16px; height: 16px; }
+@media (max-width: 800px) { .repository-preparation__header { grid-template-columns: minmax(0,1fr); gap: 14px; } }
