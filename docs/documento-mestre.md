@@ -806,3 +806,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - No cabeçalho do Antes de começar, apresentar à direita o botão destacado para login em https://repositorio.ufba.br/mydspace, com orientação interna para acessar a conta e seguir as verificações das etapas/opções; em telas pequenas, o botão fica abaixo do título. Os blocos de contato do RI incluem botão discreto junto ao endereço para copiar repositorio@ufba.br, com retorno de sucesso ou erro.
 
 - Orientações de criação e confirmação da conta no RI apresentam três passos visuais numerados e com ícones: criar a conta, confirmar pelo e-mail recebido e continuar no Pronto!. Abrir RI e tutorial ficam junto do primeiro passo, com hierarquia principal/secundária; os demais orientam caixa de entrada/spam e a resposta após a contagem, preservando o fluxo aprovado.
+
+- A divisória do cabeçalho do preparo do RI pertence ao contêiner completo, abaixo do texto e do botão de login, sem interrupção. O texto interno do botão orienta fazer login na nova aba, voltar ao Pronto! e alternar entre as abas para conferir cada etapa.
