@@ -8,6 +8,16 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Consolida o MVP para lançamento: fluxo do RI e acervo retrospectivo, ajustes de atendimento e e-mails, tutorial de PDF/A como link discreto e verificações completas de aplicação e banco.
+
+- E-mails de atendimento concluído sem publicação registrada passam a oferecer acesso à página pública do trabalho no Pronto!, em lugar do painel.
+
+- Unifica os e-mails finais como Atendimento concluído, mantendo o endereço permanente quando houver publicação verificada no RI.
+
+- URLs alternativas dos e-mails com fonte uniforme, destaques preservados e avisos de conclusão da ficha sem referência a guia ou RI para solicitante e coordenação.
+
+- Ajustes dos modelos de e-mail conforme parecer: links alternativos após cada botão, rodapé comum, caixas para respostas e declarações e textos específicos por ocasião dos lembretes. Catálogo renovado para conferência; conclusão sem RI permanece pendente de decisão.
+
 - Catálogo de revisão dos 23 modelos e variantes de e-mail, com prévias visuais, conteúdo completo e espaço para parecer individual, sem alterar os envios.
 
 - Aviso de PDF/A na etapa de arquivo, com acesso ao tutorial oficial do RI; orientação sobre escolha de licenças na etapa de licença.

@@ -29,7 +29,7 @@ select lives_ok($$select * from public.open_student_request_v12(jsonb_build_obje
  'keywordsEn',jsonb_build_array('Architecture','Housing','Urbanism'),
  'equivalentTitles',jsonb_build_array(jsonb_build_object('language','en','title','Repository deposit work')),'hasIllustrations',false,'specialCases',jsonb_build_array(),
  'originalLanguage','pt','cancellationAcknowledged',true,'sharedFileUnchangedConfirmed',true,'defendedAndApproved',true,'finalFileConfirmed',true,'approvalPageConfirmed',true))$$,'solicitação criada');
-select throws_ok($$select public.start_repository_deposit((select id from public.cataloging_requests limit 1))$$,'P0001','repository_deposit_not_available','não inicia antes da liberação completa');
+select throws_ok($$select public.start_repository_deposit((select id from public.cataloging_requests limit 1))$$,'P0001','repository_access_confirmation_required','não inicia antes da confirmação de acesso');
 reset role;
 
 with created_terms as (
@@ -53,6 +53,11 @@ insert into public.cataloging_card_homologations(request_id,snapshot,homologated
 insert into public.nada_consta_documents(request_id,object_path,original_name,size_bytes,mime_type,sha256,status,uploaded_by,validated_by,validated_at,released_at)
  select id,id::text||'/nada-consta.pdf','nada.pdf',100,'application/pdf',repeat('a',64),'approved','98000000-0000-4000-8000-000000000001','98000000-0000-4000-8000-000000000003',now(),now() from public.cataloging_requests;
 
+-- Preparação já confirmada para o destino deste protocolo homologado.
+insert into public.repository_access_preparations(request_id,state,destination)
+ select r.id,'{"route":"ready"}',jsonb_build_array(p.code,p.repository_collection_label,p.repository_document_type_label)
+ from public.cataloging_requests r join public.academic_enrollments e on e.id=r.academic_enrollment_id
+ join public.academic_programs p on p.id=e.academic_program_id;
 set local role authenticated;
 set local request.jwt.claim.sub='98000000-0000-4000-8000-000000000001';
 select lives_ok($$select public.start_repository_deposit((select id from public.cataloging_requests limit 1))$$,'estudante liberado registra o início');

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(25);
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
  ('a1000000-0000-4000-8000-000000000001','teste.retrospectiva.admin@ufba.br',now(),'{}'),
@@ -62,6 +62,14 @@ select throws_ok($$select public.end_retrospective_access('a1000000-0000-4000-80
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000002';
 select ok((select count(*)=1 from public.cataloging_card_homologations),'ficha homologada é liberada sem Nada Consta');
 select throws_ok($$select public.report_retrospective_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'),'https://example.org/falso')$$,'P0001','ri_ufba_url_required','rejeita URL fora do RI/UFBA');
+select throws_ok($$select public.start_repository_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'))$$,'P0001','repository_access_confirmation_required','guia desativado não permite iniciar nem no retrospectivo');
+reset role;
+update public.academic_programs set repository_deposit_enabled=true where code='athdc-specialization';
+insert into public.repository_access_preparations(request_id,state,destination)
+ select r.id,'{"route":"ready"}',jsonb_build_array(p.code,p.repository_collection_label,p.repository_document_type_label)
+ from public.cataloging_requests r join public.academic_enrollments e on e.id=r.academic_enrollment_id
+ join public.academic_programs p on p.id=e.academic_program_id where r.title='Retrospectivo primeiro';
+set local role authenticated;
 select lives_ok($$select public.report_retrospective_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'),'https://repositorio.ufba.br/handle/ri/1')$$,'secretaria informa URL de cada depósito');
 select ok((select status='approved' from public.cataloging_requests where title='Retrospectivo primeiro'),'URL informada aguarda conferência profissional');
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000001';

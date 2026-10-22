@@ -47,7 +47,10 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   const blocked = useRef(false);
   const saved = useRef("");
   const restoreEmail = useRef(onRestoreEmail);
-  restoreEmail.current = onRestoreEmail;
+  useEffect(() => { restoreEmail.current = onRestoreEmail; }, [onRestoreEmail]);
+  useEffect(() => {
+    if (pendingDecision) destinationDialog.current?.showModal();
+  }, [pendingDecision]);
   const snapshot = JSON.stringify({ ...state, ...emailState });
   const stages = accessStages(state);
   const ready = accessReady(state);
@@ -191,7 +194,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
   function choice(label: string, description: string, icon: AppIconName, selected: boolean, onClick: () => void, checkDestination = false, timed = false, onDecline: () => void = () => undefined, context: "access" | "release" | "final" = "access") {
     const waiting = timed && waitRemaining > 0;
     const showReminder = !!waitingKind && icon === "clock" && selected;
-    return <div className={`repository-preparation__option${showReminder ? " repository-preparation__option--waiting" : ""}`}><button className={`browser-pdf-delivery__color-option repository-preparation__choice${selected ? " is-selected" : ""}${waiting ? " is-counting" : ""}`} type="button" aria-pressed={selected} disabled={!loaded || starting || waiting} onClick={() => { if (!checkDestination) { onClick(); return; } setPendingDecision({ label, wrong: icon === "edit", context, confirm: onClick, decline: selected ? onDecline : () => undefined }); destinationDialog.current?.showModal(); }}><AppIcon name={waiting ? "clock" : icon} /><span><strong>{t(label)}</strong><small>{t(description)}</small>{waiting && <span className="repository-preparation__timer"><strong>{Math.floor(waitRemaining/60)}:{String(waitRemaining%60).padStart(2,"0")}</strong><span>{t("Pode aguardar com esta tela aberta e conferir seu e-mail. Quando a contagem terminar, informe se sua conta já foi confirmada.")}</span></span>}</span><AppIcon name="check" />{waiting && <span className="repository-preparation__progress" role="progressbar" aria-label={t("Tempo até liberar a confirmação")} aria-valuemin={0} aria-valuemax={120} aria-valuenow={120 - waitRemaining}><span style={{ width: `${(120 - waitRemaining) / 120 * 100}%` }} /></span>}</button>{showReminder && reminderOption()}</div>;
+    return <div className={`repository-preparation__option${showReminder ? " repository-preparation__option--waiting" : ""}`}><button className={`browser-pdf-delivery__color-option repository-preparation__choice${selected ? " is-selected" : ""}${waiting ? " is-counting" : ""}`} type="button" aria-pressed={selected} disabled={!loaded || starting || waiting} onClick={() => { if (!checkDestination) { onClick(); return; } setPendingDecision({ label, wrong: icon === "edit", context, confirm: onClick, decline: selected ? onDecline : () => undefined }); }}><AppIcon name={waiting ? "clock" : icon} /><span><strong>{t(label)}</strong><small>{t(description)}</small>{waiting && <span className="repository-preparation__timer"><strong>{Math.floor(waitRemaining/60)}:{String(waitRemaining%60).padStart(2,"0")}</strong><span>{t("Pode aguardar com esta tela aberta e conferir seu e-mail. Quando a contagem terminar, informe se sua conta já foi confirmada.")}</span></span>}</span><AppIcon name="check" />{waiting && <span className="repository-preparation__progress" role="progressbar" aria-label={t("Tempo até liberar a confirmação")} aria-valuemin={0} aria-valuemax={120} aria-valuenow={120 - waitRemaining}><span style={{ width: `${(120 - waitRemaining) / 120 * 100}%` }} /></span>}</button>{showReminder && reminderOption()}</div>;
   }
   function backDecision() {
     if (state.account === "create") update({ ...state, account: "", accountAwaitingConfirmation: false });
@@ -243,6 +246,7 @@ export function RepositoryAccessPreparation({ requestId, setup, destinationKey, 
 
   return <section className="panel repository-preparation"><header className={`repository-preparation__header${showHeaderAccess ? "" : " repository-preparation__header--without-access"}`}><div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="upload" /></span><div><p className="eyebrow">{t("Antes de começar")}</p><h2>{t("Prepare sua conta e a liberação para depositar no RI/UFBA")}</h2><p>{t("Responda às perguntas de cada etapa. Sua resposta define o próximo passo; reabra uma etapa para conferir ou alterar o que informou.")}</p></div></div>{showHeaderAccess && repositoryAccessButton}</header>
     {!loaded && !error && <p role="status">{t("Carregando suas respostas…")}</p>}
+    {/* eslint-disable-next-line react-hooks/refs -- As opções apenas registram handlers; leituras de refs ocorrem nos eventos, nunca nesta renderização. */}
     <div className="repository-preparation__steps">{titles.map((title, step) => {
       const unlocked = stages[step]; const expanded = unlocked && state.expanded.includes(step);
       const skipped = step > 0 && (state.route === "ready" || (step === 1 && ["account", "wrong"].includes(state.route)));

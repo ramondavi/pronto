@@ -46,3 +46,15 @@ Tarefas do Catalogador: filtrar e assumir ticket; observar bloqueio concorrente;
 Tarefas do Administrador: bloquear conta; alterar perfil; reatribuir ticket; configurar programa/SLA; publicar mural; consultar estatísticas/logs; executar expurgo descartável.
 
 Critério de saída: nenhuma falha crítica ou alta aberta, nenhum vazamento entre perfis, todas as tarefas essenciais concluídas e aceite institucional das pendências de lançamento.
+
+
+## Consolidação para lançamento — 22/10/2026
+
+- Autorização do responsável: consolidar alterações, validar, abrir PR, aplicar migrações e atualizar produção. Os testes antes adiados passam a ser executados nesta entrega.
+- `npm run verify`: 133 testes aprovados, typecheck aprovado, lint aprovado (13 avisos não bloqueantes existentes) e build de produção aprovado. Relatório local: `tmp/verification/run-1BuFu2/summary.json`.
+- Banco local isolado em portas 563xx: todas as migrações reaplicadas; lint sem erros; 261 testes pgTAP aprovados em 13 arquivos. Relatório local: `tmp/db-validation-tests-2.log`.
+- Testes antigos do depósito foram adaptados à confirmação prévia obrigatória do destino e ao acesso à própria ficha após conclusão sem guia; isolamento entre estudantes continua coberto. Testes dos e-mails verificam URL alternativa por botão, sanitização de resposta, rodapé, botão público em E16/E17 e ausência de acesso interno para coordenação.
+- Recuperação de senha preserva o layout responsivo já ajustado no clone principal, incorporado por leitura sem modificar o arquivo de trabalho original. Rodapé e URL foram padronizados.
+- Quatro migrações de e-mail aplicadas na prévia pelo CLI, após simulação; produção tem 13 migrações pendentes na simulação, de 202610210000 a 202610220003. Nenhum seed ou role é aplicado no remoto.
+- Capturas e gravações omitidas por solicitação expressa do responsável; a verificação de interface usa navegação e testes sem essas gravações.
+- A aprovação de publicação consolida os ajustes de e-mail solicitados. O catálogo é referência editorial, não um canal de envio. Não houve envio manual de e-mails nem convite à secretaria. Entrega SMTP real e aceite humano assistido não devem ser declarados comprovados apenas pelos testes automatizados.

@@ -1,0 +1,144 @@
+{
+  "catalogo": "7e8e6ca",
+  "data": "2026-10-22T04:37:58.743Z",
+  "pareceres": [
+    {
+      "modelo": "E01",
+      "titulo": "Confirmação do cadastro",
+      "status": "approved",
+      "note": ""
+    },
+    {
+      "modelo": "E02",
+      "titulo": "Código de acesso do estudante",
+      "status": "approved",
+      "note": ""
+    },
+    {
+      "modelo": "E03",
+      "titulo": "Recuperação ou definição de senha",
+      "status": "approved",
+      "note": ""
+    },
+    {
+      "modelo": "E04",
+      "titulo": "Confirmação da alteração de e-mail",
+      "status": "approved",
+      "note": ""
+    },
+    {
+      "modelo": "E05",
+      "titulo": "Solicitação recebida",
+      "status": "changes",
+      "note": "Abaixo do botão, inclua a url inteira precedida por, numa linha acima, \"Se o botão não funcionar, copie este endereço para o navegador:\" para a pessoa poder copiar e colar no navegador para caso o botao nao funcionar"
+    },
+    {
+      "modelo": "E06",
+      "titulo": "Abertura para a coordenação",
+      "status": "changes",
+      "note": "substitua \"Olá, Coordenação.\" por \"Olá!\" apenas; após \"Para acompanhar o andamento, use o botão abaixo.\", falta um espaço para separar de \"Esse acesso...\"; mude \"realizada pelo(a) referido(a) estudante.\" para \"realizada pelo(a) referido(a) discente concluinte.\"; mude \"Se o botão não abrir, copie este endereço no navegador:\" para \"Se o botão não funcionar, copie este endereço para o navegador:\""
+    },
+    {
+      "modelo": "E07",
+      "titulo": "Abertura para a coordenação — recuperação do envio",
+      "status": "changes",
+      "note": "substitua \"Olá, Coordenação.\" por \"Olá!\" apenas; após \"Para acompanhar o andamento, use o botão abaixo.\", falta um espaço para separar de \"Esse acesso...\"; mude \"realizada pelo(a) referido(a) estudante.\" para \"realizada pelo(a) referido(a) discente concluinte.\"; mude \"Se o botão não abrir, copie este endereço no navegador:\" para \"Se o botão não funcionar, copie este endereço para o navegador:\""
+    },
+    {
+      "modelo": "E08",
+      "titulo": "Pedido de correções",
+      "status": "changes",
+      "note": "abaixo dos botões, inclua, respectivamente, a url inteira de cada botão precedida por, numa linha acima, \"Se o botão \"Corrigir campos pendentes\" não funcionar, copie este endereço para o navegador:\" e \"Se o botão \"Acessar o painel do Pronto!\" não funcionar, copie este endereço para o navegador:\"  para a pessoa poder copiar e colar no navegador para caso de cada botao nao funcionar"
+    },
+    {
+      "modelo": "E09",
+      "titulo": "Resposta da Biblioteca à mensagem do solicitante",
+      "status": "changes",
+      "note": "mova a resposta redigida pela biblioteca para dentro de uma caixa, como a q tem no E08 com as informações do campo a corrigir, só q teria apenas a resposta da biblioteca"
+    },
+    {
+      "modelo": "E10",
+      "titulo": "Ficha comum liberada",
+      "status": "changes",
+      "note": "mude \"Acesse sua solicitação para gerar o PDF completo do trabalho com a ficha catalográfica já inserida (opção recomendada), baixar a ficha catalográfica a parte e consultar as orientações para o autodepósito no RI/UFBA, quando aplicável.\" para:\n\n\"Acesse sua solicitação para gerar o PDF completo do seu trabalho com a ficha catalográfica já inserida (opção recomendada) ou baixá-la separadamente.\n\nNo painel do Pronto!, você também pode consultar as orientações para o autodepósito do seu trabalho no RI/UFBA.\"\n\nmude \"Atenção! Antes de gerar o arquivo final do seu trabalho contendo a ficha, confira se o PDF selecionado por você no seu dispositivo é o mesmo trabalho final completo que foi analisado pela Biblioteca.\" para \"Atenção! Antes de gerar o arquivo final do seu trabalho contendo a ficha, confira se o PDF selecionado por você no seu dispositivo é o mesmo trabalho final completo que você enviou durante o atendimento no Pronto!.\""
+    },
+    {
+      "modelo": "E11",
+      "titulo": "Ficha retrospectiva da RAU+E liberada",
+      "status": "changes",
+      "note": "mude para:\n\n\"Olá!\n\nA ficha do protocolo FA2026-0001 foi homologada.\n\nAcesse o Pronto! para gerar a ficha e consultar o guia de depósito do trabalho no RI/UFBA.\n\nno assunto, mude para \"Pronto! | Ficha retrospectiva n.º [número do protocolo] liberada\""
+    },
+    {
+      "modelo": "E12",
+      "titulo": "Cancelamento por descumprimento de declarações",
+      "status": "changes",
+      "note": "movas a informação das declarações nao cumpridas para dentro de uma caixa como a do E08"
+    },
+    {
+      "modelo": "E13",
+      "titulo": "Encerramento com publicação no RI — pedido comum",
+      "status": "changes",
+      "note": "Mude \"Guarde este endereço para consulta e divulgação do seu trabalho.\" para \"Guarde este endereço para consulta e divulgação do seu trabalho. Ele é permanente e único.\""
+    },
+    {
+      "modelo": "E14",
+      "titulo": "Encerramento com publicação no RI — retrospectivo",
+      "status": "changes",
+      "note": "remova: \"Guarde este endereço para consulta e divulgação do seu trabalho.\n\nSolicitação retrospectiva da RAU+E com dispensa de Nada Consta.\""
+    },
+    {
+      "modelo": "E15",
+      "titulo": "Conclusão com publicação — coordenação",
+      "status": "changes",
+      "note": "mude \"A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento. O Magic Link enviado anteriormente não é mais válido.\" para \"A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento. O botão e URL de acesso ao protocolo enviados anteriormente não são mais válidos.\""
+    },
+    {
+      "modelo": "E16",
+      "titulo": "Conclusão sem guia do RI — solicitante",
+      "status": "changes",
+      "note": "Não entendi esse email. qual a diferença de status dos emails de conclusão e de encerramento?"
+    },
+    {
+      "modelo": "E17",
+      "titulo": "Conclusão sem guia do RI — coordenação",
+      "status": "changes",
+      "note": "talvez eu solicite ajustes a depender da sua resposta a minha pergunta no campo do E16"
+    },
+    {
+      "modelo": "E18",
+      "titulo": "Conta interna aguardando provisionamento",
+      "status": "changes",
+      "note": "mude \"Acesse Administração → Equipe e acessos para atribuir o perfil adequado.\" para \"Acesse Administração → Operação → Contas para atribuir o perfil adequado.\""
+    },
+    {
+      "modelo": "E19",
+      "titulo": "Lembrete para avaliar o serviço",
+      "status": "changes",
+      "note": "no assunto e no corpo da mensagem, onde tiver BIB/FA, mude para BIB/FAUFBA; não precisa dos botões no fim;\n\nno dia 10, mude o assunto para \"Pronto! | Somente 3 minutos e você pode ajudar a melhorar nossos serviços\", no corpo da mensagem, mude apenas o parágrafo \"Você concluiu o protocolo FA2026-0001 e sua experiência pode ajudar a melhorar o Pronto! e os serviços da Biblioteca da Faculdade de Arquitetura da UFBA.\" para \"Há 10 dias, você usou nosso mais novo serviço, o Pronto!, e imaginamos que sua experiência tenha sido a melhor possível. Poderia compartilhar com a gente o que achou?\"\n\nno dia 17, mude o assunto para \"Pronto! | Toc toc! Teria 3 minutinhos?\", no corpo da mensagem, mude apenas o parágrafo \"Você concluiu o protocolo FA2026-0001 e sua experiência pode ajudar a melhorar o Pronto! e os serviços da Biblioteca da Faculdade de Arquitetura da UFBA.\" para \"Desculpa atrapalhar o silêncio da sua viagem... Mas você poderia compartilhar com a gente como foi sua experiência ao usar o Pronto!? Sua resposta certamente vai contribuir bastante com a melhoria do que oferecemos à comunidade FAUFBA.\"\n\nno dia 24, mude o assunto para \"Pronto! | Última chamada! Rsrs\", no corpo da mensagem, mude apenas o parágrafo \"Você concluiu o protocolo FA2026-0001 e sua experiência pode ajudar a melhorar o Pronto! e os serviços da Biblioteca da Faculdade de Arquitetura da UFBA.\" para \"A gente jura que será o último pedido! Valorizamos muito sua avaliação dos nossos serviços e, por isso, continuamos aguardando que compartilhe conosco como foi sua experiência usando o Pronto!.\n\nSério! Um pequeno tempo seu gasto pode contribuir bastante para um serviço melhor da Biblioteca para seus colegas e demais membros da FAUFBA.\"\n\nNo assunto de cada dia, inclua no final um emoji que represente a frase utilizada no assunto\n\nremova os dois botoes no final e inclua no lugar deles um botao para abrir a avaliação"
+    },
+    {
+      "modelo": "E20",
+      "titulo": "Lembrete de depósito após habilitar o guia",
+      "status": "changes",
+      "note": "mude \"A ficha catalográfica do trabalho abaixo foi concluída quando o guia de autodepósito do seu programa ainda não estava habilitado no Pronto!. O guia agora está disponível.\" para \"Seu trabalho abaixo infelizmente não consta ainda no Repositório Institucional da UFBA (RI/UFBA).\"\n\n\n\nmude \"Convidamos você a depositar seu trabalho no Repositório Institucional da UFBA, para ampliar sua circulação e preservação. Acesse o guia com os dados homologados pela biblioteca, entrando na mesma conta usada na solicitação:\" para \"E sabe o que é ruim nisso? Que ele poderia estar sendo visto pelo mundo todo se estivesse lá disponível. Por isso, considerando a adequada divulgação científica da produção do conhecimento da nossa Faculdade e da nossa UFBA, convidamos você a depositar seu trabalho no RI. Essa ação, mais que tudo, visa a ampliar a circulação e preservação do seu trabalho, da ciência que você ajudou a construir.\n\nAcesse o guia com os dados homologados pela biblioteca, entrando na mesma conta usada na solicitação:\"\n\nremova os dois botoes no final e inclua no lugar deles um botao para abrir o antes de começar do guia"
+    },
+    {
+      "modelo": "E21",
+      "titulo": "Lembrete de preparação — confirmação da conta",
+      "status": "changes",
+      "note": "remova os dois botoes no final e inclua no lugar deles um botao para abrir o antes de começar do guia"
+    },
+    {
+      "modelo": "E22",
+      "titulo": "Lembrete de preparação — liberação para depositar",
+      "status": "changes",
+      "note": "mude \"Você pediu este lembrete para voltar ao Pronto! e conferir a liberação do seu acesso no RI/UFBA.\" para \"Você pediu este lembrete para voltar ao Pronto! e conferir a liberação do seu autodepósito no RI/UFBA.\"\n\nremova os dois botoes no final e inclua no lugar deles um botao para abrir o antes de começar do guia"
+    },
+    {
+      "modelo": "E23",
+      "titulo": "Lembrete de preparação — correção da liberação",
+      "status": "changes",
+      "note": "mude \"Você pediu este lembrete para voltar ao Pronto! e conferir a correção da liberação do seu acesso no RI/UFBA.\" para \"Você pediu este lembrete para voltar ao Pronto! e conferir a correção da sua liberação para o autodepósito no RI/UFBA.\"\n\nremova os dois botoes no final e inclua no lugar deles um botao para abrir o antes de começar do guia"
+    }
+  ]
+}

@@ -2,9 +2,11 @@
 
 Remetente: **BIB/FAUFBA | Pronto!**
 Canal de atendimento: **bibarq@ufba.br**
-Rodapé comum: “Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.”
+Rodapé comum (duas linhas contíguas): “Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.” e “Não responda a este e-mail.”
 Saudação: usar somente o primeiro nome da pessoa destinatária. O nome completo do estudante permanece nos dados de identificação enviados à coordenação.
-Ao final de cada mensagem, incluir o botão **Acessar o painel do Pronto!**. Ações específicas, como corrigir campos ou acompanhar a solicitação, podem aparecer antes dele.
+Botões: cada ação deve ter logo abaixo o texto “Se o botão não funcionar, copie este endereço para o navegador:” e sua URL completa. Com várias ações, o texto deve identificar o rótulo de cada botão. Avaliação usa somente Avaliar o serviço; lembretes de RI usam somente Abrir Antes de começar; coordenação não recebe acesso ao painel interno.
+
+Revisão de 22/10/2026: os textos atuais completos e as variantes estão em [modelos-completos.md](revisao-emails/modelos-completos.md), que substitui redações anteriores abaixo nos itens ajustados pelo parecer. E01–E04 aprovados originalmente; demais versões revisadas aguardam conferência, e E16/E17 aguardam esclarecimento.
 
 ## Solicitação recebida — estudante
 
@@ -116,3 +118,15 @@ Só faça o provisionamento após confirmar que a pessoa integra a equipe autori
 Assunto: Pronto! | Continue a preparação do autodepósito
 
 Enviado apenas por opção do estudante, no segundo dia útil, uma vez por espera. Identifica o trabalho e o protocolo, lembra de conferir a criação/confirmacão da conta, a liberação ou a correção do acesso, conforme a resposta registrada, e oferece o link para retomar o guia. Orienta verificar o e-mail ou a conta do RI e esclarece que o lembrete não confirma a resolução nem constitui prazo de resposta do RI. Cancelado antes do envio ao resolver ou substituir a espera. Usa o modelo transacional institucional existente.
+
+
+- Refinamento dos e-mails (22/10/2026): URLs alternativas de todos os botões usam 12px, como E06, inclusive modelos Auth; preservar destaques semânticos nos termos revisados. E16/E17 passam a comunicar apenas a conclusão do atendimento da ficha, com trabalho e protocolo, sem citar guia ou RI. A diferença é o destinatário (solicitante/coordenação), mantendo condições de envio. Coordenação não recebe botão para o painel interno. Nova migração local 202610220001_completion_email_wording.sql; não aplicada remotamente. Conteúdo ajustado para conferência, sem aprovação automática integral.
+
+
+- Terminologia dos e-mails de conclusão (22/10/2026): decisão aprovada de usar “Atendimento concluído” nos assuntos de E13–E17, com protocolo para identificação. Mensagens com publicação mantêm endereço permanente e informação da conferência; sem publicação registrada, informar apenas a conclusão da ficha, sem citar guia ou RI. As regras e o status completed permanecem. Migração 202610220002_unify_completion_email_subject.sql preparada localmente, sem aplicação remota. Substitui a distinção editorial entre protocolo encerrado e concluído.
+
+
+- E16/E17 (22/10/2026): substituir acesso ao painel pelo botão Ver página pública do trabalho, com URL integral alternativa abaixo. Usar o identificador público existente da ficha homologada em /f/{identificador}, sem gerar novo identificador nem apontar para o PDF original. Aplicar aos destinatários solicitante e coordenação; origem correspondente ao ambiente de envio. Migração local 202610220003_completion_public_work_link.sql preparada, sem aplicação remota.
+
+
+- 22/10/2026: nos e-mails E20–E23, substituir o rótulo Abrir Antes de começar por Continuar preparação para o autodepósito, mantendo destino e URL alternativa. Alteração local, sem envio ou publicação.

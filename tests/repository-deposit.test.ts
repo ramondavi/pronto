@@ -24,6 +24,6 @@ test("maps only applicable metadata and leaves RI decisions manual", () => {
   assert.match(page, /repository_collection_label/);
   assert.match(page, /snapshot\.subjects/);
   assert.match(page, /Áreas de conhecimento CNPq/);
-  assert.match(guide, /Acesso, embargo e licenças são escolhidos por você diretamente no repositório/);
+  assert.match(guide, /Licenças são escolhidas por você diretamente no repositório/);
   assert.doesNotMatch(guide, /\.upload\(|storage\.from|SWORD|dspace\/api/i);
 });

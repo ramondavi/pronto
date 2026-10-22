@@ -7122,5 +7122,3 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-guide__step-content { display: grid; grid-column: 1 / -1; gap: 16px; min-width: 0; margin-top: 8px; }
 
 .repository-guide__reminders--single { grid-template-columns: minmax(0,1fr); }
-.repository-guide__pdf-tutorial { margin-top: 10px; white-space: normal; }
-.repository-guide__pdf-tutorial svg { width: 15px; height: 15px; }

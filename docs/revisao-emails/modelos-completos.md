@@ -1,16 +1,16 @@
 # Pronto! — modelos de e-mail para validação
 
-Data: 22/10/2026. Base: código da prévia em 7e8e6ca.
+Data: 22/10/2026. Revisão de 22/10/2026 após o parecer sobre a base 7e8e6ca. Alterações locais, sem publicação em produção.
 
-**23 modelos e variantes — todos aguardando validação do responsável pelo projeto.**
+**26 modelos e variantes: Redações consolidadas após parecer, esclarecimentos e autorização de publicação em 22/10/2026.**
 
-Este catálogo apresenta o conteúdo implementado, sem revisão editorial silenciosa. Não envia mensagens, não altera configurações e não comprova a configuração remota de produção. Os modelos de autenticação correspondem aos arquivos locais do Supabase; os demais são gerados pelas versões mais recentes das funções do banco e pelo formatador do Pronto!.
+Este catálogo apresenta o conteúdo implementado, com os ajustes solicitados no parecer. Não envia mensagens, não altera configurações e não comprova a configuração remota de produção. Os modelos de autenticação correspondem aos arquivos locais do Supabase; os demais são gerados pelas versões mais recentes das funções do banco e pelo formatador do Pronto!.
 
 Os exemplos usam Pessoa Exemplo, Secretaria Exemplo, Coordenação Exemplo, matrícula 000000000 e protocolo FA2026-0001. Título, subtítulo, prazos, campos de correção, resposta da Biblioteca, endereço do trabalho, links e códigos são dados variáveis. Endereços example.invalid e identificadores EXEMPLO não dão acesso real. Os botões da prévia visual são ilustrativos.
 
-Os e-mails de abertura à coordenação incluem Magic Link somente nas condições configuradas para programa e contato. A recuperação desse aviso é apresentada separadamente. Lembretes de avaliação repetem o mesmo texto nas datas previstas; lembretes de preparação têm três variantes.
+Os e-mails de abertura à coordenação incluem Magic Link somente nas condições configuradas para programa e contato. A recuperação desse aviso é apresentada separadamente. Lembretes de avaliação têm textos próprios nos dias 3, 10, 17 e 24; lembretes de preparação têm três variantes.
 
-**Para validar:** use os identificadores E01 a E23. Você pode informar, por exemplo, “E01 aprovado; no E08, substituir ... por ...”. Nenhum modelo foi marcado como aprovado automaticamente. A versão visual permite guardar anotações neste navegador e exportá-las; essas marcações não alteram o Pronto!.
+**Para validar:** use os identificadores E01 a E23 e E19-10/E19-17/E19-24. Você pode informar, por exemplo, “E01 aprovado; no E08, substituir ... por ...”. E01–E04 foram aprovados explicitamente no parecer recebido; os demais não foram aprovados automaticamente. A versão visual permite guardar anotações neste navegador e exportá-las; essas marcações não alteram o Pronto!.
 
 ## Índice
 
@@ -26,23 +26,26 @@ Os e-mails de abertura à coordenação incluem Magic Link somente nas condiçõ
 - [E10 — Ficha comum liberada](#e10)
 - [E11 — Ficha retrospectiva da RAU+E liberada](#e11)
 - [E12 — Cancelamento por descumprimento de declarações](#e12)
-- [E13 — Encerramento com publicação no RI — pedido comum](#e13)
-- [E14 — Encerramento com publicação no RI — retrospectivo](#e14)
-- [E15 — Conclusão com publicação — coordenação](#e15)
-- [E16 — Conclusão sem guia do RI — solicitante](#e16)
-- [E17 — Conclusão sem guia do RI — coordenação](#e17)
+- [E13 — Atendimento concluído — solicitante, com publicação no RI](#e13)
+- [E14 — Atendimento concluído — retrospectivo, com publicação no RI](#e14)
+- [E15 — Atendimento concluído — coordenação, com publicação no RI](#e15)
+- [E16 — Atendimento concluído — solicitante, sem publicação registrada](#e16)
+- [E17 — Atendimento concluído — coordenação, sem publicação registrada](#e17)
 - [E18 — Conta interna aguardando provisionamento](#e18)
 - [E19 — Lembrete para avaliar o serviço](#e19)
 - [E20 — Lembrete de depósito após habilitar o guia](#e20)
 - [E21 — Lembrete de preparação — confirmação da conta](#e21)
 - [E22 — Lembrete de preparação — liberação para depositar](#e22)
 - [E23 — Lembrete de preparação — correção da liberação](#e23)
+- [E19-10 — Lembrete para avaliar o serviço — dia 10](#e19-10)
+- [E19-17 — Lembrete para avaliar o serviço — dia 17](#e19-17)
+- [E19-24 — Lembrete para avaliar o serviço — dia 24](#e19-24)
 
 <a id="e01"></a>
 
 ## E01 — Confirmação do cadastro
 
-**Situação:** aguardando sua validação.
+**Situação:** Aprovado no parecer original; rodapé geral atualizado.
 
 **Destinatário:** Pessoa que criou uma conta.
 
@@ -67,7 +70,8 @@ https://pronto.example.invalid/CONFIRMACAO-ILUSTRATIVA
 
 Se você não fez esse cadastro, desconsidere esta mensagem.
 
-Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. Não responda a este e-mail.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -79,7 +83,7 @@ Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitet
 
 ## E02 — Código de acesso do estudante
 
-**Situação:** aguardando sua validação.
+**Situação:** Aprovado no parecer original; rodapé geral atualizado.
 
 **Destinatário:** Estudante.
 
@@ -106,7 +110,9 @@ Use o código abaixo na tela de entrada do estudante. Ele é temporário e só p
 Se você não pediu esse código, desconsidere esta mensagem. Não compartilhe o código com ninguém.
 
 
-Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. Não responda a este e-mail.
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -118,7 +124,7 @@ Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitet
 
 ## E03 — Recuperação ou definição de senha
 
-**Situação:** aguardando sua validação.
+**Situação:** Aprovado no parecer original; rodapé geral atualizado.
 
 **Destinatário:** Titular da conta.
 
@@ -143,7 +149,8 @@ https://pronto.example.invalid/auth/recuperacao?token_hash=HASH-ILUSTRATIVO-SEM-
 
 Se você não pediu essa alteração, desconsidere esta mensagem. Sua senha atual permanecerá válida.
 
-Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. Não responda a este e-mail.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -155,7 +162,7 @@ Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitet
 
 ## E04 — Confirmação da alteração de e-mail
 
-**Situação:** aguardando sua validação.
+**Situação:** Aprovado no parecer original; rodapé geral atualizado.
 
 **Destinatário:** Endereços envolvidos na alteração da conta.
 
@@ -180,7 +187,8 @@ https://pronto.example.invalid/CONFIRMACAO-ILUSTRATIVA
 
 Se você não pediu essa alteração, entre em contato com a biblioteca pelo canal institucional.
 
-Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. Não responda a este e-mail.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -192,7 +200,7 @@ Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitet
 
 ## E05 — Solicitação recebida
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
@@ -210,9 +218,14 @@ Você pode acompanhar o andamento e as próximas etapas acessando o Pronto!.
 
 O prazo de referência para o atendimento é de 3 dias úteis. Caso a biblioteca identifique alguma informação a corrigir, você receberá uma nova mensagem.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -224,7 +237,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E06 — Abertura para a coordenação
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Contato ativo da coordenação.
 
@@ -236,7 +249,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 **Conteúdo completo do exemplo:**
 
-Olá, Coordenação.
+Olá!
 
 Uma solicitação de ficha catalográfica foi aberta para o curso ou programa sob sua coordenação.
 
@@ -249,9 +262,16 @@ Previsão da análise: [Data prevista da análise]
 
 Para acompanhar o andamento, use o acesso seguro abaixo: https://pronto.example.invalid/coordenacao/LINK-ILUSTRATIVO-SEM-ACESSO
 
-Esse acesso é somente para acompanhamento da solicitação realizada pelo(a) referido(a) estudante.
+Esse acesso é somente para acompanhamento da solicitação realizada pelo(a) referido(a) discente concluinte.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Acompanhar solicitação
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/coordenacao/LINK-ILUSTRATIVO-SEM-ACESSO
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -263,7 +283,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E07 — Abertura para a coordenação — recuperação do envio
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Contato ativo da coordenação.
 
@@ -273,7 +293,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 **Conteúdo completo do exemplo:**
 
-Olá, Coordenação.
+Olá!
 
 Uma solicitação de ficha catalográfica foi aberta para o curso ou programa sob sua coordenação.
 
@@ -286,9 +306,16 @@ Previsão da análise: [Data prevista da análise]
 
 Para acompanhar o andamento, use o acesso seguro abaixo: https://pronto.example.invalid/coordenacao/LINK-ILUSTRATIVO-SEM-ACESSO
 
-Esse acesso é somente para acompanhamento da solicitação realizada pelo(a) referido(a) estudante.
+Esse acesso é somente para acompanhamento da solicitação realizada pelo(a) referido(a) discente concluinte.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Acompanhar solicitação
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/coordenacao/LINK-ILUSTRATIVO-SEM-ACESSO
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -300,7 +327,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E08 — Pedido de correções
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
@@ -325,11 +352,18 @@ Acesse o sistema para revisar e reenviar as informações.
 
 Se precisar de orientação sobre o atendimento, entre em contato com a BIB/FAUFBA pelo e-mail bibarq@ufba.br.
 
-Acesse diretamente a tela de correção: https://pronto.example.invalid/painel/solicitacao/corrigir
+Corrigir campos pendentes
+Se o botão "Corrigir campos pendentes" não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/solicitacao/corrigir
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Acessar o painel do Pronto!
+Se o botão "Acessar o painel do Pronto!" não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -341,7 +375,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E09 — Resposta da Biblioteca à mensagem do solicitante
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
@@ -361,9 +395,14 @@ A biblioteca respondeu à mensagem que você enviou no protocolo FA2026-0001:
 
 Acompanhe o andamento no Pronto!.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -375,7 +414,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E10 — Ficha comum liberada
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
@@ -389,13 +428,20 @@ Olá, Pessoa.
 
 Sua ficha catalográfica foi homologada e o Nada Consta que você forneceu foi validado. A ficha já está disponível no Pronto!.
 
-Acesse sua solicitação para gerar o PDF completo do trabalho com a ficha catalográfica já inserida (opção recomendada), baixar a ficha catalográfica a parte e consultar as orientações para o autodepósito no RI/UFBA, quando aplicável.
+Acesse sua solicitação para gerar o PDF completo do seu trabalho com a ficha catalográfica já inserida (opção recomendada) ou baixá-la separadamente.
 
-Atenção! Antes de gerar o arquivo final do seu trabalho contendo a ficha, confira se o PDF selecionado por você no seu dispositivo é o mesmo trabalho final completo que foi analisado pela Biblioteca.
+No painel do Pronto!, você também pode consultar as orientações para o autodepósito do seu trabalho no RI/UFBA.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Atenção! Antes de gerar o arquivo final do seu trabalho contendo a ficha, confira se o PDF selecionado por você no seu dispositivo é o mesmo trabalho final completo que você enviou durante o atendimento no Pronto!.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -407,21 +453,30 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E11 — Ficha retrospectiva da RAU+E liberada
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Secretaria da RAU+E.
 
 **Disparo:** Homologação da ficha retrospectiva, com dispensa de Nada Consta.
 
-**Assunto:** Pronto! | Ficha retrospectiva liberada
+**Assunto:** Pronto! | Ficha retrospectiva n.º FA2026-0001 liberada
 
 **Conteúdo completo do exemplo:**
 
-Olá, Secretaria. A ficha do protocolo FA2026-0001 foi homologada. Este pedido retrospectivo da RAU+E tem dispensa de Nada Consta. Acesse o Pronto! para baixar a ficha e, após o depósito, informar a URL permanente do RI/UFBA para conferência pela biblioteca.
+Olá!
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+A ficha do protocolo FA2026-0001 foi homologada.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Acesse o Pronto! para gerar a ficha e consultar o guia de depósito do trabalho no RI/UFBA.
+
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -433,7 +488,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E12 — Cancelamento por descumprimento de declarações
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
@@ -449,9 +504,14 @@ Após a análise da biblioteca, o protocolo FA2026-0001 foi cancelado porque est
 
 Este protocolo não pode ser reaberto. Consulte o Pronto! para acompanhar seu registro. Em caso de dúvida, entre em contato com a BIB/FAUFBA pelo e-mail bibarq@ufba.br.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -461,31 +521,40 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 <a id="e13"></a>
 
-## E13 — Encerramento com publicação no RI — pedido comum
+## E13 — Atendimento concluído — solicitante, com publicação no RI
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
 **Disparo:** Biblioteca registra/verifica a publicação e encerra o protocolo.
 
-**Assunto:** Pronto! | Protocolo n.º FA2026-0001 encerrado
+**Assunto:** Pronto! | Atendimento concluído — FA2026-0001
 
 **Conteúdo completo do exemplo:**
 
 Olá, Pessoa.
 
-Seu protocolo foi encerrado após a verificação da publicação do trabalho no Repositório Institucional da UFBA.
+Seu atendimento foi concluído. A publicação do trabalho no Repositório Institucional da UFBA foi verificada pela Biblioteca.
 
 Endereço permanente da publicação: https://repositorio.ufba.br/handle/ri/EXEMPLO
 
-Guarde este endereço para consulta e divulgação do seu trabalho.
+Guarde este endereço para consulta e divulgação do seu trabalho. Ele é permanente e único.
 
 O arquivo Nada Consta enviado ao Pronto! será mantido somente pelo período operacional previsto e depois removido. O registro acadêmico pertinente permanece nos sistemas institucionais aplicáveis.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Consultar publicação
+Se o botão "Consultar publicação" não funcionar, copie este endereço para o navegador:
+https://repositorio.ufba.br/handle/ri/EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Acessar o painel do Pronto!
+Se o botão "Acessar o painel do Pronto!" não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -495,31 +564,36 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 <a id="e14"></a>
 
-## E14 — Encerramento com publicação no RI — retrospectivo
+## E14 — Atendimento concluído — retrospectivo, com publicação no RI
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Secretaria da RAU+E.
 
 **Disparo:** Biblioteca verifica a publicação e encerra o pedido retrospectivo.
 
-**Assunto:** Pronto! | Protocolo n.º FA2026-0001 encerrado
+**Assunto:** Pronto! | Atendimento concluído — FA2026-0001
 
 **Conteúdo completo do exemplo:**
 
 Olá, Secretaria.
 
-Seu protocolo foi encerrado após a verificação da publicação do trabalho no Repositório Institucional da UFBA.
+Seu atendimento foi concluído. A publicação do trabalho no Repositório Institucional da UFBA foi verificada pela Biblioteca.
 
 Endereço permanente da publicação: https://repositorio.ufba.br/handle/ri/EXEMPLO
 
-Guarde este endereço para consulta e divulgação do seu trabalho.
+Consultar publicação
+Se o botão "Consultar publicação" não funcionar, copie este endereço para o navegador:
+https://repositorio.ufba.br/handle/ri/EXEMPLO
 
-Solicitação retrospectiva da RAU+E com dispensa de Nada Consta.
+Acessar o painel do Pronto!
+Se o botão "Acessar o painel do Pronto!" não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -529,15 +603,15 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 <a id="e15"></a>
 
-## E15 — Conclusão com publicação — coordenação
+## E15 — Atendimento concluído — coordenação, com publicação no RI
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Contatos ativos da coordenação habilitados para receber conclusão.
 
 **Disparo:** Encerramento com publicação verificada no RI.
 
-**Assunto:** Pronto! | Protocolo n.º FA2026-0001 concluído
+**Assunto:** Pronto! | Atendimento concluído — FA2026-0001
 
 **Conteúdo completo do exemplo:**
 
@@ -550,9 +624,16 @@ Solicitante: Pessoa Exemplo
 Protocolo: FA2026-0001
 Publicação no RI/UFBA: https://repositorio.ufba.br/handle/ri/EXEMPLO
 
-A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento. O Magic Link enviado anteriormente não é mais válido.
+A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento. O botão e URL de acesso ao protocolo enviados anteriormente não são mais válidos.
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Consultar publicação
+Se o botão não funcionar, copie este endereço para o navegador:
+https://repositorio.ufba.br/handle/ri/EXEMPLO
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -562,28 +643,35 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 <a id="e16"></a>
 
-## E16 — Conclusão sem guia do RI — solicitante
+## E16 — Atendimento concluído — solicitante, sem publicação registrada
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação de conclusão consolidada para publicação.
 
 **Destinatário:** Solicitante.
 
 **Disparo:** Biblioteca conclui o atendimento comum com o guia do programa desabilitado.
 
-**Assunto:** Pronto! | Atendimento da ficha concluído
+**Assunto:** Pronto! | Atendimento concluído — FA2026-0001
 
 **Conteúdo completo do exemplo:**
 
 Olá, Pessoa.
 
-O atendimento da ficha catalográfica foi concluído. O guia de autodepósito do seu programa não está habilitado neste momento. A biblioteca poderá enviar posteriormente um lembrete com acesso ao guia, quando ele for disponibilizado.
+O atendimento da ficha catalográfica foi concluído.
 
 Trabalho: Trabalho de exemplo
 Protocolo: FA2026-0001
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Página pública do trabalho no Pronto!: https://pronto.example.invalid/f/IDENTIFICADOR-PUBLICO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Ver página pública do trabalho
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/f/IDENTIFICADOR-PUBLICO-EXEMPLO
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -593,26 +681,35 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 <a id="e17"></a>
 
-## E17 — Conclusão sem guia do RI — coordenação
+## E17 — Atendimento concluído — coordenação, sem publicação registrada
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação de conclusão consolidada para publicação.
 
 **Destinatário:** Contatos ativos da coordenação habilitados para receber conclusão.
 
 **Disparo:** Conclusão do atendimento sem depósito pelo fluxo do guia.
 
-**Assunto:** Pronto! | Atendimento da ficha concluído
+**Assunto:** Pronto! | Atendimento concluído — FA2026-0001
 
 **Conteúdo completo do exemplo:**
 
-O atendimento da ficha catalográfica foi concluído sem depósito no RI/UFBA, pois o guia do programa estava desativado.
+Olá!
+
+O atendimento da ficha catalográfica foi concluído.
 
 Trabalho: Trabalho de exemplo
 Protocolo: FA2026-0001
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Página pública do trabalho no Pronto!: https://pronto.example.invalid/f/IDENTIFICADOR-PUBLICO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Ver página pública do trabalho
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/f/IDENTIFICADOR-PUBLICO-EXEMPLO
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -624,7 +721,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E18 — Conta interna aguardando provisionamento
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Administradores ativos.
 
@@ -638,13 +735,18 @@ Olá.
 
 A conta institucional equipe@example.invalid foi confirmada e está aguardando a definição de perfil no painel administrativo do Pronto!.
 
-Acesse Administração → Equipe e acessos para atribuir o perfil adequado.
+Acesse Administração → Operação → Contas para atribuir o perfil adequado.
 
 Só faça o provisionamento após confirmar que a pessoa integra a equipe autorizada da Biblioteca.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Acessar o painel do Pronto!
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -656,15 +758,15 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E19 — Lembrete para avaliar o serviço
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Solicitante com convite de avaliação e sem resposta registrada.
 
 **Disparo:** Campanha ativada; lembretes nos dias 3, 10, 17 e 24 após o convite, conforme elegibilidade.
 
-**Assunto:** Pronto! | Sua avaliação ajuda a melhorar a BIB/FA
+**Assunto:** Pronto! | Sua avaliação ajuda a melhorar a BIB/FAUFBA 💬
 
-**Observação:** É o mesmo modelo nas quatro ocasiões; não há quatro redações diferentes.
+**Observação:** Variante do dia 3; os dias 10, 17 e 24 têm redações próprias, apresentadas a seguir.
 
 **Conteúdo completo do exemplo:**
 
@@ -676,9 +778,14 @@ A avaliação leva cerca de 3 minutos. Acesse: https://pronto.example.invalid/pa
 
 Se você já respondeu, desconsidere esta mensagem.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Avaliar o serviço
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/avaliacao
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -690,7 +797,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E20 — Lembrete de depósito após habilitar o guia
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** Pessoa cujo protocolo terminou quando o guia estava desabilitado.
 
@@ -702,19 +809,26 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 Olá, Pessoa.
 
-A ficha catalográfica do trabalho abaixo foi concluída quando o guia de autodepósito do seu programa ainda não estava habilitado no Pronto!. O guia agora está disponível.
+Seu trabalho abaixo infelizmente não consta ainda no Repositório Institucional da UFBA (RI/UFBA).
 
 Trabalho: Trabalho de exemplo
 Protocolo: FA2026-0001
 
-Convidamos você a depositar seu trabalho no Repositório Institucional da UFBA, para ampliar sua circulação e preservação. Acesse o guia com os dados homologados pela biblioteca, entrando na mesma conta usada na solicitação:
+E sabe o que é ruim nisso? Que ele poderia estar sendo visto pelo mundo todo se estivesse lá disponível. Por isso, considerando a adequada divulgação científica da produção do conhecimento da nossa Faculdade e da nossa UFBA, convidamos você a depositar seu trabalho no RI. Essa ação, mais que tudo, visa a ampliar a circulação e preservação do seu trabalho, da ciência que você ajudou a construir.
+
+Acesse o guia com os dados homologados pela biblioteca, entrando na mesma conta usada na solicitação:
 https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
 O atendimento da ficha continua concluído. Este lembrete não altera a aprovação da ficha nem declara uma obrigação retroativa. Se o trabalho já estiver no RI/UFBA, informe o endereço permanente à biblioteca.
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Continuar preparação para o autodepósito
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -726,7 +840,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E21 — Lembrete de preparação — confirmação da conta
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** E-mail da conta da pessoa no Pronto!.
 
@@ -749,9 +863,14 @@ Confira a resposta por e-mail ou entre na sua conta do RI/UFBA. Este lembrete n�
 
 Continue de onde parou: https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Continuar preparação para o autodepósito
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -763,7 +882,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E22 — Lembrete de preparação — liberação para depositar
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** E-mail da conta da pessoa no Pronto!.
 
@@ -777,7 +896,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 Olá, Pessoa.
 
-Você pediu este lembrete para voltar ao Pronto! e conferir a liberação do seu acesso no RI/UFBA.
+Você pediu este lembrete para voltar ao Pronto! e conferir a liberação do seu autodepósito no RI/UFBA.
 
 Trabalho: Trabalho de exemplo
 Protocolo: FA2026-0001
@@ -786,9 +905,14 @@ Confira a resposta por e-mail ou entre na sua conta do RI/UFBA. Este lembrete n�
 
 Continue de onde parou: https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Continuar preparação para o autodepósito
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -800,7 +924,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 ## E23 — Lembrete de preparação — correção da liberação
 
-**Situação:** aguardando sua validação.
+**Situação:** Redação consolidada para publicação.
 
 **Destinatário:** E-mail da conta da pessoa no Pronto!.
 
@@ -814,7 +938,7 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 
 Olá, Pessoa.
 
-Você pediu este lembrete para voltar ao Pronto! e conferir a correção da liberação do seu acesso no RI/UFBA.
+Você pediu este lembrete para voltar ao Pronto! e conferir a correção da sua liberação para o autodepósito no RI/UFBA.
 
 Trabalho: Trabalho de exemplo
 Protocolo: FA2026-0001
@@ -823,9 +947,127 @@ Confira a resposta por e-mail ou entre na sua conta do RI/UFBA. Este lembrete n�
 
 Continue de onde parou: https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Acesse o painel do Pronto!: https://pronto.example.invalid/painel
+Continuar preparação para o autodepósito
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/autodeposito?pedido=PEDIDO-EXEMPLO
 
-Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
+
+**Validação:** ☐ Aprovado ☐ Ajustar
+
+**Ajustes solicitados:**
+
+---
+
+<a id="e19-10"></a>
+
+## E19-10 — Lembrete para avaliar o serviço — dia 10
+
+**Situação:** Redação consolidada para publicação.
+
+**Destinatário:** Solicitante elegível e sem resposta registrada.
+
+**Disparo:** Dia 10 após o convite, mantendo as condições da campanha.
+
+**Assunto:** Pronto! | Somente 3 minutos e você pode ajudar a melhorar nossos serviços ⏱️
+
+**Conteúdo completo do exemplo:**
+
+Olá, Pessoa.
+
+Há 10 dias, você usou nosso mais novo serviço, o Pronto!, e imaginamos que sua experiência tenha sido a melhor possível. Poderia compartilhar com a gente o que achou?
+
+A avaliação leva cerca de 3 minutos. Acesse: https://pronto.example.invalid/painel/avaliacao
+
+Se você já respondeu, desconsidere esta mensagem.
+
+Avaliar o serviço
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/avaliacao
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
+
+**Validação:** ☐ Aprovado ☐ Ajustar
+
+**Ajustes solicitados:**
+
+---
+
+<a id="e19-17"></a>
+
+## E19-17 — Lembrete para avaliar o serviço — dia 17
+
+**Situação:** Redação consolidada para publicação.
+
+**Destinatário:** Solicitante elegível e sem resposta registrada.
+
+**Disparo:** Dia 17 após o convite, mantendo as condições da campanha.
+
+**Assunto:** Pronto! | Toc toc! Teria 3 minutinhos? 🚪
+
+**Conteúdo completo do exemplo:**
+
+Olá, Pessoa.
+
+Desculpa atrapalhar o silêncio da sua viagem... Mas você poderia compartilhar com a gente como foi sua experiência ao usar o Pronto!? Sua resposta certamente vai contribuir bastante com a melhoria do que oferecemos à comunidade FAUFBA.
+
+A avaliação leva cerca de 3 minutos. Acesse: https://pronto.example.invalid/painel/avaliacao
+
+Se você já respondeu, desconsidere esta mensagem.
+
+Avaliar o serviço
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/avaliacao
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
+
+**Validação:** ☐ Aprovado ☐ Ajustar
+
+**Ajustes solicitados:**
+
+---
+
+<a id="e19-24"></a>
+
+## E19-24 — Lembrete para avaliar o serviço — dia 24
+
+**Situação:** Redação consolidada para publicação.
+
+**Destinatário:** Solicitante elegível e sem resposta registrada.
+
+**Disparo:** Dia 24 após o convite, mantendo as condições da campanha.
+
+**Assunto:** Pronto! | Última chamada! Rsrs 📣
+
+**Conteúdo completo do exemplo:**
+
+Olá, Pessoa.
+
+A gente jura que será o último pedido! Valorizamos muito sua avaliação dos nossos serviços e, por isso, continuamos aguardando que compartilhe conosco como foi sua experiência usando o Pronto!.
+
+Sério! Um pequeno tempo seu gasto pode contribuir bastante para um serviço melhor da Biblioteca para seus colegas e demais membros da FAUFBA.
+
+A avaliação leva cerca de 3 minutos. Acesse: https://pronto.example.invalid/painel/avaliacao
+
+Se você já respondeu, desconsidere esta mensagem.
+
+Avaliar o serviço
+Se o botão não funcionar, copie este endereço para o navegador:
+https://pronto.example.invalid/painel/avaliacao
+
+Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.
+Não responda a este e-mail.
+
+Rodapé: Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA. / Não responda a este e-mail.
 
 **Validação:** ☐ Aprovado ☐ Ajustar
 
@@ -841,22 +1083,25 @@ Rodapé visual: Não responda. Esta é uma mensagem automática do Pronto!, serv
 | E02 | supabase/templates/magic_link.html · assunto em supabase/config.toml |
 | E03 | supabase/templates/recovery.html · assunto em supabase/config.toml |
 | E04 | supabase/templates/email_change.html · assunto em supabase/config.toml |
-| E05 | supabase/migrations/202609300011_coordination_opening_details.sql · enqueue_opening_email |
-| E06 | supabase/migrations/202609300011_coordination_opening_details.sql · enqueue_opening_email |
-| E07 | supabase/migrations/202609300011_coordination_opening_details.sql · ensure_own_coordination_opening_email |
+| E05 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_opening_email |
+| E06 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_opening_email |
+| E07 | supabase/migrations/202610220000_email_review_wording.sql · ensure_own_coordination_opening_email |
 | E08 | supabase/migrations/202610080001_separate_correction_observations.sql · return_request_for_corrections |
 | E09 | supabase/migrations/202610010006_initial_public_link_gate.sql · complete_request_analysis |
-| E10 | supabase/migrations/202610210000_retrospective_raue.sql · queue_request_release_notice |
-| E11 | supabase/migrations/202610210000_retrospective_raue.sql · queue_request_release_notice |
+| E10 | supabase/migrations/202610220000_email_review_wording.sql · queue_request_release_notice |
+| E11 | supabase/migrations/202610220000_email_review_wording.sql · queue_request_release_notice |
 | E12 | supabase/migrations/202609300019_cancel_changed_public_file_through_completion.sql · cancel_request_for_failed_declaration |
-| E13 | supabase/migrations/202610210000_retrospective_raue.sql · close_cataloging_request |
-| E14 | supabase/migrations/202610210000_retrospective_raue.sql · close_cataloging_request |
-| E15 | supabase/migrations/202610210000_retrospective_raue.sql · close_cataloging_request |
-| E16 | supabase/migrations/202610210002_repository_deposit_followup.sql · complete_request_without_repository |
-| E17 | supabase/migrations/202610210002_repository_deposit_followup.sql · complete_request_without_repository |
-| E18 | supabase/migrations/202609300014_coordination_completion_notice.sql · enqueue_pending_staff_account_notification |
-| E19 | supabase/migrations/202609290000_feedback_campaign.sql · enqueue_due_feedback_reminders |
-| E20 | supabase/migrations/202610210004_repository_deposit_permissions.sql · enqueue_repository_deposit_reminders |
-| E21 | supabase/migrations/202610210008_repository_availability_submission.sql · enqueue_repository_preparation_reminders |
-| E22 | supabase/migrations/202610210008_repository_availability_submission.sql · enqueue_repository_preparation_reminders |
-| E23 | supabase/migrations/202610210008_repository_availability_submission.sql · enqueue_repository_preparation_reminders |
+| E13 | supabase/migrations/202610220002_unify_completion_email_subject.sql · close_cataloging_request |
+| E14 | supabase/migrations/202610220002_unify_completion_email_subject.sql · close_cataloging_request |
+| E15 | supabase/migrations/202610220002_unify_completion_email_subject.sql · close_cataloging_request |
+| E16 | supabase/migrations/202610220003_completion_public_work_link.sql · complete_request_without_repository |
+| E17 | supabase/migrations/202610220003_completion_public_work_link.sql · complete_request_without_repository |
+| E18 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_pending_staff_account_notification |
+| E19 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_due_feedback_reminders |
+| E20 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_repository_deposit_reminders |
+| E21 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_repository_preparation_reminders |
+| E22 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_repository_preparation_reminders |
+| E23 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_repository_preparation_reminders |
+| E19-10 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_due_feedback_reminders |
+| E19-17 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_due_feedback_reminders |
+| E19-24 | supabase/migrations/202610220000_email_review_wording.sql · enqueue_due_feedback_reminders |
