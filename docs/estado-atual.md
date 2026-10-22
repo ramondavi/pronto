@@ -67,3 +67,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: coleção na etapa 1 e tipo de documento na etapa 2; excluído grupo de destino da etapa 3. Valores com botões de cópia protegidos contra seleção/cópia/corte/arraste; dia/ano como texto em vez de input e contato do RI protegido também. Sem migração ou capturas; testes adiados até PR.
 
 - 22/10/2026: retomada inclui coleção/tipo nas etapas 1/2 e cópia apenas por botões (16a5beb). Avisos de PDF/A e licença movidos para etapas 4 e 6; link discreto para tutorial oficial de conversão e traduções incluídos. Publicar conjunto na prévia; sem migração/capturas, testes adiados até PR.
+
+- 22/10/2026: catálogo local de validação individual dos e-mails em docs/revisao-emails/ (23 modelos/variantes E01–E23, HTML e Markdown). Extraído dos templates locais e versões mais recentes das funções/formatador do código em 7e8e6ca, com dados fictícios e links ilustrativos inativos. Todos pendentes. Sem envio, migração, consulta de configuração remota, alteração funcional ou publicação em produção.

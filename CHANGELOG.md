@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Catálogo de revisão dos 23 modelos e variantes de e-mail, com prévias visuais, conteúdo completo e espaço para parecer individual, sem alterar os envios.
+
 - Aviso de PDF/A na etapa de arquivo, com acesso ao tutorial oficial do RI; orientação sobre escolha de licenças na etapa de licença.
 
 ### 21 de outubro de 2026

@@ -39,3 +39,7 @@ Este arquivo contém somente pontos que o Documento-Mestre Consolidado ainda nã
 
 - O bibliotecário já registra URL/Handle ao encerrar; nos retrospectivos, o fluxo vigente também exige a URL informada pela secretaria e o início do guia. Avaliar permitir que a Biblioteca registre e valide a publicação antes dessas ações. Proposta ainda não aprovada: estudante/secretaria declara o envio, Biblioteca valida e informa o Handle definitivo; dispensar a dependência da URL fornecida pelo solicitante. Alternativa: aceitar URL sugerida pelo estudante, sempre dependente de validação bibliotecária.
 - Para programas com depósito obrigatório, avaliar acompanhamento separado de “aguardando envio” e “aguardando validação”, lembretes após liberação da ficha e encerramento somente com publicação verificada. Definir a obrigação institucional por programa; a declaração de envio não comprova publicação. Não implementar automaticamente esta proposta.
+
+### Validação individual dos e-mails — 22/10/2026
+
+Aguardando o responsável pelo projeto revisar os 23 modelos e variantes E01–E23 do catálogo docs/revisao-emails/index.html (texto completo: docs/revisao-emails/modelos-completos.md). Nenhuma redação foi aprovada por esta solicitação de apresentação. Marcas locais no catálogo servem como anotações e não alteram envio ou produção.
