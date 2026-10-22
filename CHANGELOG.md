@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 22 de outubro de 2026
+
+- Aviso de PDF/A na etapa de arquivo, com acesso ao tutorial oficial do RI; orientação sobre escolha de licenças na etapa de licença.
+
 ### 21 de outubro de 2026
 
 - Coleção e tipo de documento confirmados ficam nas etapas 1 e 2 do guia. Campos com botão de copiar bloqueiam seleção e cópia manual, incluindo nomes e datas; a cópia continua pelos botões próprios.

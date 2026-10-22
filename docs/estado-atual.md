@@ -65,3 +65,5 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - 21/10/2026: dados de preenchimento posicionados na etapa 3 e confirmação de envio na etapa 8, dentro do roteiro conectado. Orientações gerais junto aos dados antes do upload. Sem migração; sem capturas a pedido do usuário; testes adiados até PR.
 
 - 21/10/2026: coleção na etapa 1 e tipo de documento na etapa 2; excluído grupo de destino da etapa 3. Valores com botões de cópia protegidos contra seleção/cópia/corte/arraste; dia/ano como texto em vez de input e contato do RI protegido também. Sem migração ou capturas; testes adiados até PR.
+
+- 22/10/2026: retomada inclui coleção/tipo nas etapas 1/2 e cópia apenas por botões (16a5beb). Avisos de PDF/A e licença movidos para etapas 4 e 6; link discreto para tutorial oficial de conversão e traduções incluídos. Publicar conjunto na prévia; sem migração/capturas, testes adiados até PR.

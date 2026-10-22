@@ -1422,5 +1422,19 @@ export const repositoryUiText: Record<string, Record<Exclude<InterfaceLanguage, 
     "de": "Wählen Sie den für diese Arbeit bereits bestätigten Dokumenttyp.",
     "fr": "Sélectionnez le type de document déjà confirmé pour ce travail.",
     "it": "Seleziona il tipo di documento già confermato per questo lavoro."
+  },
+  "Licenças são escolhidas por você diretamente no repositório.": {
+    "en": "You choose licenses directly in the repository.",
+    "es": "Usted elige las licencias directamente en el repositorio.",
+    "de": "Sie wählen die Lizenzen direkt im Repositorium aus.",
+    "fr": "Vous choisissez les licences directement dans le dépôt.",
+    "it": "Scegli le licenze direttamente nel repository."
+  },
+  "Tutorial do RI: converter para PDF/A": {
+    "en": "RI tutorial: convert to PDF/A",
+    "es": "Tutorial del RI: convertir a PDF/A",
+    "de": "RI-Anleitung: in PDF/A umwandeln",
+    "fr": "Tutoriel du RI : convertir en PDF/A",
+    "it": "Tutorial del RI: convertire in PDF/A"
   }
 };
