@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Testes de navegação no CI executam sem concorrência entre navegadores e aguardam a compilação inicial da interface, preservando todas as verificações.
+
 - Corrige os rótulos de acompanhamento dos retrospectivos: respeita a dispensa de Nada Consta e identifica as correções como responsabilidade da secretaria.
 
 - A varredura de acessibilidade da Central de ajuda usa o mesmo prazo da página inicial, mantendo todas as verificações.

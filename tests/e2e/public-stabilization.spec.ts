@@ -4,7 +4,8 @@ import { expect, test, type Page } from "@playwright/test";
 async function openReadyPage(page: Page, path: string) {
   // Widgets externos não precisam terminar de carregar para exercitar o Pronto!.
   await page.goto(path, { waitUntil: "domcontentloaded" });
-  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
+  // O servidor de desenvolvimento também compila a rota no primeiro acesso do CI.
+  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true", { timeout: 20_000 });
 }
 
 for (const path of ["/", "/entrar", "/cadastro", "/recuperar-senha", "/ajuda"]) {
