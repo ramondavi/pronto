@@ -7,6 +7,15 @@ const actions = readFileSync("src/app/auth-actions.ts", "utf8");
 const callback = readFileSync("src/app/auth/callback/route.ts", "utf8");
 const confirm = readFileSync("src/app/auth/confirm/route.ts", "utf8");
 const config = readFileSync("supabase/config.toml", "utf8");
+const recoveryTemplate = readFileSync("supabase/templates/recovery.html", "utf8");
+
+test("recovery email sends both links to the route that accepts token hashes", () => {
+  const links = recoveryTemplate.match(/\{\{ \.SiteURL \}\}\/auth\/confirm\?token_hash=\{\{ \.TokenHash \}\}&amp;type=recovery/g);
+  assert.equal(links?.length, 2, "button and fallback URL must use the token-hash confirmation route");
+  assert.doesNotMatch(recoveryTemplate, /\{\{ \.RedirectTo \}\}\?token_hash=/);
+  assert.match(confirm, /tokenHash && type === "recovery"/);
+  assert.match(confirm, /\/confirmar-recuperacao/);
+});
 
 test("password recovery starts and completes PKCE on the server", () => {
   assert.match(form, /useActionState\(requestPasswordReset,/);
