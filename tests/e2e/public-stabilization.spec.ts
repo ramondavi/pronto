@@ -1,10 +1,16 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openReadyPage(page: Page, path: string) {
+  // Widgets externos não precisam terminar de carregar para exercitar o Pronto!.
+  await page.goto(path, { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
+}
 
 for (const path of ["/", "/entrar", "/cadastro", "/recuperar-senha", "/ajuda"]) {
   test(`${path} não tem violações críticas ou sérias`, async ({ page }) => {
     if (path === "/") test.slow();
-    await page.goto(path);
+    await openReadyPage(page, path);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === "critical" || impact === "serious")).toEqual([]);
   });
@@ -12,28 +18,28 @@ for (const path of ["/", "/entrar", "/cadastro", "/recuperar-senha", "/ajuda"]) 
 
 test("recursos de acessibilidade preservam as preferências", async ({ page }) => {
   test.slow();
-  await page.goto("/");
+  await openReadyPage(page, "/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   await page.getByRole("button", { name: "Recursos de acessibilidade" }).click();
   await page.getByRole("button", { name: "Aumentar tamanho do texto" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-text-scale", "large");
   await page.getByRole("button", { name: "Alternar alto contraste" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-contrast", "high");
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("data-text-scale", "large");
   await expect(page.locator("html")).toHaveAttribute("data-contrast", "high");
 });
 
 test("busca de ajuda sugere respostas", async ({ page }) => {
   await page.route("**/api/central-de-duvidas?*", (route) => route.fulfill({ json: { results: [{ id: "article-corrections", slug: "corrigir-solicitacao", kind: "Artigo de ajuda", category: "Análise", title: "Como responder a uma correção da biblioteca", summary: "Como corrigir a solicitação" }] } }));
-  await page.goto("/ajuda");
+  await openReadyPage(page, "/ajuda");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   await page.getByRole("searchbox", { name: "Encontre uma resposta" }).fill("correcao");
   await expect(page.getByRole("link", { name: /Artigo de ajuda.*correção/ })).toBeVisible();
 });
 
 test("navegação por teclado alcança o conteúdo", async ({ page }) => {
-  await page.goto("/");
+  await openReadyPage(page, "/");
   for (let step = 0; step < 12; step += 1) {
     await page.keyboard.press("Tab");
     if (await page.evaluate(() => document.activeElement?.getAttribute("href") === "#conteudo")) break;
@@ -44,7 +50,7 @@ test("navegação por teclado alcança o conteúdo", async ({ page }) => {
 });
 
 test("controles de idioma e tema ficam alinhados no rodapé público", async ({ page }) => {
-  await page.goto("/");
+  await openReadyPage(page, "/");
   const language = page.locator("#creditos .language-control");
   const theme = page.locator("#creditos .theme-switcher");
   await expect(language).toBeVisible();
@@ -59,7 +65,7 @@ test("controles de idioma e tema ficam alinhados no rodapé público", async ({ 
 
 test("links do rodapé público formam uma linha no desktop", async ({ page }) => {
   if ((page.viewportSize()?.width ?? 0) < 900) return;
-  await page.goto("/");
+  await openReadyPage(page, "/");
   const footerLinks = page.locator('#creditos nav[aria-label="Informações"] a');
   await footerLinks.first().waitFor({ state: "visible" });
   const alignment = await footerLinks.evaluateAll((links) => ({
@@ -70,21 +76,21 @@ test("links do rodapé público formam uma linha no desktop", async ({ page }) =
 });
 
 test("páginas públicas não criam rolagem horizontal", async ({ page }) => {
-  await page.goto("/");
+  await openReadyPage(page, "/");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
 test("tema explícito persiste e substitui a preferência do sistema", async ({ page }) => {
   test.slow();
-  await page.goto("/");
+  await openReadyPage(page, "/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   const darkTheme = page.getByRole("button", { name: "Usar tema escuro" });
   const lightTheme = page.getByRole("button", { name: "Usar tema claro" });
   await darkTheme.click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(darkTheme).toHaveAttribute("aria-pressed", "true");
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(darkTheme).toHaveAttribute("aria-pressed", "true");
   await lightTheme.click();
@@ -97,7 +103,7 @@ test("entrada continua utilizável sob latência simulada", async ({ page }) => 
     await new Promise(resolve => setTimeout(resolve, 120));
     await route.continue();
   });
-  await page.goto("/entrar");
+  await openReadyPage(page, "/entrar");
   await expect(page.getByRole("heading", { name: "Entre na sua conta" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
 });

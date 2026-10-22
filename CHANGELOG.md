@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Testes públicos aguardam explicitamente a interface pronta, sem depender do carregamento completo dos widgets externos.
+
 - Migrações e modelos Auth sincronizados em produção, com evidências de validação do lançamento e atualização da prévia.
 
 - Consolida o MVP para lançamento: fluxo do RI e acervo retrospectivo, ajustes de atendimento e e-mails, tutorial de PDF/A como link discreto e verificações completas de aplicação e banco.
