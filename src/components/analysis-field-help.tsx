@@ -70,7 +70,7 @@ export function AnalysisFieldHelp({ rootRef }: { rootRef: React.RefObject<HTMLDi
       const replies = Array.from(root.querySelectorAll<HTMLElement>(".student-message-note__reply"));
       const next = [...labels, ...metadata, ...citation, ...replies].map((element) => {
         const preferredMount = element.querySelector<HTMLElement>(".analysis-help-mount") ?? element.querySelector<HTMLElement>(".cataloging-field-label") ?? element.querySelector<HTMLElement>(".analysis-help-label") ?? element.querySelector<HTMLElement>(".field-label-with-tooltip") ?? (element.classList.contains("field-review__value") || element.classList.contains("citation-inline-editor__toolbar") ? element.querySelector<HTMLElement>(":scope > span") : null) ?? (element.classList.contains("student-message-note__reply") ? element.querySelector<HTMLElement>(":scope > strong") : null) ?? element;
-        const mount = preferredMount !== element && preferredMount.childNodes.length === 1 && preferredMount.firstChild?.nodeType === Node.TEXT_NODE ? element : preferredMount;
+        const mount = preferredMount;
         const textNode = mount === element ? Array.from(element.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) : null;
         const range = textNode ? document.createRange() : null;
         if (range && textNode) range.selectNodeContents(textNode);

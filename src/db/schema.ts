@@ -63,9 +63,24 @@ export const staffInheritedRoles = pgTable("staff_inherited_roles", {
 export const studentProfiles = pgTable("student_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
   profileId: uuid("profile_id").references(() => profiles.id, { onDelete: "cascade" }).notNull().unique(),
-  cpf: text("cpf").notNull().unique(),
+  cpf: text("cpf").unique(),
   birthDate: date("birth_date"),
   ...timestamps,
+});
+
+export const retrospectiveAccounts = pgTable("retrospective_accounts", {
+  profileId: uuid("profile_id").primaryKey().references(() => profiles.id, { onDelete: "restrict" }),
+  grantedBy: uuid("granted_by").notNull().references(() => profiles.id),
+  grantedAt: timestamp("granted_at", { withTimezone: true }).defaultNow().notNull(),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  endedBy: uuid("ended_by").references(() => profiles.id),
+});
+
+export const retrospectiveDepositReports = pgTable("retrospective_deposit_reports", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  permanentUrl: text("permanent_url").notNull(),
+  reportedBy: uuid("reported_by").notNull().references(() => profiles.id),
+  reportedAt: timestamp("reported_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const academicEnrollments = pgTable("academic_enrollments", {
@@ -81,6 +96,9 @@ export const catalogingRequests = pgTable("cataloging_requests", {
   studentProfileId: uuid("student_profile_id").references(() => studentProfiles.id, { onDelete: "restrict" }).notNull(),
   academicEnrollmentId: uuid("academic_enrollment_id").references(() => academicEnrollments.id, { onDelete: "restrict" }).notNull(),
   protocol: text("protocol").notNull().unique(),
+  retrospective: boolean("retrospective").default(false).notNull(),
+  repositoryGuideEnabledAtCompletion: boolean("repository_guide_enabled_at_completion"),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
   status: requestStatus("status").default("submitted").notNull(),
   assignedTo: uuid("assigned_to").references(() => profiles.id, { onDelete: "restrict" }),
   assignedAt: timestamp("assigned_at", { withTimezone: true }),
@@ -311,6 +329,8 @@ export const repositoryDepositProgress = pgTable("repository_deposit_progress", 
   requestId: uuid("request_id").references(() => catalogingRequests.id, { onDelete: "restrict" }).notNull().unique(),
   startedBy: uuid("started_by").references(() => profiles.id, { onDelete: "restrict" }).notNull(),
   startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+  submittedBy: uuid("submitted_by").references(() => profiles.id, { onDelete: "restrict" }),
   ...timestamps,
 });
 
@@ -444,4 +464,30 @@ export const staffMessages = pgTable("staff_messages", {
   body: text("body").notNull(),
   readAt: timestamp("read_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const repositoryDepositReminders = pgTable("repository_deposit_reminders", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  outboxId: uuid("outbox_id").notNull().unique().references(() => emailOutbox.id, { onDelete: "restrict" }),
+  queuedBy: uuid("queued_by").notNull().references(() => profiles.id),
+  queuedAt: timestamp("queued_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const repositoryAccessPreparations = pgTable("repository_access_preparations", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  state: jsonb("state").notNull().default({}),
+  destination: jsonb("destination").notNull(),
+  revision: integer("revision").notNull().default(1),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const repositoryPreparationReminders = pgTable("repository_preparation_reminders", {
+  requestId: uuid("request_id").primaryKey().references(() => catalogingRequests.id, { onDelete: "restrict" }),
+  generation: uuid("generation").defaultRandom().notNull(),
+  waitingKind: text("waiting_kind").notNull(),
+  destination: jsonb("destination").notNull(),
+  status: text("status").default("scheduled").notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  outboxId: uuid("outbox_id").references(() => emailOutbox.id, { onDelete: "restrict" }),
 });

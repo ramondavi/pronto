@@ -6,6 +6,123 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 22 de outubro de 2026
+
+- Testes de navegação no CI executam sem concorrência entre navegadores e aguardam a compilação inicial da interface, preservando todas as verificações.
+
+- Corrige os rótulos de acompanhamento dos retrospectivos: respeita a dispensa de Nada Consta e identifica as correções como responsabilidade da secretaria.
+
+- A varredura de acessibilidade da Central de ajuda usa o mesmo prazo da página inicial, mantendo todas as verificações.
+
+- Testes públicos aguardam explicitamente a interface pronta, sem depender do carregamento completo dos widgets externos.
+
+- Migrações e modelos Auth sincronizados em produção, com evidências de validação do lançamento e atualização da prévia.
+
+- Consolida o MVP para lançamento: fluxo do RI e acervo retrospectivo, ajustes de atendimento e e-mails, tutorial de PDF/A como link discreto e verificações completas de aplicação e banco.
+
+- E-mails de atendimento concluído sem publicação registrada passam a oferecer acesso à página pública do trabalho no Pronto!, em lugar do painel.
+
+- Unifica os e-mails finais como Atendimento concluído, mantendo o endereço permanente quando houver publicação verificada no RI.
+
+- URLs alternativas dos e-mails com fonte uniforme, destaques preservados e avisos de conclusão da ficha sem referência a guia ou RI para solicitante e coordenação.
+
+- Ajustes dos modelos de e-mail conforme parecer: links alternativos após cada botão, rodapé comum, caixas para respostas e declarações e textos específicos por ocasião dos lembretes. Catálogo renovado para conferência; conclusão sem RI permanece pendente de decisão.
+
+- Catálogo de revisão dos 23 modelos e variantes de e-mail, com prévias visuais, conteúdo completo e espaço para parecer individual, sem alterar os envios.
+
+- Aviso de PDF/A na etapa de arquivo, com acesso ao tutorial oficial do RI; orientação sobre escolha de licenças na etapa de licença.
+
+### 21 de outubro de 2026
+
+- Coleção e tipo de documento confirmados ficam nas etapas 1 e 2 do guia. Campos com botão de copiar bloqueiam seleção e cópia manual, incluindo nomes e datas; a cópia continua pelos botões próprios.
+
+- Dados para copiar e conferir passam a integrar a etapa 3 do roteiro do RI; a confirmação de envio fica na etapa 8, mantendo a sequência do guia.
+
+- Guia sem atalho redundante de abertura do RI, com oito etapas conectadas na ordem de execução. A retomada respeita o início registrado e a preparação válida, evitando reiniciar automaticamente em Antes de começar.
+
+- Guia do RI revisado para continuar a preparação sem repetir verificações de conta, liberação e destino. Envios já registrados direcionam ao acompanhamento no RI em vez de nova submissão. Textos atualizados em todos os idiomas.
+
+- Removida a confirmação redundante de login no rodapé: após conferir o destino na janela da etapa 0, a pessoa pode iniciar diretamente o guia.
+
+- O Passo 1 do acesso ao RI exige confirmação de login por checkbox antes de mostrar o início do guia; ícones ampliados e alinhados à esquerda nas duas fases.
+
+- Orientação final do preparo do RI volta à coluna esquerda do botão, com quebra de linha e alinhamento vertical centralizado.
+
+- Na preparação com conta e liberação corretas, uma única ação pulsante abre o login do RI e depois se transforma no botão de iniciar o guia.
+
+- Ações finais do preparo do autodepósito mais compactas, com destaque do guia somente após clicar no login. Traduções completas das novas orientações, respostas, modais, lembretes e confirmação de envio para os cinco idiomas adicionais do Pronto!.
+
+- O acesso destacado ao RI acompanha a resposta inicial: aparece como cadastro ou login no cabeçalho, ou como primeiro passo ao lado do início do guia quando a liberação já está correta.
+
+- Desativar o guia de um programa oculta o fluxo de autodepósito também para o acervo retrospectivo, bloqueando acesso direto e operações no banco. O guia passa a registrar a declaração de submissão para aguardar validação da Biblioteca. A ficha mostra até três autores na responsabilidade, separados por vírgula; com mais de três, primeiro autor e ... [et al.].
+
+- Etapas que aguardam confirmação da conta ou liberação/correção do RI usam quadrado azul com relógio, distinguindo a espera da conclusão com check verde.
+
+- Grupos de três opções do preparo do RI passam a três colunas iguais em telas amplas, mantendo uma coluna em telas pequenas.
+
+- Etapas concluídas do preparo do RI mostram quadrado verde com check, como na geração da ficha. O número reaparece quando uma alteração desfaz a confirmação; etapas puladas mantêm sua indicação própria.
+
+- O contato durante a espera por confirmação do RI recebe campo de e-mail proporcional, cópia alinhada e orientação separada; removido o botão Escrever ao RI/UFBA.
+
+- As orientações de cadastro removem o botão duplicado de abrir o RI e apresentam o tutorial como link discreto, sem borda, com ícone proporcional.
+
+- A etapa 0 remove a opção redundante de liberação em outro destino; essa situação continua identificada pelo modal de conferência e encaminhada ao pedido de correção.
+
+- A divisória do cabeçalho Antes de começar passa abaixo do título e do botão do RI em toda a largura; o botão orienta voltar ao Pronto! e alternar entre as abas durante as verificações.
+
+- Orientações de cadastro no RI passam a três passos visuais com ícones, títulos curtos e ações de abrir o repositório e consultar o tutorial junto ao primeiro passo.
+
+- O cabeçalho do Antes de começar oferece login destacado no RI com orientação para as verificações. Os blocos de contato incluem botão discreto de copiar o e-mail do repositório.
+
+- Textos do Antes de começar especificam liberação para depositar e destino do depósito nos rótulos, respostas, orientações e modais, sem acrescentar blocos de explicação.
+
+- O endereço repositorio@ufba.br aparece em destaque antes das orientações de espera e da preparação de mensagens de liberação ou correção do RI.
+
+- Informar destino incorreto no modal da etapa 0 seleciona automaticamente a resposta de liberação em outro destino e abre a correção. O roteiro dos modais começa pelo login no RI/UFBA e pelo botão Iniciar um novo depósito.
+
+- O cadastro no RI aguarda 120 segundos e então pergunta se a conta foi confirmada, sem avanço automático. Respostas de espera exibem contato e lembrete opcional com data e hora; pedidos de liberação/correção seguem a mesma confirmação explícita, sem temporizador. Orientações e modais recebem passos numerados, e o retorno redundante foi removido.
+
+- Etapas dispensadas do preparo do RI indicam que foram puladas conforme a resposta da etapa 0, com justificativa; etapas ainda bloqueadas apontam a confirmação realmente necessária, evitando retornos desnecessários.
+
+- QR vetorial reposicionado no canto inferior esquerdo, com margens iguais e tamanho ajustado à referência. Degradês do feed acompanham interação e cartões cortados, desaparecendo no topo e no fim respectivos.
+
+- O preparo do RI remove o aviso de respostas salvas e permite optar por um lembrete por e-mail no segundo dia útil durante a espera de cadastro, liberação ou correção. A pessoa pode cancelar antes do envio; avançar no fluxo cancela lembretes pendentes.
+
+- QR vetorial reduzido e alinhado à margem da ficha; frases de carregamento a cada 1,6 segundo. O preparo do RI usa perguntas e respostas com expansão suave, modal contextual com orientação dos campos do RI e barra interna durante a espera; a prévia do e-mail permite cópia apenas pelos botões.
+
+- A ficha final recebe QR maior e sem transparência, alinhado à indicação de emissão revisada, com Pronto! em itálico. O preparo do RI confere coleção e tipo de documento em modal padrão antes de registrar a decisão.
+
+- A preparação do RI concentra o destino nas decisões de conferência, registra respostas em primeira pessoa e mantém as decisões encadeadas em área estável. A confirmação após as instruções de cadastro tem contagem de 120 segundos; a liberação direta destaca o botão do guia.
+
+- O preparo do autodepósito recebe cartões e decisões mais compactos, ícones visíveis, cabeçalhos alinhados e ação final organizada; confirmar acesso na etapa 0 leva suavemente ao botão do guia.
+
+- A conferência de acesso ao RI mostra a coleção pelo caminho completo e o tipo de documento separadamente, acompanhando os campos vistos pelo estudante no repositório.
+
+- A preparação do autodepósito passa a conduzir decisões condicionais sobre cadastro, pedido e liberação no destino correto, com pedido de correção quando houver divergência e retomada por trabalho na conta. As mensagens de carregamento alternam mais rapidamente.
+
+- Acervo retrospectivo e Depósitos pendentes adotam os componentes de cabeçalhos, indicadores, cartões, guias e ações do painel. As quatro atribuições de depósitos passam a aparecer na gestão de permissões, com autorização no banco. O dropdown de ordenação volta ao estilo compartilhado do Pronto!.
+
+- A submissão da secretaria retoma pela matrícula quando ela falta e mostra a RAU+E selecionada em campo inativo. Ajustados degradê inferior do feed, alinhamento do seletor de ordenação e frases de carregamento com transição suave.
+
+- Depósitos pendentes passa para Administração → Controle, preservando filtros, ações e permissões.
+
+### 20 de outubro de 2026
+
+- A homologação usa orientação de confirmação adequada a qualquer largura e dispensa ajuda nesse checkbox; o menu móvel se alinha ao botão de abertura. A seleção de tipos de nota conforme AACR2 foi registrada como pendência futura.
+
+- Cartões da fila, ordenação, títulos, ajudas e menus recebem ajustes para telas pequenas. A análise ganha revisão dos campos com atalhos e atualização automática das correções recebidas, preservando edições em outros campos.
+- O acervo retrospectivo ganha orientações por etapa, identificação da secretaria como responsável pelo envio e RAU+E definida na submissão; o encerramento é apresentado como ação da Biblioteca.
+
+- O TFG passa a admitir até três autores, com ordenação como na RAU+E. Na secretaria, a matrícula é identificada como a do primeiro autor, a representante não pode integrar a autoria e o protocolo enviado oferece novo pedido em destaque. O botão de envio preserva contraste ao passar o mouse.
+
+- Em preparação: relação de depósitos posteriores ao encerramento, com confirmação histórica, lembretes individuais ou em lotes após habilitação do guia e registro da URL conferida pela biblioteca.
+- Pessoas já autenticadas são encaminhadas ao painel ao abrir a entrada; o guia do trabalho é preservado como destino após o login.
+- Título e descrição públicos passam a identificar fichas catalográficas e autodepósito, com metadados de busca e compartilhamento consistentes.
+
+- O depósito dos pedidos retrospectivos da RAU+E permanece disponível mesmo quando o guia dos pedidos comuns está desativado.
+
+- A secretaria da RAU+E recebe acesso provisório para várias fichas retrospectivas, com dispensa de Nada Consta, indicação individual das publicações no RI e inativação administrativa após concluir o lote.
+
 ### 19 de outubro de 2026
 
 - A página pública inclui a tag de verificação para acompanhar sua indexação no Google Search Console.

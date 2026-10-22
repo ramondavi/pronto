@@ -1,5 +1,8 @@
 "use server";
 
+import { redirectIfAuthenticated } from "@/lib/authenticated-redirect";
+import { safePanelDestination } from "@/domain/auth/navigation";
+
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -38,6 +41,7 @@ function recoveryEmailClient() {
 export type SignupState = { errors: SignupErrors; formError: string | null };
 
 export async function signup(_previousState: SignupState, formData: FormData): Promise<SignupState> {
+  await redirectIfAuthenticated(String(formData.get("next") ?? ""));
   const input = {
     fullName: String(formData.get("name") ?? ""),
     cpf: String(formData.get("cpf") ?? ""),
@@ -77,9 +81,11 @@ export async function updateBirthDate(formData: FormData) {
 }
 
 async function loginWithPassword(formData: FormData, audience: "student" | "staff") {
+  const next = safePanelDestination(String(formData.get("next") ?? ""));
+  const supabase = await createClient();
+  await redirectIfAuthenticated(next, supabase);
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
-  const next = audience === "student" && formData.get("next") === "/painel/solicitacao/corrigir" ? "/painel/solicitacao/corrigir" : "/painel";
   const loginError = (message: string) => {
     const params = new URLSearchParams();
     if (audience === "staff") params.set("perfil", "equipe");
@@ -89,7 +95,6 @@ async function loginWithPassword(formData: FormData, audience: "student" | "staf
   };
   if (!isUfbaEmail(email) || !password) redirect(loginError("Informe e-mail institucional e senha."));
 
-  const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error?.status === 429) redirect(loginError("Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente."));
   if (error?.status && error.status >= 500) redirect(loginError("O serviço de autenticação está temporariamente indisponível. Tente novamente em instantes."));
@@ -123,6 +128,7 @@ export type StudentCodeRequestState = { status: "idle" | "sent" | "error"; email
 export type StudentCodeVerifyState = { error: string };
 
 export async function requestStudentCode(_previousState: StudentCodeRequestState, formData: FormData): Promise<StudentCodeRequestState> {
+  await redirectIfAuthenticated(String(formData.get("next") ?? ""));
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const failure = (message: string): StudentCodeRequestState => _previousState.status === "sent"
     ? { ..._previousState, error: message }
@@ -137,6 +143,7 @@ export async function requestStudentCode(_previousState: StudentCodeRequestState
 }
 
 export async function verifyStudentCode(_previousState: StudentCodeVerifyState, formData: FormData): Promise<StudentCodeVerifyState> {
+  await redirectIfAuthenticated(String(formData.get("next") ?? ""));
   if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return { error: "O acesso por código ainda não está disponível." };
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const token = String(formData.get("code") ?? "").trim();
@@ -149,7 +156,7 @@ export async function verifyStudentCode(_previousState: StudentCodeVerifyState, 
     await supabase.auth.signOut();
     return { error: "Este acesso é exclusivo para estudantes com conta ativa." };
   }
-  redirect("/painel");
+  redirect(safePanelDestination(String(formData.get("next") ?? "")));
 }
 
 export type PasswordResetRequestState = { status: "idle" | "sent" | "error"; sentAt: number; email: string; message: string };

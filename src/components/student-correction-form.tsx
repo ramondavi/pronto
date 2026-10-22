@@ -51,7 +51,7 @@ export function StudentCorrectionForm({ requestId, fields, programs, preview = f
     const { error: rpcError } = await supabase.rpc("submit_request_corrections", { target_request_id: requestId, corrections });
     if (rpcError) { const message = t(fields.length === 1 ? "Não foi possível reenviar a correção. Confira o campo solicitado e tente novamente." : "Não foi possível reenviar as correções. Confira os campos solicitados e tente novamente."); setError(message); showPanelChangeError(t(fields.length === 1 ? "Correção não enviada" : "Correções não enviadas"), message); setSubmitting(false); return; }
     showPanelChange(t(fields.length === 1 ? "Correção enviada à biblioteca" : "Correções enviadas à biblioteca"));
-    router.push("/painel/solicitacao?corrigida=1"); router.refresh();
+    router.push(`/painel/solicitacao?corrigida=1&pedido=${encodeURIComponent(requestId)}`); router.refresh();
   }
 
   return <form className="correction-form" onSubmit={submit}>

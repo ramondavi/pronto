@@ -43,7 +43,7 @@ set local role authenticated; set local request.jwt.claim.sub='97000000-0000-400
 select is((select count(*)::integer from public.cataloging_card_homologations),0,'revogação do Nada Consta bloqueia novamente');
 reset role; reset request.jwt.claim.sub; update public.nada_consta_documents set status='approved',released_at=now(); update public.cataloging_requests set status='completed';
 set local role authenticated; set local request.jwt.claim.sub='97000000-0000-4000-8000-000000000001';
-select is((select count(*)::integer from public.cataloging_card_homologations),0,'status encerrado não amplia a regra sem decisão específica');
+select is((select count(*)::integer from public.cataloging_card_homologations),1,'conclusão com guia desativado preserva acesso à própria ficha');
 
 select * from finish();
 rollback;

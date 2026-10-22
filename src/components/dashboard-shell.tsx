@@ -99,7 +99,7 @@ const commemorativeDates: Record<string, string> = {
   "12-15": "Dia do(a) Arquiteto(a) e Urbanista",
 };
 
-export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, canChangeHours = false, canViewOverview = true, canViewQueue = true, canViewCalendar = true, canManageCalendar = false, canPreviewStudent = false, adminPermissions = [], showNotifications = true }: { children: React.ReactNode; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean; closingTime: string; specialHours: boolean; now: string }; canChangeHours?: boolean; canViewOverview?: boolean; canViewQueue?: boolean; canViewCalendar?: boolean; canManageCalendar?: boolean; canPreviewStudent?: boolean; adminPermissions?: string[]; showNotifications?: boolean }) {
+export function DashboardShell({ children, fullName, role, userId, avatarChoice, birthday, serviceStatus, repositoryAccess = [], retrospective = false, canChangeHours = false, canViewOverview = true, canViewQueue = true, canViewCalendar = true, canManageCalendar = false, canPreviewStudent = false, adminPermissions = [], showNotifications = true }: { children: React.ReactNode; repositoryAccess?: { id: string; enabled: boolean }[]; retrospective?: boolean; fullName: string; role: string; userId: string; avatarChoice?: number | null; birthday?: string | null; serviceStatus?: { title: string; message?: string; reason?: string; date: { value: string; label: string }; exceptional: boolean; closed: boolean; closingTime: string; specialHours: boolean; now: string }; canChangeHours?: boolean; canViewOverview?: boolean; canViewQueue?: boolean; canViewCalendar?: boolean; canManageCalendar?: boolean; canPreviewStudent?: boolean; adminPermissions?: string[]; showNotifications?: boolean }) {
   const isStaff = role === "cataloger" || role === "administrator";
   const [previewAllowed, setPreviewAllowed] = useState(canPreviewStudent);
   const pathname = usePathname();
@@ -122,6 +122,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
   const translate = (value: string, values?: Record<string, string | number>) => uiText(language, value, values);
   const [openMenuLabel, closeMenuLabel] = mobileMenuCopy[language];
   const searchParams = useSearchParams();
+  const repositoryRequest = repositoryAccess.find((request) => request.id === searchParams.get("pedido")) ?? repositoryAccess[0];
   const previewHref = (screen: string) => `/painel/visao-estudante${screen ? `?tela=${screen}` : ""}${searchParams.get("estado") ? `${screen ? "&" : "?"}estado=${searchParams.get("estado")}` : ""}`;
   const previewScenario = studentPreviewScenarios.find((item) => item.id === searchParams.get("estado")) ?? studentPreviewScenarios[0];
   const adminAreaParam = searchParams.get("area");
@@ -179,21 +180,33 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", closeOnEscape); };
   }, [mobileMenuOpen]);
   useEffect(() => {
-    const headings = [...document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text")];
-    if (!headings.length) return;
+    const headings = new Set<HTMLElement>();
+    let frame = 0;
     const measure = () => {
-      const compact = window.matchMedia("(max-width: 560px)").matches;
+      const compact = window.matchMedia("(max-width: 700px)").matches;
       headings.forEach((heading) => {
+        if (!heading.isConnected) { headings.delete(heading); return; }
         const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
         heading.classList.toggle("is-scrolling", distance > 2);
         heading.style.setProperty("--heading-travel", `${-distance}px`);
-        heading.style.setProperty("--heading-duration", `${Math.min(7.5, Math.max(3.5, distance / 80 + 2.5))}s`);
+        heading.style.setProperty("--heading-duration", `${Math.min(9, Math.max(4, distance / 45 + 2))}s`);
       });
     };
-    const observer = new ResizeObserver(measure);
-    headings.forEach((heading) => { observer.observe(heading); if (heading.firstElementChild) observer.observe(heading.firstElementChild); });
-    const frame = window.requestAnimationFrame(measure);
-    return () => { window.cancelAnimationFrame(frame); observer.disconnect(); };
+    const resize = new ResizeObserver(measure);
+    const collect = () => {
+      document.querySelectorAll<HTMLElement>(".dashboard-main .panel-heading-text").forEach((heading) => {
+        if (headings.has(heading)) return;
+        headings.add(heading); resize.observe(heading);
+        if (heading.firstElementChild) resize.observe(heading.firstElementChild);
+      });
+      cancelAnimationFrame(frame); frame = requestAnimationFrame(measure);
+    };
+    const mutations = new MutationObserver(collect);
+    mutations.observe(document.querySelector(".dashboard-content") ?? document.body, { childList: true, subtree: true, characterData: true });
+    collect();
+    document.fonts.ready.then(measure);
+    window.addEventListener("resize", measure);
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); mutations.disconnect(); window.removeEventListener("resize", measure); };
   }, [pathname, searchParams]);
   useEffect(() => {
     const timelines = new Set<HTMLElement>();
@@ -438,7 +451,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
         </nav> : <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.studentArea}>
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === null || searchParams.get("tela") === "inicio" ? "is-active" : undefined : activeClass("/painel")} href={previewMode ? previewHref("") : "/painel"} aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? ["solicitacoes", "solicitacao", "correcao"].includes(searchParams.get("tela") ?? "") ? "is-active" : undefined : activeClass("/painel/solicitacao")} href={previewMode ? previewHref("solicitacoes") : "/painel/solicitacao"} aria-label={t.request} title={t.request}><SidebarIcon name="request" /><span className="dashboard-nav__label">{t.request}</span></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "autodeposito" ? "is-active" : undefined : activeClass("/painel/autodeposito")} href={previewMode ? previewHref("autodeposito") : "/painel/autodeposito"} aria-label={t.deposit} title={t.deposit}><SidebarIcon name="deposit" /><span className="dashboard-nav__label">{t.deposit}</span></Link>
+          {(previewMode || repositoryRequest?.enabled) && <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "autodeposito" ? "is-active" : undefined : activeClass("/painel/autodeposito")} href={previewMode ? previewHref("autodeposito") : `/painel/autodeposito?pedido=${repositoryRequest?.id ?? ""}`} aria-label={t.deposit} title={t.deposit}><SidebarIcon name="deposit" /><span className="dashboard-nav__label">{t.deposit}</span></Link>}
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "conta" ? "is-active" : undefined : activeClass("/painel/conta")} href={previewMode ? previewHref("conta") : "/painel/conta"} aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
         </nav>}
         {isStaff && !previewMode && previewAllowed && <button className="dashboard-nav__preview-switch" type="button" role="switch" aria-checked="false" aria-label="Ver como estudante" title="Ver como estudante" onClick={() => router.push("/painel/visao-estudante")}><AppIcon className="dashboard-nav__preview-icon" name="eye" /><span className="dashboard-preview-switch__track"><span /></span><span className="dashboard-nav__preview-label">Ver como estudante</span></button>}
@@ -454,7 +467,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
             <div className="user-identity"><span className="dashboard-birthday-avatar" title={birthday === today.slice(5) ? "Feliz aniversário!" : undefined}><LiteraryAvatar id={userId} label={fullName} choice={avatarChoice} small />{birthday === today.slice(5) && <span className="dashboard-birthday-avatar__hat" aria-hidden="true"><i /></span>}</span><span className="user-identity__copy"><Link className="user-greeting" href="/painel/conta" title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${firstName}` : `${t.greeting}, ${firstName}`}</Link><span className="user-chip" title={fullName}>{t[role as keyof typeof t] ?? role}</span></span></div>
             <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>
             </> : <>
-            <div className="user-identity"><StudentAvatar name={studentProfileName} small /><span className="user-identity__copy"><Link className="user-greeting" href={previewMode ? previewHref("conta") : "/painel/conta"} title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${studentProfileName}` : `${t.greeting}, ${studentProfileName}`}</Link><span className="user-chip" title={studentProfileFullName}>{t.student}</span></span></div>
+            <div className="user-identity"><StudentAvatar name={studentProfileName} small /><span className="user-identity__copy"><Link className="user-greeting" href={previewMode ? previewHref("conta") : "/painel/conta"} title={t.account} style={{ visibility: greetingClock ? "visible" : "hidden" }}>{greeting ? `${greeting}, ${studentProfileName}` : `${t.greeting}, ${studentProfileName}`}</Link><span className="user-chip" title={studentProfileFullName}>{retrospective ? "Secretaria da RAU+E" : t.student}</span></span></div>
             {previewMode ? <button className="logout-icon" type="button" onClick={() => setLogoutDialogOpen(true)} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button> : <form id="dashboard-logout-form" ref={logoutFormRef} action={logout}><button className="logout-icon" type="button" onClick={() => { if (window.matchMedia("(max-width: 1100px), (pointer: coarse), (any-pointer: coarse)").matches) setLogoutDialogOpen(true); else logoutFormRef.current?.requestSubmit(); }} aria-label={t.logout} title={t.logout}><AppIcon name="logout" /></button></form>}
             </>}
           </div>

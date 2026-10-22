@@ -1,5 +1,7 @@
+import { accessReady, restoreAccessPreparation } from "@/domain/repository-deposit/preparation";
 import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel/autodeposito"); }
+import { StudentRequestLiveRefresh } from "@/components/student-request-live-refresh";
 import { AppIcon } from "@/components/app-icon";
 import { StudentFeedbackInvite } from "@/components/student-feedback-invite";
 import { redirect } from "next/navigation";
@@ -10,30 +12,40 @@ import { formatWorkTitle } from "@/lib/work-title";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
 import { repositoryDepositSetup } from "@/lib/repository-deposit-setup";
+import { hasRetrospectiveAccess } from "@/lib/retrospective-access";
 
 
 const first = <T,>(value: T | T[] | null | undefined): T | null => Array.isArray(value) ? value[0] ?? null : value ?? null;
 
-export default async function RepositoryDepositPage() {
+export default async function RepositoryDepositPage({ searchParams }: { searchParams: Promise<{ pedido?: string }> }) {
+  const { pedido } = await searchParams;
   const language = await getInterfaceLanguage();
   const t = (value: string) => uiText(language, value);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role,full_name").eq("id", user.id).single() : { data: null };
   if (!user || profile?.role !== "student") redirect("/painel");
-  const { data: request } = await supabase.from("cataloging_requests").select(`id,status,title,subtitle,equivalent_title,people:request_people(role,transcribed_name,authorized_name,position),enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(program:academic_programs!academic_enrollments_academic_program_id_fkey(id,code,name,level,repository_deposit_enabled,repository_collection_label,repository_document_type_label,repository_academic_degree_label,repository_institution_label,repository_institution_acronym,repository_unit_label,repository_program_label,repository_country_label,repository_default_language_label))`).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
-  if (!request) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="document" /></span><div><h2>{t("Guia ainda indisponível")}</h2><p>{t("Faça uma solicitação de ficha para acompanhar as próximas etapas aqui.")}</p></div></section></main>;
+  if (!pedido && await hasRetrospectiveAccess()) redirect("/painel/retrospectivas");
+  let query = supabase.from("cataloging_requests").select(`id,retrospective,status,title,subtitle,equivalent_title,people:request_people(role,transcribed_name,authorized_name,position),enrollment:academic_enrollments!cataloging_requests_academic_enrollment_id_fkey(program:academic_programs!academic_enrollments_academic_program_id_fkey(id,code,name,level,repository_deposit_enabled,repository_collection_label,repository_document_type_label,repository_academic_degree_label,repository_institution_label,repository_institution_acronym,repository_unit_label,repository_program_label,repository_country_label,repository_default_language_label))`);
+  if (pedido) query = query.eq("id", pedido);
+  const { data: request } = await query.order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  if (!request) redirect("/painel/solicitacao");
   const enrollment = first(request.enrollment); const program = first(enrollment?.program);
-  const [{ data: nada }, { data: homologation }, { data: progress }, { data: citation }, { data: workDates }] = await Promise.all([
+  if (!program?.repository_deposit_enabled) redirect(`/painel/solicitacao?pedido=${request.id}`);
+  const [{ data: nada }, { data: homologation }, { data: progress }, { data: citation }, { data: workDates }, { data: preparation }] = await Promise.all([
     supabase.from("nada_consta_documents").select("status").eq("request_id", request.id).eq("status", "approved").maybeSingle(),
     supabase.from("cataloging_card_homologations").select("snapshot").eq("request_id", request.id).maybeSingle(),
-    supabase.from("repository_deposit_progress").select("started_at").eq("request_id", request.id).maybeSingle(),
+    supabase.from("repository_deposit_progress").select("started_at,submitted_at").eq("request_id", request.id).maybeSingle(),
     supabase.rpc("get_validated_request_citation", { target_request_id: request.id }),
     supabase.from("request_card_details").select("deposit_date,defense_date").eq("request_id", request.id).maybeSingle(),
+    supabase.rpc("load_repository_access_preparation", { target_request_id: request.id }),
   ]);
-  const available = request.status === "approved" && nada?.status === "approved" && Boolean(homologation?.snapshot);
-  if (!program?.repository_deposit_enabled) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="lock" /></span><div><h2>{t("Guia desativado para este curso")}</h2><p>{uiText(language, "O guia de autodepósito não está habilitado para {program}. Para TFG de graduação, ele permanece inicialmente desativado por cautela normativa.", { program: program?.name ?? t("seu curso ou programa") })}</p></div></section></main>;
+  const { data: publication } = await supabase.from("repository_publications").select("verified_at").eq("request_id", request.id).maybeSingle();
+  const { data: completedGuideAccess } = await supabase.rpc("can_access_completed_repository_guide", { target_request_id: request.id });
+  const available = ((request.status === "approved" && (request.retrospective || nada?.status === "approved")) || completedGuideAccess === true) && Boolean(homologation?.snapshot);
   if (!available) return <main className="dashboard-main dashboard-main--narrow"><div className="page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div></div><StudentFeedbackInvite /><section className="panel repository-guide__state"><span><AppIcon name="review" /></span><div><h2>{t("Aguarde a liberação da ficha")}</h2><p>{t("O guia ficará disponível após a homologação da ficha e a aprovação do Nada Consta.")}</p></div></section></main>;
+  const preparationReady = preparation?.destination_current === true && accessReady(restoreAccessPreparation(preparation.state));
+  const destinationKey = JSON.stringify([program.code, program.repository_collection_label, program.repository_document_type_label]);
   const setup = repositoryDepositSetup(program.code, { collection: program.repository_collection_label ?? "", documentType: program.repository_document_type_label ?? "" });
   const snapshot = homologation!.snapshot as unknown as CatalogingCardSnapshot;
   const people = [...snapshot.people].sort((a,b) => (a.position ?? 0)-(b.position ?? 0));
@@ -75,5 +87,5 @@ export default async function RepositoryDepositPage() {
     { label: "Relação com outros documentos", note: "Preencha quando o trabalho tiver vínculo com outro documento ou publicação.", group: "Conferir no RI" },
     { label: "Arquivo, formato e descrição", note: "Envie a versão final com a ficha, confira o formato exigido pelo RI e marque o arquivo principal.", group: "Conferir no RI" },
   ];
-  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading repository-guide__page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><p className="repository-guide__protocol"><AppIcon name="document" /><span><small>{t("Protocolo")}</small><strong>{snapshot.request.protocol}</strong></span></p></div><StudentFeedbackInvite /><RepositoryDepositGuide requestId={request.id} startedAt={progress?.started_at ?? null} fields={fields} setup={setup} requesterName={profile.full_name ?? ""} requesterEmail={user.email ?? ""} /></main>;
+  return <main className="dashboard-main dashboard-main--form"><div className="page-heading request-heading repository-guide__page-heading"><div><h1><AppIcon className="panel-heading-icon" name="upload" /><span className="panel-heading-text"><span className="panel-heading-text__inner">{t("Autodepósito")}</span></span></h1></div><p className="repository-guide__protocol"><AppIcon name="document" /><span><small>{t("Protocolo")}</small><strong>{snapshot.request.protocol}</strong></span></p></div><StudentFeedbackInvite /><StudentRequestLiveRefresh active /><RepositoryDepositGuide key={`${request.id}:${destinationKey}`} requestId={request.id} preparationReady={preparationReady} startedAt={progress?.started_at ?? null} submittedAt={progress?.submitted_at ?? null} publicationVerified={Boolean(publication?.verified_at)} fields={fields} setup={setup} destinationKey={destinationKey} requesterName={profile.full_name ?? ""} requesterEmail={user.email ?? ""} /></main>;
 }

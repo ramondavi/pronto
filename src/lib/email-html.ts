@@ -12,8 +12,8 @@ const colors = {
 };
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character] ?? character);
-const importantPattern = /(\b[A-Z]{2,}\d{4}-\d{4,}\b|\b\d+\s+dias?\s+úteis\b|Atenção!|ficha catalográfica foi homologada|ficha já está disponível no Pronto!|informações que precisam ser corrigidas|protocolo foi encerrado|Administração → Equipe e acessos)/gi;
-const importantTest = /^(?:[A-Z]{2,}\d{4}-\d{4,}|\d+\s+dias?\s+úteis|Atenção!|ficha catalográfica foi homologada|ficha já está disponível no Pronto!|informações que precisam ser corrigidas|protocolo foi encerrado|Administração → Equipe e acessos)$/i;
+const importantPattern = /(\b[A-Z]{2,}\d{4}-\d{4,}\b|\b\d+\s+dias?\s+úteis\b|Atenção!|ficha catalográfica foi homologada|ficha já está disponível no Pronto!|informações que precisam ser corrigidas|protocolo foi encerrado|atendimento foi concluído|Administração → (?:Equipe e acessos|Operação → Contas)|ficha do protocolo|foi homologada|PDF completo do seu trabalho|opção recomendada|atendimento da ficha catalográfica foi concluído|permanente e único|cerca de 3 minutos|Nada Consta)/gi;
+const importantTest = /^(?:[A-Z]{2,}\d{4}-\d{4,}|\d+\s+dias?\s+úteis|Atenção!|ficha catalográfica foi homologada|ficha já está disponível no Pronto!|informações que precisam ser corrigidas|protocolo foi encerrado|atendimento foi concluído|Administração → (?:Equipe e acessos|Operação → Contas)|ficha do protocolo|foi homologada|PDF completo do seu trabalho|opção recomendada|atendimento da ficha catalográfica foi concluído|permanente e único|cerca de 3 minutos|Nada Consta)$/i;
 const detailLine = /^(Trabalho|Solicitante|Matrícula|Protocolo|Prazo de referência|Previsão da análise|Publicação no RI\/UFBA|Endereço permanente da publicação):\s*(.*)$/i;
 const adjustmentLine = /^•\s+([^:]+):\s*(.*)$/;
 
@@ -30,7 +30,9 @@ function linkedText(value: string) {
   }).join("");
 }
 
-function paragraphHtml(value: string) {
+function paragraphHtml(value: string): string {
+  const cancellation = value.match(/^(.*estas declarações não foram cumpridas:)\s*([\s\S]+)$/);
+  if (cancellation) return paragraphHtml(cancellation[1]) + informationBox(linkedText(cancellation[2]));
   const lines = value.split("\n");
   const observationIndex = value.indexOf("\nObservação complementar: ");
   if (value.startsWith("• ") && observationIndex > 0) {
@@ -59,24 +61,26 @@ function paragraphHtml(value: string) {
 const correctionSubject = /^Pronto!\s*\|\s*Correções necessárias\b/i;
 const studentReplySubject = /^Pronto!\s*\|\s*Resposta sobre o protocolo\b/i;
 const richReplyPattern = /<\/?(?:p|strong|em|ul|ol|li|a|br)\b/i;
+const footerText = "Mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.\nNão responda a este e-mail.";
+const informationBox = (content: string) => `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 18px;padding:12px 16px;border-left:3px solid ${colors.institutional};border-radius:6px;background:${colors.institutionalSoft}"><tr><td style="color:${colors.text};font-size:15px;line-height:1.65">${content}</td></tr></table>`;
 function replyParagraphs(body: string, html: boolean) {
   const parts = body.split(/\n\s*\n/).filter(Boolean);
-  if (parts.length < 4 || !richReplyPattern.test(parts[2])) return null;
+  if (parts.length < 4) return null;
   const reply = parts.slice(2, -1).join("\n\n");
   if (!html) {
     const plain = sanitizeHtml(reply.replace(/<\/(?:p|li|ul|ol)>|<br\s*\/?\s*>/gi, "\n"), { allowedTags: [], allowedAttributes: {} }).trim();
     return [...parts.slice(0, 2), plain, parts.at(-1)!].join("\n\n");
   }
-  const safeReply = sanitizeHtml(reply, {
+  const safeReply = richReplyPattern.test(reply) ? sanitizeHtml(reply, {
     allowedTags: ["p", "br", "strong", "em", "ul", "ol", "li", "a"],
     allowedAttributes: { a: ["href", "style"] },
     allowedSchemes: ["https"],
     transformTags: { a: (_tag, attrs) => ({ tagName: "a", attribs: { href: attrs.href ?? "", style: `color:${colors.institutional};font-weight:700;text-decoration:underline` } }) },
-  });
-  return `${parts.slice(0, 2).map(paragraphHtml).join("")}<div style="margin:0 0 18px;color:${colors.text};font-size:15px;line-height:1.65">${safeReply}</div>${paragraphHtml(parts.at(-1)!)}`;
+  }) : reply.split(/\n\s*\n/).map(paragraphHtml).join("");
+  return `${parts.slice(0, 2).map(paragraphHtml).join("")}${informationBox(safeReply)}${paragraphHtml(parts.at(-1)!)}`;
 }
-const coordinationCompletion = (subject: string, body: string) => /protocolo\s+n\.º\s+.*\s+concluído/i.test(subject) && body.includes("A página de acompanhamento desta solicitação foi fechada");
-const explicitClosedLink = (body: string) => body.includes("O Magic Link enviado anteriormente não é mais válido.") ? body : body.replace("A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento.", "A página de acompanhamento desta solicitação foi fechada juntamente com o protocolo de atendimento. O Magic Link enviado anteriormente não é mais válido.");
+const coordinationCompletion = (subject: string, body: string) => /Atendimento concluído|protocolo\s+n\.º\s+.*\s+concluído/i.test(subject) && body.includes("A página de acompanhamento desta solicitação foi fechada");
+const explicitClosedLink = (body: string) => body.replace("O Magic Link enviado anteriormente não é mais válido.", "O botão e URL de acesso ao protocolo enviados anteriormente não são mais válidos.");
 const firstNameGreeting = (body: string) => body.replace(/^(Olá,\s+)([^\n.]+)(\.)/m, (_match, greeting: string, name: string, punctuation: string) => `${greeting}${name.trim().split(/\s+/)[0]}${punctuation}`);
 const panelUrl = (siteUrl: string) => new URL("/painel", siteUrl).toString();
 const resolveSiteUrl = (body: string, siteUrl: string) => body.replaceAll("{{SITE_URL}}", siteUrl.replace(/\/$/, ""));
@@ -87,14 +91,31 @@ function emailDestination(subject: string, textBody: string, siteUrl: string) {
   return textBody.match(/https?:\/\/[^\s<>]+/)?.[0]?.replace(/[.,;:!?]+$/, "");
 }
 
+function emailActions(subject: string, body: string, siteUrl: string) {
+  const publicWorkUrl = body.match(/https?:\/\/[^\s<>]+\/f\/[a-zA-Z0-9-]+/)?.[0];
+  if (/Atendimento concluído/i.test(subject) && publicWorkUrl) return [{ url: publicWorkUrl, label: "Ver página pública do trabalho" }];
+  // A coordenação acompanha por link próprio e não recebe acesso ao painel.
+  if (/Atendimento (?:da ficha )?concluído/i.test(subject) && body.startsWith("Olá!")) return [];
+  const destination = emailDestination(subject, body, siteUrl);
+  if (/Continue a preparação do autodepósito|Lembrete.*depósito/i.test(subject) || destination?.includes("/painel/autodeposito")) {
+    return destination ? [{ url: destination, label: "Continuar preparação para o autodepósito" }] : [];
+  }
+  if (destination?.includes("/painel/avaliacao")) return [{ url: destination, label: "Avaliar o serviço" }];
+  if (destination?.includes("/coordenacao/")) return [{ url: destination, label: "Acompanhar solicitação" }];
+  const actions = [];
+  if (destination && destination !== panelUrl(siteUrl)) actions.push({ url: destination, label: correctionSubject.test(subject) ? "Corrigir campos pendentes" : /repositorio\.ufba\.br|\/handle\//i.test(destination) ? "Consultar publicação" : "Acessar o Pronto!" });
+  if (!coordinationCompletion(subject, body)) actions.push({ url: panelUrl(siteUrl), label: "Acessar o painel do Pronto!" });
+  return actions;
+}
+
+const fallbackLabel = (label: string, count: number) => count > 1 ? `Se o botão "${label}" não funcionar, copie este endereço para o navegador:` : "Se o botão não funcionar, copie este endereço para o navegador:";
+
 export function transactionalEmailText(subject: string, textBody: string, siteUrl: string) {
   const resolvedBody = firstNameGreeting(resolveSiteUrl(textBody, siteUrl)).trim();
   const body = studentReplySubject.test(subject) ? replyParagraphs(resolvedBody, false) ?? resolvedBody : coordinationCompletion(subject, resolvedBody) ? explicitClosedLink(resolvedBody) : resolvedBody;
   const formattedBody = correctionSubject.test(subject) ? body.replaceAll(" Observação complementar: ", "\n  Observação complementar: ") : body;
-  const correctionLink = correctionSubject.test(subject) ? `\n\nAcesse diretamente a tela de correção: ${emailDestination(subject, body, siteUrl)}` : "";
-  const destination = emailDestination(subject, body, siteUrl);
-  if (destination?.includes("/coordenacao/") || coordinationCompletion(subject, body)) return formattedBody;
-  return `${formattedBody}${correctionLink}\n\nAcesse o painel do Pronto!: ${panelUrl(siteUrl)}`;
+  const actions = emailActions(subject, body, siteUrl);
+  return `${formattedBody}${actions.map(({ url, label }) => `\n\n${label}\n${fallbackLabel(label, actions.length)}\n${url}`).join("")}\n\n${footerText}`;
 }
 
 export function transactionalEmailHtml(subject: string, textBody: string, siteUrl: string) {
@@ -102,14 +123,9 @@ export function transactionalEmailHtml(subject: string, textBody: string, siteUr
   const body = coordinationCompletion(subject, resolvedBody) ? explicitClosedLink(resolvedBody) : resolvedBody;
   const firstUrl = emailDestination(subject, body, siteUrl);
   const coordinationAccess = Boolean(firstUrl?.includes("/coordenacao/"));
-  const displayBody = coordinationAccess && firstUrl ? body.replace(firstUrl, "").replace(/Para acompanhar o andamento, use o acesso seguro abaixo:\s*/, "Para acompanhar o andamento, use o botão abaixo.") : body;
+  const displayBody = coordinationAccess && firstUrl ? body.replace(firstUrl, "").replace(/Para acompanhar o andamento, use o acesso seguro abaixo:\s*/, "Para acompanhar o andamento, use o botão abaixo.\n\n") : body;
   const paragraphs = studentReplySubject.test(subject) ? replyParagraphs(displayBody, true) ?? displayBody.split(/\n\s*\n/).filter(Boolean).map(paragraphHtml).join("") : displayBody.split(/\n\s*\n/).filter(Boolean).map(paragraphHtml).join("");
-  const actionLabel = firstUrl ? correctionSubject.test(subject) ? "Corrigir campos pendentes" : /coordenacao/i.test(firstUrl) ? "Acompanhar solicitação" : /reposit[oó]rio|handle|ri\.ufba/i.test(firstUrl) ? "Consultar publicação" : "Acessar o Pronto!" : "";
-  const button = (url: string, label: string, background: string) => `<a href="${escapeHtml(url)}" style="display:inline-block;padding:14px 22px;border-radius:8px;background:${background};color:#ffffff;font-size:14px;font-weight:700;line-height:1.25;text-decoration:none">${label}</a>`;
-  const actions: string[] = [];
-  if (firstUrl && firstUrl !== panelUrl(siteUrl) && !coordinationAccess) actions.push(button(firstUrl, actionLabel, colors.text));
-  if (!coordinationCompletion(subject, body)) actions.push(coordinationAccess && firstUrl ? button(firstUrl, "Acompanhar solicitação", colors.institutional) : button(panelUrl(siteUrl), "Acessar o painel do Pronto!", colors.institutional));
-  const actionRow = actions.length ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0 0;border-collapse:collapse"><tr>${actions.map((action, index) => `<td class="email-action-cell" style="padding:0 ${index < actions.length - 1 ? "12px" : "0"} 0 0;vertical-align:top">${action}</td>`).join("")}</tr></table>` : "";
-  const coordinationFallback = coordinationAccess && firstUrl ? `<p style="margin:12px 0 0;color:${colors.muted};font-size:12px;line-height:1.5">Se o botão não abrir, copie este endereço no navegador:<br><a href="${escapeHtml(firstUrl)}" style="color:${colors.institutional};font-size:12px;word-break:break-all">${escapeHtml(firstUrl)}</a></p>` : "";
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><style>@media(max-width:480px){.email-action-cell a{padding:10px 12px!important;font-size:12px!important}}</style></head><body style="margin:0;padding:32px 12px;background:${colors.background};font-family:Inter,Arial,Helvetica,sans-serif;color:${colors.text}"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;margin:auto;border:1px solid ${colors.border};border-radius:8px;background:${colors.surface}"><tr><td bgcolor="${colors.header}" style="padding:0;background:${colors.header}"><img src="cid:pronto-header" width="600" alt="Pronto! Biblioteca FAUFBA" style="display:block;width:100%;max-width:600px;height:auto;border:0"></td></tr><tr><td style="padding:32px"><p style="margin:0 0 10px;color:${colors.institutional};font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">BIB/FAUFBA · Pronto!</p><h1 style="margin:0 0 24px;color:${colors.text};font-size:24px;line-height:1.25">${escapeHtml(subject.replace(/^Pronto!\s*\|\s*/, ""))}</h1>${paragraphs}${actionRow}${coordinationFallback}</td></tr><tr><td style="padding:20px 32px;border-top:1px solid ${colors.border};background:${colors.background};color:${colors.muted};font-size:12px;line-height:1.6">Não responda. Esta é uma mensagem automática do Pronto!, serviço da Biblioteca da Faculdade de Arquitetura da UFBA.</td></tr></table></body></html>`;
+  const actions = emailActions(subject, body, siteUrl);
+  const actionRow = actions.map(({ url, label }) => `<div style="margin:24px 0 0"><a href="${escapeHtml(url)}" style="display:inline-block;padding:14px 22px;border-radius:8px;background:${colors.institutional};color:#ffffff;font-size:14px;font-weight:700;line-height:1.25;text-decoration:none">${escapeHtml(label)}</a><p style="margin:12px 0 0;color:${colors.muted};font-size:12px;line-height:1.5">${escapeHtml(fallbackLabel(label, actions.length))}<br><a href="${escapeHtml(url)}" style="color:${colors.institutional};font-size:12px;word-break:break-all">${escapeHtml(url)}</a></p></div>`).join("");
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><style>@media(max-width:480px){.email-action-cell a{padding:10px 12px!important;font-size:12px!important}}</style></head><body style="margin:0;padding:32px 12px;background:${colors.background};font-family:Inter,Arial,Helvetica,sans-serif;color:${colors.text}"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;margin:auto;border:1px solid ${colors.border};border-radius:8px;background:${colors.surface}"><tr><td bgcolor="${colors.header}" style="padding:0;background:${colors.header}"><img src="cid:pronto-header" width="600" alt="Pronto! Biblioteca FAUFBA" style="display:block;width:100%;max-width:600px;height:auto;border:0"></td></tr><tr><td style="padding:32px"><p style="margin:0 0 10px;color:${colors.institutional};font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">BIB/FAUFBA · Pronto!</p><h1 style="margin:0 0 24px;color:${colors.text};font-size:24px;line-height:1.25">${escapeHtml(subject.replace(/^Pronto!\s*\|\s*/, ""))}</h1>${paragraphs}${actionRow}</td></tr><tr><td style="padding:20px 32px;border-top:1px solid ${colors.border};background:${colors.background};color:${colors.muted};font-size:12px;line-height:1.6">${escapeHtml(footerText).replace("\n", "<br>")}</td></tr></table></body></html>`;
 }

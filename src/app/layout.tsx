@@ -1,3 +1,4 @@
+import { siteCopy } from "@/lib/site-copy";
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
@@ -14,8 +15,8 @@ import { cookies, headers } from "next/headers";
 import packageInfo from "../../package.json";
 
 const metadataBase = new URL("https://prontobib.vercel.app");
-const siteTitle = "Pronto! | Assistente de Fichas Catalográficas e Autodepósito";
-const siteDescription = "Serviço da Biblioteca da Faculdade de Arquitetura da UFBA para solicitar ficha catalográfica e orientar o autodepósito.";
+const siteTitle = `Pronto! | ${siteCopy.pt.title}`;
+const siteDescription = siteCopy.pt.description;
 const layoutCopy = {
   pt: [siteTitle, siteDescription, "Pular para o conteúdo principal", "Portal do Governo Brasileiro"],
   en: ["Pronto! | Catalog Record and Self-deposit Assistant", "BIB/FAUFBA service for requesting a catalog record and guiding self-deposit.", "Skip to main content", "Brazilian Government Portal"],
@@ -43,7 +44,8 @@ const baseMetadata: Metadata = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getInterfaceLanguage();
-  const [title, description] = layoutCopy[language];
+  const title = `Pronto! | ${siteCopy[language].title}`;
+  const description = siteCopy[language].description;
   return { ...baseMetadata, title: { default: title, template: "%s | Pronto!" }, description, openGraph: { ...baseMetadata.openGraph, locale: language === "pt" ? "pt_BR" : `${language}_${({ en: "US", es: "ES", de: "DE", fr: "FR", it: "IT" } as const)[language]}`, title, description, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }] }, twitter: { ...baseMetadata.twitter, title, description } };
 }
 

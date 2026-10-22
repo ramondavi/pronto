@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { adminSections, adminTabHref, canOpenAdminTab, type AdminArea } from "@/lib/admin-navigation";
@@ -133,6 +133,7 @@ function announcementColorCategory(item: Announcement) {
 export function AdminOperations(props: {
   area: AdminArea;
   tab: string;
+  depositFollowup?: ReactNode;
   users: User[];
   staffCandidates: StaffCandidate[];
   programs: Program[];
@@ -1158,6 +1159,7 @@ export function AdminOperations(props: {
       </section>
       <CduCatalogAdmin entries={props.cduEntries} />
       <ControlledTermsAdmin />
+      {props.depositFollowup && <section className="panel admin-section deposit-followup-admin">{props.depositFollowup}</section>}
     </div>
   );
 }

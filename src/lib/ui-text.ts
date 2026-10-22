@@ -1,8 +1,14 @@
+import { repositoryUiText } from "@/lib/repository-ui-text";
 import type { InterfaceLanguage } from "@/lib/interface-language";
 
 type Translations = Record<Exclude<InterfaceLanguage, "pt">, string>;
 
 const text: Record<string, Translations> = {
+  "O TFG admite no máximo três autores.": { en: "TFG allows up to three authors.", es: "El TFG admite un máximo de tres autores.", de: "Der TFG erlaubt höchstens drei Autoren.", fr: "Le TFG admet trois auteurs au maximum.", it: "Il TFG ammette fino a tre autori." },
+  "TFG: informe no máximo três autores.": { en: "TFG: enter up to three authors.", es: "TFG: indique un máximo de tres autores.", de: "TFG: Geben Sie höchstens drei Autoren an.", fr: "TFG : indiquez trois auteurs au maximum.", it: "TFG: indica fino a tre autori." },
+  "A secretaria representa os autores e não deve ser informada como autora.": { en: "The secretary represents the authors and must not be entered as an author.", es: "La secretaría representa a los autores y no debe figurar como autora.", de: "Das Sekretariat vertritt die Autoren und darf nicht als Autor eingetragen werden.", fr: "Le secrétariat représente les auteurs et ne doit pas être indiqué comme auteur.", it: "La segreteria rappresenta gli autori e non deve essere indicata come autore." },
+  "O guia do seu programa está disponível. Você pode depositar este trabalho sem reabrir o atendimento da ficha.": { en: "Your program’s guide is available. You can deposit this work without reopening the cataloging request.", es: "La guía de su programa está disponible. Puede depositar este trabajo sin reabrir la solicitud de ficha.", de: "Der Leitfaden Ihres Studiengangs ist verfügbar. Sie können diese Arbeit hinterlegen, ohne den Katalogisierungsantrag erneut zu öffnen.", fr: "Le guide de votre programme est disponible. Vous pouvez déposer ce travail sans rouvrir la demande de notice.", it: "La guida del tuo corso è disponibile. Puoi depositare questo lavoro senza riaprire la richiesta della scheda." },
+  "Acessar guia do RI/UFBA": { en: "Open the RI/UFBA guide", es: "Acceder a la guía del RI/UFBA", de: "RI/UFBA-Leitfaden öffnen", fr: "Accéder au guide RI/UFBA", it: "Apri la guida RI/UFBA" },
   "Peça a ficha agora; o prazo começa no próximo dia útil.": { en: "Request the record now; the deadline starts next business day.", es: "Pida la ficha ahora; el plazo empieza el próximo día hábil.", de: "Beantragen Sie den Eintrag jetzt; die Frist beginnt am nächsten Werktag.", fr: "Demandez la notice maintenant ; le délai commence le prochain jour ouvrable.", it: "Richiedi la scheda ora; il termine decorre dal prossimo giorno lavorativo." },
   "Você pode solicitar a ficha hoje. O prazo começa no próximo dia útil.": { en: "You can request the catalog record today. The deadline starts on the next business day.", es: "Puede solicitar la ficha hoy. El plazo comienza el próximo día hábil.", de: "Sie können den Katalogeintrag heute beantragen. Die Frist beginnt am nächsten Werktag.", fr: "Vous pouvez demander la notice aujourd’hui. Le délai commence le prochain jour ouvrable.", it: "Puoi richiedere la scheda oggi. Il termine decorre dal prossimo giorno lavorativo." },
   "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo de atendimento começa a contar no próximo dia útil.": { en: "You can request the catalog record while the library is closed. The service deadline starts on the next business day.", es: "Puede solicitar la ficha aunque la biblioteca esté cerrada. El plazo de atención comienza a contar el próximo día hábil.", de: "Sie können den Katalogeintrag auch bei geschlossener Bibliothek beantragen. Die Bearbeitungsfrist beginnt am nächsten Werktag.", fr: "Vous pouvez demander la notice même lorsque la bibliothèque est fermée. Le délai de traitement commence le prochain jour ouvrable.", it: "Puoi richiedere la scheda anche quando la biblioteca è chiusa. Il termine di lavorazione decorre dal prossimo giorno lavorativo." },
@@ -875,6 +881,6 @@ const text: Record<string, Translations> = {
 };
 
 export function uiText(language: InterfaceLanguage, source: string, values?: Record<string, string | number>): string {
-  const translated = language === "pt" ? source : text[source]?.[language] ?? source;
+  const translated = language === "pt" ? source : text[source]?.[language] ?? repositoryUiText[source]?.[language] ?? source;
   return values ? translated.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`)) : translated;
 }

@@ -30,14 +30,14 @@ export function LoginRoleForm({ initialRole, error, message, next, otpEnabled }:
     <p className="auth-role-description">{t(role === "student" ? "Acesse suas solicitações com senha ou código por e-mail." : "Acesse as ferramentas de atendimento e administração com sua senha.")}</p>
     {role === initialRole && <AuthFeedback error={error} message={message} />}
     <form key={role} className="form-stack" action={role === "student" ? login : loginStaff}>
-      {role === "student" && next === "/painel/solicitacao/corrigir" && <input type="hidden" name="next" value={next} />}
+      {role === "student" && next && <input type="hidden" name="next" value={next} />}
       <label>{t("E-mail institucional")}<InstitutionalEmailInput /></label>
       <label>{t("Senha")}<input type="password" name="password" autoComplete="current-password" placeholder={t("Sua senha")} required /></label>
       <div className="auth-form__help"><Link href="/recuperar-senha">{t("Esqueci minha senha")}</Link></div>
       <button className="button button--primary button--full" type="submit">{t("Entrar")}</button>
     </form>
     {role === "student" && <>
-      {otpEnabled && <p className="auth-card__footer">{t("Prefere entrar sem senha?")} <Link href="/entrar/codigo">{t("Receber código por e-mail")}</Link></p>}
+      {otpEnabled && <p className="auth-card__footer">{t("Prefere entrar sem senha?")} <Link href={next ? `/entrar/codigo?next=${encodeURIComponent(next)}` : "/entrar/codigo"}>{t("Receber código por e-mail")}</Link></p>}
       <p className="auth-card__footer auth-card__footer--compact">{t("Ainda não tem conta?")} <Link href="/cadastro">{t("Criar conta")}</Link></p>
     </>}
   </>;

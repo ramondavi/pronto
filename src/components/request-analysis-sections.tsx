@@ -49,7 +49,7 @@ function AnalysisSectionIndex({ section, active, onActivate, showDeclarations, m
   </nav>;
 }
 
-export function RequestAnalysisSections({ metadata, cataloging, documentation, finalAction, requestId, declarationRequestId, preliminaryRequired = false, canceled = false, declarationsReviewed = false, initialLinkVerified = false, metadataComplete = false, catalogingComplete = false, citationComplete = false, nadaConstaComplete = false, nadaConstaStatus = null, documentationComplete = false, publicWorkUrl = "", waitingForStudent = false, hasStudentMessage = false, sharedFileRequestId }: { metadata: ReactNode; cataloging: ReactNode; documentation: ReactNode; finalAction?: ReactNode; requestId: string; declarationRequestId?: string; preliminaryRequired?: boolean; canceled?: boolean; declarationsReviewed?: boolean; initialLinkVerified?: boolean; metadataComplete?: boolean; catalogingComplete?: boolean; citationComplete?: boolean; nadaConstaComplete?: boolean; nadaConstaStatus?: string | null; documentationComplete?: boolean; publicWorkUrl?: string; waitingForStudent?: boolean; hasStudentMessage?: boolean; sharedFileRequestId?: string }) {
+export function RequestAnalysisSections({ submissionReview, metadata, cataloging, documentation, finalAction, requestId, declarationRequestId, preliminaryRequired = false, canceled = false, declarationsReviewed = false, initialLinkVerified = false, metadataComplete = false, catalogingComplete = false, citationComplete = false, nadaConstaComplete = false, nadaConstaStatus = null, documentationComplete = false, publicWorkUrl = "", waitingForStudent = false, hasStudentMessage = false, sharedFileRequestId }: { submissionReview?: ReactNode; metadata: ReactNode; cataloging: ReactNode; documentation: ReactNode; finalAction?: ReactNode; requestId: string; declarationRequestId?: string; preliminaryRequired?: boolean; canceled?: boolean; declarationsReviewed?: boolean; initialLinkVerified?: boolean; metadataComplete?: boolean; catalogingComplete?: boolean; citationComplete?: boolean; nadaConstaComplete?: boolean; nadaConstaStatus?: string | null; documentationComplete?: boolean; publicWorkUrl?: string; waitingForStudent?: boolean; hasStudentMessage?: boolean; sharedFileRequestId?: string }) {
   const helpRootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const requestedStep = useSearchParams().get("etapa");
@@ -169,6 +169,7 @@ export function RequestAnalysisSections({ metadata, cataloging, documentation, f
     <section className="request-analysis-section" data-step="review">
       {sharedFileRequestId && <SharedFileIntegrityControl requestId={sharedFileRequestId} publicWorkUrl={publicWorkUrl} />}
       <div className="analysis-stage-heading"><h2>Revisão da ficha</h2><p>Confira a referência e a ficha. Depois, registre a homologação.</p></div>
+      {submissionReview}
       <div id="request-analysis-citation-end" />
       <div id="request-analysis-pending-end" />
       <div id="request-cataloging-preview-end" />

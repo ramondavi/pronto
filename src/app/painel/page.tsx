@@ -1,3 +1,4 @@
+import { hasRetrospectiveAccess } from "@/lib/retrospective-access";
 import { panelMetadata } from "@/lib/panel-metadata";
 export async function generateMetadata() { return panelMetadata("/painel"); }
 import { createClient } from "@/lib/supabase/server";
@@ -30,6 +31,7 @@ export default async function StudentDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("full_name, role").eq("id", user.id).single() : { data: null };
   if (!profile || !user) redirect("/entrar");
+  if (profile.role === "student" && await hasRetrospectiveAccess()) redirect("/painel/retrospectivas");
   if (profile.role === "cataloger" || profile.role === "administrator") {
     const allowed = await userHasPermission(supabase, "staff.overview.view", profile.role);
     if (!allowed) redirect("/painel/conta");

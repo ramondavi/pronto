@@ -10,3 +10,10 @@ test("mostra o estado operacional pelos marcos registrados", () => {
   assert.equal(describeRequestProgress({ status: "approved", nadaConstaStatus: "approved", hasRepositoryDeposit: true }).label, "Aguardando validação no RI/UFBA");
   assert.equal(describeRequestProgress({ status: "completed", hasPublication: true }).label, "Protocolo encerrado");
 });
+
+test("retrospectivos dispensam Nada Consta sem dispensar o acompanhamento do depósito", () => {
+  assert.equal(describeRequestProgress({ status: "approved", retrospective: true, hasHomologation: true }).label, "Ficha liberada — aguarda autodepósito");
+  assert.equal(describeRequestProgress({ status: "approved", retrospective: true, hasRepositoryDeposit: true }).label, "Aguardando validação no RI/UFBA");
+  assert.equal(describeRequestProgress({ status: "changes_requested", retrospective: true }).label, "Aguardando correção da secretaria");
+  assert.equal(describeRequestProgress({ status: "approved", retrospective: false }).label, "Aguardando Nada Consta");
+});
