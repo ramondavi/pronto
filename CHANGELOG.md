@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- A varredura de acessibilidade da Central de ajuda usa o mesmo prazo da página inicial, mantendo todas as verificações.
+
 - Testes públicos aguardam explicitamente a interface pronta, sem depender do carregamento completo dos widgets externos.
 
 - Migrações e modelos Auth sincronizados em produção, com evidências de validação do lançamento e atualização da prévia.

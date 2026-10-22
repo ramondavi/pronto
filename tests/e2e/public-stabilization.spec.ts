@@ -9,7 +9,8 @@ async function openReadyPage(page: Page, path: string) {
 
 for (const path of ["/", "/entrar", "/cadastro", "/recuperar-senha", "/ajuda"]) {
   test(`${path} não tem violações críticas ou sérias`, async ({ page }) => {
-    if (path === "/") test.slow();
+    // A varredura Axe destas páginas inclui mais conteúdo e custa mais que a navegação.
+    if (path === "/" || path === "/ajuda") test.slow();
     await openReadyPage(page, path);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === "critical" || impact === "serious")).toEqual([]);
