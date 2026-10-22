@@ -121,7 +121,7 @@ export default async function RequestAnalysisPage({ params }: { params: Promise<
   const { data: depositReport } = await supabase.from("retrospective_deposit_reports").select("permanent_url").eq("request_id", id).maybeSingle();
   const ready = Boolean(homologation && nadaApproved && repositoryProgress && (!request.retrospective || depositReport));
 
-  const progress = describeRequestProgress({ status: request.status, assignedTo: request.assigned_to, nadaConstaStatus: nadaApproved ? "approved" : nadaConsta?.status, hasHomologation: Boolean(homologation), hasRepositoryDeposit: Boolean(repositoryProgress), hasPublication: Boolean(publication) });
+  const progress = describeRequestProgress({ status: request.status, retrospective: request.retrospective, assignedTo: request.assigned_to, nadaConstaStatus: nadaApproved ? "approved" : nadaConsta?.status, hasHomologation: Boolean(homologation), hasRepositoryDeposit: Boolean(repositoryProgress), hasPublication: Boolean(publication) });
   const assigneeName = first(request.assignee)?.full_name?.trim();
   const assigneeParts = assigneeName?.split(/\s+/) ?? [];
   const assigneeDisplayName = assigneeParts.length > 1 ? `${assigneeParts[0]} ${assigneeParts[assigneeParts.length - 1]}` : assigneeName;

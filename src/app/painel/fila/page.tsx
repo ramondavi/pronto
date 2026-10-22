@@ -74,7 +74,7 @@ export default async function StaffQueuePage() {
     const assignee = first(item.assignee);
     const analysis = first(item.analysis);
     const latestNadaConsta = [...(item.nadaConsta ?? [])].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at))[0];
-    const progress = describeRequestProgress({ status: item.status, assignedTo: item.assigned_to, nadaConstaStatus: latestNadaConsta?.status, hasHomologation: Boolean(first(item.homologation)), hasRepositoryDeposit: Boolean(first(item.repositoryProgress)), hasPublication: Boolean(first(item.publication)) });
+    const progress = describeRequestProgress({ status: item.status, retrospective: item.retrospective, assignedTo: item.assigned_to, nadaConstaStatus: latestNadaConsta?.status, hasHomologation: Boolean(first(item.homologation)), hasRepositoryDeposit: Boolean(first(item.repositoryProgress)), hasPublication: Boolean(first(item.publication)) });
     return {
       id: item.id, protocol: item.protocol, status: item.status, title: item.title, subtitle: item.subtitle,
       submittedAt: item.submitted_at, updatedAt: item.updated_at, assignedTo: item.assigned_to,
