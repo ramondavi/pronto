@@ -84,4 +84,3 @@ Atualizado em 16/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 
 
 - 22/10/2026: nos e-mails E20–E23, substituir o rótulo Abrir Antes de começar por Continuar preparação para o autodepósito, mantendo destino e URL alternativa. Alteração local, sem envio ou publicação.
-

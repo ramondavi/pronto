@@ -58,3 +58,12 @@ Critério de saída: nenhuma falha crítica ou alta aberta, nenhum vazamento ent
 - Quatro migrações de e-mail aplicadas na prévia pelo CLI, após simulação; produção tem 13 migrações pendentes na simulação, de 202610210000 a 202610220003. Nenhum seed ou role é aplicado no remoto.
 - Capturas e gravações omitidas por solicitação expressa do responsável; a verificação de interface usa navegação e testes sem essas gravações.
 - A aprovação de publicação consolida os ajustes de e-mail solicitados. O catálogo é referência editorial, não um canal de envio. Não houve envio manual de e-mails nem convite à secretaria. Entrega SMTP real e aceite humano assistido não devem ser declarados comprovados apenas pelos testes automatizados.
+
+
+### Evidência remota e navegador
+
+- Prévia publicada pela Vercel no commit eb52a1d; domínio habitual preservado. Navegação pública e bloqueio de painel sem sessão conferidos no navegador.
+- Produção: 13 migrações aplicadas em ordem pelo CLI; lint remoto aprovado e simulação posterior com `upToDate=true`, sem migrations/seeds/roles pendentes. Quatro modelos Auth salvos pelo painel, preservando os demais ajustes e as credenciais SMTP.
+- 39 cenários públicos locais: 36 passaram na rodada de três navegadores; três atingiram 30s no ambiente Windows e passaram na repetição isolada com timeout de 60s (28,8s no teste mais demorado). Nenhuma asserção foi removida nem alteração de timeout versionada. Logs: tmp/e2e-public.log e tmp/e2e-public-retry.log.
+- PR consolidado: https://github.com/ramondavi/pronto/pull/10. CI externo também executa a suíte de aplicação, navegador e banco. Publicação do frontend segue integração na master após aprovação desse CI, por autorização do responsável.
+- Sem sessão autenticada disponível para teste manual dos painéis nesta rodada; não houve solicitação de senha nem envio de código/convite para obter acesso. Cobertura automatizada de regras e autorização não substitui o aceite assistido nem comprova entrega real de SMTP.
