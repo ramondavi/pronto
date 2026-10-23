@@ -91,7 +91,7 @@ STORAGE_FORM = FORM.partition("<main>")[0].replace("Banco do Pronto!", "Document
 <p>A chave será cadastrada diretamente no ambiente protegido <b>backup-production</b> do repositório
 <b>ramondavi/pronto</b> no GitHub, conforme sua autorização. O backup continuará desativado.</p>
 <ol><li>No Supabase, abra o projeto de produção do Pronto! e vá a <b>Settings → API Keys</b>.</li>
-<li>Na seção <b>Secret keys</b>, crie uma chave dedicada com o nome <b>pronto-backup</b>.
+<li>Na seção <b>Secret keys</b>, crie uma chave dedicada com o nome <b>pronto_backup</b>.
 Ela deve começar por <b>sb_secret_</b>. Mantenha as chaves existentes.</li>
 <li>Copie a nova chave e cole somente no campo abaixo. Não a envie pelo chat.</li></ol>
 <p>Esta chave tem acesso privilegiado aos dados do projeto. O executor a usará para baixar os PDFs
