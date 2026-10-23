@@ -10,6 +10,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { canChangeAuthenticatedEmail, isUfbaEmail, isValidBirthDate, normalizeEmail, normalizedSignupMetadata, validateEmailChange, validateSignupFields, type SignupErrors } from "@/domain/auth/account";
 import { validatePassword } from "@/domain/auth/password";
 import { createClient } from "@/lib/supabase/server";
+import { verifyPasswordRecovery } from "@/lib/supabase/password-recovery";
 import { PRIVACY_NOTICE_VERSION } from "@/domain/privacy/notice";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
@@ -171,11 +172,20 @@ export async function requestPasswordReset(_previousState: PasswordResetRequestS
 }
 
 export async function confirmPasswordRecovery(formData: FormData) {
-  const tokenHash = String(formData.get("token_hash") ?? "");
-  if (!tokenHash) redirect(destination("/recuperar-senha", "error", "O link não está mais válido. Solicite um novo link para redefinir sua senha."));
+  const tokenHash = String(formData.get("token_hash") ?? "").trim();
+  const invalidLink = "O link não está mais válido. Solicite um novo link para redefinir sua senha.";
+  if (!tokenHash) redirect(destination("/recuperar-senha", "error", invalidLink));
   const supabase = await createClient();
-  const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
-  if (error) redirect(destination("/recuperar-senha", "error", "O link não está mais válido. Solicite um novo link para redefinir sua senha."));
+  const { data, error } = await verifyPasswordRecovery(supabase, tokenHash);
+  if (error) {
+    const explanation = error.status === 429
+      ? "Muitas tentativas. Aguarde alguns minutos e tente novamente."
+      : !error.status || error.status >= 500
+        ? "Não foi possível validar o link agora. Tente novamente em instantes."
+        : invalidLink;
+    redirect(destination("/recuperar-senha", "error", explanation));
+  }
+  if (!data.session || !data.user) redirect(destination("/recuperar-senha", "error", invalidLink));
   redirect("/redefinir-senha");
 }
 

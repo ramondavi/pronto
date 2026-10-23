@@ -17,7 +17,7 @@ test("recovery email sends both links to the route that accepts token hashes", (
   assert.match(confirm, /\/confirmar-recuperacao/);
 });
 
-test("password recovery starts and completes PKCE on the server", () => {
+test("password recovery keeps the legacy return destination and explicit token confirmation", () => {
   assert.match(form, /useActionState\(requestPasswordReset,/);
   assert.match(form, /action=\{formAction\}/);
   assert.match(actions, /export async function requestPasswordReset/);
