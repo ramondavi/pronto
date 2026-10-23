@@ -249,7 +249,12 @@ def download_storage(inventory: list[dict], folder: Path) -> list[dict]:
         path.parent.mkdir(exist_ok=True)
         url = (os.environ["SUPABASE_URL"].rstrip("/") + "/storage/v1/object/authenticated/" +
                quote(entry["bucket"], safe="") + "/" + quote(entry["name"], safe="/"))
-        headers = {"Authorization": "Bearer " + os.environ["BACKUP_STORAGE_READ_TOKEN"]}
+        token = os.environ["BACKUP_STORAGE_READ_TOKEN"]
+        # Current opaque secret keys belong only in apikey, not Bearer JWT.
+        # Keep compatibility with an existing legacy service-role JWT.
+        headers = {"apikey": token}
+        if not token.startswith("sb_secret_"):
+            headers["Authorization"] = "Bearer " + token
         with safe_request(url, headers=headers) as response, path.open("wb") as output:
             total = 0
             while block := response.read(64 * 1024):

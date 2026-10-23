@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Backup preparado para a chave de servidor atual do Supabase na leitura dos documentos privados, com cadastro local protegido e compatibilidade com credenciais legadas existentes. Ativação e validação de acesso continuam pendentes.
+
 - Prepara cadastro local protegido do acesso ao banco para o backup, com envio direto aos segredos do GitHub e conferência do projeto e da conexão de sessão. A rotina continua desativada até completar a configuração e o ensaio.
 
 - Corrige a confirmação do formulário local de cadastro de backup, que bloqueava o envio legítimo do navegador. A validação de origem e a proteção contra envios externos permanecem ativas.

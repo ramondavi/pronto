@@ -1,4 +1,4 @@
-"""Operator-only PostgreSQL secret registration; never connects to the database."""
+"""Operator-only Supabase secret registration; never connects to production."""
 from __future__ import annotations
 
 import argparse
@@ -49,6 +49,18 @@ def provision(connection, password):
         save_secret(gh, name, value)
 
 
+def provision_storage(project_url, credential):
+    require(project_url == "https://" + PROJECT + ".supabase.co", "unexpected_supabase_project")
+    require(re.fullmatch(r"sb_secret_[A-Za-z0-9_-]{20,512}", credential) is not None,
+            "use_server_secret_key_not_publishable_or_legacy")
+    gh = shutil.which("gh")
+    require(gh is not None, "github_cli_missing")
+    require_disabled(gh)
+    # This is a privileged project key, not a read-only key. The backup only
+    # uses GET requests; never pass this key to application/browser code.
+    save_secret(gh, "BACKUP_STORAGE_READ_TOKEN", credential)
+
+
 FORM = """<!doctype html><html lang="pt-br"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Banco do Pronto!</title>
 <style>body{font:16px system-ui;background:#f4f6f9;color:#1e293b;max-width:680px;margin:40px auto;padding:24px}
@@ -74,14 +86,40 @@ A conexão e a senha ainda precisarão ser validadas em etapa posterior.</p>
 O endereço completo não será armazenado; apenas servidor, usuário e senha serão cadastrados separadamente.</small></main></html>"""
 
 
+STORAGE_FORM = FORM.partition("<main>")[0].replace("Banco do Pronto!", "Documentos do Pronto!") + """<main>
+<h1>Preparar backup dos documentos privados</h1>
+<p>A chave será cadastrada diretamente no ambiente protegido <b>backup-production</b> do repositório
+<b>ramondavi/pronto</b> no GitHub, conforme sua autorização. O backup continuará desativado.</p>
+<ol><li>No Supabase, abra o projeto de produção do Pronto! e vá a <b>Settings → API Keys</b>.</li>
+<li>Na seção <b>Secret keys</b>, crie uma chave dedicada com o nome <b>pronto-backup</b>.
+Ela deve começar por <b>sb_secret_</b>. Mantenha as chaves existentes.</li>
+<li>Copie a nova chave e cole somente no campo abaixo. Não a envie pelo chat.</li></ol>
+<p>Esta chave tem acesso privilegiado aos dados do projeto. O executor a usará para baixar os PDFs
+privados do Nada Consta. Este cadastro não acessa documentos nem testa a chave.</p>
+<form method="post" action="/configure" autocomplete="off"><input type="hidden" name="csrf" value="CSRF_TOKEN">
+<label for="identifier">Projeto de produção</label>
+<input id="identifier" name="identifier" type="text" value="https://vsdkxmpzqwauzotnbdxo.supabase.co" readonly required>
+<label for="credential">Chave de servidor (sb_secret_...)</label>
+<input id="credential" name="credential" type="password" autocomplete="off" spellcheck="false" required maxlength="1024">
+<button type="submit">Cadastrar chave dos documentos no GitHub</button></form>
+<small>A página funciona somente neste computador. A chave não será salva em arquivos locais ou nos relatórios.
+Não envie capturas da chave ou dos campos preenchidos.</small></main></html>"""
+
+
 def main():
     parser = argparse.ArgumentParser(description="Cadastro local protegido do acesso ao banco")
     parser.add_argument("status_file", type=Path)
+    parser.add_argument("--storage-key", action="store_true")
     options = parser.parse_args()
     state = {"done": False}
+    success = ("Chave dos documentos cadastrada no GitHub." if options.storage_key else
+               "Acesso do banco cadastrado no GitHub.")
+    notice = ("A chave ainda não foi testada" if options.storage_key else "A conexão ainda não foi testada")
     handler = make_handler(options.status_file, secrets.token_urlsafe(32), state,
-                           form=FORM, configure=provision, preserve_password=True,
-                           success_body="<h1>Acesso do banco cadastrado no GitHub.</h1><p>Pode fechar esta página. A conexão ainda não foi testada e o backup continua desativado.</p>")
+                           form=STORAGE_FORM if options.storage_key else FORM,
+                           configure=provision_storage if options.storage_key else provision,
+                           preserve_password=not options.storage_key,
+                           success_body="<h1>" + success + "</h1><p>" + notice + " e o backup continua desativado.</p>")
     with HTTPServer(("127.0.0.1", 0), handler) as server:
         server.timeout = 1
         options.status_file.write_text(json.dumps({"ready": True, "url": "http://127.0.0.1:" + str(server.server_port)}), encoding="utf-8")

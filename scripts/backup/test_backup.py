@@ -204,6 +204,20 @@ class ExecutionTest(unittest.TestCase):
             self.assertEqual(result[0]["file"], "objects/00000000.pdf")
             self.assertTrue((Path(temp) / result[0]["file"]).is_file())
 
+    def test_current_storage_secret_is_api_key_not_bearer_jwt(self):
+        inventory = [{"bucket": "nada-consta", "name": "synthetic.pdf", "metadata": {"size": 14}}]
+        for token in ("sb_secret_synthetic", "synthetic-legacy-jwt"):
+            with self.subTest(current_key=token.startswith("sb_secret_")), tempfile.TemporaryDirectory() as temp, \
+                 patch.object(backup, "safe_request", return_value=io.BytesIO(b"%PDF-synthetic")) as request, \
+                 patch.dict(os.environ, {"SUPABASE_URL": "https://synthetic.supabase.co", "BACKUP_STORAGE_READ_TOKEN": token}):
+                backup.download_storage(inventory, Path(temp))
+                headers = request.call_args.kwargs["headers"]
+                self.assertEqual(headers["apikey"], token)
+                if token.startswith("sb_secret_"):
+                    self.assertNotIn("Authorization", headers)
+                else:
+                    self.assertEqual(headers["Authorization"], "Bearer " + token)
+
     def test_storage_size_mismatch_fails_before_success(self):
         inventory = [{"bucket": "nada-consta", "name": "synthetic.pdf", "metadata": {"size": 14}}]
         with tempfile.TemporaryDirectory() as temp, patch.object(backup, "safe_request", return_value=io.BytesIO(b"short")), \

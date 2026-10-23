@@ -49,6 +49,34 @@ class SupabaseSetupTest(unittest.TestCase):
             setup.provision(URI, "synthetic")
         save.assert_not_called()
 
+    @patch("provision_supabase.shutil.which", return_value="synthetic-gh")
+    @patch("provision_supabase.require_disabled")
+    @patch("provision_supabase.save_secret")
+    def test_storage_secret_saved_only_to_backup_environment(self, save, disabled, which):
+        key = "sb_secret_" + "synthetic" * 4
+        setup.provision_storage("https://" + setup.PROJECT + ".supabase.co", key)
+        disabled.assert_called_once_with("synthetic-gh")
+        save.assert_called_once_with("synthetic-gh", "BACKUP_STORAGE_READ_TOKEN", key)
+
+    @patch("provision_supabase.save_secret")
+    def test_storage_rejects_publishable_legacy_and_other_project(self, save):
+        url = "https://" + setup.PROJECT + ".supabase.co"
+        for key in ("sb_publishable_" + "synthetic" * 4, "synthetic-jwt", "sb_secret_bad",
+                    "sb_secret_" + "synthetic" * 4 + "\nInjected"):
+            with self.assertRaises(BackupError):
+                setup.provision_storage(url, key)
+        with self.assertRaises(BackupError):
+            setup.provision_storage("https://otherproject.supabase.co", "sb_secret_" + "synthetic" * 4)
+        save.assert_not_called()
+
+    @patch("provision_supabase.shutil.which", return_value="synthetic-gh")
+    @patch("provision_supabase.require_disabled", side_effect=BackupError("disable_schedule_before_setup"))
+    @patch("provision_supabase.save_secret")
+    def test_storage_setup_blocked_while_schedule_enabled(self, save, disabled, which):
+        with self.assertRaisesRegex(BackupError, "disable_schedule_before_setup"):
+            setup.provision_storage("https://" + setup.PROJECT + ".supabase.co", "sb_secret_" + "synthetic" * 4)
+        save.assert_not_called()
+
     def test_local_form_preserves_password_without_echo_or_status_leak(self):
         configure = Mock()
         with tempfile.TemporaryDirectory() as temporary:
