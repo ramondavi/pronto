@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { canChangeAuthenticatedEmail, isUfbaEmail, isValidBirthDate, normalizeEmail, normalizedSignupMetadata, validateEmailChange, validateSignupFields, type SignupErrors } from "@/domain/auth/account";
 import { validatePassword } from "@/domain/auth/password";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createRecoveryClient } from "@/lib/supabase/server";
 import { verifyPasswordRecovery } from "@/lib/supabase/password-recovery";
 import { PRIVACY_NOTICE_VERSION } from "@/domain/privacy/notice";
 import { getInterfaceLanguage } from "@/lib/server-language";
@@ -175,7 +175,7 @@ export async function confirmPasswordRecovery(formData: FormData) {
   const tokenHash = String(formData.get("token_hash") ?? "").trim();
   const invalidLink = "O link não está mais válido. Solicite um novo link para redefinir sua senha.";
   if (!tokenHash) redirect(destination("/recuperar-senha", "error", invalidLink));
-  const supabase = await createClient();
+  const supabase = await createRecoveryClient();
   const { data, error } = await verifyPasswordRecovery(supabase, tokenHash);
   if (error) {
     const explanation = error.status === 429
@@ -187,6 +187,20 @@ export async function confirmPasswordRecovery(formData: FormData) {
   }
   if (!data.session || !data.user) redirect(destination("/recuperar-senha", "error", invalidLink));
   redirect("/redefinir-senha");
+}
+
+export async function restorePasswordRecovery(accessToken: string, refreshToken: string): Promise<boolean> {
+  if (!accessToken || !refreshToken) return false;
+  const supabase = await createRecoveryClient();
+  await supabase.auth.initialize();
+  const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+  if (error) return false;
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    await supabase.auth.signOut({ scope: "local" });
+    return false;
+  }
+  return true;
 }
 
 export type PrivacyAcknowledgementState = { error?: string; success?: boolean };
@@ -226,7 +240,7 @@ export async function updatePassword(formData: FormData) {
   const passwordError = validatePassword(password);
   if (passwordError) redirect(destination("/redefinir-senha", "error", passwordError));
   if (password !== confirmation) redirect(destination("/redefinir-senha", "error", "As senhas não coincidem."));
-  const supabase = await createClient();
+  const supabase = await createRecoveryClient();
   const { data: { user }, error: sessionError } = await supabase.auth.getUser();
   if (sessionError || !user) redirect(destination("/recuperar-senha", "error", "O link não está mais válido. Solicite um novo link para redefinir sua senha."));
   const { error } = await supabase.auth.updateUser({ password });
@@ -245,6 +259,7 @@ export async function updatePassword(formData: FormData) {
               : "Não foi possível atualizar a senha. Solicite um novo link se o problema continuar.";
     redirect(destination("/redefinir-senha", "error", explanation));
   }
+  await supabase.auth.signOut({ scope: "local" });
   redirect(destination("/entrar", "message", "Senha atualizada. Você já pode entrar."));
 }
 

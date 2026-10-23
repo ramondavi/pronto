@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 23 de outubro de 2026
+
+- Recuperação de senha usa sessão temporária separada do acesso ao painel. Abrir e abandonar o link não conecta a conta ao Pronto!; após trocar a senha, a autorização de recuperação é encerrada e a pessoa deve entrar normalmente.
+
 ### 22 de outubro de 2026
 
 - Cadastro passa a informar no início do formulário o atendimento exclusivo a estudantes concluintes dos cursos da FAUFBA. Formulários administrativos passam a distinguir dados salvos, alterações pendentes, salvamento e falha de confirmação, com destaque nos campos alterados e botão “Salvo” quando não há mudanças.
