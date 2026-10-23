@@ -13,3 +13,8 @@ test-results/
 *.log
 *.tsbuildinfo
 .DS_Store
+
+# Backup: nunca versionar artefatos privados ou cache Python.
+scripts/backup/__pycache__/
+*.age
+*.dump

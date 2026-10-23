@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Integração de backup com Backblaze B2 preparada para verificar mudanças diariamente, exportar e criptografar somente quando necessário, renovar cópias antes da expiração e alertar falhas. Permanece desativada até configuração segura e primeiro ensaio; sem alteração no banco remoto.
+
 - A operação passa a ter protocolo de backup e recuperação com cópias independentes, alertas, ensaios e conciliação de expurgos. A implantação e o primeiro teste continuam pendentes, sem promessa de proteção já ativa.
 - Recuperação de senha usa sessão temporária separada do acesso ao painel. Abrir e abandonar o link não conecta a conta ao Pronto!; após trocar a senha, a autorização de recuperação é encerrada e a pessoa deve entrar normalmente.
 

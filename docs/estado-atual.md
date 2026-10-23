@@ -21,3 +21,5 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 ## Backup e preservação — 23/10/2026
 
 - Protocolo aprovado documentado em protocolo-backup-recuperacao.md; regras sincronizadas com mestre, política e operação. Destino, executor/substituto, rotina, alertas e primeiro ensaio permanecem pendentes. Nenhum backup ou restauração de produção comprovado nesta entrega.
+
+- Integração B2 preparada em scripts/backup e workflows backup/backup-checks, desativada até configuração. Verificação diária detecta mudanças antes da exportação; cópias criptografadas, marcador de conclusão após integridade, retenção validada e limite preventivo de espaço. Conta, monitor, credenciais e ensaio Supabase ainda pendentes. Guia: configuracao-backup-b2.md.

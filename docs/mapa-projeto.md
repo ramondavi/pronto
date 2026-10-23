@@ -23,3 +23,5 @@ Operação: operacao-mvp.md. Aceites: validacao-mvp.md. Segurança: revisao-segu
 Verificações resumidas: npm run verify. Operação desse executor e evidências de economia: economia-operacional.md (somente quando necessário). Redução de caracteres não equivale a percentual de tokens ou cota.
 
 Backup, recuperação e preservação: protocolo-backup-recuperacao.md (metas, cobertura, ensaios e pendências de implantação).
+
+Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; workflows backup.yml e backup-checks.yml.

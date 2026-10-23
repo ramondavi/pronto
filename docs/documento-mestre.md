@@ -501,8 +501,8 @@ O fluxo observado e confirmado é: coleção; tipo de documento; cinco grupos de
 
 ### Backup, recuperação e preservação — decisão de 23/10/2026
 
-- Adotar docs/protocolo-backup-recuperacao.md: cópia diária independente e criptografada, rotação de 90 dias, cobertura de banco/Auth e Storage separado, alertas, primeiro ensaio antes do lançamento e repetição trimestral.
-- Metas iniciais: ponto recuperável com até 24 horas de defasagem e recuperação em até um dia útil, sujeitas a comprovação. Destino, executor, substituto e custos permanecem pendentes; nenhum serviço pago ou alteração remota é autorizado por esta decisão.
+- Adotar docs/protocolo-backup-recuperacao.md: verificação diária com nova cópia independente e criptografada somente se houver mudanças (inclusive exclusões), renovação aos 80 dias e rotação de 90 dias, cobertura de banco/Auth e Storage separado, alertas, primeiro ensaio antes do lançamento e repetição trimestral.
+- Metas iniciais: nenhuma alteração por mais de 24 horas sem cópia recuperável e recuperação em até um dia útil, sujeitas a comprovação. Vercel/Supabase Free confirmados; Backblaze B2 escolhido para integração com a franquia gratuita e executor GitHub Actions separado do site. Conta, bucket, credenciais, monitor externo, substituto e ensaio permanecem pendentes; nenhum serviço pago ou alteração remota é autorizado por esta decisão. Configuração: docs/configuracao-backup-b2.md.
 - Antes de liberar dados restaurados, conciliar exclusões e reaplicar expurgos e restrições. A guarda acadêmica de longo prazo exige planejamento de custódia com a UFBA/STI, além dos backups rotativos.
 - Protocolo aprovado não significa rotina implantada: exigir evidência de cópia, alertas e restauração antes de declarar prontidão.
 

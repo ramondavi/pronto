@@ -57,6 +57,6 @@ Aguardando o responsável pelo projeto revisar os 23 modelos e variantes E01–E
 
 ## Implantação do protocolo de backup — 23/10/2026
 
-- Definir armazenamento independente, executor, substituto e custos conforme docs/protocolo-backup-recuperacao.md, sem contratação automática.
+- Configurar a conta e o bucket Backblaze B2 escolhidos, o executor GitHub Actions, o monitor externo e o substituto conforme docs/configuracao-backup-b2.md, sem contratação automática. Medir tamanho/tráfego e confirmar compatibilidade com as franquias gratuitas antes de ativar.
 - Confirmar plano/cobertura atual do Supabase, configurar rotina e alertas, testar expiração e executar primeiro ensaio de recuperação. Não considerar proteção comprovada antes dessas evidências.
 - Articular custódia e preservação de longo prazo com UFBA/STI, sem presumir aceite institucional.
