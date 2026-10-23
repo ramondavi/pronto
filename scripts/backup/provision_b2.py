@@ -115,7 +115,7 @@ para criar uma credencial limitada ao bucket <b>pronto-backups</b>, sem exclusã
 Nenhum segredo aparece em relatórios ou arquivos locais. Não envie capturas com os campos preenchidos.</small></main></html>"""
 
 
-def make_handler(status_path, csrf, state):
+def make_handler(status_path, csrf, state, *, form=None, configure=None, success_body=None, preserve_password=False):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass  # Never log requests, headers, form data or provider exceptions.
@@ -142,11 +142,15 @@ def make_handler(status_path, csrf, state):
             if not self.trusted() or self.path != "/":
                 self.reply("Acesso indisponível.", 403)
                 return
-            self.reply(FORM.replace("CSRF_TOKEN", csrf))
+            self.reply((form or FORM).replace("CSRF_TOKEN", csrf))
 
         def do_POST(self):
             origin = "http://127.0.0.1:" + str(self.server.server_port)
-            length = int(self.headers.get("Content-Length", "0"))
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+            except ValueError:
+                self.reply("Acesso indisponível.", 403)
+                return
             if (not self.trusted() or self.path != "/configure" or self.headers.get("Origin") != origin
                     or not 0 < length <= 16384):
                 self.reply("Acesso indisponível.", 403)
@@ -156,7 +160,7 @@ def make_handler(status_path, csrf, state):
                 require(hmac.compare_digest(fields.get("csrf", [""])[0], csrf), "invalid_local_form")
                 identifier, credential = fields.get("identifier", [""])[0], fields.get("credential", [""])[0]
                 require(bool(identifier.strip() and credential.strip()), "missing_fields")
-                provision(identifier.strip(), credential.strip())
+                (configure or provision)(identifier.strip(), credential if preserve_password else credential.strip())
                 ok, code = True, "configured"
             except Exception as error:
                 ok = False
@@ -164,7 +168,7 @@ def make_handler(status_path, csrf, state):
             status_path.write_text(json.dumps({"ok": ok, "code": code}), encoding="utf-8")
             if ok:
                 state["done"] = True
-                self.reply("<h1>Credencial restrita cadastrada no GitHub.</h1><p>Pode fechar esta página. O backup continua desativado.</p>")
+                self.reply(success_body or "<h1>Credencial restrita cadastrada no GitHub.</h1><p>Pode fechar esta página. O backup continua desativado.</p>")
             else:
                 self.reply("<h1>Cadastro não concluído.</h1><p>Código: " + code + ". Não envie os campos pelo chat.</p>", 400)
     return Handler
