@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Prepara cadastro protegido do monitor externo do backup, sem disparar sinais de sucesso durante a configuração. Horário e tolerância de alerta registrados; ativação e testes reais permanecem pendentes.
+
 - Prepara entrega local da chave de recuperação ao responsável, com teste criptográfico sintético e cadastro somente da parte pública no GitHub após confirmação de guarda. A chave privada fica fora do executor; backup continua desativado até o ensaio.
 
 - Backup preparado para a chave de servidor atual do Supabase na leitura dos documentos privados, com cadastro local protegido e compatibilidade com credenciais legadas existentes. Ativação e validação de acesso continuam pendentes.
