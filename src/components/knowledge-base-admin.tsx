@@ -1,7 +1,8 @@
 "use client";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { SavedForm, SaveButton } from "./saved-form";
 import { createClient } from "@/lib/supabase/client";
 import { knowledgeCategories, type KnowledgeEntry, type KnowledgeTranslation } from "@/lib/knowledge-base";
 import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
@@ -54,13 +55,11 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
   const supabase = createClient();
   const formId = `knowledge-${entry.id}`;
 
-  async function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
+  async function save(form: FormData) {
     const audiences = form.getAll("audiences").map(String);
-    if (!audiences.length) { setFeedback("Selecione pelo menos um público."); return; }
-    if (!localized.pt.body_html.replace(/<[^>]*>/g, "").trim()) { setFeedback("Preencha o conteúdo completo em português."); return; }
-    if (localized.pt.title.trim().length < 5 || localized.pt.summary.trim().length < 5) { setFeedback("Preencha título e resumo em português."); return; }
+    if (!audiences.length) { setFeedback("Selecione pelo menos um público."); return false; }
+    if (!localized.pt.body_html.replace(/<[^>]*>/g, "").trim()) { setFeedback("Preencha o conteúdo completo em português."); return false; }
+    if (localized.pt.title.trim().length < 5 || localized.pt.summary.trim().length < 5) { setFeedback("Preencha título e resumo em português."); return false; }
     setSaving(true); setFeedback("");
     const payload = {
       entry_id: /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(entry.id) ? entry.id : null,
@@ -80,7 +79,7 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
     if (error || !id) {
       setFeedback(error?.code === "PGRST202" || error?.code === "42P01" ? "A nova base ainda precisa ser aplicada ao banco para permitir o salvamento." : "Não foi possível salvar. Confira os campos e tente novamente.");
       showPanelChangeError("Conteúdo não salvo", error?.code === "PGRST202" || error?.code === "42P01" ? "A atualização necessária do banco ainda não foi aplicada. Avise a administração." : "Confira os campos e tente novamente.");
-      setSaving(false); return;
+      setSaving(false); return false;
     }
     const { data: saved, error: readError } = await supabase.from("knowledge_base_entries")
       .select("id,slug,kind,title,summary,body_html,translations,category,audiences,active,position,featured_position,created_at,updated_at,published_at")
@@ -88,6 +87,7 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
     if (readError || !saved) { setFeedback("O banco recebeu a alteração, mas não foi possível confirmá-la."); showPanelChangeError("Salvamento não confirmado", "Atualize a página para verificar se a alteração foi registrada."); }
     else { onSaved(entry.id, saved as KnowledgeEntry); showPanelChange("Conteúdo salvo"); }
     setSaving(false);
+    return !readError && Boolean(saved);
   }
 
   return <article id={`knowledge-entry-${entry.id}`} className="knowledge-card">
@@ -97,7 +97,8 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
       <span className="knowledge-card__meta"><span className={entry.active ? "knowledge-card__status is-published" : "knowledge-card__status"}>{entry.active ? "Publicado" : "Rascunho"}</span><small>Publicado: {dateLabel(entry.published_at)} · Atualizado: {dateLabel(entry.updated_at)}</small></span>
       <AppIcon name={expanded ? "panelCollapse" : "panelExpand"} className="knowledge-card__toggle-icon" />
     </button>
-    {expanded && <form id={formId} className="knowledge-card__editor" onSubmit={save} inert={!canEdit}>
+    {expanded && <SavedForm id={formId} className="knowledge-card__editor" onSave={save} initiallySaved={/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(entry.id)} inert={!canEdit}>
+      <input type="hidden" name="localized" value={JSON.stringify(localized)} />
       <div className="knowledge-card__fields">
         <label>Tipo de conteúdo<select name="kind" value={kind} disabled={faqOnly} onChange={(event) => setKind(event.target.value as KnowledgeEntry["kind"])}><option value="faq">Pergunta frequente</option>{!faqOnly && <><option value="answer">Resposta rápida</option><option value="article">Artigo completo</option></>}</select></label>
         <label>Categoria<select name="category" defaultValue={entry.category}>{knowledgeCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
@@ -108,19 +109,19 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
       <fieldset className="knowledge-card__audiences"><legend>Onde mostrar</legend>{audienceOptions.map(([value, label]) => <label key={value}><input type="checkbox" name="audiences" value={value} defaultChecked={entry.audiences.includes(value)} />{label}</label>)}</fieldset>
       <div className="knowledge-language-tabs" role="tablist" aria-label="Idioma dos textos">{supportedLanguages.map((language) => <button key={language} type="button" role="tab" aria-selected={editLanguage === language} onClick={() => setEditLanguage(language)}>{languageLabels[language]}</button>)}</div>
       <div className="knowledge-card__fields">
-        <label className="knowledge-card__wide">Título — {languageLabels[editLanguage]}<input value={localized[editLanguage].title} onChange={(event) => updateLocalized("title", event.target.value)} maxLength={300} /></label>
+        <label className="knowledge-card__wide">Título — {languageLabels[editLanguage]}<input data-save-name="localized" value={localized[editLanguage].title} onChange={(event) => updateLocalized("title", event.target.value)} maxLength={300} /></label>
         <div className="knowledge-card__wide">
           <span className="field-label-with-tooltip">Resumo <FieldTooltip text="Texto curto mostrado nas sugestões da busca e na ajuda flutuante. Use uma resposta direta." /></span>
-          <textarea aria-label={`Resumo — ${languageLabels[editLanguage]}`} value={localized[editLanguage].summary} onChange={(event) => updateLocalized("summary", event.target.value)} rows={3} maxLength={1000} />
+          <textarea data-save-name="localized" aria-label={`Resumo — ${languageLabels[editLanguage]}`} value={localized[editLanguage].summary} onChange={(event) => updateLocalized("summary", event.target.value)} rows={3} maxLength={1000} />
         </div>
         <div className="knowledge-card__wide">
           <span className="field-label-with-tooltip">Conteúdo completo <FieldTooltip text="Explicação exibida ao abrir a resposta. Organize artigos com títulos, passos, listas, links e observações." /></span>
-          <RichTextEditor key={editLanguage} value={localized[editLanguage].body_html} onChange={(html) => updateLocalized("body_html", html)} />
+          <div data-save-name="localized"><RichTextEditor key={editLanguage} value={localized[editLanguage].body_html} onChange={(html) => updateLocalized("body_html", html)} /></div>
         </div>
       </div>
-      <div className="knowledge-card__actions"><label className="compact-check"><input type="checkbox" name="active" defaultChecked={entry.active} /> Publicado</label><button className="button button--primary" type="submit" disabled={saving}><AppIcon name="check" />{saving ? "Salvando…" : "Salvar conteúdo"}</button></div>
+      <div className="knowledge-card__actions"><label className="compact-check"><input type="checkbox" name="active" defaultChecked={entry.active} /> Publicado</label><SaveButton className="button button--primary" disabled={saving}>Salvar conteúdo</SaveButton></div>
       {feedback && <p role="status" className="knowledge-card__feedback">{feedback}</p>}
-    </form>}
+    </SavedForm>}
   </article>;
 }
 

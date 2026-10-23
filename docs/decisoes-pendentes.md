@@ -15,8 +15,6 @@ Este arquivo contém somente pontos que o Documento-Mestre Consolidado ainda nã
 ## Coordenação, Magic Link e comunicações
 
 - Avaliar após o piloto se a página da coordenação precisa de outros dados além da identificação básica do trabalho, status, SLA e timeline operacional já implementados.
-- Cadastrar os e-mails oficiais das coordenações por curso/programa.
-- Testar a entrega SMTP pela aplicação hospedada usando `bibarq@ufba.br`. O SMTP institucional aceitou e entregou uma mensagem de teste enviada de um computador local em 12/10/2026. Se o uso hospedado for inviável, escolher o serviço transacional externo gratuito.
 - Após o MVP, avaliar integração das notificações da equipe com notificações nativas do navegador/sistema e Web Push, inclusive com a aba do Pronto! fechada; definir consentimento, compatibilidade, operação e retenção das assinaturas antes de implementar.
 
 ## Atendimento e operação
@@ -31,8 +29,9 @@ Este arquivo contém somente pontos que o Documento-Mestre Consolidado ainda nã
 
 ## Lançamento
 
-- Testar o envio pela hospedagem e confirmar a configuração SMTP do Supabase Auth antes do lançamento público.
-- Executar a validação assistida com estudantes e bibliotecários e registrar o aceite sem dados pessoais.
+- Executar a validação assistida com estudantes e bibliotecários após o teste do retrospectivo da RAU+E, conforme sequência definida em 22/10/2026, e registrar o aceite sem dados pessoais.
+
+Atualização operacional de 22/10/2026: o responsável confirmou o cadastro dos contatos de coordenação em Programas e SLA. A recuperação de senha chegou ao formulário de nova senha após a publicação do PR #12; o envio transacional hospedado foi registrado como entregue na primeira tentativa e o destinatário confirmou o recebimento. Esses ensaios não substituem o aceite assistido nem a conferência dos eventos reais do retrospectivo. Evidência resumida em `operacao-mvp.md`.
 
 
 ## Fluxo de publicação no RI — discussão de 21/10/2026

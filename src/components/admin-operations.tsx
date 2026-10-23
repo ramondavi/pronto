@@ -14,6 +14,7 @@ import { StaffPermissionsAdmin, type PermissionDefinition, type PermissionOverri
 import { DailyClosingControl } from "./daily-closing-control";
 import { issueTemplateFields } from "@/lib/issue-template-fields";
 import { readableAuditAction, readableAuditEntity } from "@/lib/audit-labels";
+import { SavedForm, SaveButton } from "./saved-form";
 
 type User = {
   id: string;
@@ -283,12 +284,13 @@ export function AdminOperations(props: {
         "Não foi possível confirmar o salvamento. Confira os dados e tente novamente.",
       );
     setBusy("");
+    return confirmed;
   }
   async function correctBirthDate(user: User, form: FormData) {
     const birthDate = String(form.get("birth_date") ?? "");
     if (birthDate === user.student_profiles?.[0]?.birth_date) {
       setMessage("Informe uma data diferente da atual para registrar a correção.");
-      return;
+      return false;
     }
     setBusy(`birth-${user.id}`);
     setMessage("");
@@ -304,6 +306,7 @@ export function AdminOperations(props: {
       setMessage("Data de nascimento corrigida e confirmada no banco de dados.");
     } else setMessage("Não foi possível confirmar a correção da data de nascimento.");
     setBusy("");
+    return !readError && saved?.birth_date === birthDate;
   }
   async function provision(form: FormData) {
     const id = String(form.get("id"));
@@ -388,6 +391,7 @@ export function AdminOperations(props: {
     );
     const savedValues = persisted.value;
     if (saved && savedValues) setPrograms((current) => current.map((item) => item.id === program.id ? { ...item, ...savedValues } : item));
+    return saved;
   }
   async function saveAnnouncement(form: FormData) {
     const type = String(form.get("type"));
@@ -395,13 +399,13 @@ export function AdminOperations(props: {
     const messageText = String(form.get("message"));
     const startValue = String(form.get("starts") ?? "");
     const endValue = String(form.get("ends") ?? "");
-    if (!startValue) { setMessage("Informe o início da ocorrência."); return; }
+    if (!startValue) { setMessage("Informe o início da ocorrência."); return false; }
     const startAllDay = form.get("starts_all_day") === "on";
     const endAllDay = form.get("ends_all_day") === "on";
     const startsAt = new Date(`${startValue}${startAllDay ? "T00:00:00.000" : ":00"}-03:00`).toISOString();
     const endsAt = endValue ? new Date(`${endValue}${endAllDay ? "T23:59:59.999" : ":00"}-03:00`).toISOString()
       : startAllDay && !["recess", "strike"].includes(type) ? new Date(`${startValue}T23:59:59.999-03:00`).toISOString() : null;
-    if (endsAt && endsAt < startsAt) { setMessage("O fim do período precisa ser posterior ao início."); return; }
+    if (endsAt && endsAt < startsAt) { setMessage("O fim do período precisa ser posterior ao início."); return false; }
     const active = form.get("active") === "on";
     setBusy("announcement");
     setMessage("");
@@ -435,6 +439,7 @@ export function AdminOperations(props: {
         "Não foi possível confirmar o salvamento. Confira os dados e tente novamente.",
       );
     setBusy("");
+    return !readError && Boolean(saved);
   }
   async function deleteAnnouncement(announcement: Announcement) {
     setBusy(`a-${announcement.id}`);
@@ -495,7 +500,7 @@ export function AdminOperations(props: {
     const active = form.get("active") === "on";
     const position = Number(form.get("position"));
     const fieldKeys = form.getAll("field_keys").map(String);
-    if (props.templateFieldsReady && !fieldKeys.length) { setMessage("Selecione ao menos um campo de metadados."); return; }
+    if (props.templateFieldsReady && !fieldKeys.length) { setMessage("Selecione ao menos um campo de metadados."); return false; }
     const saved = await runVerified(
       `t-${template.id}`,
       () => props.templateFieldsReady
@@ -529,6 +534,7 @@ export function AdminOperations(props: {
       "Template salvo e confirmado no banco de dados.",
     );
     if (saved) router.refresh();
+    return saved;
   }
   async function createTemplate(form: FormData) {
     const label = String(form.get("label") ?? "").trim();
@@ -706,7 +712,13 @@ export function AdminOperations(props: {
       .find((item) => getComputedStyle(item).display !== "none");
     if (!section) return;
     section.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement>("form input, form button, form select, form textarea").forEach((control) => {
-      control.disabled = readOnly;
+      if (readOnly) {
+        if (!control.hasAttribute("data-permission-disabled")) control.dataset.permissionDisabled = String(control.disabled);
+        control.disabled = true;
+      } else if (control.hasAttribute("data-permission-disabled")) {
+        control.disabled = control.dataset.permissionDisabled === "true";
+        delete control.dataset.permissionDisabled;
+      }
     });
   }, [activeTab, readOnly]);
   return (
@@ -839,9 +851,9 @@ export function AdminOperations(props: {
             return (
               <details className="admin-program" key={p.id}>
                 <summary className="admin-program__identity"><span className="admin-section__icon"><AppIcon name="book" /></span><span><strong>{p.name}</strong><small>{academicLevelLabels[p.level] ?? "Outro nível"} · Prazo atual: {p.service_level_business_days ? `${p.service_level_business_days} ${p.service_level_business_days === 1 ? "dia útil" : "dias úteis"}` : "não definido"}</small></span><AppIcon className="admin-program__chevron" name="arrowRight" /></summary>
-              <form
+              <SavedForm
                 className="admin-row admin-row--program"
-                onSubmit={(event) => { event.preventDefault(); void saveProgram(p, new FormData(event.currentTarget)); }}
+                onSave={(data) => saveProgram(p, data)}
               >
                 <div className="admin-program__settings">
                 <label>
@@ -887,13 +899,13 @@ export function AdminOperations(props: {
                   />
                 </label>
                 </div>
-                <button
+                <SaveButton
                   className="button button--secondary button--small"
                   disabled={busy === `p-${p.id}`}
                 >
-                  <AppIcon name="check" />Salvar programa
-                </button>
-              </form>
+                  Salvar programa
+                </SaveButton>
+              </SavedForm>
               </details>
             );
           })}
@@ -936,12 +948,13 @@ export function AdminOperations(props: {
         </div>
         <DailyClosingControl key={closingDate} initialHours={dailyHours} selectedDate={closingDate} onSaved={setDailyHours} />
         <div className="calendar-editor__heading"><span className="admin-section__icon"><AppIcon name={isEditingAnnouncement ? "edit" : "message"} /></span><div><p className="eyebrow">{isEditingAnnouncement ? "Editando ocorrência" : "Nova ocorrência"}</p><h3>{isEditingAnnouncement ? editingAnnouncement?.title : "Informar funcionamento ou publicar aviso"}</h3><p>Use “Fechamento excepcional” para suspensões pontuais da biblioteca que não sejam feriado, recesso ou greve. “Normal” e “Outro” são avisos sem fechamento.</p></div></div>
-        <form
+        <SavedForm
           ref={calendarFormRef}
           className="admin-grid calendar-editor"
           style={{ scrollMarginTop: 24 }}
           key={editingAnnouncement?.id || editingAnnouncement?.starts_at || "new"}
-          action={saveAnnouncement}
+          onSave={saveAnnouncement}
+          initiallySaved={Boolean(editingAnnouncement?.id)}
         >
           <label className="calendar-editor__type">
             Tipo de ocorrência
@@ -979,8 +992,8 @@ export function AdminOperations(props: {
           </label>
           <PeriodField name="starts" label="Início do período" value={editingAnnouncement?.starts_at} />
           <PeriodField name="ends" label="Fim do período (opcional)" value={editingAnnouncement?.ends_at} optional />
-          <div className="calendar-editor__footer"><label className="calendar-editor__active"><input name="active" type="checkbox" defaultChecked={editingAnnouncement?.active ?? true} /><span>Publicar esta ocorrência</span></label><div className="calendar-editor__actions"><button className="button button--primary button--small button--with-icon" disabled={busy === "announcement"}><AppIcon name="check" />{isEditingAnnouncement ? "Salvar alterações" : "Cadastrar ocorrência"}</button>{editingAnnouncement && <button type="button" className="button button--secondary button--small button--with-icon" onClick={() => { setEditingAnnouncement(null); setSelectedCalendarDay(null); }}><AppIcon name="close" />{isEditingAnnouncement ? "Cancelar edição" : "Limpar campos"}</button>}</div></div>
-        </form>
+          <div className="calendar-editor__footer"><label className="calendar-editor__active"><input name="active" type="checkbox" defaultChecked={editingAnnouncement?.active ?? true} /><span>Publicar esta ocorrência</span></label><div className="calendar-editor__actions"><SaveButton className="button button--primary button--small button--with-icon" disabled={busy === "announcement"}>{isEditingAnnouncement ? "Salvar alterações" : "Cadastrar ocorrência"}</SaveButton>{editingAnnouncement && <button type="button" className="button button--secondary button--small button--with-icon" onClick={() => { setEditingAnnouncement(null); setSelectedCalendarDay(null); }}><AppIcon name="close" />{isEditingAnnouncement ? "Cancelar edição" : "Limpar campos"}</button>}</div></div>
+        </SavedForm>
         <div className="calendar-records__intro"><div><p className="eyebrow">Registros</p><h3>Ocorrências cadastradas</h3></div><span>{visibleAnnouncements.length} resultado{visibleAnnouncements.length === 1 ? "" : "s"}</span></div>
         <div className="admin-user-filters">
           <label>
@@ -1068,7 +1081,7 @@ export function AdminOperations(props: {
         {props.templates.map((t) => (
           <details className="admin-template" key={t.id}>
             <summary className="admin-template__summary"><span className="admin-section__icon"><AppIcon name="message" /></span><span className="admin-template__summary-text"><strong>{t.label}</strong><small>Posição {t.position} · {t.field_keys.length} {t.field_keys.length === 1 ? "campo associado" : "campos associados"}</small></span><span className={`admin-template__state${t.active ? " is-active" : ""}`}>{t.active ? "Ativo" : "Inativo"}</span><AppIcon className="admin-template__chevron" name="arrowRight" /></summary>
-            <form className="admin-row admin-row--template" action={(f) => saveTemplate(t, f)}>
+            <SavedForm className="admin-row admin-row--template" onSave={(data) => saveTemplate(t, data)}>
             <div className="admin-template__fields">
               <label>
                 Nome do modelo
@@ -1089,11 +1102,9 @@ export function AdminOperations(props: {
                 <input name="active" type="checkbox" defaultChecked={t.active} />
                 Ativo
               </label>
-              <button className="button button--secondary button--small button--with-icon" disabled={busy === `t-${t.id}`}>
-                <AppIcon name="check" />Salvar modelo
-              </button>
+              <SaveButton className="button button--secondary button--small button--with-icon" disabled={busy === `t-${t.id}`}>Salvar modelo</SaveButton>
             </div>
-            </form>
+            </SavedForm>
           </details>
         ))}
         {props.templates.length === 0 && <p className="admin-empty-state"><AppIcon name="inbox" />Nenhum modelo de resposta cadastrado.</p>}
@@ -1181,9 +1192,9 @@ function UserRow({
 }: {
   user: User;
   busy: boolean;
-  onSave: (user: User, form: FormData) => Promise<void>;
+  onSave: (user: User, form: FormData) => Promise<boolean>;
   birthBusy: boolean;
-  onCorrectBirthDate: (user: User, form: FormData) => Promise<void>;
+  onCorrectBirthDate: (user: User, form: FormData) => Promise<boolean>;
   canManage: boolean;
 }) {
   const [role, setRole] = useState(user.role);
@@ -1192,9 +1203,9 @@ function UserRow({
   const birthDate = user.student_profiles?.[0]?.birth_date;
   return (
     <div className="admin-user-entry">
-    <form
+    <SavedForm
       className={`admin-row ${staff ? "admin-row--staff" : "admin-row--student"}`}
-      action={(form) => onSave(user, form)}
+      onSave={(form) => onSave(user, form)}
     >
       <div>
         <strong>{user.full_name}</strong>
@@ -1233,19 +1244,19 @@ function UserRow({
           </label>
         </>
       )}
-      {canManage && <button
+      {canManage && <SaveButton
         className="button button--secondary button--small"
         disabled={busy}
       >
         Salvar
-      </button>}
-    </form>
+      </SaveButton>}
+    </SavedForm>
     {!staff && canManage && <details className="admin-birth-date"><summary>Corrigir data de nascimento</summary>
-      <form action={(form) => onCorrectBirthDate(user, form)}>
+      <SavedForm onSave={(form) => onCorrectBirthDate(user, form)}>
         <span>Data atual: <strong>{birthDate ? birthDate.split("-").reverse().join("/") : "não informada"}</strong></span>
         <label>Nova data de nascimento<input type="date" name="birth_date" min="1900-01-01" max={new Date().toISOString().slice(0, 10)} defaultValue={birthDate ?? ""} required /></label>
-        <button className="button button--secondary button--small" type="submit" disabled={birthBusy}>{birthBusy ? "Salvando..." : "Salvar correção"}</button>
-      </form>
+        <SaveButton className="button button--secondary button--small" disabled={birthBusy}>Salvar correção</SaveButton>
+      </SavedForm>
     </details>}
     </div>
   );

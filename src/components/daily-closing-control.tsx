@@ -18,6 +18,8 @@ export function DailyClosingControl({ initialHours, selectedDate, onSaved }: {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   const router = useRouter();
+  const registered = hours.find((item) => item.service_date === date);
+  const changed = closing !== libraryClosingTime(registered?.closing_time);
 
   async function save(reset: boolean) {
     const weekday = new Date(`${date}T12:00:00Z`).getUTCDay();
@@ -50,8 +52,9 @@ export function DailyClosingControl({ initialHours, selectedDate, onSaved }: {
     <div><p className="eyebrow">Horário do dia</p><h3>Fechamento previsto</h3><p>O padrão é segunda a sexta, das 8h às 21h. O ajuste vale somente para a data escolhida e não altera o prazo dos atendimentos.</p></div>
     <div className="daily-closing-editor__controls">
       <label>Data<input type="date" value={date} onChange={(event) => { const value = event.target.value; setDate(value); setClosing(libraryClosingTime(hours.find((item) => item.service_date === value)?.closing_time)); }} /></label>
-      <label>Fechamento<input type="time" min="08:01" max="23:59" value={closing} onChange={(event) => setClosing(event.target.value)} /></label>
-      <button type="button" className="button button--primary button--small" disabled={busy} onClick={() => void save(false)}>Salvar horário</button>
+      <label>Fechamento<input data-save-state={changed ? "dirty" : "saved"} type="time" min="08:01" max="23:59" value={closing} onChange={(event) => setClosing(event.target.value)} /></label>
+      <span className="saved-form__status" role="status">{busy ? "Salvando…" : changed ? "Alterações não salvas" : registered ? "Dados salvos" : "Horário padrão: 21h"}</span>
+      <button type="button" className="button button--primary button--small" disabled={busy || !changed} onClick={() => void save(false)}>{busy ? "Salvando…" : changed ? "Salvar horário" : registered ? "Salvo" : "Horário padrão"}</button>
       {hours.some((item) => item.service_date === date) && <button type="button" className="button button--secondary button--small" disabled={busy} onClick={() => void save(true)}>Restaurar 21h</button>}
     </div>
     {feedback && <p className="auth-feedback" role="status">{feedback}</p>}
