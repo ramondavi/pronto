@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Recuperação de senha aguarda a inicialização da autenticação para preservar a sessão após confirmar o link, aceita o endereço usado por modelos anteriores e distingue indisponibilidade de link inválido.
+
 - Corrige os links do e-mail de recuperação para abrir a confirmação da nova senha, inclusive em outro navegador. Modelo de produção sincronizado sem enviar mensagens de teste.
 
 - Testes de navegação no CI executam sem concorrência entre navegadores e aguardam a compilação inicial da interface, preservando todas as verificações.
