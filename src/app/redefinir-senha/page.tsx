@@ -5,10 +5,15 @@ import { authPageMetadata } from "@/lib/auth-page-metadata";
 import { PasswordRequirements } from "@/components/password-requirements";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { uiText } from "@/lib/ui-text";
+import { createRecoveryClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export const generateMetadata = () => authPageMetadata("update");
 
 export default async function UpdatePasswordPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const supabase = await createRecoveryClient();
+  const { data: { user }, error: sessionError } = await supabase.auth.getUser();
+  if (sessionError || !user) redirect(`/recuperar-senha?${new URLSearchParams({ error: "O link não está mais válido. Solicite um novo link para redefinir sua senha." })}`);
   const { error } = await searchParams;
   const language = await getInterfaceLanguage();
   return (

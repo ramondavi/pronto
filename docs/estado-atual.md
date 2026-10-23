@@ -1,6 +1,6 @@
 # Estado atual — Pronto!
 
-Atualizado em 22/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico detalhado: historico-preparacao-outubro-2026.md.
+Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico detalhado: historico-preparacao-outubro-2026.md.
 
 ## Entrega em consolidação
 
@@ -15,4 +15,5 @@ Atualizado em 22/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Aprovados: 133 testes, tipos, lint e build; 261 testes de banco; 39 cenários públicos (três repetidos por timeout local). Evidências/limites: validacao-mvp.md.
 - PR #12 publicado em `fdfd7a7`. Em 22/10, o responsável confirmou acesso ao formulário de nova senha e recebimento do teste transacional (uma tentativa, sem erros). Detalhes e limites: operacao-mvp.md.
 - Coordenações cadastradas pelo responsável. Aceite assistido após o teste do retrospectivo RAU+E.
+- PR #13 publicado. Isolamento: verificacao-recuperacao-2026-10-23.md.
 - Regras operacionais: operacao-mvp.md. Migrações aplicadas são imutáveis; nunca resetar banco remoto nem copiar seeds de testes para produção. Conta especial da secretaria não deve receber convite automático.

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createRecoveryClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const type = url.searchParams.get("type");
   const code = url.searchParams.get("code");
   if (code) {
-    const supabase = await createClient();
+    const supabase = await createRecoveryClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL("/redefinir-senha", url.origin));
   }

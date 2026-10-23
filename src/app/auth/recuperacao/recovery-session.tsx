@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { restorePasswordRecovery } from "@/app/auth-actions";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import { uiText } from "@/lib/ui-text";
 
@@ -26,8 +26,8 @@ export function RecoverySession() {
       return;
     }
 
-    void createClient().auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-      .then(({ error }) => window.location.replace(error ? invalidLink : "/redefinir-senha"))
+    void restorePasswordRecovery(accessToken, refreshToken)
+      .then((valid) => window.location.replace(valid ? "/redefinir-senha" : invalidLink))
       .catch(() => window.location.replace(invalidLink));
   }, []);
 
