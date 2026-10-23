@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '23 8 * * *'
   workflow_dispatch:
+    inputs:
+      first_copy:
+        description: Criar primeira copia para ensaio (nao ativa o agendamento)
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -14,9 +20,13 @@ concurrency:
 
 jobs:
   backup:
-    # Deliberately dormant until the account, retention, monitor and restore drill
-    # are configured. Never run with production credentials on PRs or other refs.
-    if: vars.BACKUP_ENABLED == 'true' && github.ref == 'refs/heads/master'
+    # Daily execution stays dormant until the recovery drill is accepted.
+    # A separately authorized manual first copy requires an explicit input.
+    # Never run with production credentials on PRs or other refs.
+    if: >-
+      github.ref == 'refs/heads/master' &&
+      (vars.BACKUP_ENABLED == 'true' ||
+       (github.event_name == 'workflow_dispatch' && inputs.first_copy == true))
     environment: backup-production
     runs-on: ubuntu-24.04
     timeout-minutes: 45

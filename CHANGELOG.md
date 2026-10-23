@@ -8,7 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
-- Prepara verificação manual e somente de leitura dos acessos do backup, antes da primeira cópia: conexão segura ao banco, proteção dos buckets e parte pública de recuperação. Não consulta fichas ou PDFs, não envia cópias e não ativa o agendamento.
+- Prepara verificação manual e somente de leitura dos acessos do backup, antes da primeira cópia: conexão segura ao banco, proteção dos buckets e parte pública de recuperação. Não consulta fichas ou PDFs, não envia cópias e não ativa o agendamento. A primeira cópia para ensaio terá acionamento manual explícito separado, sem ligar a agenda diária.
 
 - Prepara cadastro protegido do monitor externo do backup, sem disparar sinais de sucesso durante a configuração. Horário e tolerância de alerta registrados; ativação e testes reais permanecem pendentes.
 
