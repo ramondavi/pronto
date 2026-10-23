@@ -31,6 +31,7 @@ Criar o ambiente GitHub **backup-production**, limitando a execução à branch 
 | Environment secrets | Finalidade |
 | --- | --- |
 | `BACKUP_PG_HOST`, `BACKUP_PG_USER`, `BACKUP_PG_PASSWORD` | Conexão de sessão ao PostgreSQL de produção, porta 5432; não usar pooler de transações |
+| `BACKUP_PG_CA_CERT` | Certificado público CA baixado da seção SSL do Supabase; nunca uma chave privada |
 | `BACKUP_STORAGE_READ_TOKEN` | Credencial de servidor para leitura dos PDFs; nunca enviar ao navegador, logs ou chat |
 | `BACKUP_B2_KEY_ID`, `BACKUP_B2_APPLICATION_KEY` | Acesso limitado ao bucket B2 |
 | `BACKUP_HEARTBEAT_URL` | Identificador secreto do monitor externo |
@@ -41,7 +42,7 @@ Criar o ambiente GitHub **backup-production**, limitando a execução à branch 
 | `BACKUP_B2_ENDPOINT`, `BACKUP_B2_REGION`, `BACKUP_B2_BUCKET` | Destino privado confirmado |
 | `BACKUP_AGE_RECIPIENT` | Chave pública age; a identidade privada correspondente fica sob custódia institucional separada |
 
-Usar PostgreSQL 17, conforme o projeto; falha de compatibilidade ou acesso deve interromper a rotina. A conexão exige TLS com validação de certificado (`verify-full`, raízes do sistema). Avaliar os privilégios necessários sem criar usuário ou aplicar migração remota automaticamente. `row_security=off` evita aceitar uma exportação silenciosamente filtrada por RLS. As credenciais de backup são privilegiadas e devem ficar exclusivamente no ambiente protegido do executor. Credenciais da aplicação não recebem acesso ao B2 nem à identidade de descriptografia.
+Usar PostgreSQL 17, conforme o projeto; falha de compatibilidade ou acesso deve interromper a rotina. A conexão exige TLS com validação de certificado (`verify-full`, CA pública do projeto fornecida em BACKUP_PG_CA_CERT e materializada somente em arquivo temporário). Avaliar os privilégios necessários sem criar usuário ou aplicar migração remota automaticamente. `row_security=off` evita aceitar uma exportação silenciosamente filtrada por RLS. As credenciais de backup são privilegiadas e devem ficar exclusivamente no ambiente protegido do executor. Credenciais da aplicação não recebem acesso ao B2 nem à identidade de descriptografia.
 
 A chave pública age e sua identidade privada devem ser produzidas em ambiente institucional controlado. Entregar a identidade privada ao responsável e substituto por mecanismo institucional; não exibi-la no terminal de logs, versioná-la ou colocá-la em GitHub Secrets. Comprovar a descriptografia com ela no ensaio, sem registrar o valor. Nenhuma identidade de produção foi gerada nesta entrega.
 

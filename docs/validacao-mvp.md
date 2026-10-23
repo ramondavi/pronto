@@ -73,4 +73,4 @@ Critério de saída: nenhuma falha crítica ou alta aberta, nenhum vazamento ent
 
 ## Aceite de backup e recuperação
 
-Aplicar docs/protocolo-backup-recuperacao.md. Registrar evidências sem dados pessoais: verificação diária e cópia independente quando houver mudanças, cobertura de banco/Auth e objetos do Storage, integridade, expiração de 90 dias, alerta de falha e de ausência de execução, restauração isolada e conciliação de expurgos. Confirmar RLS e contas bloqueadas/inativas após restauração; medir defasagem máxima de 24 horas e recuperação em até um dia útil. Estado: não executado nesta entrega; pendência de lançamento.
+Aplicar docs/protocolo-backup-recuperacao.md. Registrar evidências sem dados pessoais: verificação diária e cópia independente quando houver mudanças, cobertura de banco/Auth e objetos do Storage, integridade, expiração de 90 dias, alerta de falha e de ausência de execução, restauração isolada e conciliação de expurgos. Confirmar RLS e contas bloqueadas/inativas após restauração; medir o prazo máximo de 24 horas para proteger cada alteração e recuperação em até um dia útil. Estado: não executado nesta entrega; pendência de lançamento.

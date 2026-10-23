@@ -45,6 +45,7 @@ jobs:
           PGPASSWORD: ${{ secrets.BACKUP_PG_PASSWORD }}
           PGSSLMODE: verify-full
           PGSSLROOTCERT: system
+          BACKUP_PG_CA_CERT: ${{ secrets.BACKUP_PG_CA_CERT }}
           PGOPTIONS: '-c default_transaction_read_only=on -c statement_timeout=300000 -c timezone=UTC'
           BACKUP_SOURCE_ID: pronto-production
           SUPABASE_URL: ${{ vars.BACKUP_SUPABASE_URL }}

@@ -79,6 +79,12 @@ class DecisionsTest(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True), self.assertRaises(backup.BackupError):
             backup.check_environment()
 
+    def test_database_certificate_requires_public_certificate_not_key(self):
+        with patch.dict(os.environ, {"BACKUP_PG_CA_CERT": "synthetic private data"}), \
+             self.assertRaisesRegex(backup.BackupError, "invalid_database_ca"):
+            with backup.database_tls():
+                self.fail("invalid certificate was accepted")
+
 
 class StoreTest(unittest.TestCase):
     def setUp(self):
@@ -137,6 +143,27 @@ class StoreTest(unittest.TestCase):
 
 
 class ExecutionTest(unittest.TestCase):
+    @patch.object(backup, "DatabaseSnapshot")
+    def test_new_copy_records_success_only_after_verified_encrypted_upload(self, db_class):
+        def snapshot(connection, folder):
+            db = Mock(server_version="17", table_hashes=[])
+            db.fingerprint.return_value = "synthetic-fingerprint"
+            db.inventory.return_value = []
+            db.dump.side_effect = lambda: (folder / "database.dump").write_bytes(b"private synthetic record")
+            return db
+        db_class.side_effect = snapshot
+        def encrypt(command):
+            self.assertEqual(command[0], "age")
+            Path(command[4]).write_bytes(b"synthetic encrypted archive")
+        client = MemoryStore()
+        store = backup.BackupStore(client, "synthetic", "synthetic-prod")
+        with patch.object(backup, "run_tool", side_effect=encrypt), patch.dict(os.environ, {
+                "BACKUP_AGE_RECIPIENT": "synthetic-public-recipient", "BACKUP_SOURCE_ID": "synthetic-prod"}):
+            self.assertEqual(backup.execute_backup(store, lambda: contextlib.nullcontext(Mock()), NOW), "created")
+        self.assertIsNotNone(store.latest())
+        self.assertTrue(any("/checks/" in key for key in client.objects))
+        self.assertTrue(all(b"private synthetic record" not in body for body, _ in client.objects.values()))
+
     @patch.object(backup, "DatabaseSnapshot")
     def test_unchanged_records_check_without_exporting_data(self, db_class):
         db_class.return_value.fingerprint.return_value = "same"

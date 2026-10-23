@@ -7,10 +7,12 @@ execution environment; this program never loads dotenv files or writes credentia
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
 import re
+import ssl
 import subprocess
 import sys
 import tarfile
@@ -91,7 +93,7 @@ def check_environment() -> None:
     required = ("PGHOST", "PGPORT", "PGDATABASE", "PGUSER", "PGPASSWORD",
                 "BACKUP_SOURCE_ID", "B2_ENDPOINT", "B2_REGION", "B2_BUCKET",
                 "B2_KEY_ID", "B2_APPLICATION_KEY", "BACKUP_AGE_RECIPIENT",
-                "SUPABASE_URL", "BACKUP_STORAGE_READ_TOKEN", "BACKUP_HEARTBEAT_URL")
+                "SUPABASE_URL", "BACKUP_STORAGE_READ_TOKEN", "BACKUP_HEARTBEAT_URL", "BACKUP_PG_CA_CERT")
     require(all(os.environ.get(name) for name in required), "missing_configuration")
     require(os.environ.get("GITHUB_REF", "refs/heads/master") == "refs/heads/master", "untrusted_branch")
     require(os.environ["PGPORT"] == "5432", "session_connection_required")
@@ -109,7 +111,34 @@ def check_environment() -> None:
     require(supabase.scheme == "https" and supabase.hostname is not None and
             supabase.hostname.endswith(".supabase.co") and not supabase.username and
             not supabase.password and supabase.path in ("", "/") and not supabase.query, "invalid_storage_endpoint")
+    project = supabase.hostname.split(".")[0]
+    require(supabase.hostname == project + ".supabase.co" and
+            (pg_host == "db." + project + ".supabase.co" or
+             (pg_host.endswith(".pooler.supabase.com") and os.environ["PGUSER"].endswith("." + project))),
+            "database_storage_project_mismatch")
     require(os.environ["BACKUP_AGE_RECIPIENT"].startswith("age1"), "public_age_recipient_required")
+
+
+@contextmanager
+def database_tls():
+    # Supabase's CA is not necessarily in the system trust store. This is a
+    # public certificate, never a private key; verify both CA and hostname.
+    certificate = os.environ["BACKUP_PG_CA_CERT"].strip()
+    require(re.fullmatch(r"-----BEGIN CERTIFICATE-----\s+[A-Za-z0-9+/=\s]+-----END CERTIFICATE-----",
+                         certificate) is not None, "invalid_database_ca")
+    ssl.PEM_cert_to_DER_cert(certificate)
+    previous = os.environ.get("PGSSLROOTCERT")
+    with tempfile.TemporaryDirectory(prefix="pronto-ca-") as temp:
+        path = Path(temp) / "supabase-ca.crt"
+        path.write_text(certificate + "\n", encoding="ascii")
+        os.environ["PGSSLROOTCERT"] = str(path)
+        try:
+            yield
+        finally:
+            if previous is None:
+                os.environ.pop("PGSSLROOTCERT", None)
+            else:
+                os.environ["PGSSLROOTCERT"] = previous
 
 
 class DatabaseSnapshot:
@@ -147,6 +176,7 @@ class DatabaseSnapshot:
                 self.connection.execute(sql.SQL("LOCK TABLE {} IN ACCESS SHARE MODE").format(sql.Identifier(schema, name)))
         self.tables = [(schema, name) for schema, name, kind in tables if kind != "p"]
         self.snapshot = self.query("SELECT pg_export_snapshot()")[0][0]
+        self.server_version = self.query("SELECT current_setting('server_version')")[0][0]
         schema_args = [f"--schema={name}" for name in SCHEMAS]
         run_tool(self.command("pg_dump", "--schema-only", f"--snapshot={self.snapshot}",
                               *schema_args, f"--file={self.folder / 'schema.sql'}"))
@@ -184,6 +214,7 @@ class DatabaseSnapshot:
                 """).format(sql.Identifier(schema, name)))[0]
             table_hashes.append((schema, name, *result))
         self.sequence_state = self.sequences()
+        self.table_hashes = table_hashes
         self.roles_hash = hashlib.sha256(canonical_sql((self.folder / "roles.sql").read_bytes())).hexdigest()
         return digest_json({"format": FORMAT, "schemas": SCHEMAS, "tables": table_hashes,
                             "sequences": self.sequence_state, "roles": self.roles_hash,
@@ -271,7 +302,7 @@ class BackupStore:
         require(meta.get("format") == FORMAT and head["ContentLength"] == committed.get("size") and
                 all(meta.get(k) for k in ("fingerprint", "created_at", "sha256")), "invalid_previous_backup")
         require(all(meta[k] == committed.get(k) for k in meta), "invalid_backup_commit")
-        return {**meta, "key": committed["key"]}
+        return {**meta, "key": committed["key"], "size": head["ContentLength"]}
 
     def upload(self, path: Path, fingerprint: str, now: datetime, used: int) -> dict:
         size = path.stat().st_size
@@ -292,12 +323,14 @@ class BackupStore:
         commit_key = key.replace("/archives/", "/commits/") + ".json"
         self.client.put_object(Bucket=self.bucket, Key=commit_key, Body=json.dumps(committed).encode(),
                                ContentType="application/json")
-        return {**metadata, "key": key}
+        return {**metadata, "key": key, "size": size}
 
     def report(self, outcome: str, previous: dict, now: datetime):
         key = self.prefix + "checks/" + now.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex + ".json"
         body = json.dumps({"checked_at": now.isoformat(), "result": outcome,
-                           "backup_created_at": previous["created_at"], "archive": previous["key"], "format": FORMAT}).encode()
+                           "completed_at": datetime.now(timezone.utc).isoformat(),
+                           "backup_created_at": previous["created_at"], "archive": previous["key"],
+                           "bytes": previous["size"], "format": FORMAT}).encode()
         self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType="application/json")
 
 
@@ -326,6 +359,8 @@ def execute_backup(store: BackupStore, connect, now: datetime) -> str:
                     after = DatabaseSnapshot(current, folder).inventory()
                 require(digest_json(before) == digest_json(after), "storage_changed_during_backup")
                 manifest = {"format": FORMAT, "created_at": now.isoformat(), "fingerprint": fingerprint,
+                            "source_id": os.environ["BACKUP_SOURCE_ID"], "server_version": db.server_version,
+                            "code_revision": os.environ.get("GITHUB_SHA", "local"), "tables": db.table_hashes,
                             "schemas": SCHEMAS, "objects": objects,
                             "files": {p.name: digest_file(p) for p in folder.iterdir() if p.is_file()}}
                 (folder / "manifest.json").write_text(json.dumps(manifest, default=str), encoding="utf-8")
@@ -355,8 +390,9 @@ def main() -> int:
                                             request_checksum_calculation="when_required", response_checksum_validation="when_required"))
         def connect():
             return psycopg.connect(autocommit=True, connect_timeout=20, application_name="pronto-backup")
-        outcome = execute_backup(BackupStore(client, os.environ["B2_BUCKET"], os.environ["BACKUP_SOURCE_ID"]),
-                                 connect, datetime.now(timezone.utc))
+        with database_tls():
+            outcome = execute_backup(BackupStore(client, os.environ["B2_BUCKET"], os.environ["BACKUP_SOURCE_ID"]),
+                                     connect, datetime.now(timezone.utc))
         heartbeat()
         print("Verificação concluída: " + ("nova cópia conferida." if outcome == "created" else "sem mudanças; cópia válida mantida."))
         return 0
