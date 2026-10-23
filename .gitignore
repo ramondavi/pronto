@@ -13,3 +13,11 @@ test-results/
 *.log
 *.tsbuildinfo
 .DS_Store
+
+# Backup: nunca versionar artefatos privados ou cache Python.
+scripts/backup/__pycache__/
+*.age
+*.dump
+
+# Identidade de recuperação: guardar somente no gerenciador, fora do repositório.
+pronto-recuperacao-backup*.txt

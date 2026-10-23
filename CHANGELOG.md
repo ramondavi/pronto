@@ -8,6 +8,21 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Prepara verificação manual e somente de leitura dos acessos do backup, antes da primeira cópia: conexão segura ao banco, proteção dos buckets e parte pública de recuperação. Não consulta fichas ou PDFs, não envia cópias e não ativa o agendamento. A primeira cópia para ensaio terá acionamento manual explícito separado, sem ligar a agenda diária.
+
+- Prepara cadastro protegido do monitor externo do backup, sem disparar sinais de sucesso durante a configuração. Horário e tolerância de alerta registrados; ativação e testes reais permanecem pendentes.
+
+- Prepara entrega local da chave de recuperação ao responsável, com teste criptográfico sintético e cadastro somente da parte pública no GitHub após confirmação de guarda. A chave privada fica fora do executor; backup continua desativado até o ensaio.
+
+- Backup preparado para a chave de servidor atual do Supabase na leitura dos documentos privados, com cadastro local protegido e compatibilidade com credenciais legadas existentes. Ativação e validação de acesso continuam pendentes.
+
+- Prepara cadastro local protegido do acesso ao banco para o backup, com envio direto aos segredos do GitHub e conferência do projeto e da conexão de sessão. A rotina continua desativada até completar a configuração e o ensaio.
+
+- Corrige a confirmação do formulário local de cadastro de backup, que bloqueava o envio legítimo do navegador. A validação de origem e a proteção contra envios externos permanecem ativas.
+
+- Integração de backup com Backblaze B2 preparada para verificar mudanças diariamente, exportar e criptografar somente quando necessário, renovar cópias antes da expiração e alertar falhas. Permanece desativada até configuração segura e primeiro ensaio; sem alteração no banco remoto.
+
+- A operação passa a ter protocolo de backup e recuperação com cópias independentes, alertas, ensaios e conciliação de expurgos. A implantação e o primeiro teste continuam pendentes, sem promessa de proteção já ativa.
 - Recuperação de senha usa sessão temporária separada do acesso ao painel. Abrir e abandonar o link não conecta a conta ao Pronto!; após trocar a senha, a autorização de recuperação é encerrada e a pessoa deve entrar normalmente.
 
 ### 22 de outubro de 2026

@@ -69,3 +69,7 @@ Essas são configurações de implantação, não autorizações para alterar da
 ## 7. Revisão
 
 A BIB/FAUFBA revisa esta política uma vez por ano, após incidente relevante ou quando houver alteração de fornecedor, arquitetura, regras institucionais ou tratamento de dados.
+
+## 8. Backup e preservação — complemento de 23/10/2026
+
+Seguir docs/protocolo-backup-recuperacao.md para verificação diária e cópia independente quando houver mudanças, criptografia, expiração em 90 dias, alertas e ensaios trimestrais. Confirmar a cobertura de contas e copiar Storage separadamente. A restauração deve reaplicar eliminações devidas e preservar restrições de acesso. As metas são até 24 horas para proteger alterações e recuperação em até um dia útil, a comprovar. A rotina permanece pendente de implantação e primeiro ensaio; não declarar redundância ou recuperação garantidas sem evidência.

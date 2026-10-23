@@ -54,3 +54,9 @@ Aguardando o responsável pelo projeto revisar os 23 modelos e variantes E01–E
 
 
 - Atualização de 22/10/2026: parecer de e-mails e esclarecimentos posteriores consolidados pela autorização de publicação. A antiga pendência editorial de E16/E17 foi resolvida: Atendimento concluído, sem menção ao RI/guia e com botão da página pública do trabalho. Pendências futuras do mestre e aceite assistido não são implementados automaticamente por esta liberação.
+
+## Implantação do protocolo de backup — 23/10/2026
+
+- Configurar a conta e o bucket Backblaze B2 escolhidos, o executor GitHub Actions, o monitor externo e o substituto conforme docs/configuracao-backup-b2.md, sem contratação automática. Medir tamanho/tráfego e confirmar compatibilidade com as franquias gratuitas antes de ativar.
+- Confirmar plano/cobertura atual do Supabase, configurar rotina e alertas, testar expiração e executar primeiro ensaio de recuperação. Não considerar proteção comprovada antes dessas evidências.
+- Articular custódia e preservação de longo prazo com UFBA/STI, sem presumir aceite institucional.
