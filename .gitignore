@@ -18,3 +18,6 @@ test-results/
 scripts/backup/__pycache__/
 *.age
 *.dump
+
+# Identidade de recuperação: guardar somente no gerenciador, fora do repositório.
+pronto-recuperacao-backup*.txt

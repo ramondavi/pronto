@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Prepara entrega local da chave de recuperação ao responsável, com teste criptográfico sintético e cadastro somente da parte pública no GitHub após confirmação de guarda. A chave privada fica fora do executor; backup continua desativado até o ensaio.
+
 - Backup preparado para a chave de servidor atual do Supabase na leitura dos documentos privados, com cadastro local protegido e compatibilidade com credenciais legadas existentes. Ativação e validação de acesso continuam pendentes.
 
 - Prepara cadastro local protegido do acesso ao banco para o backup, com envio direto aos segredos do GitHub e conferência do projeto e da conexão de sessão. A rotina continua desativada até completar a configuração e o ensaio.

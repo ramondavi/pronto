@@ -120,10 +120,12 @@ def make_handler(status_path, csrf, state, *, form=None, configure=None, success
         def log_message(self, *args):
             pass  # Never log requests, headers, form data or provider exceptions.
 
-        def reply(self, body, status=200):
-            data = body.encode("utf-8")
+        def reply(self, body, status=200, *, content_type="text/html; charset=utf-8", download_name=None):
+            data = body.encode("utf-8") if isinstance(body, str) else body
             self.send_response(status)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", content_type)
+            if download_name is not None:
+                self.send_header("Content-Disposition", 'attachment; filename="' + download_name + '"')
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
             # no-referrer makes browser form submissions send Origin: null.

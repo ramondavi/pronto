@@ -106,3 +106,11 @@ Acesso PostgreSQL cadastrado pelo responsável; confirmação do formulário e n
 Referência do formato atual: https://supabase.com/docs/guides/getting-started/api-keys.
 
 Cadastro da chave dos documentos concluído pelo responsável em 23/10/2026: resultado configured e presença de BACKUP_STORAGE_READ_TOKEN confirmados sem consulta ao valor. O formulário do Supabase aceita nome com letras minúsculas, números e sublinhado: usar pronto_backup, sem prefixar o nome com sb_secret_. Corrigida a orientação; esse prefixo pertence ao valor gerado. A chave ainda não foi testada contra o Storage; BACKUP_ENABLED permanece false.
+
+## Entrega local da identidade de recuperação
+
+O responsável informou usar gerenciador de senhas. scripts/backup/provision_recovery.py prepara uma página local temporária para gerar e entregar a identidade privada como download direto, nunca em HTML, logs, argumentos de processos, arquivo de estado ou GitHub. A geração usa age-keygen oficial; antes de entregar, comprova criptografia/descriptografia de conteúdo sintético. Só o arquivo criptografado desse teste toca temporários; a identidade vai por entrada padrão aos subprocessos.
+
+O operador baixa pronto-recuperacao-backup.txt e guarda pessoalmente seu conteúdo em nota segura ou anexo do gerenciador. Um novo pedido de download na mesma sessão entrega a mesma identidade. Após conferir a guarda, confirma na página; somente então BACKUP_AGE_RECIPIENT recebe a parte pública no ambiente backup-production. O executor permanece desativado. Uma parte pública já cadastrada bloqueia esta preparação: rotação exige preservar as identidades antigas até expirarem todas as cópias correspondentes. A página encerra após confirmação ou 30 minutos e descarta o estado em memória; não recuperar identidades privadas pelo agente.
+
+Foi preparada a distribuição oficial age v1.3.2 para Windows x64, com checksum SHA-256 do pacote conferido contra a publicação oficial em FiloSottile/age. O arquivo privado que o navegador salva em Downloads fica sob controle do responsável; após conferir sua guarda no gerenciador, ele deve remover pessoalmente essa cópia solta. O assistente não lê, transmite ou exclui esse arquivo. A guarda informada pelo responsável não substitui o primeiro ensaio real, a definição institucional de custódia e o acesso do substituto.
