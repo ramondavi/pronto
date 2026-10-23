@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 23 de outubro de 2026
 
+- Corrige a confirmação do formulário local de cadastro de backup, que bloqueava o envio legítimo do navegador. A validação de origem e a proteção contra envios externos permanecem ativas.
+
 - Integração de backup com Backblaze B2 preparada para verificar mudanças diariamente, exportar e criptografar somente quando necessário, renovar cópias antes da expiração e alertar falhas. Permanece desativada até configuração segura e primeiro ensaio; sem alteração no banco remoto.
 
 - A operação passa a ter protocolo de backup e recuperação com cópias independentes, alertas, ensaios e conciliação de expurgos. A implantação e o primeiro teste continuam pendentes, sem promessa de proteção já ativa.

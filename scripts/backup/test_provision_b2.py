@@ -84,9 +84,11 @@ class ProvisionTest(unittest.TestCase):
                 try:
                     with urlopen(origin) as page:
                         self.assertEqual(page.headers["Cache-Control"], "no-store")
+                        self.assertEqual(page.headers["Referrer-Policy"], "same-origin")
                         self.assertIn("frame-ancestors 'none'", page.headers["Content-Security-Policy"])
                     body = urlencode({"csrf": "synthetic-csrf", "identifier": "synthetic-id", "credential": "synthetic-value"}).encode()
-                    for headers, data in (({"Origin": "https://example.org"}, body),
+                    for headers, data in (({"Origin": "null"}, body),
+                                           ({"Origin": "https://example.org"}, body),
                                            ({"Origin": origin}, body.replace(b"synthetic-csrf", b"incorrect-csrf"))):
                         with self.assertRaises(HTTPError):
                             urlopen(Request(origin + "/configure", data=data, headers=headers))

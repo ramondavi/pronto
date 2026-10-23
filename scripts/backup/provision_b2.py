@@ -6,6 +6,7 @@ authorizing B2 and creating a bucket-scoped application key. It is never stored.
 
 from __future__ import annotations
 
+import argparse
 import base64
 import hmac
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -14,7 +15,6 @@ from pathlib import Path
 import secrets
 import shutil
 import subprocess
-import sys
 import time
 from urllib.parse import parse_qs, urlsplit
 from urllib.request import Request, build_opener
@@ -126,7 +126,9 @@ def make_handler(status_path, csrf, state):
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
-            self.send_header("Referrer-Policy", "no-referrer")
+            # no-referrer makes browser form submissions send Origin: null.
+            # Preserve the local origin so strict Origin/CSRF checks keep working.
+            self.send_header("Referrer-Policy", "same-origin")
             self.send_header("X-Frame-Options", "DENY")
             self.send_header("X-Content-Type-Options", "nosniff")
             self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'")
@@ -169,10 +171,14 @@ def make_handler(status_path, csrf, state):
 
 
 def main():
-    require(len(sys.argv) == 2, "local_status_path_required")
-    status_path = Path(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Cadastro local protegido do backup")
+    parser.add_argument("status_file", type=Path)
+    parser.add_argument("--port", type=int, default=0)
+    options = parser.parse_args()
+    require(0 <= options.port <= 65535, "invalid_local_port")
+    status_path = options.status_file
     state = {"done": False}
-    with HTTPServer(("127.0.0.1", 0), make_handler(status_path, secrets.token_urlsafe(32), state)) as server:
+    with HTTPServer(("127.0.0.1", options.port), make_handler(status_path, secrets.token_urlsafe(32), state)) as server:
         server.timeout = 1
         status_path.write_text(json.dumps({"ready": True, "url": "http://127.0.0.1:" + str(server.server_port)}), encoding="utf-8")
         deadline = time.monotonic() + 1800
