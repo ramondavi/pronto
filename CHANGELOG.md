@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 22 de outubro de 2026
 
+- Cadastro passa a informar no início do formulário o atendimento exclusivo a estudantes concluintes dos cursos da FAUFBA. Formulários administrativos passam a distinguir dados salvos, alterações pendentes, salvamento e falha de confirmação, com destaque nos campos alterados e botão “Salvo” quando não há mudanças.
+
 - Recuperação de senha aguarda a inicialização da autenticação para preservar a sessão após confirmar o link, aceita o endereço usado por modelos anteriores e distingue indisponibilidade de link inválido.
 
 - Corrige os links do e-mail de recuperação para abrir a confirmação da nova senha, inclusive em outro navegador. Modelo de produção sincronizado sem enviar mensagens de teste.

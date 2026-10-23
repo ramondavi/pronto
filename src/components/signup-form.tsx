@@ -38,6 +38,7 @@ export function SignupForm() {
   return <>
     <AuthFeedback error={state.formError ?? undefined} />
     <form ref={formRef} className="form-stack auth-form" action={formAction} noValidate onSubmit={(event) => { if (!isUfbaEmail(email)) { event.preventDefault(); setEmailBlurred(true); formRef.current?.querySelector<HTMLInputElement>('input[name="email"]')?.focus(); return; } setClearedErrors(new Set()); }}>
+      <p className="signup-audience-notice">{t("O Pronto! é voltado exclusivamente para estudantes concluintes dos cursos da Faculdade de Arquitetura da UFBA.")}</p>
       <h2 className="auth-form__section-title">{t("Seus dados")}</h2>
       <label>{t("Nome completo")}<input name="name" autoComplete="name" value={name} onChange={(event) => { setName(event.target.value); clearError("name"); }} required aria-invalid={Boolean(errorFor("name"))} aria-describedby={errorFor("name") ? "signup-name-error" : undefined} />{errorFor("name") && <span id="signup-name-error" className="signup-field-error" role="alert">{t(errorFor("name")!)}</span>}</label>
       <div className="auth-form__pair"><label>CPF<input name="cpf" inputMode="numeric" autoComplete="off" placeholder="000.000.000-00" maxLength={14} value={cpf} onChange={(event) => { setCpf(formatCpfInput(event.target.value)); clearError("cpf"); }} required aria-invalid={Boolean(errorFor("cpf"))} aria-describedby={errorFor("cpf") ? "signup-cpf-error" : undefined} />{errorFor("cpf") && <span id="signup-cpf-error" className="signup-field-error" role="alert">{t(errorFor("cpf")!)}</span>}</label>

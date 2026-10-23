@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AppIcon } from "@/components/app-icon";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
+import { SavedForm, SaveButton } from "./saved-form";
 import { createClient } from "@/lib/supabase/client";
 
 type Term = { id: string; preferred_label_pt: string; preferred_label_en: string | null; active: boolean; usage_count: number; sources: string[]; total_count: number };
@@ -72,14 +73,15 @@ export function ControlledTermsAdmin() {
   function chooseReview(value: string) { setReview(value); setOffset(0); }
 
   async function persist(term: Term, labelPt: string, labelEn: string, enabled: boolean) {
-    if (labelPt === term.preferred_label_pt && labelEn === (term.preferred_label_en ?? "") && enabled === term.active) { setEditing(null); return; }
+    if (labelPt === term.preferred_label_pt && labelEn === (term.preferred_label_en ?? "") && enabled === term.active) { setEditing(null); return true; }
     setBusy(term.id);
     const supabase = createClient();
     const { error: saveError } = await supabase.rpc("admin_save_controlled_term", { term_id: term.id, label_pt: labelPt, label_en: labelEn, enabled });
+    const { data: saved, error: readError } = saveError ? { data: null, error: true } : await supabase.from("controlled_terms").select("preferred_label_pt,preferred_label_en,active").eq("id", term.id).single();
     setBusy(null);
-    if (saveError) {
-      const reason = saveError.message.includes("controlled_term_used_by_open_request") ? "Este assunto está em um atendimento aberto. Conclua ou cancele o protocolo antes de alterar o cadastro." : saveError.code === "23505" ? "Já existe um assunto com essa forma em português ou inglês." : "Confira os nomes e tente novamente.";
-      setError(reason); showPanelChangeError("Assunto não salvo", reason); return;
+    if (saveError || readError || saved?.preferred_label_pt !== labelPt || (saved.preferred_label_en ?? "") !== labelEn || saved.active !== enabled) {
+      const reason = saveError?.message.includes("controlled_term_used_by_open_request") ? "Este assunto está em um atendimento aberto. Conclua ou cancele o protocolo antes de alterar o cadastro." : saveError?.code === "23505" ? "Já existe um assunto com essa forma em português ou inglês." : "Não foi possível confirmar o salvamento. Confira os nomes e tente novamente.";
+      setError(reason); showPanelChangeError("Assunto não salvo", reason); return false;
     }
     setEditing(null); refresh();
     showPanelChange(enabled !== term.active ? enabled ? "Assunto ativado" : "Assunto desativado" : "Assunto atualizado", async () => {
@@ -87,6 +89,7 @@ export function ControlledTermsAdmin() {
       if (undoError) throw undoError;
       refresh();
     });
+    return true;
   }
 
   async function showUsage(term: Term) {
@@ -133,7 +136,7 @@ export function ControlledTermsAdmin() {
     {error && <div className="notice notice--error controlled-terms-admin__error" role="alert"><span>{error}</span><button type="button" onClick={refresh}>Tentar novamente</button></div>}
 
     <div className="controlled-terms-admin__list">{items.map((term) => <article className={`controlled-terms-admin__item${term.active ? "" : " is-inactive"}`} key={term.id}>
-      {editing === term.id ? <form className="controlled-terms-admin__edit" action={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label>Termo preferido em português<input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label>Equivalente em inglês <small>Opcional, quando confirmado na fonte</small><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /></label></div><Sources sources={term.sources} /><div className="controlled-terms-admin__actions"><button className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</button><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}>Cancelar</button></div></form> : <>
+      {editing === term.id ? <SavedForm className="controlled-terms-admin__edit" onSave={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label>Termo preferido em português<input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label>Equivalente em inglês <small>Opcional, quando confirmado na fonte</small><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /></label></div><Sources sources={term.sources} /><div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}>Cancelar</button></div></SavedForm> : <>
         <div className="controlled-terms-admin__main"><div className="controlled-terms-admin__title"><strong>{term.preferred_label_pt}</strong><span className={`controlled-terms-admin__state${term.active ? " is-active" : ""}`}>{term.active ? "Ativo" : "Inativo"}</span></div><p className="controlled-terms-admin__english"><span>EN</span>{term.preferred_label_en ?? "Sem equivalente em inglês"}</p><Sources sources={term.sources} /></div>
         <div className="controlled-terms-admin__side"><div className="controlled-terms-admin__usage"><strong>{term.usage_count}</strong><span>{term.usage_count === 1 ? "protocolo" : "protocolos"}</span></div><div className="controlled-terms-admin__actions"><button type="button" className="button button--secondary button--small" onClick={() => { setEditing(term.id); setExpanded(null); }}><AppIcon name="edit" /> Editar</button><button type="button" className="button button--secondary button--small" disabled={busy === term.id} onClick={() => persist(term, term.preferred_label_pt, term.preferred_label_en ?? "", !term.active)}>{term.active ? "Desativar" : "Ativar"}</button>{term.usage_count === 0 && <button type="button" className="button button--secondary button--small controlled-terms-admin__delete" onClick={() => setDeleting(term)}>Excluir</button>}</div></div>
         {term.usage_count > 0 && <div className="controlled-terms-admin__details"><button type="button" aria-expanded={expanded === term.id} onClick={() => showUsage(term)}>{expanded === term.id ? "Ocultar protocolos" : "Ver protocolos que usam este assunto"}<span aria-hidden="true">{expanded === term.id ? "↑" : "↓"}</span></button>{expanded === term.id && <div className="controlled-terms-admin__protocols">{loadingUsage === term.id ? <p>Carregando protocolos…</p> : (usage[term.id] ?? []).map((entry) => <Link key={entry.request_id} href={`/painel/atendimento/${entry.request_id}`}><strong>{entry.protocol}</strong><span>{statusNames[entry.request_status] ?? entry.request_status}{entry.is_primary ? " · Assunto principal" : ""}{entry.source_code ? ` · ${sourceNames[entry.source_code] ?? entry.source_code}` : " · Fonte não registrada"}</span><AppIcon name="arrowRight" /></Link>)}{term.usage_count > 30 && <p>Exibindo os 30 protocolos mais recentes.</p>}</div>}</div>}

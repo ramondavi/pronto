@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+.signup-audience-notice { margin: 0 0 8px; padding: 14px 16px; border: 1px solid var(--line); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .88rem; line-height: 1.55; }
+.saved-form__status { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; width: 100%; margin-bottom: 4px; color: var(--success); font-size: .78rem; font-weight: 650; }
+.saved-form__status svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.saved-form[data-save-state="dirty"] > .saved-form__status, .saved-form[data-save-state="saving"] > .saved-form__status { color: var(--institutional); }
+.saved-form[data-save-state="error"] > .saved-form__status { color: var(--danger); }
+.saved-form :is(input:not([type="hidden"]):not([type="checkbox"]),select,textarea)[data-save-state="saved"] { background: color-mix(in srgb, var(--success) 3%, var(--field)); }
+.saved-form [data-save-state="dirty"]:is(input:not([type="hidden"]),select,textarea,[data-save-name]) { outline: 1px solid var(--institutional); outline-offset: 1px; background: color-mix(in srgb, var(--institutional) 7%, var(--field)); }
+.saved-form[data-save-state="saved"] button[type="submit"] { color: var(--success); opacity: 1; background: var(--surface); border-color: var(--line); cursor: default; }
+
 :root {
   --bg: #ffffff;
   --surface: #f3f3f1;

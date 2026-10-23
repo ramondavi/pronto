@@ -45,6 +45,10 @@ Se houver falha crítica após a publicação, reverta a implantação da Vercel
 
 ### Envio de e-mails em produção
 
+Validação controlada de 22/10/2026: o PR #12 foi integrado e o deployment `fdfd7a7` foi confirmado no domínio público. Um novo link de recuperação foi solicitado para a conta autorizada do responsável; ele confirmou que a confirmação abriu “Nova senha / Confirmar nova senha”. A troca efetiva de sua senha não foi necessária neste ensaio.
+
+No canal transacional, foi enfileirada uma única mensagem identificada como teste autorizado em `account_notification_outbox`, sem criar solicitação de estudante. O processamento agendado pela hospedagem registrou `delivered`, uma tentativa, nenhum erro e horário de entrega preenchido; o destinatário confirmou o recebimento. Esse teste comprova o canal hospedado compartilhado pelo processador das filas, não cada gatilho, template ou comunicação de protocolo. A mensagem de diagnóstico permanece como evidência operacional, sem alteração dos demais registros. O aceite assistido ocorrerá após o teste do retrospectivo RAU+E.
+
 - A fila transacional é processada a cada cinco minutos por Supabase Cron, que chama `POST /api/internal/email-delivery` na Vercel. O endpoint exige o segredo `EMAIL_WORKER_SECRET`; a função de banco aceita somente a chave de serviço no servidor. Nunca exponha essa chave ou a senha SMTP em variáveis `NEXT_PUBLIC_*`.
 - Na Vercel Production, configure `SUPABASE_SECRET_KEY` (chave secret atual, nunca a chave pública), `SMTP_PASSWORD` e `EMAIL_WORKER_SECRET` como variáveis do tipo Secret. `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SITE_URL` também precisam estar corretas. O usuário SMTP é `bibarq@ufba.br` e o servidor é `smtps.ufba.br:465` com TLS.
 - No Supabase Vault, mantenha `pronto_email_worker_url` com a URL completa do endpoint de produção e `pronto_email_worker_secret` com o mesmo valor de `EMAIL_WORKER_SECRET`. Ambos foram cadastrados em 16/10/2026. A tarefa agendada está ativa; sua última execução sem erro confirma o agendamento, não a entrega de e-mail.
