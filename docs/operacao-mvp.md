@@ -66,3 +66,7 @@ O PR3 foi promovido para o domínio público em 16/10/2026. Ainda faltam o teste
 - A migração `202610120002` remove as funções, a tabela e a política de ensaio local criadas por migrações anteriores, inclusive as RPCs de entrega via Mailpit, e restabelece a imutabilidade estrita das fichas homologadas. A tela de prévia com dados fictícios e os controles locais de persona, exclusão de protocolo e entrega de e-mails foram retirados do aplicativo. Os testes automatizados permanecem no repositório.
 - Após a aplicação remota, o deployment do commit `e89aaef` (PR3) foi promovido para `prontobib.vercel.app` em 16/10/2026. Com a atribuição automática de domínios desativada na Vercel, builds prontos ficam em Production Staged e não atualizam o domínio sem promoção manual.
 - Foram preservadas a conta administrativa, duas contas reais de catalogadores, cinco programas e a ocorrência de fechamento de 26/10 cadastradas pelo responsável. Não tratar esses registros como dados fictícios de teste.
+
+## Backup e recuperação — requisito de lançamento
+
+Seguir docs/protocolo-backup-recuperacao.md. Conferir diariamente último ponto recuperável e alertas. Antes do lançamento, registrar destino independente, executor e substituto, cobertura de banco/Auth/Storage, expiração de 90 dias e primeiro ensaio aprovado. Repetir o ensaio trimestralmente. Não restaurar sobre produção sem impacto explicado e confirmação explícita. Estado em 23/10/2026: protocolo documentado; execução e recuperação ainda não comprovadas nesta entrega.

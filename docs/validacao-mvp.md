@@ -70,3 +70,7 @@ Critério de saída: nenhuma falha crítica ou alta aberta, nenhum vazamento ent
 
 
 - Conferência autenticada em 22/10: sessão ativa redireciona /entrar para /painel sem campos de senha; Depósitos pendentes abre em Administração → Controle; demonstração inicia apenas etapa 0 e o modal de destino incorreto encaminha ao pedido de correção. Encontrado e corrigido rótulo indevido de Nada Consta na fila retrospectiva, com teste de regressão. Verificação completa posterior: 134 testes, tipos, lint e build aprovados (tmp/verification/run-n6G3Ky/summary.json). CI do commit 789d626 também aprovado, incluindo navegador e banco.
+
+## Aceite de backup e recuperação
+
+Aplicar docs/protocolo-backup-recuperacao.md. Registrar evidências sem dados pessoais: cópia diária independente, cobertura de banco/Auth e objetos do Storage, integridade, expiração de 90 dias, alerta de falha e de ausência de execução, restauração isolada e conciliação de expurgos. Confirmar RLS e contas bloqueadas/inativas após restauração; medir defasagem máxima de 24 horas e recuperação em até um dia útil. Estado: não executado nesta entrega; pendência de lançamento.

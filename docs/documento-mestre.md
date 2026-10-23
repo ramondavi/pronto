@@ -499,6 +499,13 @@ O fluxo observado e confirmado é: coleção; tipo de documento; cinco grupos de
 - Exportação básica CSV/JSON e backup de dados essenciais.
 - Relatórios avançados ficam para depois; não criar módulo separado de relatórios anuais.
 
+### Backup, recuperação e preservação — decisão de 23/10/2026
+
+- Adotar docs/protocolo-backup-recuperacao.md: cópia diária independente e criptografada, rotação de 90 dias, cobertura de banco/Auth e Storage separado, alertas, primeiro ensaio antes do lançamento e repetição trimestral.
+- Metas iniciais: ponto recuperável com até 24 horas de defasagem e recuperação em até um dia útil, sujeitas a comprovação. Destino, executor, substituto e custos permanecem pendentes; nenhum serviço pago ou alteração remota é autorizado por esta decisão.
+- Antes de liberar dados restaurados, conciliar exclusões e reaplicar expurgos e restrições. A guarda acadêmica de longo prazo exige planejamento de custódia com a UFBA/STI, além dos backups rotativos.
+- Protocolo aprovado não significa rotina implantada: exigir evidência de cópia, alertas e restauração antes de declarar prontidão.
+
 ## 18. Arquitetura e hospedagem
 
 ### 18.1. Fundação e hospedagem inicial

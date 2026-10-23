@@ -17,3 +17,7 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Coordenações cadastradas pelo responsável. Aceite assistido após o teste do retrospectivo RAU+E.
 - PR #13 publicado. Isolamento: verificacao-recuperacao-2026-10-23.md.
 - Regras operacionais: operacao-mvp.md. Migrações aplicadas são imutáveis; nunca resetar banco remoto nem copiar seeds de testes para produção. Conta especial da secretaria não deve receber convite automático.
+
+## Backup e preservação — 23/10/2026
+
+- Protocolo aprovado documentado em protocolo-backup-recuperacao.md; regras sincronizadas com mestre, política e operação. Destino, executor/substituto, rotina, alertas e primeiro ensaio permanecem pendentes. Nenhum backup ou restauração de produção comprovado nesta entrega.

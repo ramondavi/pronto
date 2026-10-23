@@ -54,3 +54,9 @@ Aguardando o responsável pelo projeto revisar os 23 modelos e variantes E01–E
 
 
 - Atualização de 22/10/2026: parecer de e-mails e esclarecimentos posteriores consolidados pela autorização de publicação. A antiga pendência editorial de E16/E17 foi resolvida: Atendimento concluído, sem menção ao RI/guia e com botão da página pública do trabalho. Pendências futuras do mestre e aceite assistido não são implementados automaticamente por esta liberação.
+
+## Implantação do protocolo de backup — 23/10/2026
+
+- Definir armazenamento independente, executor, substituto e custos conforme docs/protocolo-backup-recuperacao.md, sem contratação automática.
+- Confirmar plano/cobertura atual do Supabase, configurar rotina e alertas, testar expiração e executar primeiro ensaio de recuperação. Não considerar proteção comprovada antes dessas evidências.
+- Articular custódia e preservação de longo prazo com UFBA/STI, sem presumir aceite institucional.
