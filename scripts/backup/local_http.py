@@ -25,4 +25,3 @@ class SecureLocalHandler(BaseHTTPRequestHandler):
 
     def trusted(self):
         return self.headers.get("Host") == "127.0.0.1:" + str(self.server.server_port)
-
