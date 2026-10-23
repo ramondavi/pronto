@@ -9,9 +9,6 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 ### 23 de outubro de 2026
 
 - A operação passa a ter protocolo de backup e recuperação com cópias independentes, alertas, ensaios e conciliação de expurgos. A implantação e o primeiro teste continuam pendentes, sem promessa de proteção já ativa.
-
-### 23 de outubro de 2026
-
 - Recuperação de senha usa sessão temporária separada do acesso ao painel. Abrir e abandonar o link não conecta a conta ao Pronto!; após trocar a senha, a autorização de recuperação é encerrada e a pessoa deve entrar normalmente.
 
 ### 22 de outubro de 2026
