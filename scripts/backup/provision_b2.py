@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hmac
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import HTTPServer
 import json
 from pathlib import Path
 import secrets
@@ -20,6 +20,7 @@ from urllib.parse import parse_qs, urlsplit
 from urllib.request import Request, build_opener
 
 from run_backup import BackupError, NoRedirect, require
+from local_http import SecureLocalHandler
 
 
 CAPABILITIES = ["listBuckets", "readBuckets", "readBucketEncryption", "readBucketRetentions",
@@ -116,30 +117,7 @@ Nenhum segredo aparece em relatórios ou arquivos locais. Não envie capturas co
 
 
 def make_handler(status_path, csrf, state, *, form=None, configure=None, success_body=None, preserve_password=False):
-    class Handler(BaseHTTPRequestHandler):
-        def log_message(self, *args):
-            pass  # Never log requests, headers, form data or provider exceptions.
-
-        def reply(self, body, status=200, *, content_type="text/html; charset=utf-8", download_name=None):
-            data = body.encode("utf-8") if isinstance(body, str) else body
-            self.send_response(status)
-            self.send_header("Content-Type", content_type)
-            if download_name is not None:
-                self.send_header("Content-Disposition", 'attachment; filename="' + download_name + '"')
-            self.send_header("Content-Length", str(len(data)))
-            self.send_header("Cache-Control", "no-store")
-            # no-referrer makes browser form submissions send Origin: null.
-            # Preserve the local origin so strict Origin/CSRF checks keep working.
-            self.send_header("Referrer-Policy", "same-origin")
-            self.send_header("X-Frame-Options", "DENY")
-            self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'")
-            self.end_headers()
-            self.wfile.write(data)
-
-        def trusted(self):
-            return self.headers.get("Host") == "127.0.0.1:" + str(self.server.server_port)
-
+    class Handler(SecureLocalHandler):
         def do_GET(self):
             if not self.trusted() or self.path != "/":
                 self.reply("Acesso indisponível.", 403)

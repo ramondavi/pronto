@@ -234,6 +234,10 @@ class DatabaseIntegrationTest(unittest.TestCase):
         connect = lambda: psycopg.connect(host="127.0.0.1", port=55432, user="postgres", password="synthetic",
                                           dbname="postgres", sslmode="disable", autocommit=True)
         with connect() as setup:
+            # Clean only this loopback fixture so an interrupted local test is repeatable.
+            setup.execute("DROP DATABASE IF EXISTS backup_restored")
+            setup.execute("DROP DATABASE IF EXISTS manual_restored")
+            setup.execute("DROP TABLE IF EXISTS auth.users, storage.objects, public.records CASCADE")
             setup.execute("CREATE SCHEMA IF NOT EXISTS auth; CREATE SCHEMA IF NOT EXISTS storage;")
             setup.execute("CREATE SCHEMA IF NOT EXISTS supabase_migrations;")
             setup.execute("CREATE TABLE auth.users (id int PRIMARY KEY, status text);")
@@ -286,6 +290,28 @@ class DatabaseIntegrationTest(unittest.TestCase):
             backup.run_tool(["age", "-r", public, "-o", str(folder / "dump.age"), str(folder / "database.dump")])
             backup.run_tool(["age", "-d", "-i", str(folder / "identity"), "-o", str(folder / "decoded.dump"), str(folder / "dump.age")])
             self.assertEqual(backup.digest_file(folder / "decoded.dump"), backup.digest_file(folder / "database.dump"))
+            # The contingency path must create and recover the same complete
+            # encrypted format without consulting GitHub, B2 or a heartbeat.
+            import manual_backup as manual
+            import tarfile
+            fields = {"BACKUP_SOURCE_ID": "synthetic-manual", "BACKUP_AGE_RECIPIENT": public,
+                      "SUPABASE_URL": "https://synthetic.supabase.co", "BACKUP_STORAGE_READ_TOKEN": "synthetic"}
+            destination = folder / "manual-copies"
+            destination.mkdir()
+            with patch.object(manual, "database_tls", return_value=contextlib.nullcontext()):
+                receipt = manual.execute_manual(fields, destination, connect=connect, now=NOW)
+            backup.run_tool(["age", "-d", "-i", str(folder / "identity"), "-o", str(folder / "manual.tar.gz"),
+                             str(destination / receipt["archive"])])
+            with tarfile.open(folder / "manual.tar.gz", "r:gz") as tar:
+                tar.extract("backup/database.dump", folder / "manual-unpacked", filter="data")
+            with connect() as setup:
+                setup.execute("CREATE DATABASE manual_restored")
+            backup.run_tool(["pg_restore", "--exit-on-error", "--clean", "--if-exists", "--dbname=manual_restored",
+                             str(folder / "manual-unpacked" / "backup" / "database.dump")])
+            with psycopg.connect(host="127.0.0.1", port=55432, user="postgres", password="synthetic",
+                                  dbname="manual_restored", sslmode="disable", autocommit=True) as restored_db:
+                self.assertEqual(restored_db.execute("SELECT value FROM public.records WHERE id=1").fetchone()[0], "after snapshot")
+                self.assertEqual(restored_db.execute("SELECT status FROM auth.users WHERE id=1").fetchone()[0], "blocked")
 
 
 def subprocess_public_recipient(identity):

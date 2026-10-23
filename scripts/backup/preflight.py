@@ -44,6 +44,24 @@ def check_public_recipient():
             "public_recipient_not_accepted")
 
 
+def error_code(error, stage):
+    if isinstance(error, BackupError):
+        return str(error)
+    if stage == "banco":
+        # Inspect locally only; never echo provider messages or connection strings.
+        message = str(error).lower()
+        if getattr(error, "sqlstate", None) in {"28P01", "28000"} or "password authentication failed" in message:
+            return "database_credentials_not_accepted"
+        if any(text in message for text in ("certificate verify failed", "root certificate", "ssl certificate")):
+            return "database_tls_validation_failed"
+        if "tenant or user not found" in message:
+            return "database_project_or_pooler_not_found"
+        if any(text in message for text in ("timeout", "could not translate host", "network is unreachable", "connection refused")):
+            return "database_network_unavailable"
+        return "database_connection_failed"
+    return "access_check_failed"
+
+
 def main():
     os.umask(0o077)
     stage = "configuracao"
@@ -75,7 +93,7 @@ def main():
         print("Verificacao previa concluida. Nenhuma copia criada, nenhum ping enviado; agendamento inalterado.")
         return 0
     except Exception as error:
-        code = str(error) if isinstance(error, BackupError) else "access_check_failed"
+        code = error_code(error, stage)
         print("Verificacao previa interrompida em " + stage + ": " + code + ".", file=sys.stderr)
         return 1
 

@@ -505,6 +505,7 @@ O fluxo observado e confirmado é: coleção; tipo de documento; cinco grupos de
 - Metas iniciais: nenhuma alteração por mais de 24 horas sem cópia recuperável e recuperação em até um dia útil, sujeitas a comprovação. Vercel/Supabase Free confirmados; Backblaze B2 escolhido para integração com a franquia gratuita e executor GitHub Actions separado do site. Conta, bucket, credenciais, monitor externo, substituto e ensaio permanecem pendentes; nenhum serviço pago ou alteração remota é autorizado por esta decisão. Configuração: docs/configuracao-backup-b2.md.
 - Antes de liberar dados restaurados, conciliar exclusões e reaplicar expurgos e restrições. A guarda acadêmica de longo prazo exige planejamento de custódia com a UFBA/STI, além dos backups rotativos.
 - Protocolo aprovado não significa rotina implantada: exigir evidência de cópia, alertas e restauração antes de declarar prontidão.
+- Contingência manual aprovada em 23/10/2026: preparar pacote local para Windows com ferramentas incluídas, capaz de exportar banco/Auth e PDFs privados para cópia criptografada em pasta privada ou disco externo, sem GitHub, B2, Healthchecks ou painel. Supabase e internet continuam necessários. Manter consistência, integridade, chave privada separada e rotação de 90 dias; nas cópias locais, o responsável faz o expurgo, pois mídia desconectada não executa tarefas. Instruções: docs/backup-manual-independente.md. A aba administrativa foi sugerida e permanece entrega separada, sem implementação nesta etapa.
 
 ## 18. Arquitetura e hospedagem
 
