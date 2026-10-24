@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 24 de outubro de 2026
 
+- Prepara checksum de transporte nos envios ao bucket com retenção, mantendo a conferência SHA-256 após o download. Acrescenta progresso e diagnóstico por códigos fixos na cópia real, sem publicar dados do banco, nomes de arquivos, mensagens do provedor ou credenciais. As proteções de consistência e a agenda desativada permanecem.
+
 - Ajusta a conferência das regras de ciclo de vida ao formato dividido retornado pelo Backblaze, preservando os prazos aprovados. Prepara a permissão restrita de leitura dessa configuração e diagnósticos estáticos por operação, sem revelar segredos, conceder exclusão ou ativar backups.
 
 - Corrige a verificação de acesso ao banco para iniciar uma transação explicitamente somente de leitura, mantendo a conferência dessa proteção mesmo quando o pooler não preserva as opções iniciais da conexão. Não consulta fichas, não gera cópias e não ativa a agenda.

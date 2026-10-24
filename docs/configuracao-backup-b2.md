@@ -146,3 +146,15 @@ A permissão adicional lê somente a configuração do ciclo de vida do bucket d
 Os diagnósticos B2 agora distinguem a operação e categorias fixas de permissão, autenticação, assinatura, rede e configuração; mensagens do provedor, identificadores de requisição e códigos desconhecidos não são publicados. Uma permissão ausente está comprovada no provisionador; a causa completa da execução remota só será confirmada depois da substituição e do novo teste.
 
 Fontes oficiais: [permissões S3](https://www.backblaze.com/docs/cloud-storage-s3-compatible-app-keys) e [representação das regras](https://www.backblaze.com/apidocs/s3-get-lifecycle-configuration). Os 56 testes Python passaram, incluindo as duas representações e casos que devem ser recusados, além de exportação, criptografia e restauração exclusivamente fictícias no PostgreSQL local.
+
+## Primeira cópia autorizada em 24/10/2026
+
+O responsável informou que ainda não há PDFs no Pronto e autorizou a primeira cópia real, sem ativar a agenda. Após o PR 18 e o recadastro protegido da credencial B2, a verificação completa passou: TLS e transação somente leitura, privacidade/retenção/ciclo de vida do B2, configuração do Storage privado e criptografia de mensagem fictícia para a parte pública de recuperação.
+
+A primeira tentativa de exportação interrompeu por sequences_changed_during_backup, antes do envio; a repetição retornou execution_failed. Não há confirmação de cópia válida. Não presumir ausência de objetos órfãos na segunda falha, pois o diagnóstico anterior não indicava a etapa. A proteção contra mudança de sequência permanece: não ignorar a falha nem declarar a exportação consistente.
+
+A revisão também identificou ausência de checksum de transporte explícito nos PutObject. O protocolo S3 exige Content-MD5 ou checksum equivalente para objetos com retenção. A correção envia Content-MD5 do arquivo já criptografado e dos marcadores/relatórios, sem substituir SHA-256, TLS ou criptografia age. O arquivo é baixado e conferido por SHA-256 antes do marcador de conclusão. Não há permissão nova, exclusão automática de objetos ou alteração de retenção.
+
+A execução passa a registrar somente nomes fixos de etapas e categorias fixas de falha. Mensagens do provedor, stderr, SQL, arquivos, nomes de documentos, respostas e credenciais não são publicados. A nova tentativa remota deve comprovar a causa e o resultado depois da incorporação; a autorização da primeira cópia já foi dada, mas o agendamento continua desativado. Ensaio real de restauração e testes de alerta ainda pendentes.
+
+Referência: [requisitos de upload com Object Lock](https://docs.aws.amazon.com/us_en/AmazonS3/latest/userguide/object-lock-managing.html).
