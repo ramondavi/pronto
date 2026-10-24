@@ -37,6 +37,8 @@ class ProvisionTest(unittest.TestCase):
         self.assertEqual(save.call_count, 2)
         request = api.call_args_list[2].kwargs["data"]
         self.assertEqual(request["bucketId"], "synthetic")
+        self.assertIn("readBucketLifecycleRules", request["capabilities"])
+        self.assertNotIn("writeBucketLifecycleRules", request["capabilities"])
         self.assertNotIn("deleteFiles", request["capabilities"])
         self.assertNotIn("writeBucketRetentions", request["capabilities"])
         self.assertEqual(request["validDurationInSeconds"], 15552000)

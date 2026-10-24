@@ -267,6 +267,32 @@ def download_storage(inventory: list[dict], folder: Path) -> list[dict]:
     return result
 
 
+def validate_lifecycle_rules(rules):
+    # B2 maps one native rule into separate S3 expiration, noncurrent-version
+    # expiration and orphan-marker rules. Validate effective actions, not count.
+    code = "bucket_lifecycle_not_confirmed"
+    require(isinstance(rules, list) and 1 <= len(rules) <= 3, code)
+    actions = {"hide": 0, "delete": 0, "markers": 0}
+    allowed = {"ID", "Status", "Filter", "Prefix", "Expiration", "NoncurrentVersionExpiration"}
+    for rule in rules:
+        require(isinstance(rule, dict) and set(rule) <= allowed and rule.get("Status") == "Enabled", code)
+        require(rule.get("Filter", {"Prefix": rule.get("Prefix", "")}) == {"Prefix": ""}, code)
+        require("Prefix" not in rule or rule["Prefix"] == "", code)
+        require("Filter" in rule or "Prefix" in rule, code)
+        before = sum(actions.values())
+        if "Expiration" in rule:
+            if rule["Expiration"] == {"Days": 89}:
+                actions["hide"] += 1
+            else:
+                require(rule["Expiration"] == {"ExpiredObjectDeleteMarker": True}, code)
+                actions["markers"] += 1
+        if "NoncurrentVersionExpiration" in rule:
+            require(rule["NoncurrentVersionExpiration"] == {"NoncurrentDays": 1}, code)
+            actions["delete"] += 1
+        require(sum(actions.values()) > before, code)
+    require(actions["hide"] == 1 and actions["delete"] == 1 and actions["markers"] <= 1, code)
+
+
 class BackupStore:
     def __init__(self, client, bucket: str, source: str):
         self.client, self.bucket = client, bucket
@@ -280,11 +306,7 @@ class BackupStore:
                 lock.get("Rule", {}).get("DefaultRetention") == {"Mode": "COMPLIANCE", "Days": 90},
                 "bucket_retention_must_be_90_days")
         rules = self.client.get_bucket_lifecycle_configuration(Bucket=self.bucket).get("Rules", [])
-        # One dedicated bucket: hide at 89 days, delete old versions after one day.
-        require(len(rules) == 1 and rules[0].get("Status") == "Enabled" and
-                rules[0].get("Filter", {"Prefix": rules[0].get("Prefix", "")}) == {"Prefix": ""} and
-                rules[0].get("Expiration") == {"Days": 89} and
-                rules[0].get("NoncurrentVersionExpiration") == {"NoncurrentDays": 1}, "bucket_lifecycle_not_confirmed")
+        validate_lifecycle_rules(rules)
 
     def stored_bytes(self) -> int:
         # Include hidden/noncurrent versions, not only the visible object list.

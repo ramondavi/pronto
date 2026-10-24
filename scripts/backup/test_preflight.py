@@ -69,6 +69,21 @@ class PreflightTest(unittest.TestCase):
         for message, expected in samples:
             self.assertEqual(setup.error_code(RuntimeError(message), "banco"), expected)
 
+    def test_b2_diagnosis_exposes_only_fixed_operation_and_reason(self):
+        class ProviderFailure(Exception):
+            operation_name = "GetBucketLifecycleConfiguration"
+            response = {"Error": {"Code": "AccessDenied", "Message": "synthetic-private"},
+                        "ResponseMetadata": {"RequestId": "synthetic-private"}}
+        error = ProviderFailure("synthetic-private")
+        self.assertEqual(setup.error_code(error, "armazenamento_b2"), "b2_lifecycle_access_denied")
+        error.operation_name = "synthetic-private"
+        error.response["Error"]["Code"] = "synthetic-private"
+        self.assertEqual(setup.error_code(error, "armazenamento_b2"), "b2_connection_check_failed")
+        self.assertNotIn("synthetic-private", setup.error_code(error, "armazenamento_b2"))
+        error.operation_name = ["synthetic-private"]
+        error.response["Error"]["Code"] = {"synthetic-private": True}
+        self.assertEqual(setup.error_code(error, "armazenamento_b2"), "b2_connection_check_failed")
+
     @patch("preflight.check_environment", side_effect=RuntimeError("synthetic-private-provider-error"))
     def test_errors_never_echo_provider_credentials_or_details(self, check):
         with patch("sys.stderr", new_callable=io.StringIO) as output:

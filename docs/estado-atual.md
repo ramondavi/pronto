@@ -17,4 +17,4 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
 - PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
 - Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backup B2 preparado, desativado; conta, credenciais, monitor, substituto e ensaio Supabase pendentes. Protocolo: protocolo-backup-recuperacao.md; implantação: configuracao-backup-b2.md.
+- Backup desativado; banco validado em leitura. B2: corrigir leitura do ciclo de vida; ensaio, alertas e substituto pendentes. Guias: configuracao-backup-b2.md e backup-manual-independente.md.

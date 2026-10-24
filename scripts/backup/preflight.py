@@ -50,6 +50,30 @@ def check_public_recipient():
 def error_code(error, stage):
     if isinstance(error, BackupError):
         return str(error)
+    if stage == "armazenamento_b2":
+        # Only fixed operation/reason labels may leave this process. Provider
+        # messages, request IDs, endpoints and unknown error codes stay private.
+        operation_name = getattr(error, "operation_name", "")
+        operation_name = operation_name if isinstance(operation_name, str) else ""
+        operation = {"GetBucketAcl": "privacy", "GetObjectLockConfiguration": "retention",
+                     "GetBucketLifecycleConfiguration": "lifecycle"}.get(operation_name, "connection")
+        response = getattr(error, "response", None)
+        reason = "check_failed"
+        if isinstance(response, dict):
+            details = response.get("Error", {})
+            provider_code = details.get("Code") if isinstance(details, dict) else None
+            provider_code = provider_code if isinstance(provider_code, str) else None
+            reason = {"AccessDenied": "access_denied", "Unauthorized": "access_denied",
+                      "InvalidAccessKeyId": "credentials_not_accepted", "ExpiredToken": "credentials_not_accepted",
+                      "InvalidToken": "credentials_not_accepted", "SignatureDoesNotMatch": "signature_not_accepted",
+                      "NoSuchBucket": "bucket_not_found", "NoSuchLifecycleConfiguration": "lifecycle_not_configured",
+                      "ObjectLockConfigurationNotFoundError": "retention_not_configured",
+                      "RequestTimeTooSkewed": "clock_skew", "NotImplemented": "request_not_supported"}.get(provider_code, reason)
+        if type(error).__name__ in {"EndpointConnectionError", "ConnectTimeoutError", "ReadTimeoutError"}:
+            reason = "network_unavailable"
+        if type(error).__name__ == "SSLError":
+            reason = "tls_validation_failed"
+        return "b2_" + operation + "_" + reason
     if stage == "banco":
         # Inspect locally only; never echo provider messages or connection strings.
         message = str(error).lower()
