@@ -25,3 +25,5 @@ Verificações resumidas: npm run verify. Operação desse executor e evidência
 Backup, recuperação e preservação: protocolo-backup-recuperacao.md (metas, cobertura, ensaios e pendências de implantação).
 
 Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; workflows backup.yml e backup-checks.yml.
+
+Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.

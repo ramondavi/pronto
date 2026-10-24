@@ -339,6 +339,29 @@ class BackupStore:
         self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType="application/json")
 
 
+def encrypted_snapshot(db, connect, folder: Path, root: Path, fingerprint: str, now: datetime) -> Path:
+    before = db.inventory()
+    db.dump()
+    objects = download_storage(before, folder)
+    # Fresh transaction checks concurrent deletion/replacement during download.
+    with connect() as current:
+        current.execute("BEGIN READ ONLY")
+        after = DatabaseSnapshot(current, folder).inventory()
+    require(digest_json(before) == digest_json(after), "storage_changed_during_backup")
+    manifest = {"format": FORMAT, "created_at": now.isoformat(), "fingerprint": fingerprint,
+                "source_id": os.environ["BACKUP_SOURCE_ID"], "server_version": db.server_version,
+                "code_revision": os.environ.get("GITHUB_SHA", "local"), "tables": db.table_hashes,
+                "schemas": SCHEMAS, "objects": objects,
+                "files": {p.name: digest_file(p) for p in folder.iterdir() if p.is_file()}}
+    (folder / "manifest.json").write_text(json.dumps(manifest, default=str), encoding="utf-8")
+    archive = root / "backup.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        tar.add(folder, arcname="backup")
+    encrypted = root / "backup.tar.gz.age"
+    run_tool(["age", "--recipient", os.environ["BACKUP_AGE_RECIPIENT"], "--output", str(encrypted), str(archive)])
+    return encrypted
+
+
 def execute_backup(store: BackupStore, connect, now: datetime) -> str:
     store.validate()
     used = store.stored_bytes()
@@ -355,25 +378,7 @@ def execute_backup(store: BackupStore, connect, now: datetime) -> str:
             if not needs_backup(previous, fingerprint, now):
                 outcome = "unchanged"
             else:
-                before = db.inventory()
-                db.dump()
-                objects = download_storage(before, folder)
-                # Fresh transaction checks concurrent deletion/replacement during download.
-                with connect() as current:
-                    current.execute("BEGIN READ ONLY")
-                    after = DatabaseSnapshot(current, folder).inventory()
-                require(digest_json(before) == digest_json(after), "storage_changed_during_backup")
-                manifest = {"format": FORMAT, "created_at": now.isoformat(), "fingerprint": fingerprint,
-                            "source_id": os.environ["BACKUP_SOURCE_ID"], "server_version": db.server_version,
-                            "code_revision": os.environ.get("GITHUB_SHA", "local"), "tables": db.table_hashes,
-                            "schemas": SCHEMAS, "objects": objects,
-                            "files": {p.name: digest_file(p) for p in folder.iterdir() if p.is_file()}}
-                (folder / "manifest.json").write_text(json.dumps(manifest, default=str), encoding="utf-8")
-                archive = root / "backup.tar.gz"
-                with tarfile.open(archive, "w:gz") as tar:
-                    tar.add(folder, arcname="backup")
-                encrypted = root / "backup.tar.gz.age"
-                run_tool(["age", "--recipient", os.environ["BACKUP_AGE_RECIPIENT"], "--output", str(encrypted), str(archive)])
+                encrypted = encrypted_snapshot(db, connect, folder, root, fingerprint, now)
                 previous = store.upload(encrypted, fingerprint, now, used)
                 outcome = "created"
         # Report success only after integrity verification or verified no-change check.

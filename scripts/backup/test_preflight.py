@@ -50,6 +50,13 @@ class PreflightTest(unittest.TestCase):
                     self.assertTrue(request.call_args.args[0].endswith("/storage/v1/bucket/nada-consta"))
                     self.assertNotIn("Authorization", request.call_args.kwargs["headers"])
 
+    def test_database_diagnosis_uses_static_codes_without_provider_message(self):
+        samples = [("password authentication failed with synthetic-private", "database_credentials_not_accepted"),
+                   ("certificate verify failed: synthetic-private", "database_tls_validation_failed"),
+                   ("connection timeout synthetic-private", "database_network_unavailable")]
+        for message, expected in samples:
+            self.assertEqual(setup.error_code(RuntimeError(message), "banco"), expected)
+
     @patch("preflight.check_environment", side_effect=RuntimeError("synthetic-private-provider-error"))
     def test_errors_never_echo_provider_credentials_or_details(self, check):
         with patch("sys.stderr", new_callable=io.StringIO) as output:

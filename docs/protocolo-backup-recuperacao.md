@@ -52,3 +52,7 @@ A proteção só pode ser declarada operacional quando houver destino e respons�
 ## Referência técnica
 
 [Backups do Supabase](https://supabase.com/docs/guides/platform/backups): confirmar cobertura e limitações do plano vigente, especialmente Auth, configurações externas e objetos do Storage, antes de escolher a implementação.
+
+## 7. Contingência independente dos serviços de backup
+
+Em 23/10/2026, o responsável aprovou preparar a alternativa local descrita em backup-manual-independente.md. Ela deve estar instalada antes de uma indisponibilidade, guardar somente saída criptografada no destino escolhido e usar a mesma cobertura, consistência e integridade da rotina automática. Não depende de GitHub, B2, Healthchecks ou painel durante a geração; continua dependente de Supabase e internet. Na mídia local, expurgo de 90 dias e conferência do recibo ficam a cargo do responsável. Não equivale a cópia imutável nem substitui alertas e ensaios.
