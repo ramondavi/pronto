@@ -36,3 +36,5 @@ PR 15 incorporado com todas as checagens aprovadas. A primeira verificação rem
 ## Validação desta entrega
 
 Em 23/10/2026, os 53 testes Python passaram, incluindo exportação, criptografia, abertura e restauração real de dados exclusivamente fictícios em PostgreSQL local isolado, com as ferramentas portáteis para Windows. A aplicação passou em 138 testes, tipos, lint e build; o lint manteve 13 avisos preexistentes em arquivos não alterados. O formulário local foi conferido no navegador com execução simulada, sem conexão com produção. Essas verificações não comprovam restauração dos dados reais.
+
+Em 24/10/2026, após redefinição pessoal e recadastro protegido da senha, a conexão de produção deixou de apresentar recusa de credenciais. A verificação parou em readonly_connection_required, antes de SELECT 1 ou leitura de registros. A correção inicia BEGIN READ ONLY e continua exigindo transaction_read_only=on; não depende apenas de PGOPTIONS atravessar o pooler. Os 54 testes Python passaram com restauração sintética e um teste de conexão cuja sessão permite escrita por padrão. A nova execução remota continua pendente de incorporação; BACKUP_ENABLED permanece false.

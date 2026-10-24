@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 24 de outubro de 2026
+
+- Corrige a verificação de acesso ao banco para iniciar uma transação explicitamente somente de leitura, mantendo a conferência dessa proteção mesmo quando o pooler não preserva as opções iniciais da conexão. Não consulta fichas, não gera cópias e não ativa a agenda.
+
 ### 23 de outubro de 2026
 
 - Prepara pacote portátil para backup manual criptografado em pasta privada ou disco externo, com ferramentas incluídas e sem depender de GitHub, Backblaze ou Healthchecks durante a geração. Reutiliza a consistência e a cobertura da rotina automática, verifica a cópia local e emite recibo com vencimento de 90 dias. Também melhora o diagnóstico sanitizado da conexão ao banco; acessos reais e primeiro ensaio ainda pendentes.

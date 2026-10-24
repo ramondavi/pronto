@@ -21,7 +21,7 @@ class PreflightTest(unittest.TestCase):
         cursor.fetchone.side_effect = [("on",), (1,), ("170007",)]
         setup.check_database(lambda: connection)
         self.assertEqual([call.args[0] for call in cursor.execute.call_args_list],
-                         ["SHOW transaction_read_only", "SELECT 1", "SHOW server_version_num"])
+                         ["BEGIN READ ONLY", "SHOW transaction_read_only", "SELECT 1", "SHOW server_version_num"])
 
     @patch("preflight.database_tls", return_value=contextlib.nullcontext())
     def test_database_rejects_write_enabled_connection(self, tls):
@@ -33,7 +33,19 @@ class PreflightTest(unittest.TestCase):
         cursor.fetchone.return_value = ("off",)
         with self.assertRaisesRegex(BackupError, "readonly_connection_required"):
             setup.check_database(lambda: connection)
-        self.assertEqual(cursor.execute.call_count, 1)
+        self.assertEqual(cursor.execute.call_count, 2)
+
+    @unittest.skipUnless(os.environ.get("BACKUP_INTEGRATION") == "1", "local synthetic PostgreSQL required")
+    @patch("preflight.database_tls", return_value=contextlib.nullcontext())
+    def test_real_database_with_write_enabled_session_defaults(self, tls):
+        import psycopg
+        with patch.dict(os.environ, {"PGOPTIONS": "-c default_transaction_read_only=off"}):
+            def connect():
+                return psycopg.connect(host="127.0.0.1", port=55432, dbname="postgres",
+                                       user="postgres", password="synthetic", sslmode="disable", autocommit=True)
+            with connect() as connection:
+                self.assertEqual(connection.execute("SHOW transaction_read_only").fetchone(), ("off",))
+            setup.check_database(connect)
 
     def test_storage_reads_bucket_configuration_only_and_rejects_public_bucket(self):
         for public in (False, True):
