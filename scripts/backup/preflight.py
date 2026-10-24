@@ -12,6 +12,9 @@ from run_backup import BackupError, BackupStore, check_environment, database_tls
 def check_database(connect):
     with database_tls(), connect() as connection:
         with connection.cursor() as cursor:
+            # Poolers may not preserve startup PGOPTIONS. Require an explicit
+            # read-only transaction before checking settings or running SELECT.
+            cursor.execute("BEGIN READ ONLY")
             cursor.execute("SHOW transaction_read_only")
             require(cursor.fetchone()[0] == "on", "readonly_connection_required")
             cursor.execute("SELECT 1")
