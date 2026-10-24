@@ -132,6 +132,25 @@ class StoreTest(unittest.TestCase):
             with self.assertRaisesRegex(backup.BackupError, "bucket_retention_must_be_90_days"):
                 self.store.validate()
 
+    def test_b2_split_lifecycle_rules_preserve_exact_retention(self):
+        rules = [{"ID": "hide", "Status": "Enabled", "Filter": {"Prefix": ""}, "Expiration": {"Days": 89}},
+                 {"ID": "delete", "Status": "Enabled", "Filter": {"Prefix": ""},
+                  "NoncurrentVersionExpiration": {"NoncurrentDays": 1}},
+                 {"ID": "markers", "Status": "Enabled", "Filter": {"Prefix": ""},
+                  "Expiration": {"ExpiredObjectDeleteMarker": True}}]
+        self.client.get_bucket_lifecycle_configuration = lambda **_: {"Rules": rules}
+        self.store.validate()
+        invalid = [rules[:1], rules + [rules[0]],
+                   [{**rules[0], "Filter": {"Prefix": "other/"}}, *rules[1:]],
+                   [{**rules[0], "Expiration": {"Days": 88}}, *rules[1:]],
+                   [rules[0], {**rules[1], "NoncurrentVersionExpiration": {"NoncurrentDays": 2}}, rules[2]],
+                   [{**rules[0], "Status": "Disabled"}, *rules[1:]],
+                   [{**rules[0], "Transitions": [{"Days": 1, "StorageClass": "GLACIER"}]}, *rules[1:]],
+                   [rules[0], rules[1], {**rules[2], "Expiration": {"ExpiredObjectDeleteMarker": False}}]]
+        for candidate in invalid:
+            with self.subTest(candidate=candidate), self.assertRaisesRegex(backup.BackupError, "bucket_lifecycle_not_confirmed"):
+                backup.validate_lifecycle_rules(candidate)
+
     def test_mutated_commit_is_rejected(self):
         self.upload()
         key = next(key for key in self.client.objects if "/commits/" in key)

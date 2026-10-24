@@ -23,7 +23,7 @@ from run_backup import BackupError, NoRedirect, require
 from local_http import SecureLocalHandler
 
 
-CAPABILITIES = ["listBuckets", "readBuckets", "readBucketEncryption", "readBucketRetentions",
+CAPABILITIES = ["listBuckets", "readBuckets", "readBucketEncryption", "readBucketRetentions", "readBucketLifecycleRules",
                 "listFiles", "readFiles", "writeFiles", "readFileRetentions"]
 BUCKET = "pronto-backups"
 REPOSITORY = "ramondavi/pronto"
@@ -106,6 +106,8 @@ small{display:block;line-height:1.5;margin-top:18px}</style><main><h1>Conectar o
 para criar uma credencial limitada ao bucket <b>pronto-backups</b>, sem exclusão permanente ou alteração de retenção.</p>
 <p>A credencial limitada será cadastrada diretamente no ambiente <b>backup-production</b> do GitHub de
 <b>ramondavi/pronto</b>. A chave mestra não será salva. O backup continuará desativado.</p>
+<p>A nova credencial inclui leitura da configuração de ciclo de vida (<b>readBucketLifecycleRules</b>),
+necessária para conferir a eliminação em 90 dias. Não permite mudar essas regras, reduzir o bloqueio ou excluir versões de arquivos.</p>
 <form method="post" action="/configure" autocomplete="off"><input type="hidden" name="csrf" value="CSRF_TOKEN">
 <label for="identifier">Master Application Key ID</label>
 <input id="identifier" name="identifier" type="password" autocomplete="off" required maxlength="1024">

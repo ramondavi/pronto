@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 24 de outubro de 2026
 
+- Ajusta a conferência das regras de ciclo de vida ao formato dividido retornado pelo Backblaze, preservando os prazos aprovados. Prepara a permissão restrita de leitura dessa configuração e diagnósticos estáticos por operação, sem revelar segredos, conceder exclusão ou ativar backups.
+
 - Corrige a verificação de acesso ao banco para iniciar uma transação explicitamente somente de leitura, mantendo a conferência dessa proteção mesmo quando o pooler não preserva as opções iniciais da conexão. Não consulta fichas, não gera cópias e não ativa a agenda.
 
 ### 23 de outubro de 2026
