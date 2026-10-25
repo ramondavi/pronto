@@ -95,5 +95,22 @@ class LocalFormTest(unittest.TestCase):
         self.assertEqual(status, 400)
 
 
+class SanitizedFailureTest(unittest.TestCase):
+    def test_schema_failure_saves_counts_and_finishes_without_credentials(self):
+        with tempfile.TemporaryDirectory() as folder:
+            state = server.DrillState(Path(folder) / "status.json", Path(folder) / "report.json")
+            fields = dict(identifier="fake-private-id", credential="fake-private-master", identity="fake-private-identity")
+            def failed(*_):
+                raise server.SchemaComparisonError(b"GRANT SELECT ON private_table TO private_role;", b"\n")
+            state.run(fields, failed)
+            self.assertEqual(fields, {})
+            self.assertEqual(state.phase, "failed")
+            self.assertIsNotNone(state.finished_at)
+            report = (Path(folder) / "report-diagnostics.json").read_text()
+            self.assertIn("source_only", report)
+            for forbidden in ("private_table", "private_role", "fake-private"):
+                self.assertNotIn(forbidden, report + state.status_file.read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

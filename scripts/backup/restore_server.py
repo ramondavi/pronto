@@ -15,7 +15,7 @@ from urllib.parse import parse_qs
 import webbrowser
 
 from local_http import SecureLocalHandler
-from restore_drill import execute_drill, IDENTITY
+from restore_drill import execute_drill, IDENTITY, SchemaComparisonError
 from run_backup import BackupError, require
 
 STYLE = "body{font:16px system-ui;background:#f4f6f9;color:#1e293b;max-width:760px;margin:30px auto;padding:20px}main{background:white;border-radius:16px;padding:30px}h1{font-size:25px}p,li{line-height:1.5}label{display:block;margin:18px 0 5px}input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:6px}button{margin-top:24px;background:#3c3873;color:white;border:0;border-radius:6px;padding:14px;font:inherit}small{display:block;line-height:1.5;margin-top:20px}"
@@ -84,6 +84,12 @@ class DrillState:
                 self.result = result
                 self.phase = "complete"
         except Exception as error:
+            if isinstance(error, SchemaComparisonError) and self.report_file:
+                diagnostic_path = self.report_file.with_name(self.report_file.stem + "-diagnostics.json")
+                try:
+                    diagnostic_path.write_text(json.dumps(error.diagnostics, indent=2), encoding="utf-8")
+                except OSError:
+                    pass  # Preserve the original failure and complete the status response.
             # No provider exception, SQL, command output or submitted field in responses.
             code = str(error) if isinstance(error, BackupError) else "local_restore_failed"
             if not code.isascii() or not code.replace("_", "").isalnum() or len(code) > 90:

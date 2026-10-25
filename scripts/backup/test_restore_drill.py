@@ -79,6 +79,23 @@ class ArchiveTest(unittest.TestCase):
 
 
 
+
+class SchemaDiagnosticTest(unittest.TestCase):
+    def test_diagnostic_contains_only_fixed_categories_and_counts(self):
+        source = b"CREATE FUNCTION private_name() RETURNS text;\nGRANT SELECT ON private_table TO private_role;\n"
+        restored = b"CREATE FUNCTION other_private_name() RETURNS text;\n"
+        error = drill.SchemaComparisonError(source, restored)
+        report = json.dumps(error.diagnostics)
+        for value in ("private_name", "private_table", "private_role", "CREATE", "GRANT"):
+            self.assertNotIn(value, report)
+        self.assertEqual(error.diagnostics["categories"]["permissions"]["source_only"], 1)
+        self.assertEqual(str(error), "restored_schema_not_identical")
+
+    def test_order_difference_does_not_hide_mismatch(self):
+        report = drill.schema_diagnostics(b"SET x=1;\nSET y=2;", b"SET y=2;\nSET x=1;")
+        self.assertTrue(report["same_lines_different_order"])
+
+
 class DownloadTest(unittest.TestCase):
     def test_completed_copy_download_and_checksum_reject_corruption(self):
         key = drill.PREFIX + "archives/20261024T000000-" + "a" * 32 + ".tar.gz.age"

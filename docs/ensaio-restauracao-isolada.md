@@ -30,3 +30,5 @@ Não ativar BACKUP_ENABLED com base apenas no resultado deste ensaio. A aba admi
 ## Validação técnica
 
 Testes unitários: `python -m unittest discover -s scripts/backup -p 'test_*.py'`. A integração adicional com Docker exige `BACKUP_DOCKER_INTEGRATION=1`, ferramentas oficiais disponíveis e PostgreSQL sintético em loopback na porta 55432. Ela cria e remove somente drill_source com credenciais fictícias. Nunca apontar o teste para produção.
+
+Em divergência da estrutura, o executor registra apenas quantidades de linhas por categorias fixas (permissões, propriedade, configuração, comentários, definições e outros), sem SQL, nomes ou valores. O diagnóstico não transforma divergência em sucesso. Após falha, os arquivos e o banco temporário também são removidos; uma nova análise exige nova submissão pessoal das credenciais.

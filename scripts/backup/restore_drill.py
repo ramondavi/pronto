@@ -3,6 +3,7 @@ Never log credentials, decrypted SQL, object names, table names or row values.
 """
 from __future__ import annotations
 
+from collections import Counter
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
@@ -24,6 +25,43 @@ PREFIX = "pronto-production/"
 READER_CAPABILITIES = ["listFiles", "readFiles"]
 MAX_UNPACKED = 2_000_000_000
 IDENTITY = re.compile(r"AGE-SECRET-KEY-1[0-9A-Z]{58}")
+
+
+
+class SchemaComparisonError(BackupError):
+    def __init__(self, expected, actual):
+        super().__init__("restored_schema_not_identical")
+        self.diagnostics = schema_diagnostics(expected, actual)
+
+
+def schema_diagnostics(expected, actual):
+    """Only fixed labels and counts may leave this function; never SQL text."""
+    expected_lines = canonical_sql(expected).splitlines()
+    actual_lines = canonical_sql(actual).splitlines()
+    before, after = Counter(expected_lines), Counter(actual_lines)
+    categories = {label: {"source_only": 0, "restored_only": 0} for label in
+                  ("blank", "permissions", "ownership", "configuration", "comments", "definitions", "other")}
+    def category(line):
+        stripped = line.strip()
+        if not stripped:
+            return "blank"
+        if stripped.startswith((b"GRANT ", b"REVOKE ", b"ALTER DEFAULT PRIVILEGES ")):
+            return "permissions"
+        if stripped.startswith(b"ALTER ") and b" OWNER TO " in stripped:
+            return "ownership"
+        if stripped.startswith(b"SET "):
+            return "configuration"
+        if stripped.startswith((b"COMMENT ON ", b"SECURITY LABEL ")):
+            return "comments"
+        if stripped.startswith((b"CREATE ", b"ALTER ")):
+            return "definitions"
+        return "other"
+    for difference, direction in ((before - after, "source_only"), (after - before, "restored_only")):
+        for line, count in difference.items():
+            categories[category(line)][direction] += count
+    return {"format": "pronto-schema-diagnostics-v1", "source_lines": len(expected_lines),
+            "restored_lines": len(actual_lines), "same_lines_different_order": before == after,
+            "categories": categories}
 
 
 def local_command(arguments, *, data=None, timeout=180, code="local_drill_command_failed"):
@@ -298,7 +336,9 @@ class OfflineDatabase:
         self.command("pg_dump", "--schema-only", *["--schema=" + schema for schema in SCHEMAS],
                      "-h", "/restore/socket", "-U", "pronto_drill_owner", "-d", "postgres", "--file=/restore/schema.sql")
         restored_schema = self.command("cat", "/restore/schema.sql")
-        require(canonical_sql(restored_schema) == canonical_sql((root / "schema.sql").read_bytes()), "restored_schema_not_identical")
+        expected_schema = (root / "schema.sql").read_bytes()
+        if canonical_sql(restored_schema) != canonical_sql(expected_schema):
+            raise SchemaComparisonError(expected_schema, restored_schema)
         return checks
 
 
