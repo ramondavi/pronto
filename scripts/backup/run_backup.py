@@ -6,6 +6,7 @@ execution environment; this program never loads dotenv files or writes credentia
 
 from __future__ import annotations
 
+import base64
 import hashlib
 from contextlib import contextmanager
 import json
@@ -18,6 +19,7 @@ import sys
 import tarfile
 import tempfile
 from datetime import datetime, timedelta, timezone
+from urllib.error import HTTPError
 from urllib.parse import quote, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 import uuid
@@ -40,6 +42,51 @@ class BackupError(Exception):
 def require(condition: bool, code: str) -> None:
     if not condition:
         raise BackupError(code)
+
+
+def b2_error_code(error):
+    # Only fixed operation/reason labels may leave this process. Provider
+    # messages, request IDs, endpoints and unknown error codes stay private.
+    operation_name = getattr(error, "operation_name", "")
+    operation_name = operation_name if isinstance(operation_name, str) else ""
+    operation = {"GetBucketAcl": "privacy", "GetObjectLockConfiguration": "retention",
+                 "GetBucketLifecycleConfiguration": "lifecycle", "PutObject": "upload",
+                 "GetObject": "download", "HeadObject": "metadata", "ListObjectVersions": "versions",
+                 "ListObjectsV2": "inventory"}.get(operation_name, "connection")
+    response = getattr(error, "response", None)
+    reason = "check_failed"
+    if isinstance(response, dict):
+        details = response.get("Error", {})
+        provider_code = details.get("Code") if isinstance(details, dict) else None
+        provider_code = provider_code if isinstance(provider_code, str) else None
+        reason = {"AccessDenied": "access_denied", "Unauthorized": "access_denied",
+                  "InvalidAccessKeyId": "credentials_not_accepted", "ExpiredToken": "credentials_not_accepted",
+                  "InvalidToken": "credentials_not_accepted", "SignatureDoesNotMatch": "signature_not_accepted",
+                  "NoSuchBucket": "bucket_not_found", "NoSuchLifecycleConfiguration": "lifecycle_not_configured",
+                  "ObjectLockConfigurationNotFoundError": "retention_not_configured",
+                  "RequestTimeTooSkewed": "clock_skew", "NotImplemented": "request_not_supported",
+                  "InvalidRequest": "request_rejected", "BadDigest": "checksum_rejected"}.get(provider_code, reason)
+    if type(error).__name__ in {"EndpointConnectionError", "ConnectTimeoutError", "ReadTimeoutError"}:
+        reason = "network_unavailable"
+    if type(error).__name__ == "SSLError":
+        reason = "tls_validation_failed"
+    return "b2_" + operation + "_" + reason
+
+
+def execution_error_code(error):
+    if isinstance(error, BackupError):
+        return str(error)
+    if isinstance(getattr(error, "response", None), dict) or type(error).__module__.startswith("botocore."):
+        return b2_error_code(error)
+    if isinstance(error, HTTPError):
+        return {401: "http_authentication_failed", 403: "http_access_denied",
+                404: "http_resource_not_found", 429: "http_rate_limited"}.get(error.code, "http_request_failed")
+    sqlstate = getattr(error, "sqlstate", None)
+    if isinstance(sqlstate, str):
+        return {"42501": "database_permission_denied", "57014": "database_query_timeout",
+                "55P03": "database_lock_unavailable", "28P01": "database_credentials_not_accepted",
+                "08006": "database_connection_failed"}.get(sqlstate, "database_operation_failed")
+    return "execution_failed"
 
 
 def digest_file(path: Path) -> str:
@@ -66,9 +113,44 @@ def needs_backup(previous: dict | None, fingerprint: str, now: datetime) -> bool
 
 
 def run_tool(command: list[str]) -> None:
-    # Passwords are inherited through PG* environment fields, never command args.
-    subprocess.run(command, check=True, stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL, timeout=900)
+    # Inspect stderr locally for fixed categories; never publish its contents.
+    tool = {"pg_dump": "pg_dump", "pg_dumpall": "pg_dumpall", "pg_restore": "pg_restore", "age": "age",
+            "age-keygen": "age_keygen"}.get(Path(command[0]).stem, "external_tool")
+    try:
+        subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=900)
+    except subprocess.CalledProcessError as error:
+        message = (error.stderr or b"").decode("utf-8", errors="replace").lower()
+        reason = "permission_denied" if "permission denied" in message else "failed"
+        if "server version" in message and "pg_dump version" in message:
+            reason = "version_mismatch"
+        if "snapshot" in message and "does not exist" in message:
+            reason = "snapshot_unavailable"
+        raise BackupError(tool + "_" + reason) from None
+    except subprocess.TimeoutExpired:
+        raise BackupError(tool + "_timeout") from None
+
+
+def report_progress(stage):
+    allowed = {"validate_destination", "inspect_destination", "open_snapshot", "export_schema", "export_roles",
+               "fingerprint", "inventory_documents", "export_database", "verify_sequences", "export_documents",
+               "verify_documents", "package_encrypt", "upload_archive", "verify_upload", "commit_archive",
+               "report_completion", "monitor_start", "monitor_success"}
+    require(stage in allowed, "invalid_progress_stage")
+    print("Backup: etapa " + stage + ".", flush=True)
+
+
+def content_md5(body):
+    # Compatibility checksum required by Object Lock. SHA-256 readback remains
+    # the security/integrity verification; MD5 here is only the HTTP protocol field.
+    if isinstance(body, bytes):
+        digest = hashlib.md5(body, usedforsecurity=False).digest()
+    else:
+        position = body.tell()
+        try:
+            digest = hashlib.file_digest(body, lambda: hashlib.md5(usedforsecurity=False)).digest()
+        finally:
+            body.seek(position)
+    return base64.b64encode(digest).decode("ascii")
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -178,11 +260,13 @@ class DatabaseSnapshot:
         self.snapshot = self.query("SELECT pg_export_snapshot()")[0][0]
         self.server_version = self.query("SELECT current_setting('server_version')")[0][0]
         schema_args = [f"--schema={name}" for name in SCHEMAS]
+        report_progress("export_schema")
         run_tool(self.command("pg_dump", "--schema-only", f"--snapshot={self.snapshot}",
                               *schema_args, f"--file={self.folder / 'schema.sql'}"))
         self.roles()
 
     def roles(self):
+        report_progress("export_roles")
         run_tool(self.command("pg_dumpall", "--roles-only", "--no-role-passwords",
                               f"--file={self.folder / 'roles.sql'}"))
 
@@ -229,6 +313,7 @@ class DatabaseSnapshot:
                 for bucket, name, metadata, updated in rows]
 
     def dump(self):
+        report_progress("export_database")
         run_tool(self.command("pg_dump", "--format=custom", "--compress=6",
                               f"--snapshot={self.snapshot}", *[f"--schema={n}" for n in SCHEMAS],
                               f"--file={self.folder / 'database.dump'}"))
@@ -236,6 +321,7 @@ class DatabaseSnapshot:
         self.roles()
         require(self.roles_hash == hashlib.sha256(canonical_sql((self.folder / "roles.sql").read_bytes())).hexdigest(),
                 "roles_changed_during_backup")
+        report_progress("verify_sequences")
         require(self.sequence_state == self.sequences(), "sequences_changed_during_backup")
 
 
@@ -337,10 +423,12 @@ class BackupStore:
         checksum = digest_file(path)
         key = self.prefix + "archives/" + now.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex + ".tar.gz.age"
         metadata = {"format": FORMAT, "fingerprint": fingerprint, "created_at": now.isoformat(), "sha256": checksum}
+        report_progress("upload_archive")
         with path.open("rb") as stream:
             self.client.put_object(Bucket=self.bucket, Key=key, Body=stream, ContentLength=size,
-                                   Metadata=metadata, ContentType="application/octet-stream")
+                                   Metadata=metadata, ContentType="application/octet-stream", ContentMD5=content_md5(stream))
         # Verify uploaded bytes; metadata alone does not prove a complete copy.
+        report_progress("verify_upload")
         response = self.client.get_object(Bucket=self.bucket, Key=key)
         with response["Body"] as stream:
             downloaded_hash = hashlib.file_digest(stream, "sha256").hexdigest()
@@ -348,8 +436,10 @@ class BackupStore:
         # An interrupted or corrupt upload never becomes the last valid backup.
         committed = {**metadata, "key": key, "size": size}
         commit_key = key.replace("/archives/", "/commits/") + ".json"
-        self.client.put_object(Bucket=self.bucket, Key=commit_key, Body=json.dumps(committed).encode(),
-                               ContentType="application/json")
+        report_progress("commit_archive")
+        body = json.dumps(committed).encode()
+        self.client.put_object(Bucket=self.bucket, Key=commit_key, Body=body,
+                               ContentType="application/json", ContentMD5=content_md5(body))
         return {**metadata, "key": key, "size": size}
 
     def report(self, outcome: str, previous: dict, now: datetime):
@@ -358,14 +448,17 @@ class BackupStore:
                            "completed_at": datetime.now(timezone.utc).isoformat(),
                            "backup_created_at": previous["created_at"], "archive": previous["key"],
                            "bytes": previous["size"], "format": FORMAT}).encode()
-        self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType="application/json")
+        self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType="application/json", ContentMD5=content_md5(body))
 
 
 def encrypted_snapshot(db, connect, folder: Path, root: Path, fingerprint: str, now: datetime) -> Path:
+    report_progress("inventory_documents")
     before = db.inventory()
     db.dump()
+    report_progress("export_documents")
     objects = download_storage(before, folder)
     # Fresh transaction checks concurrent deletion/replacement during download.
+    report_progress("verify_documents")
     with connect() as current:
         current.execute("BEGIN READ ONLY")
         after = DatabaseSnapshot(current, folder).inventory()
@@ -376,6 +469,7 @@ def encrypted_snapshot(db, connect, folder: Path, root: Path, fingerprint: str, 
                 "schemas": SCHEMAS, "objects": objects,
                 "files": {p.name: digest_file(p) for p in folder.iterdir() if p.is_file()}}
     (folder / "manifest.json").write_text(json.dumps(manifest, default=str), encoding="utf-8")
+    report_progress("package_encrypt")
     archive = root / "backup.tar.gz"
     with tarfile.open(archive, "w:gz") as tar:
         tar.add(folder, arcname="backup")
@@ -385,7 +479,9 @@ def encrypted_snapshot(db, connect, folder: Path, root: Path, fingerprint: str, 
 
 
 def execute_backup(store: BackupStore, connect, now: datetime) -> str:
+    report_progress("validate_destination")
     store.validate()
+    report_progress("inspect_destination")
     used = store.stored_bytes()
     require(used < MAX_STORED_BYTES, "free_storage_budget_exceeded")
     previous = store.latest()
@@ -395,7 +491,9 @@ def execute_backup(store: BackupStore, connect, now: datetime) -> str:
         folder.mkdir(mode=0o700)
         with connect() as connection:
             db = DatabaseSnapshot(connection, folder)
+            report_progress("open_snapshot")
             db.start()
+            report_progress("fingerprint")
             fingerprint = db.fingerprint()
             if not needs_backup(previous, fingerprint, now):
                 outcome = "unchanged"
@@ -404,6 +502,7 @@ def execute_backup(store: BackupStore, connect, now: datetime) -> str:
                 previous = store.upload(encrypted, fingerprint, now, used)
                 outcome = "created"
         # Report success only after integrity verification or verified no-change check.
+        report_progress("report_completion")
         store.report(outcome, previous, now)
     return outcome
 
@@ -412,6 +511,7 @@ def main() -> int:
     os.umask(0o077)
     try:
         check_environment()
+        report_progress("monitor_start")
         heartbeat("/start")
         import boto3
         from botocore.config import Config
@@ -425,12 +525,13 @@ def main() -> int:
         with database_tls():
             outcome = execute_backup(BackupStore(client, os.environ["B2_BUCKET"], os.environ["BACKUP_SOURCE_ID"]),
                                      connect, datetime.now(timezone.utc))
+        report_progress("monitor_success")
         heartbeat()
         print("Verificação concluída: " + ("nova cópia conferida." if outcome == "created" else "sem mudanças; cópia válida mantida."))
         return 0
     except Exception as error:
         # Provider exceptions may embed credentials, SQL, object paths or personal data.
-        code = str(error) if isinstance(error, BackupError) else "execution_failed"
+        code = execution_error_code(error)
         print("Backup não concluído: " + code + ".", file=sys.stderr)
         try:
             heartbeat("/fail")

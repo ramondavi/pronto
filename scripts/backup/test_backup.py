@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import io
 import json
 import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -151,6 +152,26 @@ class StoreTest(unittest.TestCase):
             with self.subTest(candidate=candidate), self.assertRaisesRegex(backup.BackupError, "bucket_lifecycle_not_confirmed"):
                 backup.validate_lifecycle_rules(candidate)
 
+    def test_object_lock_provider_receives_full_body_and_required_checksum(self):
+        checksums = []
+        class LockedStore(MemoryStore):
+            def put_object(self, *, Body, ContentMD5=None, **kwargs):
+                import base64
+                import hashlib
+                body = Body.read() if hasattr(Body, "read") else Body
+                expected = base64.b64encode(hashlib.md5(body, usedforsecurity=False).digest()).decode("ascii")
+                if ContentMD5 != expected:
+                    raise RuntimeError("synthetic provider rejects missing or incorrect checksum")
+                checksums.append(ContentMD5)
+                return super().put_object(Body=body, **kwargs)
+        self.client = LockedStore()
+        self.store = backup.BackupStore(self.client, "synthetic", "synthetic-prod")
+        committed = self.upload(b"abc")
+        self.store.report("created", committed, NOW)
+        self.assertEqual(checksums[0], "kAFQmDzST7DWlj99KOF/cg==")
+        self.assertEqual(len(checksums), 3)  # Archive, conclusion marker and operational receipt.
+        self.assertEqual(self.store.latest(), committed)
+
     def test_mutated_commit_is_rejected(self):
         self.upload()
         key = next(key for key in self.client.objects if "/commits/" in key)
@@ -212,6 +233,29 @@ class ExecutionTest(unittest.TestCase):
             self.assertEqual(backup.main(), 1)
             self.assertNotIn("synthetic private value", output.getvalue())
             self.assertIn("execution_failed", output.getvalue())
+
+    def test_tool_diagnosis_never_exposes_stderr_or_command_values(self):
+        error = subprocess.CalledProcessError(1, ["pg_dump", "synthetic-private"],
+                                             stderr=b"permission denied: synthetic-private")
+        with patch.object(backup.subprocess, "run", side_effect=error):
+            with self.assertRaisesRegex(backup.BackupError, "^pg_dump_permission_denied$"):
+                backup.run_tool(["pg_dump", "synthetic-private"])
+        error = subprocess.TimeoutExpired(["pg_dump", "synthetic-private"], 900)
+        with patch.object(backup.subprocess, "run", side_effect=error):
+            with self.assertRaisesRegex(backup.BackupError, "^pg_dump_timeout$"):
+                backup.run_tool(["pg_dump", "synthetic-private"])
+
+    def test_progress_and_execution_errors_use_fixed_labels_only(self):
+        with patch("sys.stdout", new_callable=io.StringIO) as output:
+            backup.report_progress("verify_upload")
+            with self.assertRaisesRegex(backup.BackupError, "invalid_progress_stage"):
+                backup.report_progress("synthetic-private")
+        self.assertEqual(output.getvalue(), "Backup: etapa verify_upload.\n")
+        class ProviderFailure(Exception):
+            operation_name = "PutObject"
+            response = {"Error": {"Code": "InvalidRequest", "Message": "synthetic-private"}}
+        self.assertEqual(backup.execution_error_code(ProviderFailure("synthetic-private")), "b2_upload_request_rejected")
+        self.assertEqual(backup.execution_error_code(RuntimeError("synthetic-private")), "execution_failed")
 
     def test_paths_from_storage_cannot_escape_temporary_folder(self):
         response = io.BytesIO(b"%PDF-synthetic")
