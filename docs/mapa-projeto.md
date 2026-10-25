@@ -27,3 +27,5 @@ Backup, recuperação e preservação: protocolo-backup-recuperacao.md (metas, c
 Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; workflows backup.yml e backup-checks.yml.
 
 Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.
+
+Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; scripts/backup/restore_drill.py e restore_server.py.

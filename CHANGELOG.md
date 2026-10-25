@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 24 de outubro de 2026
 
+- Prepara ensaio local de recuperação com banco descartável sem rede, conferência de hashes e estrutura, remoção do ambiente e formulário protegido com acompanhamento das etapas. O ensaio real depende do preenchimento pessoal das credenciais; não altera produção nem ativa a agenda.
+
 - Prepara checksum de transporte nos envios ao bucket com retenção, mantendo a conferência SHA-256 após o download. Acrescenta progresso e diagnóstico por códigos fixos na cópia real, sem publicar dados do banco, nomes de arquivos, mensagens do provedor ou credenciais. As proteções de consistência e a agenda desativada permanecem.
 
 - Ajusta a conferência das regras de ciclo de vida ao formato dividido retornado pelo Backblaze, preservando os prazos aprovados. Prepara a permissão restrita de leitura dessa configuração e diagnósticos estáticos por operação, sem revelar segredos, conceder exclusão ou ativar backups.
