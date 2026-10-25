@@ -6,7 +6,7 @@ Atualizado em 24/10/2026. Complementa a seção 5 de protocolo-backup-recuperaca
 
 A primeira cópia real foi concluída e conferida no [run 40146034584](https://github.com/ramondavi/pronto/actions/runs/40146034584), em 24/10/2026 às 21h19 de Brasília. A agenda continua desativada. O responsável informou que ainda não existem PDFs de solicitações; o inventário real deve ser conferido pelo ensaio, sem presumir arquivos inexistentes.
 
-O ensaio sintético restaurou três tabelas de banco/Auth/Storage, comparou contagens, hashes de todas as linhas e estrutura incluindo RLS, e removeu o banco descartável. Isso valida a ferramenta com dados fictícios; não comprova ainda a recuperação da cópia real.
+O ensaio sintético restaurou três tabelas de banco/Auth/Storage, comparou contagens, hashes de todas as linhas e estrutura incluindo RLS, e removeu o banco descartável. O ensaio real também passou em 24/10/2026 às 22h19 de Brasília: 96 tabelas e nenhum PDF, em 68,4 segundos. Estrutura equivalente comprovada pela referência isolada; ambiente removido e credencial temporária revogada. Evidência e limites: validacao-restauracao-2026-10-24.md.
 
 ## Procedimento protegido
 

@@ -28,4 +28,4 @@ Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; 
 
 Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.
 
-Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; scripts/backup/restore_drill.py e restore_server.py.
+Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; evidência real: validacao-restauracao-2026-10-24.md; scripts/backup/restore_drill.py e restore_server.py.
