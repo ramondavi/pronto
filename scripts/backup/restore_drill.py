@@ -59,9 +59,18 @@ def schema_diagnostics(expected, actual):
     for difference, direction in ((before - after, "source_only"), (after - before, "restored_only")):
         for line, count in difference.items():
             categories[category(line)][direction] += count
+    prefixes = {"create_function": (b"CREATE FUNCTION ", b"CREATE OR REPLACE FUNCTION "),
+                "create_table": (b"CREATE TABLE ",), "create_index": (b"CREATE INDEX ", b"CREATE UNIQUE INDEX "),
+                "create_policy": (b"CREATE POLICY ",), "create_trigger": (b"CREATE TRIGGER ",),
+                "alter_table": (b"ALTER TABLE ",), "other": ()}
+    kinds = {label: {"source_only": 0, "restored_only": 0} for label in prefixes}
+    for difference, direction in ((before - after, "source_only"), (after - before, "restored_only")):
+        for line, count in difference.items():
+            kind = next((label for label, choices in prefixes.items() if line.strip().startswith(choices)), "other")
+            kinds[kind][direction] += count
     return {"format": "pronto-schema-diagnostics-v1", "source_lines": len(expected_lines),
             "restored_lines": len(actual_lines), "same_lines_different_order": before == after,
-            "categories": categories}
+            "categories": categories, "statement_kinds": kinds}
 
 
 def local_command(arguments, *, data=None, timeout=180, code="local_drill_command_failed"):
@@ -211,14 +220,16 @@ class OfflineDatabase:
         self.session = uuid.uuid4().hex
         self.container = None
         self.cleaned = False
+        self.schema_comparison = None
 
     def command(self, *arguments, data=None, timeout=180, code="offline_database_command_failed"):
         require(self.container and re.fullmatch(r"[0-9a-f]{64}", self.container), "owned_container_required")
         return local_command(["docker", "exec", "-i", "--user", "100:101", self.container, *arguments],
                              data=data, timeout=timeout, code=code)
 
-    def sql(self, statement):
-        return self.command("psql", "-XAtq", "-h", "/restore/socket", "-U", "pronto_drill_owner", "-d", "postgres",
+    def sql(self, statement, *, database="postgres"):
+        require(database in {"postgres", "pronto_schema_reference"}, "unexpected_offline_database")
+        return self.command("psql", "-XAtq", "-h", "/restore/socket", "-U", "pronto_drill_owner", "-d", database,
                             "--set", "ON_ERROR_STOP=1", "--command", statement)
 
     def __enter__(self):
@@ -268,6 +279,35 @@ class OfflineDatabase:
 
     def __exit__(self, *_):
         self.cleanup()
+
+    def compare_reference_schema(self, source_schema, restored_schema):
+        # A second, empty database replays the independent schema export using
+        # the SAME server/client. This normalizes PostgreSQL deparser/version
+        # differences without ignoring definitions, ACLs, owners or policies.
+        # It receives no rows and remains in the same networkless tmpfs.
+        self.sql("CREATE DATABASE pronto_schema_reference")
+        self.sql('CREATE SCHEMA extensions; CREATE EXTENSION pgcrypto WITH SCHEMA extensions; '
+                 'CREATE EXTENSION "uuid-ossp" WITH SCHEMA extensions; '
+                 'GRANT USAGE ON SCHEMA public TO PUBLIC;', database="pronto_schema_reference")
+        # initdb already provides public. Preserve its standard baseline before
+        # the source's ALTER OWNER and ACL statements (including revocations).
+        declaration = b"CREATE SCHEMA public;"
+        position = source_schema.find(declaration)
+        if position != -1:
+            first_function = source_schema.find(b"CREATE FUNCTION ")
+            require((first_function == -1 or position < first_function) and
+                    (position == 0 or source_schema[position - 1:position] == b"\n"),
+                    "reference_public_schema_declaration_not_valid")
+            source_schema = source_schema[:position] + source_schema[position:].replace(declaration, b"", 1)
+        self.command("psql", "-Xq", "--set", "ON_ERROR_STOP=1", "--single-transaction",
+                     "-h", "/restore/socket", "-U", "pronto_drill_owner", "-d", "pronto_schema_reference",
+                     data=source_schema, timeout=600, code="reference_schema_replay_failed")
+        self.command("pg_dump", "--schema-only", *["--schema=" + schema for schema in SCHEMAS],
+                     "-h", "/restore/socket", "-U", "pronto_drill_owner", "-d", "pronto_schema_reference",
+                     "--file=/restore/reference-schema.sql")
+        reference = self.command("cat", "/restore/reference-schema.sql")
+        if canonical_sql(reference) != canonical_sql(restored_schema):
+            raise SchemaComparisonError(reference, restored_schema)
 
     def restore(self, root, manifest):
         # Never execute the privileged global role dump. Recreate names with no
@@ -338,7 +378,10 @@ class OfflineDatabase:
         restored_schema = self.command("cat", "/restore/schema.sql")
         expected_schema = (root / "schema.sql").read_bytes()
         if canonical_sql(restored_schema) != canonical_sql(expected_schema):
-            raise SchemaComparisonError(expected_schema, restored_schema)
+            self.compare_reference_schema(expected_schema, restored_schema)
+            self.schema_comparison = "isolated_reference"
+        else:
+            self.schema_comparison = "direct_dump"
         return checks
 
 
@@ -365,7 +408,9 @@ def execute_drill(master_id, master_key, identity, progress=lambda _: None):
         result = {"format": "pronto-restore-drill-v1", "completed_at": datetime.now(timezone.utc).isoformat(),
                   "archive_sha256": receipt["sha256"], "backup_created_at": created.isoformat(),
                   "duration_seconds": round(time.monotonic() - start, 1), "tables_verified": tables,
-                  "documents_verified": len(manifest.get("objects", [])), "schema_identical": True,
+                  "documents_verified": len(manifest.get("objects", [])), "schema_equivalent": True,
+                  "schema_comparison": database.schema_comparison,
+                  "source_dump_text_identical": database.schema_comparison == "direct_dump",
                   "container_removed": True, "temporary_reader_revoked": True,
                   "production_modified": False, "daily_schedule_enabled": False,
                   "role_login_and_elevated_attributes_restored": False,

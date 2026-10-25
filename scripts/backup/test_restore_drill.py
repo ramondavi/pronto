@@ -151,7 +151,16 @@ class OfflineIntegrationTest(unittest.TestCase):
     def test_source_public_usage_revocation_is_preserved(self):
         self.exercise(revoke_public=True)
 
-    def exercise(self, revoke_public=False):
+    def test_equivalent_source_format_is_compared_in_an_empty_reference_database(self):
+        self.exercise(reformat_source=True)
+
+    def test_reference_comparison_preserves_explicit_usage_revocation(self):
+        self.exercise(revoke_public=True, reformat_source=True)
+
+    def test_actual_policy_difference_is_rejected_and_environment_removed(self):
+        self.exercise(change_policy=True)
+
+    def exercise(self, revoke_public=False, reformat_source=False, change_policy=False):
         import psycopg
         connect_root = lambda: psycopg.connect(host="127.0.0.1", port=55432, user="postgres", password="synthetic",
                                                dbname="postgres", sslmode="disable", autocommit=True)
@@ -188,9 +197,26 @@ class OfflineIntegrationTest(unittest.TestCase):
                 drill.local_command(["age", "-d", "-i", "-", "-o", plain, archive], data=identity)
                 restored, manifest = drill.unpack_verified(plain, folder / "out", {
                     "created_at": NOW.isoformat(), "fingerprint": fingerprint})
+                if reformat_source or change_policy:
+                    schema_path = restored / "schema.sql"
+                    schema = schema_path.read_bytes()
+                    if reformat_source:
+                        schema = schema.replace(b"CREATE TABLE public.records (", b"CREATE TABLE public.records   (", 1)
+                    if change_policy:
+                        schema = schema.replace(b"USING (true)", b"USING (false)", 1)
+                    self.assertNotEqual(schema, schema_path.read_bytes())
+                    # Mutate only the explicitly synthetic fixture AFTER unpack
+                    # to prove the database comparison does not accept drift.
+                    schema_path.write_bytes(schema)
                 database = drill.OfflineDatabase()
+                if change_policy:
+                    with self.assertRaises(drill.SchemaComparisonError), database:
+                        database.restore(restored, manifest)
+                    self.assertTrue(database.cleaned)
+                    return
                 with database:
                     self.assertEqual(database.restore(restored, manifest), 3)
+                    self.assertEqual(database.schema_comparison, "isolated_reference" if reformat_source else "direct_dump")
                     self.assertEqual(database.sql("SELECT relrowsecurity FROM pg_class WHERE oid='public.records'::regclass").strip(), b"t")
                     if revoke_public:
                         self.assertEqual(database.sql("SELECT NOT EXISTS(SELECT FROM pg_namespace n, aclexplode(coalesce(n.nspacl,acldefault('n',n.nspowner))) a WHERE n.nspname='public' AND a.grantee=0 AND a.privilege_type='USAGE')").strip(), b"t")
