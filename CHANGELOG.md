@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 26 de outubro de 2026
 
+- Comprova o aviso por ausência de sinais em monitor separado de ensaio, com confirmação de recebimento pelo responsável e pausa ao final. O monitor diário e a agenda automática não foram alterados; login após restauração e substituto seguem pendentes.
+
 - Registra a entrega ao responsável dos avisos reais de falha e recuperação do backup, confirmada pelas capturas dos e-mails de 24/10. Alerta por ausência de execução, login após restauração e substituto permanecem pendentes; agenda desativada.
 
 ### 24 de outubro de 2026

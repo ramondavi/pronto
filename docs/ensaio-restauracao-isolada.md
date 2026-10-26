@@ -23,7 +23,7 @@ O formulário responde imediatamente e acompanha fases a cada três segundos. A 
 
 ## Limites e próximas verificações
 
-Mesmo um resultado positivo deste executor comprova recuperação e integridade em nível de banco/arquivos, não o funcionamento completo do serviço. Atributos privilegiados/login dos papéis não são reaplicados automaticamente. Configurações externas de Auth/SMTP/domínio, login pelo site, isolamento entre perfis e bloqueio de contas, reaplicação dos expurgos e aviso por ausência de execução exigem verificações específicas em ambiente autorizado antes de declarar o protocolo operacional. Também permanece pendente definir o substituto autorizado.
+Mesmo um resultado positivo deste executor comprova recuperação e integridade em nível de banco/arquivos, não o funcionamento completo do serviço. Atributos privilegiados/login dos papéis não são reaplicados automaticamente. Configurações externas de Auth/SMTP/domínio, login pelo site, isolamento entre perfis e bloqueio de contas e reaplicação dos expurgos exigem verificações específicas em ambiente autorizado antes de declarar o protocolo operacional. Também permanece pendente definir o substituto autorizado.
 
 Não ativar BACKUP_ENABLED com base apenas no resultado deste ensaio. A aba administrativa de backups continua entrega separada.
 
@@ -36,3 +36,5 @@ Em divergência da estrutura, o executor registra apenas quantidades de linhas p
 O relatório distingue comparação direta dos dumps de comparação com referência isolada. Quando a segunda é necessária, registra `schema_equivalent=true`, `schema_comparison=isolated_reference` e `source_dump_text_identical=false`; não afirma igualdade textual do dump original. O schema.sql é uma exportação independente já incluída no manifesto conferido, não é reconstruído a partir do banco restaurado. Somente a criação redundante do esquema public é retirada do fluxo de referência, preservando sua base initdb e todas as alterações de dono e ACL da origem.
 
 Entrega de avisos confirmada em 26/10/2026 pelas capturas do responsável: DOWN por falha explícita e UP por recuperação, recebidos em 24/10. Isso não cobre ausência de execução. O substituto ainda será definido. Detalhes e horários em validacao-restauracao-2026-10-24.md.
+
+Ensaio adicional de ausência concluído em 26/10/2026: monitor separado com período de um minuto e tolerância de um minuto, sinal inicial único, transição automática para atraso/ausência e recebimento do aviso DOWN confirmado pelo responsável. Monitor de ensaio pausado ao final. Não alterou o monitor diário nem comprova o prazo real do cron de produção. Evidência: validacao-alerta-ausencia-2026-10-26.md.

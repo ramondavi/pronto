@@ -30,3 +30,8 @@ O responsável apresentou capturas dos e-mails do Healthchecks recebidos em sua 
 Isso comprova entrega dos avisos de falha explícita e recuperação ao responsável. Não comprova o alerta causado pela ausência de execução nem recebimento por substituto. Não foi necessário enviar nova mensagem de teste. As capturas da caixa de e-mail não foram incorporadas ao repositório; este registro contém somente o resultado e os horários.
 
 Em 26/10/2026, o responsável informou que o substituto ainda será definido. A agenda continua desativada; esta evidência não autoriza sua ativação nem substitui o aceite final do protocolo.
+
+
+## Ensaio posterior de ausência
+
+Em 26/10/2026 também foi concluído um ensaio separado de falta de sinais, com recebimento do aviso DOWN confirmado pelo responsável. Procedimento e limites em validacao-alerta-ausencia-2026-10-26.md. Isso resolve a pendência do mecanismo de aviso por ausência em modo simples, sem afirmar teste do prazo do cron diário, de login após restauração ou de acesso de substituto.
