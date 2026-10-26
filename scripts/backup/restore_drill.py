@@ -393,7 +393,7 @@ class OfflineDatabase:
         return checks
 
 
-def execute_drill(master_id, master_key, identity, progress=lambda _: None):
+def execute_drill(master_id, master_key, identity, progress=lambda _: None, *, auth_binary=None):
     require(IDENTITY.fullmatch(identity.strip()), "native_recovery_identity_required")
     start = time.monotonic()
     with private_temporary_directory() as folder:
@@ -407,8 +407,18 @@ def execute_drill(master_id, master_key, identity, progress=lambda _: None):
         progress("verify_package")
         root, manifest = unpack_verified(plain, folder / "unpacked", receipt)
         progress("restore")
-        with OfflineDatabase() as database:
+        auth_result = None
+        with OfflineDatabase(auth_tools=auth_binary is not None) as database:
             tables = database.restore(root, manifest)
+            if auth_binary is not None:
+                from restore_auth import OfflineAuth, prepare_offline_fixture
+                progress("auth")
+                password = prepare_offline_fixture(database)
+                try:
+                    with OfflineAuth(database, auth_binary) as auth:
+                        auth_result = auth.verify_fixture(password)
+                finally:
+                    password = None
         require(database.cleaned, "offline_database_cleanup_not_confirmed")
         progress("cleanup")
         created = datetime.fromisoformat(receipt["created_at"])
@@ -422,5 +432,10 @@ def execute_drill(master_id, master_key, identity, progress=lambda _: None):
                   "container_removed": True, "temporary_reader_revoked": True,
                   "production_modified": False, "daily_schedule_enabled": False,
                   "role_login_and_elevated_attributes_restored": False,
-                  "auth_service_login_tested": False, "alert_delivery_tested": False}
+                  "auth_service_login_tested": auth_result is not None, "alert_delivery_tested": False}
+        if auth_result is not None:
+            result["auth_validation"] = auth_result
+            result["auth_validation_scope"] = "synthetic_accounts_in_verified_restored_copy"
+            result["real_account_password_recovery_tested"] = False
+            result["website_login_tested"] = False
     return result

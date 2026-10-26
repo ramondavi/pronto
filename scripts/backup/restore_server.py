@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import hmac
+from functools import partial
 import html
 from http.server import ThreadingHTTPServer
 import json
@@ -21,7 +22,7 @@ from run_backup import BackupError, require
 STYLE = "body{font:16px system-ui;background:#f4f6f9;color:#1e293b;max-width:760px;margin:30px auto;padding:20px}main{background:white;border-radius:16px;padding:30px}h1{font-size:25px}p,li{line-height:1.5}label{display:block;margin:18px 0 5px}input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:6px}button{margin-top:24px;background:#3c3873;color:white;border:0;border-radius:6px;padding:14px;font:inherit}small{display:block;line-height:1.5;margin-top:20px}"
 PHASES = {"starting": "Preparando o ensaio", "download": "Baixando e conferindo a cópia criptografada",
           "decrypt": "Abrindo a cópia neste computador", "verify_package": "Conferindo os arquivos",
-          "restore": "Restaurando e comparando o banco isolado", "cleanup": "Concluindo a limpeza"}
+          "restore": "Restaurando e comparando o banco isolado", "auth": "Conferindo login e permissões na cópia isolada", "cleanup": "Concluindo a limpeza"}
 
 
 def page(body, refresh=False):
@@ -35,6 +36,7 @@ def form(csrf):
     return page('''<h1>Ensaio de recuperação do Pronto!</h1>
 <p>Vamos testar a cópia já guardada no Backblaze em um banco temporário neste computador autorizado.
 O banco do teste ficará sem rede e será removido ao final. O Pronto! em produção não será alterado.</p>
+<p>Após conferir a integridade, este ensaio poderá criar contas fictícias somente na cópia isolada para testar login e permissões. Nenhuma senha de usuário real será solicitada. O ambiente inteiro será removido.</p>
 <p>Consulte seu gerenciador de senhas e preencha os três campos. Eles não serão guardados em arquivo nem enviados ao GitHub.</p>
 <form method="post" action="/run" autocomplete="off"><input type="hidden" name="csrf" value="''' + csrf + '''">
 <label for="identifier">Identificador da chave principal do Backblaze (keyID)</label>
@@ -116,7 +118,9 @@ def make_handler(state, csrf, executor=execute_drill):
                 elif state.result is not None:
                     self.reply(page('<h1>Ensaio concluído e conferido</h1><p>A cópia foi aberta, o banco foi restaurado e a integridade foi conferida. '
                         'O ambiente temporário e os arquivos de trabalho foram removidos.</p><p>Produção e agenda diária não foram alteradas. '
-                        'Login pelo site e entrega de alertas ainda precisam de teste.</p><p>Você pode fechar esta página.</p>'))
+                        'Login pelo site permanece uma verificação separada.</p>'
+                        + ('<p>Login e permissões de contas fictícias também foram conferidos na cópia isolada.</p>' if state.result.get('auth_service_login_tested') else '')
+                        + '<p>Você pode fechar esta página.</p>'))
                 elif state.error:
                     self.reply(page('<h1>Ensaio não concluído</h1><p>Código: ' + html.escape(state.error)
                         + '.</p><p>Nenhum sucesso foi registrado. Informe somente esse código; não envie as credenciais pelo chat.</p>'))
@@ -167,11 +171,13 @@ def main():
     parser.add_argument("--report-file", type=Path, required=True)
     parser.add_argument("--tools", type=Path, required=True)
     parser.add_argument("--no-browser", action="store_true")
+    parser.add_argument("--auth-binary", type=Path)
     options = parser.parse_args()
     os.umask(0o077)
     os.environ["PATH"] = str(options.tools.resolve()) + os.pathsep + os.environ.get("PATH", "")
     state = DrillState(options.status_file, options.report_file)
-    with ThreadingHTTPServer(("127.0.0.1", 0), make_handler(state, secrets.token_urlsafe(32))) as server:
+    executor = partial(execute_drill, auth_binary=options.auth_binary)
+    with ThreadingHTTPServer(("127.0.0.1", 0), make_handler(state, secrets.token_urlsafe(32), executor)) as server:
         server.timeout = 1
         state.url = "http://127.0.0.1:" + str(server.server_port)
         state.persist()

@@ -40,3 +40,9 @@ Entrega de avisos confirmada em 26/10/2026 pelas capturas do responsável: DOWN 
 Ensaio adicional de ausência concluído em 26/10/2026: monitor separado com período de um minuto e tolerância de um minuto, sinal inicial único, transição automática para atraso/ausência e recebimento do aviso DOWN confirmado pelo responsável. Monitor de ensaio pausado ao final. Não alterou o monitor diário nem comprova o prazo real do cron de produção. Evidência: validacao-alerta-ausencia-2026-10-26.md.
 
 Ensaio sintético de Auth/perfis concluído em 26/10: seis logins após restauração, sessões e RLS conferidos, incluindo contas bloqueadas/inativas. Usa executor optativo separado; o procedimento protegido real acima permanece sem iniciar Auth. Limites e reprodução: validacao-auth-restauracao-2026-10-26.md.
+
+## Etapa Auth opcional na cópia real
+
+O executor aceita --auth-binary com o binário oficial previamente conferido. Sem essa opção, mantém o procedimento anterior e auth_service_login_tested=false. Com a opção, confere primeiro todas as tabelas, documentos e estrutura; só depois cria contas fictícias na cópia descartável, recusando identificadores/e-mails de teste já presentes. Nenhuma conta existente é sobrescrita e nenhuma senha real é usada. A configuração local permite login apenas ao papel limitado do serviço Auth; não importa atributos elevados da origem nem executa migrações.
+
+A etapa valida as seis contas e suas permissões com o mesmo Auth isolado do ensaio sintético. Falha em qualquer ponto impede sucesso e mantém a remoção do destino. O relatório distingue auth_validation_scope=synthetic_accounts_in_verified_restored_copy de recuperação de senhas reais e de login pelo site, ambos explicitamente não comprovados. A integridade registrada descreve a cópia antes da inserção fictícia. O ambiente inteiro é removido ao final; os registros fictícios nunca são enviados à produção ou ao backup original.

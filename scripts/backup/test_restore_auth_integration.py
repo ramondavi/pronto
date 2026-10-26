@@ -9,7 +9,7 @@ sys.path.insert(0,'scripts/backup')
 import psycopg
 import run_backup as backup
 from restore_drill import OfflineDatabase,unpack_verified,local_command
-from restore_auth import OfflineAuth,FIXTURE_IDS
+from restore_auth import OfflineAuth,FIXTURE_IDS,prepare_offline_fixture
 from unittest.mock import patch
 from datetime import datetime,timezone
 
@@ -59,6 +59,14 @@ def exercise(state_path):
             with OfflineAuth(database,os.environ['BACKUP_AUTH_TEST_BINARY']) as auth:
                 print('isolated_auth_ready',flush=True)
                 result=auth.verify_fixture(password)
+            # Only this labelled, all-synthetic source is accepted above. Reset
+            # its disposable restored fixture to exercise post-verification seeding.
+            require(database.sql("SELECT count(*) FROM auth.users").strip()==b"6", "synthetic_accounts_unexpected")
+            database.sql("TRUNCATE auth.users, public.academic_programs CASCADE")
+            new_password=prepare_offline_fixture(database)
+            with OfflineAuth(database,os.environ['BACKUP_AUTH_TEST_BINARY']) as auth:
+                result=auth.verify_fixture(new_password)
+            result['post_restore_fixture_creation_verified']=True
         result['tables_verified']=tables;result['container_removed']=database.cleaned;result['synthetic_only']=True
     return result
 @unittest.skipUnless(os.environ.get("BACKUP_AUTH_INTEGRATION_STATE"), "explicit owned synthetic source required")

@@ -59,5 +59,36 @@ class TokenTest(unittest.TestCase):
             runner.request("https://outside.invalid")
 
 
+class FixturePreparationTest(unittest.TestCase):
+    def test_existing_fixture_identity_aborts_before_any_write(self):
+        class Database:
+            calls=[]
+            def check_isolation(self): pass
+            def command(self,*args,**kwargs):
+                self.calls.append(kwargs["data"])
+                return b"1\n"
+        db=Database()
+        with self.assertRaisesRegex(BackupError,"offline_auth_fixture_conflict"):
+            auth.prepare_offline_fixture(db)
+        self.assertEqual(len(db.calls),1)
+        self.assertTrue(db.calls[0].startswith(b"SELECT"))
+
+    def test_preparation_is_transactional_and_password_only_in_stdin(self):
+        class Database:
+            calls=[]
+            def check_isolation(self): pass
+            def command(self,*args,**kwargs):
+                self.calls.append((args,kwargs["data"]))
+                return b"0\n"
+        db=Database()
+        password=auth.prepare_offline_fixture(db)
+        args,body=db.calls[-1]
+        self.assertNotIn(password,repr(args))
+        self.assertIn(password.encode(),body)
+        self.assertTrue(body.startswith(b"BEGIN;"))
+        self.assertTrue(body.endswith(b"COMMIT;"))
+        self.assertIn(b"WHERE id IN",body)
+
+
 if __name__=="__main__":
     unittest.main()

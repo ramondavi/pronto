@@ -25,3 +25,7 @@ Esta evidência complementa a restauração real de 24/10 (96 tabelas e nenhum P
 Integração Auth reproduzível: cinco testes passaram (quatro unitários e um roundtrip completo). Integração de restauração: 15 testes passaram, incluindo preservação de revogações e rejeição de políticas divergentes. Suíte de backup: 83 testes, oito integrações optativas ignoradas nessa execução; os dois grupos acima foram executados separadamente.
 
 Validação geral: 138 testes da aplicação, tipos, lint e build passaram. Lint mantém 13 avisos preexistentes e nenhum erro. Origem descartável, pilha auxiliar e rede própria removidas; banco fictício da integração encerrado.
+
+## Preparação adicional da cópia real
+
+Etapa opcional integrada ao executor protegido. A revalidação sintética passou também na inserção posterior à conferência: contas fictícias recriadas somente no destino descartável, novo login/perfis conferidos e ambiente removido. Sete testes de Auth passaram, incluindo prevenção de conflitos e senha somente por entrada padrão. Suíte Python: 85 testes, oito optativos ignorados; integração Auth executada separadamente. Testes da aplicação: 138 passaram após compactar o resumo ao limite documental. Formulário vazio conferido visualmente; captura fora do Git. A execução sobre a cópia real aguarda preenchimento pessoal do formulário e não foi declarada concluída.

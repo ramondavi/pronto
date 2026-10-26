@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 26 de outubro de 2026
 
+- Prepara etapa opcional de Auth na cópia real restaurada, após conferir sua integridade, com contas fictícias, prevenção de conflitos e resultado separado do login pelo site. Mantém produção intacta e agenda desligada.
+
 - Acrescenta ensaio isolado de login após cópia criptografada e restauração com seis contas fictícias, conferindo sessões e permissões de estudantes/equipe, incluindo bloqueados e inativos. Mantém explícita a pendência do login sobre a cópia real e pelo site, sem ativar a agenda.
 
 - Comprova o aviso por ausência de sinais em monitor separado de ensaio, com confirmação de recebimento pelo responsável e pausa ao final. O monitor diário e a agenda automática não foram alterados; login após restauração e substituto seguem pendentes.

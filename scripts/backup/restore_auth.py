@@ -42,6 +42,37 @@ def verified_claims(token, key, expected_id):
     return claims
 
 
+def prepare_offline_fixture(database):
+    """Insert synthetic accounts only AFTER the restored contents were verified.
+
+    Fixed identifiers must be unused. All writes stay in the disposable,
+    networkless restored copy; conflicts abort rather than overwrite accounts.
+    """
+    database.check_isolation()
+    identifiers = ",".join("'" + value + "'::uuid" for value in FIXTURE_IDS)
+    query = "SELECT count(*) FROM auth.users WHERE id IN (" + identifiers + ") OR email LIKE 'teste.pgtap.%@ufba.br'"
+    sql = lambda value: database.command("psql", "-XAtq", "-h", "/restore/socket", "-U", "pronto_drill_owner",
+        "-d", "postgres", "--set", "ON_ERROR_STOP=1", data=value.encode())
+    require(sql(query).strip() == b"0", "offline_auth_fixture_conflict")
+    fixture = Path(__file__).resolve().parents[2] / "supabase/tests/database/authorization_rls.test.sql"
+    source = fixture.read_text(encoding="utf-8")
+    setup = source[source.index("insert into auth.users"):source.index("set local role authenticated;")]
+    password = secrets.token_urlsafe(32)
+    # The generated password contains only URL-safe characters and travels on stdin.
+    require(re.fullmatch(r"[A-Za-z0-9_-]{40,64}", password), "offline_fixture_password_invalid")
+    setup += "UPDATE auth.users SET encrypted_password=extensions.crypt('" + password + "',extensions.gen_salt('bf',10)),"
+    setup += "aud='authenticated',role='authenticated',email_confirmed_at=now(),confirmation_token='',recovery_token='',"
+    setup += "email_change_token_new='',email_change='',email_change_token_current='',reauthentication_token='',"
+    setup += "phone_change='',phone_change_token='',instance_id='00000000-0000-0000-0000-000000000000',"
+    setup += "raw_app_meta_data='{\"provider\":\"email\",\"providers\":[\"email\"]}'::jsonb,created_at=now(),updated_at=now() "
+    setup += "WHERE id IN (" + identifiers + ");"
+    setup += ("INSERT INTO auth.identities(id,provider_id,user_id,identity_data,provider,created_at,updated_at) "
+        "SELECT extensions.gen_random_uuid(),id::text,id,jsonb_build_object('sub',id::text,'email',email,'email_verified',true),"
+        "'email',now(),now() FROM auth.users WHERE id IN (" + identifiers + ");")
+    sql("BEGIN;" + setup + "COMMIT;")
+    return password
+
+
 class OfflineAuth:
     def __init__(self, database, binary):
         self.database = database
@@ -80,7 +111,7 @@ class OfflineAuth:
         require(self.database.auth_tools, "offline_auth_tools_mount_required")
         with self.binary.open("rb") as source:
             copy = subprocess.run(["docker", "exec", "-i", "--user", "0:0", self.database.container,
-                "/bin/sh", "-c", "cat > /auth-tools/auth && chmod 0555 /auth-tools/auth"],
+                "/bin/sh", "-c", "rm -f /auth-tools/auth && cat > /auth-tools/auth && chmod 0555 /auth-tools/auth"],
                 stdin=source, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         require(copy.returncode == 0, "offline_auth_binary_transfer_failed")
