@@ -216,11 +216,12 @@ def identifier(value):
 
 
 class OfflineDatabase:
-    def __init__(self):
+    def __init__(self, *, auth_tools=False):
         self.session = uuid.uuid4().hex
         self.container = None
         self.cleaned = False
         self.schema_comparison = None
+        self.auth_tools = auth_tools
 
     def command(self, *arguments, data=None, timeout=180, code="offline_database_command_failed"):
         require(self.container and re.fullmatch(r"[0-9a-f]{64}", self.container), "owned_container_required")
@@ -237,8 +238,10 @@ class OfflineDatabase:
         output = local_command(["docker", "run", "-d", "--pull", "never", "--network", "none", "--read-only",
             "--user", "100:101", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--log-driver", "none",
             "--pids-limit", "128", "--memory", "3g", "--cpus", "2", "--label", "pronto.restore.session=" + self.session,
-            "--tmpfs", "/restore:rw,size=2147483648,uid=100,gid=101,mode=0700",
-            "--tmpfs", "/tmp:rw,size=67108864,uid=100,gid=101,mode=0700", "--entrypoint", "/bin/sh", IMAGE,
+            "--tmpfs", "/restore:rw,noexec,nosuid,nodev,size=2147483648,uid=100,gid=101,mode=0700",
+            "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=67108864,uid=100,gid=101,mode=0700",
+            *(["--tmpfs", "/auth-tools:rw,exec,nosuid,nodev,size=100663296,uid=0,gid=0,mode=0755"] if self.auth_tools else []),
+            "--entrypoint", "/bin/sh", IMAGE,
             "-c", "mkdir /restore/socket && initdb -D /restore/data -U pronto_drill_owner --auth-local=trust --auth-host=reject >/dev/null 2>&1 && "
             "exec postgres -D /restore/data -k /restore/socket -c listen_addresses='' -c shared_preload_libraries='' "
             "-c max_worker_processes=0 -c autovacuum=off -c max_connections=10 -c shared_buffers=64MB "
@@ -267,6 +270,11 @@ class OfflineDatabase:
                 details.get("ReadonlyRootfs") is True and details.get("LogConfig", {}).get("Type") == "none" and
                 "ALL" in details.get("CapDrop", []) and "no-new-privileges" in details.get("SecurityOpt", []),
                 "container_isolation_not_confirmed")
+        temporary = details.get("Tmpfs", {})
+        expected_mounts = {"/restore", "/tmp"} | ({"/auth-tools"} if self.auth_tools else set())
+        require(set(temporary) == expected_mounts and
+                all("noexec" in temporary[path].split(",") for path in ("/restore", "/tmp")),
+                "container_private_mounts_not_confirmed")
         labels = json.loads(local_command(["docker", "inspect", "--format", "{{json .Config.Labels}}", self.container]))
         require(labels.get("pronto.restore.session") == self.session, "container_ownership_not_confirmed")
 

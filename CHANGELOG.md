@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 26 de outubro de 2026
 
+- Acrescenta ensaio isolado de login após cópia criptografada e restauração com seis contas fictícias, conferindo sessões e permissões de estudantes/equipe, incluindo bloqueados e inativos. Mantém explícita a pendência do login sobre a cópia real e pelo site, sem ativar a agenda.
+
 - Comprova o aviso por ausência de sinais em monitor separado de ensaio, com confirmação de recebimento pelo responsável e pausa ao final. O monitor diário e a agenda automática não foram alterados; login após restauração e substituto seguem pendentes.
 
 - Registra a entrega ao responsável dos avisos reais de falha e recuperação do backup, confirmada pelas capturas dos e-mails de 24/10. Alerta por ausência de execução, login após restauração e substituto permanecem pendentes; agenda desativada.

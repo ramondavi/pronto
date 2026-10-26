@@ -38,3 +38,5 @@ O relatório distingue comparação direta dos dumps de comparação com referê
 Entrega de avisos confirmada em 26/10/2026 pelas capturas do responsável: DOWN por falha explícita e UP por recuperação, recebidos em 24/10. Isso não cobre ausência de execução. O substituto ainda será definido. Detalhes e horários em validacao-restauracao-2026-10-24.md.
 
 Ensaio adicional de ausência concluído em 26/10/2026: monitor separado com período de um minuto e tolerância de um minuto, sinal inicial único, transição automática para atraso/ausência e recebimento do aviso DOWN confirmado pelo responsável. Monitor de ensaio pausado ao final. Não alterou o monitor diário nem comprova o prazo real do cron de produção. Evidência: validacao-alerta-ausencia-2026-10-26.md.
+
+Ensaio sintético de Auth/perfis concluído em 26/10: seis logins após restauração, sessões e RLS conferidos, incluindo contas bloqueadas/inativas. Usa executor optativo separado; o procedimento protegido real acima permanece sem iniciar Auth. Limites e reprodução: validacao-auth-restauracao-2026-10-26.md.

@@ -31,3 +31,5 @@ Contingência de backup manual: backup-manual-independente.md; scripts/backup/ma
 Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; evidência real: validacao-restauracao-2026-10-24.md; scripts/backup/restore_drill.py e restore_server.py.
 
 Ensaio de ausência de execução e entrega do aviso: validacao-alerta-ausencia-2026-10-26.md.
+
+Auth após restauração (ensaio fictício): validacao-auth-restauracao-2026-10-26.md; scripts/backup/restore_auth.py e test_restore_auth_integration.py.
