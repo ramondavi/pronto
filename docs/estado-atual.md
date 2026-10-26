@@ -17,4 +17,4 @@ Atualizado em 26/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
 - PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
 - Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backup: agenda desativada. Cópia e restauração reais conferidas (96 tabelas, 0 PDFs; 24/10). Avisos de falha, recuperação e ausência recebidos; Auth/perfis fictícios conferidos; cópia real/site e substituto pendentes. Guias: configuracao-backup-b2.md, backup-manual-independente.md e ensaio-restauracao-isolada.md.
+- Backup: agenda desativada. Cópia e restauração reais conferidas (96 tabelas, 0 PDFs; 24/10). Avisos de falha, recuperação e ausência recebidos; Auth/perfis conferidos na cópia real; site e substituto pendentes. Guias: configuracao-backup-b2.md, backup-manual-independente.md e ensaio-restauracao-isolada.md.

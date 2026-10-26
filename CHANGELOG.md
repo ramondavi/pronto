@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 26 de outubro de 2026
 
+- Comprova Auth e permissões na cópia real restaurada: 96 tabelas conferidas e seis contas fictícias validadas, incluindo bloqueados/inativos, com ambiente removido e credencial temporária revogada. Mantém login pelo site como pendência, produção intacta e agenda desligada.
+
 - Prepara etapa opcional de Auth na cópia real restaurada, após conferir sua integridade, com contas fictícias, prevenção de conflitos e resultado separado do login pelo site. Mantém produção intacta e agenda desligada.
 
 - Acrescenta ensaio isolado de login após cópia criptografada e restauração com seis contas fictícias, conferindo sessões e permissões de estudantes/equipe, incluindo bloqueados e inativos. Mantém explícita a pendência do login sobre a cópia real e pelo site, sem ativar a agenda.

@@ -29,3 +29,13 @@ Validação geral: 138 testes da aplicação, tipos, lint e build passaram. Lint
 ## Preparação adicional da cópia real
 
 Etapa opcional integrada ao executor protegido. A revalidação sintética passou também na inserção posterior à conferência: contas fictícias recriadas somente no destino descartável, novo login/perfis conferidos e ambiente removido. Sete testes de Auth passaram, incluindo prevenção de conflitos e senha somente por entrada padrão. Suíte Python: 85 testes, oito optativos ignorados; integração Auth executada separadamente. Testes da aplicação: 138 passaram após compactar o resumo ao limite documental. Formulário vazio conferido visualmente; captura fora do Git. A execução sobre a cópia real aguarda preenchimento pessoal do formulário e não foi declarada concluída.
+
+## Ensaio na cópia real concluído
+
+Em 26/10/2026 às 19h55min03s de Brasília, o executor protegido concluiu a restauração da cópia real em 87,1 segundos. Conferiu 96 tabelas, nenhum documento e equivalência estrutural por referência isolada antes de inserir os registros fictícios. A cópia é a mesma já conferida em 24/10: SHA-256 f549437e68ebee82a696ee2174d47f4c1187040c3f51362f069aa61404778ab5, criada em 24/10 às 21h16min59s de Brasília.
+
+Após a conferência de integridade, seis contas fictícias foram criadas somente no destino sem rede. Login, assinatura/identidade das sessões, rejeição de senha incorreta, refresh, saída/revogação e políticas de acesso dos perfis passaram, incluindo isolamento dos estudantes e bloqueio operacional de contas blocked/inactive. Nenhuma senha de conta real foi utilizada. O relatório registra auth_service_login_tested=true e auth_validation_scope=synthetic_accounts_in_verified_restored_copy.
+
+Limpeza confirmada pelo executor: contêiner removido, credencial temporária B2 revogada e arquivos de trabalho removidos antes de registrar sucesso. Consulta posterior não encontrou contêineres com o rótulo do executor. Não houve alteração em produção, publicação de portas ou ativação da agenda. O relatório técnico sem dados pessoais foi guardado fora do Git.
+
+Este resultado encerra a pendência de Auth/perfis na cópia real indicada nas seções anteriores. Não comprova recuperação da senha de uma conta real nem o fluxo do site (cookies, redirecionamentos e telas), que continuam explicitamente false no relatório. Atributos elevados dos papéis não foram importados; somente o papel limitado do Auth recebeu login local temporário. Alertas não foram repetidos neste ensaio: suas evidências anteriores permanecem separadas. Substituto ainda será definido.
