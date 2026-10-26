@@ -17,4 +17,16 @@ O relatório técnico externo ao Git registra schema_equivalent=true, schema_com
 
 ## Limites que permanecem
 
-Esta execução comprova recuperação e integridade da cópia em nível de banco e inventário de arquivos. Papéis foram recriados sem login e sem privilégios elevados; seus atributos originais não foram automaticamente reaplicados. Login via serviço Auth, isolamento entre perfis pelo site e bloqueio operacional de contas, configurações externas, reaplicação dos expurgos e entrega dos alertas ainda exigem verificação. Também falta definir o substituto autorizado. Não declarar o protocolo integralmente operacional nem ativar a agenda somente com esta evidência.
+Esta execução comprova recuperação e integridade da cópia em nível de banco e inventário de arquivos. Papéis foram recriados sem login e sem privilégios elevados; seus atributos originais não foram automaticamente reaplicados. Login via serviço Auth, isolamento entre perfis pelo site e bloqueio operacional de contas, configurações externas, reaplicação dos expurgos e alerta por ausência de execução ainda exigem verificação. Também falta definir o substituto autorizado. Não declarar o protocolo integralmente operacional nem ativar a agenda somente com esta evidência.
+
+
+## Entrega dos avisos — evidência recebida em 26/10/2026
+
+O responsável apresentou capturas dos e-mails do Healthchecks recebidos em sua caixa de entrada em 24/10/2026, no horário de Brasília:
+
+- Falha (DOWN): recebimento às 20h39; mensagem informa sinal explícito de falha e mudança às 20h39min33s.
+- Recuperação (UP): recebimento às 21h20; mensagem informa sinal de sucesso e mudança às 21h19min56s, após a cópia concluída.
+
+Isso comprova entrega dos avisos de falha explícita e recuperação ao responsável. Não comprova o alerta causado pela ausência de execução nem recebimento por substituto. Não foi necessário enviar nova mensagem de teste. As capturas da caixa de e-mail não foram incorporadas ao repositório; este registro contém somente o resultado e os horários.
+
+Em 26/10/2026, o responsável informou que o substituto ainda será definido. A agenda continua desativada; esta evidência não autoriza sua ativação nem substitui o aceite final do protocolo.

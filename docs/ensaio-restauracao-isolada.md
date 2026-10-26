@@ -23,7 +23,7 @@ O formulário responde imediatamente e acompanha fases a cada três segundos. A 
 
 ## Limites e próximas verificações
 
-Mesmo um resultado positivo deste executor comprova recuperação e integridade em nível de banco/arquivos, não o funcionamento completo do serviço. Atributos privilegiados/login dos papéis não são reaplicados automaticamente. Configurações externas de Auth/SMTP/domínio, login pelo site, isolamento entre perfis e bloqueio de contas, reaplicação dos expurgos e entrega dos alertas exigem verificações específicas em ambiente autorizado antes de declarar o protocolo operacional. Também permanece pendente definir o substituto autorizado.
+Mesmo um resultado positivo deste executor comprova recuperação e integridade em nível de banco/arquivos, não o funcionamento completo do serviço. Atributos privilegiados/login dos papéis não são reaplicados automaticamente. Configurações externas de Auth/SMTP/domínio, login pelo site, isolamento entre perfis e bloqueio de contas, reaplicação dos expurgos e aviso por ausência de execução exigem verificações específicas em ambiente autorizado antes de declarar o protocolo operacional. Também permanece pendente definir o substituto autorizado.
 
 Não ativar BACKUP_ENABLED com base apenas no resultado deste ensaio. A aba administrativa de backups continua entrega separada.
 
@@ -34,3 +34,5 @@ Testes unitários: `python -m unittest discover -s scripts/backup -p 'test_*.py'
 Em divergência da estrutura, o executor registra apenas quantidades de linhas por categorias fixas (permissões, propriedade, configuração, comentários, definições e outros), sem SQL, nomes ou valores. O diagnóstico não transforma divergência em sucesso. Após falha, os arquivos e o banco temporário também são removidos; uma nova análise exige nova submissão pessoal das credenciais.
 
 O relatório distingue comparação direta dos dumps de comparação com referência isolada. Quando a segunda é necessária, registra `schema_equivalent=true`, `schema_comparison=isolated_reference` e `source_dump_text_identical=false`; não afirma igualdade textual do dump original. O schema.sql é uma exportação independente já incluída no manifesto conferido, não é reconstruído a partir do banco restaurado. Somente a criação redundante do esquema public é retirada do fluxo de referência, preservando sua base initdb e todas as alterações de dono e ACL da origem.
+
+Entrega de avisos confirmada em 26/10/2026 pelas capturas do responsável: DOWN por falha explícita e UP por recuperação, recebidos em 24/10. Isso não cobre ausência de execução. O substituto ainda será definido. Detalhes e horários em validacao-restauracao-2026-10-24.md.

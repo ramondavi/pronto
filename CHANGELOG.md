@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 26 de outubro de 2026
+
+- Registra a entrega ao responsável dos avisos reais de falha e recuperação do backup, confirmada pelas capturas dos e-mails de 24/10. Alerta por ausência de execução, login após restauração e substituto permanecem pendentes; agenda desativada.
+
 ### 24 de outubro de 2026
 
 - Prepara ensaio local de recuperação com banco descartável sem rede, conferência de hashes e estrutura, remoção do ambiente e formulário protegido com acompanhamento das etapas. Divergências de estrutura geram somente contagens por categoria, sem SQL ou nomes privados. Prepara comparação adicional com a exportação independente da estrutura em um banco vazio isolado, distinguindo equivalência estrutural de igualdade textual. Registra ensaio real concluído: 96 tabelas conferidas, nenhum PDF e limpeza confirmada, em 68,4 segundos; login pelo serviço Auth e alertas continuam pendentes. Não altera produção nem ativa a agenda.
