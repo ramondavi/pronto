@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 26 de outubro de 2026
 
+- Comprova o fluxo local do site com contas fictícias no computador e no celular: login, sessão após recarga, saída e rejeição de acessos indevidos. Atualiza os títulos esperados dos testes antigos e mantém a evidência separada da restauração real, sem alterar produção ou agenda.
+
 - Comprova Auth e permissões na cópia real restaurada: 96 tabelas conferidas e seis contas fictícias validadas, incluindo bloqueados/inativos, com ambiente removido e credencial temporária revogada. Mantém login pelo site como pendência, produção intacta e agenda desligada.
 
 - Prepara etapa opcional de Auth na cópia real restaurada, após conferir sua integridade, com contas fictícias, prevenção de conflitos e resultado separado do login pelo site. Mantém produção intacta e agenda desligada.

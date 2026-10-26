@@ -56,3 +56,9 @@ A proteção só pode ser declarada operacional quando houver destino e respons�
 ## 7. Contingência independente dos serviços de backup
 
 Em 23/10/2026, o responsável aprovou preparar a alternativa local descrita em backup-manual-independente.md. Ela deve estar instalada antes de uma indisponibilidade, guardar somente saída criptografada no destino escolhido e usar a mesma cobertura, consistência e integridade da rotina automática. Não depende de GitHub, B2, Healthchecks ou painel durante a geração; continua dependente de Supabase e internet. Na mídia local, expurgo de 90 dias e conferência do recibo ficam a cargo do responsável. Não equivale a cópia imutável nem substitui alertas e ensaios.
+
+## Evidências disponíveis em 26/10/2026
+
+Cópia real e recuperação conferidas, incluindo Auth/RLS com contas fictícias dentro da cópia isolada; fluxo local do site conferido em base fictícia separada. Entrega dos avisos de falha, recuperação e ausência confirmada. Evidências: validacao-restauracao-2026-10-24.md, validacao-auth-restauracao-2026-10-26.md, validacao-site-recuperacao-2026-10-26.md e validacao-alerta-ausencia-2026-10-26.md.
+
+A agenda continua desativada e o substituto autorizado ainda será definido. As evidências não significam rotina diária operacional nem comprovam o prazo efetivo do cron diário. Não ativar ou incorporar automaticamente com base no encerramento destes testes.
