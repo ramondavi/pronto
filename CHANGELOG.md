@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 27 de outubro de 2026
 
+- Acrescenta compositor CDU por escolhas explícitas no catálogo e na análise bibliotecária, com relações, auxiliares, aplicação por assunto/conjunto, conferência da edição e confirmação antes de usar. Registra a composição como pendente, preservando o preenchimento manual e as fichas anteriores.
+
 - Esclarece a organização dos códigos CDU com perguntas e ajuda junto a cada campo. A classe de aplicação aparece somente para auxiliares especiais; os campos seguem uma coluna contínua, sem lacunas.
 
 - Padroniza as abas Assuntos e Catálogo CDU com campos e ações identificados por ícones, formulários responsivos e dropdowns de altura e alinhamento uniformes no design system.

@@ -7194,3 +7194,32 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 }
 
 :is(.controlled-terms-admin, .cdu-catalog-admin) .saved-form select[data-save-state] { padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2364758b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px 8px; }
+
+/* Guided CDU composition shares the catalogue field and button language. */
+.cdu-composer { display: grid; gap: 16px; margin-block: 16px; padding: 20px; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.cdu-composer header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.cdu-composer header > div { flex: 1 1 260px; }
+.cdu-composer h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1rem; }
+.cdu-composer h3 svg { width: 20px; height: 20px; color: var(--institutional); }
+.cdu-composer p { margin: 0; color: var(--text-muted); font-size: .8rem; line-height: 1.55; }
+.cdu-composer header p { margin-top: 6px; }
+.cdu-composer label:not(.check) { display: grid; gap: 7px; min-width: 0; align-content: start; }
+.cdu-composer small { color: var(--text-muted); font-size: .75rem; font-weight: 500; line-height: 1.5; }
+.cdu-composer :is(select, textarea) { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
+.cdu-composer select { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; height: 46px; min-height: 46px; padding-block: 0; line-height: 44px; }
+.cdu-composer .button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; justify-self: start; }
+.cdu-composer .button svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.cdu-composer__blocks { display: grid; gap: 12px; }
+.cdu-composer__block { display: grid; gap: 12px; padding: 16px; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.cdu-composer__block > strong { font-size: .82rem; }
+.cdu-composer__preview { display: grid; gap: 8px; min-width: 0; padding: 16px; border-radius: var(--radius); background: var(--institutional-soft); }
+.cdu-composer__preview > strong { font-size: .8rem; }
+.cdu-composer output { font-family: var(--font-mono, monospace); font-size: 1.05rem; font-weight: 750; overflow-wrap: anywhere; }
+.cdu-composer__memory { white-space: pre-line; overflow-wrap: anywhere; }
+.cataloging-cdu-composer { margin-block: 12px; min-width: 0; }
+@media (max-width: 660px) { .cdu-composer { padding: 14px; } .cdu-composer__block { padding: 12px; } }
+
+@supports (appearance: base-select) {
+ .cdu-composer select > button { display: block; width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; line-height: 44px; text-align: left; }
+ .cdu-composer selectedcontent { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}

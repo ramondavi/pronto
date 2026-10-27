@@ -1,5 +1,6 @@
 "use client";
 
+import { CduComposer } from "./cdu-composer";
 import { CduEditionSelect, defaultCduEdition } from "./cdu-edition-select";
 
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -72,6 +73,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
     return withMinimumTerms(existing);
   });
   const [cduCode, setCduCode] = useState(initialCdu);
+  const [cduComposerOpen, setCduComposerOpen] = useState(false);
   const [cduCatalogSuggestions, setCduCatalogSuggestions] = useState<CduCatalogSuggestion[]>([]);
   const [cduCatalogOpen, setCduCatalogOpen] = useState(false);
   const [cduDescription, setCduDescription] = useState("");
@@ -671,6 +673,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
 )}</div>{editable && <button className="button button--secondary button--small" type="button" onClick={() => setTerms((current) => [...current, { termId: "", labelPt: "", labelEn: "", sourceCode: "", isPrimary: current.length === 0 }])}><AppIcon name="tag" />Adicionar termo</button>}</fieldset>
 
     <fieldset id="cataloging-classification" className="cataloging-classification"><legend>Classificação</legend>
+      {editable && !homologatedAt && <div className="cataloging-cdu-composer"><button type="button" className="button button--secondary button--small" aria-expanded={cduComposerOpen} onClick={() => setCduComposerOpen(!cduComposerOpen)}><AppIcon name="hierarchy" />Compor notação CDU</button>{cduComposerOpen && <CduComposer actionLabel="Usar na ficha" onClose={() => setCduComposerOpen(false)} onUse={(entry) => { if (!editable || homologatedAt) return; setCduCode(entry.cdu_code); setCduDescription(entry.description); setCduEdition(entry.source_reference ?? ""); setCduDescriptionKnown(true); setCduDescriptionSaved(true); setCduCatalogOpen(false); setCduComposerOpen(false); showPanelChange("CDU escolhida para a ficha"); }} />}</div>}
       <div className="cataloging-classification__main">
         <div className="cataloging-classification__left">
           <div className="cataloging-classification__code"><label className="autocomplete-field"><CatalogingFieldLabel icon="hierarchy">CDU</CatalogingFieldLabel><input id="cataloging-cdu-input" aria-invalid={highlightPendingFields && !cduCode.trim()} value={cduCode} disabled={!editable} maxLength={80} onFocus={() => setCduCatalogOpen(true)} onBlur={() => window.setTimeout(() => setCduCatalogOpen(false), 120)} onChange={(event) => { setCduCode(event.target.value); setCduCatalogOpen(true); }} placeholder="Informe ou busque o código CDU" role="combobox" aria-autocomplete="list" aria-expanded={cduCatalogOpen && cduCatalogSuggestions.length > 0} aria-controls="cataloging-cdu-suggestions" />{editable && cduCatalogOpen && cduCatalogSuggestions.length > 0 && <span id="cataloging-cdu-suggestions" className="cataloging-autocomplete cdu-code-suggestions" role="listbox" aria-label="Códigos CDU cadastrados"><small>Códigos cadastrados</small>{cduCatalogSuggestions.map((entry) => <button type="button" role="option" aria-selected={false} key={entry.cdu_code} onMouseDown={(event) => event.preventDefault()} onClick={() => { setCduCode(entry.cdu_code); setCduCatalogOpen(false); }}><strong>{entry.cdu_code}</strong><span>{entry.description}</span></button>)}</span>}</label></div>

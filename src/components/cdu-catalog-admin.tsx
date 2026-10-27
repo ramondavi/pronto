@@ -1,4 +1,5 @@
 "use client";
+import { CduComposer } from "./cdu-composer";
 import { CduStructureFields } from "./cdu-structure-fields";
 import { cduKinds, cduPath, type CduStructure, type CduKind } from "@/lib/cdu-structure";
 import { CduEditionSelect, defaultCduEdition } from "./cdu-edition-select";
@@ -32,6 +33,7 @@ export function CduCatalogAdmin({ entries }: { entries: Entry[] }) {
   const [busy, setBusy] = useState("");
   const [merging, setMerging] = useState<Entry | null>(null);
   const [creating, setCreating] = useState(false);
+  const [composing, setComposing] = useState(false);
   const supabase = createClient();
   const currentItems = items.filter((entry) => !entry.merged_into_code);
   const pending = currentItems.filter((entry) => !entry.validated).length;
@@ -94,7 +96,14 @@ export function CduCatalogAdmin({ entries }: { entries: Entry[] }) {
   }
 
   return <section className="panel admin-section cdu-catalog-admin">
-    <header className="admin-section__lead cdu-catalog-admin__heading"><span className="admin-section__icon"><AppIcon name="book" aria-hidden="true" /></span><div><p className="eyebrow">Classificação</p><h2>Repertório local de CDU</h2><p>Cadastre códigos com suas descrições, revise registros e confirme a validação técnica.</p></div><button className="button button--primary button--small" type="button" aria-expanded={creating} onClick={() => { setCreating((current) => !current); setMessage(""); }}><AppIcon name="book" />{creating ? "Fechar cadastro" : "Cadastrar CDU"}</button></header>
+    <header className="admin-section__lead cdu-catalog-admin__heading"><span className="admin-section__icon"><AppIcon name="book" aria-hidden="true" /></span><div><p className="eyebrow">Classificação</p><h2>Repertório local de CDU</h2><p>Cadastre códigos com suas descrições, revise registros e confirme a validação técnica.</p></div><button className="button button--primary button--small" type="button" aria-expanded={creating} onClick={() => { setCreating((current) => !current); setComposing(false); setMessage(""); }}><AppIcon name="book" />{creating ? "Fechar cadastro" : "Cadastrar CDU"}</button></header>
+    <div className="catalogue-inline-actions"><button type="button" className="button button--secondary button--small" aria-expanded={composing} onClick={() => { setComposing(!composing); setCreating(false); }}><AppIcon name="hierarchy" />Compor notação CDU</button></div>
+    {composing && <CduComposer actionLabel="Salvar composição no catálogo" onClose={() => setComposing(false)} onUse={(stored) => {
+      const entry: Entry = { ...stored, composition_notes: stored.composition_notes ?? null, auxiliary_codes: stored.auxiliary_codes ?? [], related_codes: stored.related_codes ?? [] };
+      setItems((current) => [...current.filter((item) => item.cdu_code !== entry.cdu_code), entry].sort((a, b) => a.cdu_code.localeCompare(b.cdu_code, "pt-BR", { numeric: true })));
+      setComposing(false); setQuery(entry.cdu_code); setHierarchyRoot(""); setStatus("all"); setPage(0); setEditing(entry.cdu_code);
+      showPanelChange("Composição disponível no catálogo", undefined);
+    }} />}
     {creating && <form className="cdu-catalog-admin__create" action={create}><div className="cdu-catalog-admin__create-heading"><AppIcon name="book" /><div><strong>Novo código CDU</strong><p>Informe a descrição conforme a edição impressa consultada. O registro fica pendente de validação.</p></div></div><div className="cdu-catalog-admin__create-fields"><label><span className="catalogue-field-label"><AppIcon name="tag" />Código CDU</span><input name="code" required maxLength={80} autoFocus placeholder="Ex.: 711.4" /></label><label><span className="catalogue-field-label"><AppIcon name="document" />Descrição técnica</span><input name="description" required minLength={3} maxLength={1000} placeholder="Descrição conforme a CDU" /></label><label><span className="catalogue-field-label"><AppIcon name="book" />Edição da CDU</span><CduEditionSelect name="source" defaultValue={defaultCduEdition} required /></label></div><CduStructureFields entries={items} /><div className="cdu-catalog-admin__create-actions"><button className="button button--primary button--small" disabled={busy === "creating"}><AppIcon name="check" />{busy === "creating" ? "Cadastrando…" : "Cadastrar código"}</button><button className="button button--secondary button--small" type="button" disabled={busy === "creating"} onClick={() => setCreating(false)}><AppIcon name="close" />Cancelar</button></div></form>}
     <div className="cdu-catalog-admin__overview" aria-label="Resumo do catálogo CDU">
       <button type="button" className={status === "all" ? "is-selected" : ""} onClick={() => chooseStatus("all")}><AppIcon name="book" /><span><strong>{currentItems.length}</strong> cadastrados</span></button>
