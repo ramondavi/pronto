@@ -1,5 +1,7 @@
 "use client";
 
+import { CduEditionSelect, defaultCduEdition } from "./cdu-edition-select";
+
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { dismissPanelChange, showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 import { createPortal } from "react-dom";
@@ -73,6 +75,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   const [cduCatalogSuggestions, setCduCatalogSuggestions] = useState<CduCatalogSuggestion[]>([]);
   const [cduCatalogOpen, setCduCatalogOpen] = useState(false);
   const [cduDescription, setCduDescription] = useState("");
+  const [cduEdition, setCduEdition] = useState(defaultCduEdition);
   const [cduDescriptionKnown, setCduDescriptionKnown] = useState(false);
   const [cduLookupPending, setCduLookupPending] = useState(false);
   const [cduMergedTarget, setCduMergedTarget] = useState<string | null>(null);
@@ -314,23 +317,23 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   useEffect(() => {
     let active = true;
     const code = cduCode.trim();
-    if (!code) { setCduMergedTarget(null); setCduDescription(""); setCduDescriptionKnown(false); setCduDescriptionSaved(false); setCduDescriptionReadyToSave(""); setCduLookupPending(false); setCduLookupFailed(false); return; }
+    if (!code) { setCduEdition(defaultCduEdition); setCduMergedTarget(null); setCduDescription(""); setCduDescriptionKnown(false); setCduDescriptionSaved(false); setCduDescriptionReadyToSave(""); setCduLookupPending(false); setCduLookupFailed(false); return; }
     setCduMergedTarget(null);
     setCduLookupPending(true);
     setCduLookupFailed(false);
     setCduDescriptionSaved(false);
     setCduDescriptionReadyToSave("");
-    createClient().from("cdu_code_descriptions").select("description,merged_into_code").eq("cdu_code", code).maybeSingle().then(async (response) => {
+    createClient().from("cdu_code_descriptions").select("description,merged_into_code,source_reference").eq("cdu_code", code).maybeSingle().then(async (response) => {
       let data = response.data;
       let error = response.error;
       if (response.error?.code === "42703" || response.error?.code === "PGRST204") {
-        const legacy = await createClient().from("cdu_code_descriptions").select("description").eq("cdu_code", code).maybeSingle();
+        const legacy = await createClient().from("cdu_code_descriptions").select("description,source_reference").eq("cdu_code", code).maybeSingle();
         data = legacy.data ? { ...legacy.data, merged_into_code: null } : null;
         error = legacy.error;
       }
       if (active) setCduMergedTarget(data?.merged_into_code ?? null);
       if (!active) return;
-      if (!error) setCduDescription(data?.description ?? "");
+      if (!error) { setCduDescription(data?.description ?? ""); setCduEdition(data ? data.source_reference ?? "" : defaultCduEdition); }
       setCduDescriptionKnown(Boolean(data));
       setCduDescriptionSaved(Boolean(data));
       setCduLookupFailed(Boolean(error));
@@ -344,14 +347,19 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
     if (!ready || !editable || !code || cduMergedTarget || cduLookupPending || cduDescriptionKnown || cduDescriptionSaved || description.length < 3 || cduDescriptionReadyToSave !== cduDescription) return;
     let active = true;
     const timer = window.setTimeout(async () => {
-      const { error } = await createClient().rpc("save_cdu_code_description", { cdu_code_value: code, description_value: description });
+      const { error } = await createClient().rpc("save_cdu_code_description", { cdu_code_value: code, description_value: description, source_reference_value: cduEdition });
       if (!active) return;
-      if (error) { showPanelChangeError("Descrição da CDU não salva", "Confira a conexão e tente novamente."); return; }
+      if (error) { setCduDescriptionReadyToSave(""); showPanelChangeError("Descrição da CDU não salva", "Confira a conexão e tente novamente."); return; }
+      const stored = await createClient().from("cdu_code_descriptions").select("description,source_reference").eq("cdu_code", code).single();
+      if (!active) return;
+      if (stored.error || !stored.data) { setCduDescriptionReadyToSave(""); showPanelChangeError("Descrição da CDU não confirmada", "Confira a conexão e tente novamente."); return; }
+      setCduDescription(stored.data.description);
+      setCduEdition(stored.data.source_reference ?? "");
       setCduDescriptionSaved(true);
       setCduDescriptionKnown(true);
     }, 500);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [cduCode, cduDescription, cduDescriptionReadyToSave, cduDescriptionKnown, cduDescriptionSaved, cduLookupPending, cduMergedTarget, editable, ready]);
+  }, [cduCode, cduDescription, cduEdition, cduDescriptionReadyToSave, cduDescriptionKnown, cduDescriptionSaved, cduLookupPending, cduMergedTarget, editable, ready]);
   useEffect(() => {
     const prefix = cduCode.trim();
     if (!cduCatalogOpen || !prefix) { setCduCatalogSuggestions([]); return; }
@@ -669,7 +677,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
           {editable && <div className="cataloging-classification__suggest"><span className="cataloging-classification__suggest-wrap" tabIndex={primaryHistory === "checking" || primaryHistory === "unused" ? 0 : -1} aria-describedby={cduSuggestionHelp ? "cataloging-cdu-suggest-help" : undefined}><button className={`button button--secondary button--small cataloging-classification__suggest-button${primaryHistory === "available" ? " is-available" : ""}`} type="button" onClick={suggestCdu} disabled={primaryHistory !== "available" && primaryHistory !== "error"} aria-describedby={cduSuggestionHelp ? "cataloging-cdu-suggest-help" : undefined}><span className="cataloging-classification__suggest-label"><AppIcon name="sparkles" />Ver sugestões de CDU</span>{primaryHistory === "available" && <small>{availableSuggestionCount} {availableSuggestionCount === 1 ? "sugestão" : "sugestões"}</small>}{primaryHistory !== "available" && primaryHistory !== "error" && primaryHistory !== "none" && <small>{primaryHistory === "checking" ? "Consultando histórico…" : `“${primaryTerm?.labelPt.trim() || "Assunto principal"}” ainda sem fichas`}</small>}</button>{primaryHistory === "none" && <button className="cataloging-classification__guidance-action" type="button" aria-describedby="cataloging-cdu-suggest-help" onClick={() => { const target = document.getElementById("cataloging-terms"); target?.scrollIntoView({ behavior: "smooth", block: "start" }); target?.focus({ preventScroll: true }); setHighlightPendingFields(true); }}>{terms.some((term) => term.labelPt.trim()) ? "Marque um assunto principal" : "Preencha um assunto principal"}</button>}{cduSuggestionHelp && <span id="cataloging-cdu-suggest-help" className="cataloging-classification__suggest-help" role="tooltip">{cduSuggestionHelp}</span>}</span></div>}
           <div className="cataloging-classification__cutter"><label className="autocomplete-field"><CatalogingFieldLabel icon="tag">Cutter do autor</CatalogingFieldLabel><span className="cutter-input-row"><input id="cataloging-cutter-input" aria-invalid={highlightPendingFields && !normalizeCutterCode(cutterCode)} value={cutterCode} disabled={!editable} maxLength={40} onFocus={() => setCutterSuggestionsOpen(true)} onBlur={() => window.setTimeout(() => setCutterSuggestionsOpen(false), 120)} onChange={(event) => { setCutterCode(normalizeCutterCode(event.target.value)); setCutterSuggestionsOpen(true); }} placeholder="Ex.: S237" role="combobox" aria-autocomplete="list" aria-expanded={cutterSuggestionsOpen && cutterSuggestions.length > 0} aria-controls="cutter-suggestions" />{firstAuthorEntry && <span className="cutter-author-entry"><span>1º autor</span><strong>{firstAuthorEntry}</strong></span>}</span>{editable && cutterSuggestionsOpen && cutterSuggestions.length > 0 && <span id="cutter-suggestions" className="cataloging-autocomplete cutter-suggestions" aria-label="Sugestões de Cutter"><small>Para {cutterSurname}</small>{cutterSuggestions.map((suggestion) => <button type="button" key={`${suggestion.prefix}-${suggestion.code}`} onMouseDown={(event) => event.preventDefault()} onClick={() => { setCutterCode(suggestion.code); setCutterSuggestionsOpen(false); }}><strong>{suggestion.code}</strong><span>Prefixo da tabela: {suggestion.prefix}</span></button>)}</span>}</label></div>
         </div>
-        <section className="classification-description"><label><CatalogingFieldLabel icon="document">Descrição da CDU</CatalogingFieldLabel><textarea id="cataloging-cdu-description" aria-invalid={highlightPendingFields && cduDescriptionPending && !cduLookupPending} value={cduDescription} disabled={!editable || !cduCode.trim() || cduDescriptionKnown} minLength={3} maxLength={1000} rows={2} onChange={(event) => { setCduDescription(event.target.value); setCduDescriptionReadyToSave(""); setCduDescriptionSaved(false); }} onBlur={() => { if (cduDescription.trim().length >= 3) setCduDescriptionReadyToSave(cduDescription); }} placeholder={cduCode ? "Descrição conforme a CDU, 2ª edição" : "Informe primeiro o código CDU"} /></label>{Boolean(cduCode.trim()) && !cduDescriptionKnown && !cduLookupPending && <div className="classification-description__notice"><AppIcon name="book" /><span><strong>Primeiro uso deste código</strong><span>Informe a descrição conforme a CDU, 2ª edição impressa. Nos próximos usos, ela será recuperada automaticamente.</span></span></div>}</section>
+        <section className="classification-description"><label>Edição da CDU<CduEditionSelect value={cduEdition} disabled={!editable || !cduCode.trim() || cduDescriptionKnown || cduLookupPending} onChange={(event) => setCduEdition(event.target.value)} /></label><label><CatalogingFieldLabel icon="document">Descrição da CDU</CatalogingFieldLabel><textarea id="cataloging-cdu-description" aria-invalid={highlightPendingFields && cduDescriptionPending && !cduLookupPending} value={cduDescription} disabled={!editable || !cduCode.trim() || cduDescriptionKnown} minLength={3} maxLength={1000} rows={2} onChange={(event) => { setCduDescription(event.target.value); setCduDescriptionReadyToSave(""); setCduDescriptionSaved(false); }} onBlur={() => { if (cduDescription.trim().length >= 3) setCduDescriptionReadyToSave(cduDescription); }} placeholder={cduCode ? "Descrição conforme a CDU, 2ª edição" : "Informe primeiro o código CDU"} /></label>{Boolean(cduCode.trim()) && !cduDescriptionKnown && !cduLookupPending && <div className="classification-description__notice"><AppIcon name="book" /><span><strong>Primeiro uso deste código</strong><span>Confira a edição selecionada e informe a descrição. Nos próximos usos, descrição e edição serão recuperadas do catálogo.</span></span></div>}</section>
       </div>
       {suggestionDialogOpen && createPortal(<div className="cdu-suggestion-modal pronto-modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) setSuggestionDialogOpen(false); }} onKeyDown={(event) => { if (event.key === "Escape") setSuggestionDialogOpen(false); }}><section className="cdu-suggestion-modal__surface pronto-modal-surface" role="dialog" aria-modal="true" aria-labelledby="cdu-suggestion-modal-title"><ModalCloseButton onClick={() => setSuggestionDialogOpen(false)} /><header className="cdu-suggestion-modal__heading"><span className="timeline-dialog__icon" aria-hidden="true"><AppIcon name="sparkles" /></span><div><p className="eyebrow">Classificação</p><h2 id="cdu-suggestion-modal-title">Sugestões de CDU</h2></div></header><p className="cdu-suggestion-modal__intro">Códigos usados em fichas anteriores para o assunto principal. Confira a classificação antes de escolher.</p>{suggestionLoading && <p className="cdu-suggestion-modal__loading" role="status">Consultando sugestões…</p>}{suggestions.length > 0 && <div className="cdu-suggestions" aria-label="Sugestões de CDU"><div className="cdu-suggestions__heading"><strong>Sugestões encontradas</strong><span>Escolha uma CDU e confira a classificação.</span></div>{suggestions.map((suggestion) => <button className="cdu-suggestions__item" type="button" key={suggestion.cdu_code} onClick={() => { setCduCode(suggestion.cdu_code); setSuggestionDialogOpen(false); }} aria-label={`Usar a CDU ${suggestion.cdu_code}`}><span className="cdu-suggestions__code"><small>Código CDU</small><strong>{suggestion.cdu_code}</strong></span><span className="cdu-suggestions__evidence"><span><b>{suggestion.primary_count}</b> {suggestion.primary_count === 1 ? "ficha com este assunto principal" : "fichas com este assunto principal"}</span><span><b>{suggestion.secondary_count}</b> {suggestion.secondary_count === 1 ? "coincidência com assunto complementar" : "coincidências com assuntos complementares"}</span></span><span className="cdu-suggestions__action">Usar código <span aria-hidden="true">→</span></span></button>)}</div>}{suggestionFeedback && <div className={`cataloging-cdu-feedback${suggestionFeedback.kind === "error" ? " is-error" : ""}`} role={suggestionFeedback.kind === "error" ? "alert" : "status"}><span className="cataloging-cdu-feedback__icon"><AppIcon name={suggestionFeedback.kind === "error" ? "help" : "search"} /></span><div><strong>{suggestionFeedback.title}</strong><p>{suggestionFeedback.detail}</p></div><button className="button button--secondary button--small" type="button" onClick={suggestionFeedback.kind === "error" ? suggestCdu : () => { setSuggestionDialogOpen(false); window.setTimeout(() => document.getElementById("cataloging-cdu-input")?.focus(), 0); }}>{suggestionFeedback.kind === "error" ? "Tentar novamente" : "Informar CDU"}</button></div>}<footer className="cdu-suggestion-modal__footer"><button className="button button--secondary" type="button" onClick={() => setSuggestionDialogOpen(false)}><AppIcon name="close" />Fechar</button></footer></section></div>, document.body)}
     </fieldset>

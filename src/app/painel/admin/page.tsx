@@ -16,7 +16,7 @@ import { legacyIssueTemplateFields } from "@/lib/issue-template-fields";
 import { supportedLanguages, type InterfaceLanguage } from "@/lib/interface-language";
 async function cduCatalogue(supabase: Awaited<ReturnType<typeof createClient>>) {
   const fields = "cdu_code,description,composition_notes,auxiliary_codes,related_codes,source_reference,validated";
-  const result = await supabase.from("cdu_code_descriptions").select(`${fields},merged_into_code`).order("cdu_code");
+  const result = await supabase.from("cdu_code_descriptions").select(`${fields},merged_into_code,parent_code,notation_kind,auxiliary_scope_code,usage_notes`).order("cdu_code");
   if (result.error?.code === "42703" || result.error?.code === "PGRST204") return supabase.from("cdu_code_descriptions").select(fields).order("cdu_code");
   return result;
 }

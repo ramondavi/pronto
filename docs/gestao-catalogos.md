@@ -16,8 +16,10 @@ A operação não troca os vínculos dos protocolos nem reescreve os textos, met
 
 Migração nova: `202610260001_catalogue_creation_and_merges.sql`. Acrescenta metadados de redirecionamento, funções de cadastro/conferência/mesclagem e proteções de escrita. Não elimina registros históricos. Não altera autenticação, backup nem armazenamento de PDFs.
 
-A aplicação remota exige confirmação explícita do responsável, primeiro no banco de prévia. Produção não foi alterada. A interface mantém consultas compatíveis com o banco anterior enquanto a migração está pendente; as operações novas dependem da migração.
+A aplicação remota exige confirmação explícita do responsável, primeiro no banco de prévia. Aplicada somente à prévia em 27/10/2026 após autorização e CI aprovado; funções confirmadas. Produção não foi alterada. A interface mantém consultas compatíveis com o banco anterior enquanto a migração está pendente; as operações novas dependem da migração.
 
 ## Verificação local
 
 Ambiente Supabase dedicado, somente dados fictícios e portas locais. Suíte de banco: 14 arquivos, 284 verificações aprovadas; 23 verificações próprias de cadastro/mesclagem. Cobertura de autorização, duplicidade, confirmação desatualizada, atendimento aberto, redirecionamento sucessivo, auditoria e preservação integral da ficha e seus vínculos. Testes da aplicação: 138 aprovados. Tipos, lint (sem erros; 13 avisos já existentes) e build padrão aprovados. Fluxos visuais conferidos em 1366 px e 390 px: criação, confirmação, mesclagens, consulta dos históricos, bloqueio de edição da origem, ícone e teclado (Espaço, Escape e retorno de foco). Captura consolidada: gestao-catalogos-validacao.png, mantida como evidência local fora do repositório. O build inicial foi impedido pelo vínculo das dependências entre pastas; a validação padrão passou após disponibilizar as mesmas dependências localmente, sem mudança de configuração da aplicação.
+
+Ampliação de edições e estrutura CDU: cdu-repertorio-local.md.

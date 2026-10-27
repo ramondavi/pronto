@@ -288,6 +288,9 @@ Graduação, Especialização, Mestrado e Doutorado.
 
 - A gestão de CDU também permite mesclar duplicatas: mantém os campos técnicos do destino e preserva integralmente o código, a descrição e os metadados históricos da origem. Os códigos mesclados ficam acessíveis no histórico, sem novos usos. As sugestões passam a apontar ao destino; nenhuma ficha anterior é reescrita e nenhuma CDU é atribuída automaticamente. Valem a confirmação, auditoria, permissão de gestão e bloqueio por atendimento aberto descritos para assuntos.
 
+- Decisão de 27/10/2026: o repertório CDU será próprio, construído pela equipe, sem importar uma base externa. Mantém hierarquia explicitamente registrada, tipo de tabela/notação, âmbito obrigatório para auxiliar especial, notas de uso e navegação pelas relações. Registros antigos não recebem hierarquia presumida. O apoio à leitura dos sinais não substitui validação bibliotecária de sintaxe, significado ou aplicabilidade.
+- No cadastro e na revisão CDU, e no primeiro uso na ficha, a edição é escolhida em lista: 2ª edição (IBICT, 2007) por padrão para novos registros; 1ª edição (IBICT, 1997) no grupo “Edição defasada”. Proveniências anteriores são preservadas, inclusive edição desconhecida, até revisão explícita. Detalhes operacionais: cdu-repertorio-local.md.
+
 ### 9.3. Assistente Cutter-Sanborn/CAT
 
 - Campo manual com dropdown de sugestões progressivas pelo sobrenome da entrada autorizada do autor; nunca atribuir automaticamente.

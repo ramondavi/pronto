@@ -10,7 +10,7 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - E-mails: 26 variantes do parecer de 22/10 em docs/revisao-emails/. Conclusão unificada; sem RI, registro público. Lembretes abrem preparação; rodapé/URLs padronizados.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
-- Assuntos/CDU e ícone: gestao-catalogos.md. Migração local; remoto pendente.
+- Assuntos/CDU: gestao-catalogos.md. Mesclagem na prévia; hierarquia local: cdu-repertorio-local.md.
 
 ## Verificação e operação
 

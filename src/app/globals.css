@@ -7147,3 +7147,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .catalogue-merge-dialog__preview { border-inline-start: 3px solid var(--institutional); padding-inline-start: 1rem; }
 .catalogue-merge-dialog__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
 @media (max-width: 600px) { .catalogue-merge-dialog__actions > button { width: 100%; } }
+
+.cdu-structure-fields { display: grid; gap: 1rem; min-width: 0; padding: 1rem; margin-block: 1rem; border: 1px solid var(--line); border-radius: var(--radius); }
+.cdu-structure-fields label { display: grid; gap: .4rem; min-width: 0; }
+.cdu-catalog-admin__taxonomy { font-size: .9rem; overflow-wrap: anywhere; color: var(--muted); }

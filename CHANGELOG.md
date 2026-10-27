@@ -6,6 +6,11 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 27 de outubro de 2026
+
+- Seleção da edição CDU com padrão IBICT 2007 e edição IBICT 1997 no grupo de edição defasada. Prepara repertório próprio com hierarquia, tipos de tabelas, âmbito de auxiliares especiais, relações navegáveis e proteção contra ciclos. Registros antigos preservam a proveniência conhecida. A migração de mesclagem foi aplicada somente à prévia, com autorização; a estrutura hierárquica continua local.
+
+
 ### 26 de outubro de 2026
 
 - Permite cadastrar assuntos pela Administração e mesclar assuntos ou CDU duplicados, mantendo fichas e vínculos históricos, com conferência, auditoria e proteção de atendimentos abertos. Substitui o ícone de acessibilidade pelo símbolo de pessoa em círculo. A ativação das funções depende da nova migração, sem aplicação remota automática.

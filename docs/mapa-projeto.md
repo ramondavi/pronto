@@ -29,3 +29,7 @@ Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; 
 Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.
 
 - Cadastro e mesclagem de assuntos/CDU: docs/gestao-catalogos.md; src/components/catalogue-merge-dialog.tsx; supabase/migrations/202610260001_catalogue_creation_and_merges.sql.
+
+- Repertório próprio CDU, hierarquia, auxiliares e edições: docs/cdu-repertorio-local.md; src/lib/cdu-structure.ts.
+
+- Avaliação das opções externas do RI (sem integração ativada): docs/interoperabilidade-ri-2026-10-27.md.
