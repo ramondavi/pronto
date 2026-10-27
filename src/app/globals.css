@@ -7235,3 +7235,12 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .cdu-add-options__choices strong { font-size: .84rem; line-height: 1.4; }
 .cdu-add-options__choices small { color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
 @media (max-width: 660px) { .cdu-add-options__choices { grid-template-columns: minmax(0, 1fr); } .cdu-add-options { padding: 14px; } }
+
+.cdu-symbol-editor, .cdu-symbol-editor__section, .cdu-symbol-editor__sequence { display: grid; gap: 12px; min-width: 0; }
+.cdu-symbol-editor__section, .cdu-symbol-editor__sequence { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.cdu-symbol-editor__sequence h4 { margin: 0; font-size: .85rem; }
+.cdu-symbol-editor__sequence ol { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.cdu-symbol-editor__sequence li { display: grid; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.cdu-symbol-editor__sequence li > span { overflow-wrap: anywhere; font-size: .82rem; font-weight: 700; }
+.cdu-composer [aria-pressed="true"] { border-color: var(--institutional); background: var(--institutional-soft); }
+@media (max-width: 660px) { .cdu-symbol-editor__section, .cdu-symbol-editor__sequence { padding: 12px; } .cdu-symbol-editor .button { max-width: 100%; white-space: normal; text-align: left; } }

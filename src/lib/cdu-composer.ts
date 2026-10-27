@@ -1,22 +1,14 @@
-import { cduPath, type CduStructure } from "./cdu-structure.ts";
+import { type CduStructure } from "./cdu-structure.ts";
+
+import { cduAuxiliaryText, specialCduSuffix, cduAscending } from "./cdu-notation.ts";
 
 export type ComposerEntry = CduStructure & { description: string; source_reference: string | null; validated: boolean; composition_notes?: string | null; auxiliary_codes?: string[]; related_codes?: string[] };
-export type CduRelation = ":" | "::" | "+";
+export type CduRelation = ":" | "::" | "+" | "/";
 export type CduPart = { code: string; relation: CduRelation };
 export type CduAuxiliary = { code: string; target: number | "whole" };
 export type CduComposition = { code: string; edition: string; memory: string; auxiliaries: string[]; related: string[] };
-export const cduRelations: Record<CduRelation, string> = { ":": "Relacionar com (:)", "::": "Relacionar mantendo a ordem (::)", "+": "Acrescentar outro assunto (+)" };
+export const cduRelations: Record<CduRelation, string> = { ":": "Relacionar com (:)", "::": "Relacionar mantendo a ordem (::)", "+": "Acrescentar outro assunto (+)", "/": "Abranger uma sequência consecutiva (/)" };
 const mainPattern = /^\d+(?:\.\d+)*$/u;
-const commonPatterns: Record<string, RegExp> = {
- common_language: /^=\d+(?:\.\d+)*$/u,
- common_form: /^\(0\d*(?:\.\d+)*\)$/u,
- common_place: /^\([1-9]\d*(?:\.\d+)*\)$/u,
- common_ancestry: /^\(=\d+(?:\.\d+)*\)$/u,
- common_time: /^"\d+(?:[.\/-]\d+)*"$/u,
- common_properties: /^-02\d*(?:\.\d+)*$/u, common_materials: /^-03\d*(?:\.\d+)*$/u,
- common_processes: /^-04\d*(?:\.\d+)*$/u, common_persons: /^-05\d*(?:\.\d+)*$/u,
-};
-
 // This builder deliberately supports only the structured subset offered by the UI.
 // It never parses arbitrary existing expressions or invents table relationships.
 export function composeCdu(parts: readonly CduPart[], auxiliaries: readonly CduAuxiliary[], edition: string, entries: readonly ComposerEntry[]): CduComposition {
@@ -45,15 +37,13 @@ export function composeCdu(parts: readonly CduPart[], auxiliaries: readonly CduA
   let suffix = auxiliary.code;
   if (kind.startsWith("special_")) {
    if (auxiliary.target === "whole") throw new Error("Auxiliares especiais devem ser ligados a um assunto específico.");
-   const scope = entry.auxiliary_scope_code;
-   if (!scope || !cduPath(parts[auxiliary.target].code, entries).includes(scope)) throw new Error("O assunto precisa pertencer ao âmbito registrado para este auxiliar especial.");
-   if (!auxiliary.code.startsWith(scope)) throw new Error("Este auxiliar especial precisa de composição manual: seu código não contém a classe de aplicação registrada.");
-   suffix = auxiliary.code.slice(scope.length);
-   const pattern = kind === "special_point_zero" ? /^\.0\d*(?:\.\d+)*$/u : kind === "special_hyphen" ? /^-\d+(?:\.\d+)*$/u : /^'\d+(?:\.\d+)*$/u;
-   if (!pattern.test(suffix)) throw new Error("Este auxiliar especial precisa de composição manual; confira sua notação na edição consultada.");
-  } else if (!commonPatterns[kind]?.test(auxiliary.code)) throw new Error("Este auxiliar não pertence ao conjunto simples aceito pelo compositor. Use o preenchimento manual.");
+   suffix = specialCduSuffix(entry, parts[auxiliary.target].code, entries);
+  } else suffix = cduAuxiliaryText(entry);
   if (auxiliary.target === "whole") whole += suffix; else attached[auxiliary.target] += suffix;
   notes.push(`Auxiliar ${auxiliary.code} — ${entry.description}; aplicação: ${auxiliary.target === "whole" ? "conjunto dos assuntos" : `assunto ${auxiliary.target + 1} (${parts[auxiliary.target].code})`}.`);
+ }
+ for (let i = 1; i < parts.length; i++) {
+  if (parts[i].relation === "/" && (attached[i - 1] || attached[i] || !cduAscending(parts[i - 1].code, parts[i].code))) throw new Error("Use / entre classes simples em ordem crescente; aplique auxiliares ao conjunto do intervalo.");
  }
  let code = parts.map((part, index) => `${index ? part.relation : ""}${part.code}${attached[index]}`).join("");
  if (whole) code = `${parts.length > 1 ? `[${code}]` : code}${whole}`;

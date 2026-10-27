@@ -31,5 +31,6 @@ Contingência de backup manual: backup-manual-independente.md; scripts/backup/ma
 - Cadastro e mesclagem de assuntos/CDU: docs/gestao-catalogos.md; src/components/catalogue-merge-dialog.tsx; supabase/migrations/202610260001_catalogue_creation_and_merges.sql.
 
 - Repertório próprio CDU, hierarquia, auxiliares e edições: docs/cdu-repertorio-local.md; src/lib/cdu-structure.ts.
+- Lógica de composições CDU e revisão do material didático: docs/cdu-logica-composicoes.md; src/lib/cdu-symbols.ts; src/lib/cdu-notation.ts; src/components/cdu-symbol-editor.tsx.
 
 - Avaliação das opções externas do RI (sem integração ativada): docs/interoperabilidade-ri-2026-10-27.md.

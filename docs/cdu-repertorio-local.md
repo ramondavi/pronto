@@ -34,7 +34,7 @@ A edição local selecionada não é declarada equivalente ao repertório atual 
 
 ## Composição assistida
 
-Disponível em Administração → Catálogo CDU e em Classificação na análise bibliotecária. O profissional escolhe componentes da mesma edição, relações simples (:), com ordem fixa (::) ou adição (+), e auxiliares ligados a um assunto ou ao conjunto. O conjunto recebe colchetes quando há mais de um assunto. A ordem dos auxiliares segue as escolhas e precisa de conferência profissional. A primeira entrega aceita apenas as formas simples reconhecidas pelo compositor; não interpreta expressões arbitrárias, intervalos, notação externa nem todas as regras de síntese. O preenchimento manual é preservado.
+Disponível em Administração → Catálogo CDU e em Classificação na análise bibliotecária. O profissional escolhe componentes da mesma edição, relações simples (:), com ordem fixa (::), adição (+) ou extensão consecutiva (/), e auxiliares ligados a um assunto ou ao conjunto. O conjunto recebe colchetes quando há mais de um assunto. A ordem dos auxiliares segue as escolhas e precisa de conferência profissional. A modalidade guiada mantém as combinações simples e a modalidade por símbolos amplia os sinais e as posições conforme a revisão descrita em cdu-logica-composicoes.md. Não interpreta texto arbitrário nem substitui as instruções da edição. O preenchimento manual é preservado.
 
 Auxiliares especiais dependem da hierarquia explicitamente registrada: o assunto deve pertencer à classe de aplicação. Para compor o sufixo, o registro precisa conter essa classe seguida da forma especial reconhecida; outras representações continuam manuais. Não se deduz parentesco pelo prefixo numérico.
 
@@ -45,3 +45,5 @@ Referências de sintaxe: [UDC Consortium — Notation](https://udcc.org/index.ph
 ### Verificação do compositor (27/10/2026)
 
 150 testes da aplicação, tipos, lint sem erros (13 avisos preexistentes) e build aprovados. Casos próprios cobrem relação simples, ordem fixa e adição, aplicação individual/conjunto, edições divergentes/desconhecidas, registros mesclados, âmbito especial baseado em hierarquia, pontuação incompleta, auxiliares repetidos e limites de tamanho. Ensaio com dados exclusivamente fictícios confirmou gravação e recuperação dos auxiliares e memória na Administração, escolha explícita na análise, recuperação da CDU no rascunho após recarregar e reutilização sem sobrescrever cadastro. Falha simulada no envio não alterou a CDU da ficha; a nova tentativa foi confirmada antes de aplicá-la. Conferência móvel: sem transbordamento e seletores com 46 px. Nenhuma migração nova ou alteração de banco remoto.
+
+Revisão com o material didático fornecido em 27/10/2026: cdu-logica-composicoes.md.

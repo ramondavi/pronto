@@ -1,19 +1,14 @@
 "use client";
 
-import { createElement, useEffect, useId, useState, type ComponentProps } from "react";
+import { useEffect, useId, useState } from "react";
+import { CatalogueSelect as ComposerSelect } from "./catalogue-select";
+import { CduSymbolEditor } from "./cdu-symbol-editor";
+import { composeCduSymbols, cduTokenCodes, type CduToken } from "@/lib/cdu-symbols";
 import { AppIcon } from "./app-icon";
 import { CduEditionSelect, defaultCduEdition } from "./cdu-edition-select";
 import { composeCdu, cduRelations, type ComposerEntry, type CduPart, type CduAuxiliary, type CduRelation } from "@/lib/cdu-composer";
 import { cduPath } from "@/lib/cdu-structure";
 import { createClient } from "@/lib/supabase/client";
-
-// Expose the closed selected content for ellipsis in browsers with customizable selects.
-// Other browsers keep their ordinary native select; options and keyboard semantics are unchanged.
-function ComposerSelect({ children, ...props }: ComponentProps<"select">) {
- const [custom, setCustom] = useState(false);
- useEffect(() => { setCustom(CSS.supports("appearance", "base-select")); }, []);
- return <select {...props}>{custom && <button type="button">{createElement("selectedcontent")}</button>}{children}</select>;
-}
 
 export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: string; onUse: (entry: ComposerEntry) => void; onClose: () => void }) {
  const id = useId();
@@ -25,6 +20,8 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
  const [edition, setEdition] = useState(defaultCduEdition);
  const [parts, setParts] = useState<CduPart[]>([{ code: "", relation: ":" }]);
  const [auxiliaries, setAuxiliaries] = useState<CduAuxiliary[]>([]);
+ const [symbolMode, setSymbolMode] = useState(false);
+ const [tokens, setTokens] = useState<CduToken[]>([]);
  const [description, setDescription] = useState("");
  const [confirmed, setConfirmed] = useState(false);
  useEffect(() => {
@@ -47,7 +44,7 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
  const current = entries.filter((item) => !item.merged_into_code && item.source_reference === edition);
  const mains = current.filter((item) => item.notation_kind === "main");
  let result: ReturnType<typeof composeCdu> | null = null; let issue = "";
- try { result = composeCdu(parts, auxiliaries, edition, entries); } catch (failure) { issue = (failure as Error).message; }
+ try { result = symbolMode ? composeCduSymbols(tokens, edition, entries) : composeCdu(parts, auxiliaries, edition, entries); } catch (failure) { issue = (failure as Error).message; }
  const existing = result ? entries.find((item) => item.cdu_code === result?.code) : undefined;
  const editionConflict = Boolean(existing && existing.source_reference !== edition);
  function change() { setConfirmed(false); setError(""); }
@@ -56,7 +53,7 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
   setBusy(true); setError("");
   try {
    const client = createClient();
-   const codes = [...new Set([...parts.map((part) => part.code), ...auxiliaries.map((auxiliary) => auxiliary.code), ...entries.filter((entry) => entry.notation_kind === "main").map((entry) => entry.cdu_code)])];
+   const codes = [...new Set([...parts.map((part) => part.code), ...auxiliaries.map((auxiliary) => auxiliary.code), ...tokens.flatMap(cduTokenCodes), ...entries.filter((entry) => entry.notation_kind === "main").map((entry) => entry.cdu_code)])];
    // Refresh in bounded batches, including the hierarchy needed by special auxiliaries.
    const fresh: ComposerEntry[] = [];
    for (let start = 0; start < codes.length; start += 200) {
@@ -64,7 +61,7 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
     if (checked.error) throw checked.error;
     fresh.push(...(checked.data ?? []) as ComposerEntry[]);
    }
-   const refreshed = composeCdu(parts, auxiliaries, edition, fresh);
+   const refreshed = symbolMode ? composeCduSymbols(tokens, edition, fresh) : composeCdu(parts, auxiliaries, edition, fresh);
    if (refreshed.code !== result.code || refreshed.memory !== result.memory) throw new Error("changed");
    if (!existing) {
     const response = await client.rpc("save_cdu_code_description", { cdu_code_value: result.code, description_value: description.trim(), source_reference_value: edition, composition_notes_value: result.memory, auxiliary_codes_value: result.auxiliaries, related_codes_value: result.related });
@@ -80,7 +77,9 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
  return <section className="cdu-composer" aria-labelledby={`${id}-title`}>
   <header><div><h3 id={`${id}-title`}><AppIcon name="hierarchy" />Compor uma notação CDU</h3><p>Escolha os componentes cadastrados e confira a aplicação de cada auxiliar. Nenhum código é atribuído por conta própria.</p></div><button type="button" className="button button--secondary button--small" disabled={busy} onClick={onClose}><AppIcon name="close" />Fechar compositor</button></header>
   {loading ? <p role="status">Carregando repertório…</p> : <>
-   <label data-no-field-help><span className="catalogue-field-label"><AppIcon name="book" />Edição usada na composição</span><CduEditionSelect value={edition} disabled={busy} onChange={(event) => { setEdition(event.target.value); setParts([{ code: "", relation: ":" }]); setAuxiliaries([]); change(); }} /><small>Somente componentes com esta edição registrada aparecem nas escolhas.</small></label>
+   <label data-no-field-help><span className="catalogue-field-label"><AppIcon name="book" />Edição usada na composição</span><CduEditionSelect value={edition} disabled={busy} onChange={(event) => { setEdition(event.target.value); setParts([{ code: "", relation: ":" }]); setAuxiliaries([]); setTokens([]); setDescription(""); change(); }} /><small>Somente componentes com esta edição registrada aparecem nas escolhas.</small></label>
+   <div className="catalogue-inline-actions" aria-label="Forma de montagem"><button type="button" className="button button--secondary button--small" aria-pressed={!symbolMode} disabled={busy} onClick={() => { setSymbolMode(false); change(); }}><AppIcon name="book" />Montagem guiada</button><button type="button" className="button button--secondary button--small" aria-pressed={symbolMode} disabled={busy} onClick={() => { setSymbolMode(true); change(); }}><AppIcon name="hierarchy" />Montagem por símbolos</button></div>
+   {symbolMode ? <CduSymbolEditor entries={current} tokens={tokens} disabled={busy} onChange={(next) => { setTokens(next); change(); }} /> : <>
    {mains.length === 0 && <p className="notice">Ainda não há classes principais organizadas nesta edição. Cadastre ou revise os componentes no Catálogo CDU; você também pode informar a notação manualmente.</p>}
    <div className="cdu-composer__blocks">{parts.map((part, index) => <div className="cdu-composer__block" key={index}>
     <strong>Assunto {index + 1}</strong>
@@ -98,10 +97,11 @@ export function CduComposer({ actionLabel, onUse, onClose }: { actionLabel: stri
     </div>;
    })}
    <button type="button" className="button button--secondary button--small" disabled={busy || auxiliaries.length >= 12 || !parts[0].code} onClick={() => { setAuxiliaries([...auxiliaries, { code: "", target: 0 }]); change(); }}><AppIcon name="tag" />Adicionar auxiliar</button>
+   </>}
    <div className="cdu-composer__preview" aria-live="polite"><strong>Prévia da notação</strong><output>{result?.code || "Selecione os componentes"}</output>{issue && <p>{issue}</p>}{result && <p className="cdu-composer__memory">{result.memory}</p>}</div>
    {result && existing && <p className="notice">{editionConflict ? "Esta notação já está cadastrada com outra edição ou sem edição registrada. Confira o cadastro existente antes de usar esta composição." : existing.merged_into_code ? `Esta notação foi mesclada em ${existing.merged_into_code}. Consulte o cadastro atual.` : `Esta notação já existe. Será reutilizada com a descrição “${existing.description}”, sem alterar o registro.`}</p>}
    {result && !existing && <label data-no-field-help><span className="catalogue-field-label"><AppIcon name="document" />Descrição da composição</span><textarea rows={2} maxLength={1000} value={description} disabled={busy} onChange={(event) => { setDescription(event.target.value); change(); }} /><small>Redija e confira o significado da combinação na edição consultada. Não juntamos descrições automaticamente.</small></label>}
-   <p>O compositor confere apenas a estrutura das escolhas oferecidas, não todas as regras da CDU. Expressões com outras formas de síntese continuam disponíveis pelo preenchimento manual. Novas composições ficam pendentes de organização e validação no catálogo.</p>
+   <p>O compositor confere a estrutura dos blocos, não a validade técnica de toda classificação. Preserve a ordem de citação indicada para o caso; ela pode mudar o significado. Instruções específicas e exceções precisam ser conferidas na edição consultada. Novas composições ficam pendentes de organização e validação no catálogo.</p>
    <label className="check" data-no-field-help><input type="checkbox" disabled={busy || !result} checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />Conferi os componentes, a ordem e a aplicação dos auxiliares na edição consultada.</label>
    <button type="button" className="button button--primary" disabled={busy || !result || !confirmed || Boolean(existing?.merged_into_code) || editionConflict || (!existing && description.trim().length < 3)} onClick={() => void apply()}><AppIcon name="check" />{busy ? "Conferindo e salvando…" : actionLabel}</button>
   </>}

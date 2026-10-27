@@ -35,7 +35,7 @@ test("auxiliary application survives only with a real target and no duplicate pa
 test("arbitrary expressions and unorganized entries remain manual", () => {
  assert.throws(() => composeCdu([{ code: "711.4:316.55", relation: ":" }], [], edition, [...entries, entry("711.4:316.55", "compound")]));
  assert.throws(() => composeCdu(parts, [{ code: "(813.8)", target: 1 }], edition, entries.map(item => item.cdu_code === "(813.8)" ? { ...item, notation_kind: "unclassified" } : item)));
- assert.throws(() => composeCdu(parts, [{ code: "(81+82)", target: 1 }], edition, [...entries, entry("(81+82)", "common_place")]));
+ assert.equal(composeCdu(parts, [{ code: "(81+82)", target: 1 }], edition, [...entries, entry("(81+82)", "common_place")]).code, "711.4:316.55(81+82)");
 });
 test("eight subjects, twelve auxiliaries and field length bound the expression", () => {
  assert.throws(() => composeCdu(Array.from({ length: 9 }, () => parts[0]), [], edition, entries));
