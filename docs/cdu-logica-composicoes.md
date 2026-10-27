@@ -28,3 +28,11 @@ Limites: 64 blocos, oito níveis de grupo, código final de até 80 caracteres e
 ## Verificações
 
 166 testes da aplicação, incluindo operadores, grupos e recusas de expressões incompletas, intervalos, complementos externos com fonte, especificação dentro/fora de auxiliar, auxiliares complexos, tempos negativos, intercalação, ordem semântica, cadeias especiais, divisão paralela declarada, edições/históricos e limites. Tipos, lint e build verificados; os 13 avisos de lint preexistentes permanecem. Ensaio local com dados fictícios confirmou as modalidades no catálogo, grupos, extensão, intercalação, divisão paralela, posição do alfabético, fonte externa obrigatória e sua memória persistida. Na análise, confirmou aplicação explícita de [53/54](0.034.2PDF), salvamento e recuperação do rascunho, sem transbordamento móvel. Sem importação de tabelas, migração nova ou alterações no banco remoto.
+
+### Layout e ajuda da equipe — 27/10/2026
+
+- Grade compartilhada responsiva: campos organizacionais em duas colunas, assunto e auxiliares lado a lado na montagem guiada, controles de símbolos alinhados e descrição sem esticamento na análise. Controles mantêm tokens, botões e altura de campo do design system.
+- Resposta rápida editável na base de conhecimento, restrita a `cataloger` e `administrator`; a API exige perfil ativo. Inclui explicações dos campos, exemplos, alcance dos auxiliares, relações e limites da validação.
+- Validação: 166 testes da aplicação; tipos, lint (13 avisos preexistentes, sem erros) e build. Os 29 testes de autorização incluem seis verificações da resposta por RLS. Navegação validada nos dois perfis de equipe, composição e persistência de rascunho, ajuda contextual, exclusão da API pública, celular e tema escuro. Captura consolidada local: `cdu-layout-validacao.png`.
+
+- Migração `202610270002` aplicada somente à prévia, com autorização explícita e conferência do público restrito. Não modifica códigos, fichas ou produção.

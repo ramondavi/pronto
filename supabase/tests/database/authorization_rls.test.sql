@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(23);
+select plan(29);
 
 insert into auth.users (id, email, email_confirmed_at, raw_user_meta_data)
 values
@@ -60,6 +60,8 @@ values (
   'profile',
   '10000000-0000-4000-8000-000000000001'
 );
+
+insert into public.knowledge_base_entries(id,kind,title,summary,body_html,category,audiences,active,position) values ('cd000000-0000-4000-8000-000000000001','answer','Ajuda CDU sintética','Resposta de teste para a equipe','<p>Conteúdo sintético.</p>','Análise',array['cataloger','administrator'],true,0) on conflict (id) do nothing;
 
 set local role authenticated;
 set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000001';
@@ -177,6 +179,22 @@ select results_eq(
   array[0::bigint],
   'conta inactive não lê dados operacionais protegidos'
 );
+
+
+-- A resposta CDU pertence somente à equipe ativa, inclusive fora da API.
+set local role anon;
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 0::bigint, 'resposta CDU não é pública');
+set local role authenticated;
+set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000001';
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 0::bigint, 'resposta CDU: acesso de estudante');
+set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000003';
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 1::bigint, 'resposta CDU: acesso de bibliotecário ativo');
+set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000004';
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 1::bigint, 'resposta CDU: acesso de administrador ativo');
+set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000005';
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 0::bigint, 'resposta CDU: acesso de administrador bloqueado');
+set local request.jwt.claim.sub = '10000000-0000-4000-8000-000000000006';
+select is((select count(*) from public.knowledge_base_entries where id = 'cd000000-0000-4000-8000-000000000001'), 0::bigint, 'resposta CDU: acesso de bibliotecário inativo');
 
 select * from finish();
 rollback;
