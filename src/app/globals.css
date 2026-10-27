@@ -7150,4 +7150,47 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .cdu-structure-fields { display: grid; gap: 1rem; min-width: 0; padding: 1rem; margin-block: 1rem; border: 1px solid var(--line); border-radius: var(--radius); }
 .cdu-structure-fields label { display: grid; gap: .4rem; min-width: 0; }
-.cdu-catalog-admin__taxonomy { font-size: .9rem; overflow-wrap: anywhere; color: var(--muted); }
+.cdu-catalog-admin__taxonomy { font-size: .9rem; overflow-wrap: anywhere; color: var(--text-muted); }
+
+/* Shared catalogue administration: aligned fields, actions and closed selects. */
+:is(.controlled-terms-admin, .cdu-catalog-admin) .button,
+.catalogue-merge-dialog__actions .button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+:is(.controlled-terms-admin, .cdu-catalog-admin) .button svg,
+.catalogue-merge-dialog__actions .button svg { flex: 0 0 16px; width: 16px; height: 16px; }
+.catalogue-field-label { display: flex; align-items: center; gap: 7px; min-height: 20px; font-size: .78rem; font-weight: 750; line-height: 1.4; }
+.catalogue-field-label svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); }
+:is(.controlled-terms-admin, .cdu-catalog-admin) label:not(.compact-check) { align-content: start; }
+:is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select, textarea),
+.catalogue-merge-dialog > label input { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
+:is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select) { height: 46px; min-height: 46px; }
+:is(.controlled-terms-admin, .cdu-catalog-admin) select { padding-block: 0; line-height: normal; text-align: left; }
+@supports (appearance: base-select) {
+  :is(.controlled-terms-admin, .cdu-catalog-admin) select { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+}
+:is(.controlled-terms-admin__heading, .cdu-catalog-admin__heading) { align-items: flex-start; flex-wrap: wrap; }
+:is(.controlled-terms-admin__heading, .cdu-catalog-admin__heading) > div { flex: 1 1 280px; }
+:is(.controlled-terms-admin__heading, .cdu-catalog-admin__heading) > .button { margin-left: auto; align-self: center; }
+.catalogue-create { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.catalogue-create > :is(.catalogue-form-heading, label:first-of-type, .controlled-terms-admin__actions) { grid-column: 1 / -1; }
+.catalogue-form-heading { display: flex; align-items: flex-start; gap: 10px; }
+.catalogue-form-heading > svg { width: 20px; height: 20px; flex: 0 0 20px; color: var(--institutional); }
+.catalogue-form-heading h3 { margin: 0; font-size: .9rem; }
+.catalogue-form-heading p { margin: 4px 0 0; font-size: .78rem; line-height: 1.5; color: var(--text-muted); }
+.cdu-catalog-admin__toolbar { grid-template-columns: minmax(180px, 1fr) minmax(130px, .45fr); }
+.catalogue-hierarchy-filter { grid-column: 1 / -1; }
+.cdu-structure-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; margin: 0; padding: 16px; background: var(--surface-raised); }
+.cdu-structure-fields legend { padding-inline: 7px; color: var(--text); font-size: .82rem; font-weight: 750; }
+.cdu-structure-fields > :is(label:last-of-type, p) { grid-column: 1 / -1; }
+.cdu-structure-fields p { margin: 0; color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
+:is(.controlled-terms-admin, .cdu-catalog-admin) label > small { color: var(--text-muted); font-size: .74rem; font-weight: 500; line-height: 1.4; }
+:is(.controlled-terms-admin__edit-fields, .cdu-catalog-admin__edit-fields) { align-items: start; }
+:is(.controlled-terms-admin__item, .cdu-catalog-admin__item, .controlled-terms-admin__toolbar, .cdu-catalog-admin__toolbar, .cdu-catalog-admin__create, .cdu-catalog-admin__edit) { border-radius: var(--radius); }
+.cdu-catalog-admin__taxonomy { margin: 12px 0 0; font-size: .76rem; line-height: 1.5; }
+@media (max-width: 660px) {
+ .catalogue-create, .cdu-structure-fields, .cdu-catalog-admin__toolbar { grid-template-columns: minmax(0, 1fr); }
+ .catalogue-create > *, .catalogue-hierarchy-filter { grid-column: auto; }
+ :is(.controlled-terms-admin__heading, .cdu-catalog-admin__heading) > .button { margin-left: 0; }
+ :is(.controlled-terms-admin__overview, .cdu-catalog-admin__overview) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+:is(.controlled-terms-admin, .cdu-catalog-admin) .saved-form select[data-save-state] { padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2364758b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px 8px; }

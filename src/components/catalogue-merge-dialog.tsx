@@ -1,4 +1,5 @@
 "use client";
+import { AppIcon } from "./app-icon";
 
 import { useEffect, useId, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -67,7 +68,7 @@ export function CatalogueMergeDialog({ kind, sourceKey, sourceLabel, onClose, on
     <h2 id={titleId}>Mesclar {noun}</h2>
     <p><strong>Cadastro duplicado:</strong> {sourceLabel}</p>
     <p>Escolha o cadastro que será mantido para novas utilizações. Seus dados serão preservados; o duplicado ficará no histórico.</p>
-    <label>Buscar destino<input type="search" maxLength={120} value={query} disabled={busy} onChange={(event) => { setQuery(event.target.value); setTarget(null); setPreview(null); }} /></label>
+    <label><span className="catalogue-field-label"><AppIcon name="search" />Buscar destino</span><input type="search" maxLength={120} value={query} disabled={busy} onChange={(event) => { setQuery(event.target.value); setTarget(null); setPreview(null); }} /></label>
     <fieldset disabled={busy} className="catalogue-merge-dialog__targets"><legend>Cadastro a manter</legend>
       {loading ? <p role="status">Buscando cadastros…</p> : targets.length === 0 ? <p>Nenhum destino encontrado. Ajuste a busca.</p> : targets.map((item) => <label key={item.record_key}>
         <input type="radio" name={titleId} checked={target?.record_key === item.record_key} onChange={() => { setPreview(null); setTarget(item); }} />
@@ -82,6 +83,6 @@ export function CatalogueMergeDialog({ kind, sourceKey, sourceLabel, onClose, on
       {preview.open_count > 0 && <p role="alert">Há {preview.open_count} atendimentos abertos usando esses cadastros. Conclua ou cancele os atendimentos antes de mesclar.</p>}
     </section>}
     {error && <p className="notice notice--error" role="alert">{error}</p>}
-    <div className="catalogue-merge-dialog__actions"><button type="button" className="button button--primary" disabled={busy || !preview || preview.open_count > 0} onClick={merge}>{busy ? "Mesclando…" : "Confirmar mesclagem"}</button><button type="button" className="button button--secondary" disabled={busy} onClick={onClose}>Cancelar</button></div>
+    <div className="catalogue-merge-dialog__actions"><button type="button" className="button button--primary" disabled={busy || !preview || preview.open_count > 0} onClick={merge}><AppIcon name="hierarchy" />{busy ? "Mesclando…" : "Confirmar mesclagem"}</button><button type="button" className="button button--secondary" disabled={busy} onClick={onClose}><AppIcon name="close" />Cancelar</button></div>
   </dialog>;
 }
