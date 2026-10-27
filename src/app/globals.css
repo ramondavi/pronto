@@ -7223,3 +7223,15 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
  .cdu-composer select > button { display: block; width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; line-height: 44px; text-align: left; }
  .cdu-composer selectedcontent { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 }
+
+.cdu-add-options { display: grid; gap: 14px; margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.cdu-add-options h3 { margin: 0; font-size: .9rem; }
+.cdu-add-options__choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cdu-add-options__choices > button { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); text-align: left; cursor: pointer; }
+.cdu-add-options__choices > button:is(:hover, :focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
+.cdu-add-options__choices svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.cdu-add-options__choices svg:last-child { flex-basis: 16px; width: 16px; height: 16px; }
+.cdu-add-options__choices span { display: grid; flex: 1; gap: 5px; min-width: 0; }
+.cdu-add-options__choices strong { font-size: .84rem; line-height: 1.4; }
+.cdu-add-options__choices small { color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
+@media (max-width: 660px) { .cdu-add-options__choices { grid-template-columns: minmax(0, 1fr); } .cdu-add-options { padding: 14px; } }

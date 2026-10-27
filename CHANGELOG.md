@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 27 de outubro de 2026
 
+- Reúne os caminhos de inclusão no catálogo administrativo em “Adicionar CDU”, com escolha explicada entre cadastrar um código e montar uma notação. A análise mantém o compositor junto ao preenchimento manual.
+
 - Acrescenta compositor CDU por escolhas explícitas no catálogo e na análise bibliotecária, com relações, auxiliares, aplicação por assunto/conjunto, conferência da edição e confirmação antes de usar. Registra a composição como pendente, preservando o preenchimento manual e as fichas anteriores.
 
 - Esclarece a organização dos códigos CDU com perguntas e ajuda junto a cada campo. A classe de aplicação aparece somente para auxiliares especiais; os campos seguem uma coluna contínua, sem lacunas.
