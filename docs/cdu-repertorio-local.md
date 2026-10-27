@@ -19,7 +19,7 @@ Novos cadastros, tanto na Administração quanto no primeiro uso na ficha, ofere
 ## Migrações
 
 - 202610260001: cadastro e mesclagem de assuntos/CDU. Aplicada exclusivamente à prévia cfntochwiztdcawbaedx em 27/10/2026, após autorização do responsável e sucesso de todas as verificações do PR #21. Simulação: apenas essa migração, sem seeds ou roles; funções de cadastro e mesclagem confirmadas no projeto. Produção preservada.
-- 202610270001: estrutura local da CDU, operações atômicas e proteção hierárquica da mesclagem. Preparada e testada somente localmente; aplicação remota depende da confirmação correspondente. Não contém importação de tabelas externas.
+- 202610270001: estrutura local da CDU, operações atômicas e proteção hierárquica da mesclagem. Aplicada exclusivamente à prévia cfntochwiztdcawbaedx em 27/10/2026, no escopo da autorização do responsável para atualizar somente a prévia e após validação local. Simulação confirmou apenas essa migração, sem seeds/roles/Vault. Colunas, funções e histórico oficial confirmados por consulta de metadados; produção preservada. Não contém importação de tabelas externas.
 
 ## Fontes técnicas
 

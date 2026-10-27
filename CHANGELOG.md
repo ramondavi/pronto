@@ -8,7 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 27 de outubro de 2026
 
-- Seleção da edição CDU com padrão IBICT 2007 e edição IBICT 1997 no grupo de edição defasada. Prepara repertório próprio com hierarquia, tipos de tabelas, âmbito de auxiliares especiais, relações navegáveis e proteção contra ciclos. Registros antigos preservam a proveniência conhecida. A migração de mesclagem foi aplicada somente à prévia, com autorização; a estrutura hierárquica continua local.
+- Seleção da edição CDU com padrão IBICT 2007 e edição IBICT 1997 no grupo de edição defasada. Prepara repertório próprio com hierarquia, tipos de tabelas, âmbito de auxiliares especiais, relações navegáveis e proteção contra ciclos. Registros antigos preservam a proveniência conhecida. As migrações de mesclagem e estrutura hierárquica foram aplicadas somente à prévia autorizada; produção preservada.
 
 
 ### 26 de outubro de 2026
