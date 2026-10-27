@@ -75,6 +75,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   const [cduDescription, setCduDescription] = useState("");
   const [cduDescriptionKnown, setCduDescriptionKnown] = useState(false);
   const [cduLookupPending, setCduLookupPending] = useState(false);
+  const [cduMergedTarget, setCduMergedTarget] = useState<string | null>(null);
   const [cduLookupFailed, setCduLookupFailed] = useState(false);
   const [cduDescriptionSaved, setCduDescriptionSaved] = useState(false);
   const [cduDescriptionReadyToSave, setCduDescriptionReadyToSave] = useState("");
@@ -139,7 +140,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
     freeNotes,
   }), [previewBase, cardDetails, people, terms, cduCode, cutterCode, includeEquivalentTitle, freeNotes]);
   const shownSnapshot = homologationSnapshot ?? previewSnapshot;
-  const cduDescriptionPending = Boolean(editable && cduCode.trim() && (cduLookupPending || cduLookupFailed || (!cduDescriptionKnown && !cduDescriptionSaved)));
+  const cduDescriptionPending = Boolean(editable && cduCode.trim() && (cduLookupPending || cduLookupFailed || Boolean(cduMergedTarget) || (!cduDescriptionKnown && !cduDescriptionSaved)));
   const previewOptions = {
     previewPlaceholders: !homologatedAt,
     invalidSubjectPositions: catalogingTerms.flatMap((term, index) => term.sourceCode && term.labelPt.trim().length >= 2 ? [] : [index]),
@@ -313,12 +314,21 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   useEffect(() => {
     let active = true;
     const code = cduCode.trim();
-    if (!code) { setCduDescription(""); setCduDescriptionKnown(false); setCduDescriptionSaved(false); setCduDescriptionReadyToSave(""); setCduLookupPending(false); setCduLookupFailed(false); return; }
+    if (!code) { setCduMergedTarget(null); setCduDescription(""); setCduDescriptionKnown(false); setCduDescriptionSaved(false); setCduDescriptionReadyToSave(""); setCduLookupPending(false); setCduLookupFailed(false); return; }
+    setCduMergedTarget(null);
     setCduLookupPending(true);
     setCduLookupFailed(false);
     setCduDescriptionSaved(false);
     setCduDescriptionReadyToSave("");
-    createClient().from("cdu_code_descriptions").select("description").eq("cdu_code", code).maybeSingle().then(({ data, error }) => {
+    createClient().from("cdu_code_descriptions").select("description,merged_into_code").eq("cdu_code", code).maybeSingle().then(async (response) => {
+      let data = response.data;
+      let error = response.error;
+      if (response.error?.code === "42703" || response.error?.code === "PGRST204") {
+        const legacy = await createClient().from("cdu_code_descriptions").select("description").eq("cdu_code", code).maybeSingle();
+        data = legacy.data ? { ...legacy.data, merged_into_code: null } : null;
+        error = legacy.error;
+      }
+      if (active) setCduMergedTarget(data?.merged_into_code ?? null);
       if (!active) return;
       if (!error) setCduDescription(data?.description ?? "");
       setCduDescriptionKnown(Boolean(data));
@@ -331,7 +341,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   useEffect(() => {
     const code = cduCode.trim();
     const description = cduDescription.trim();
-    if (!ready || !editable || !code || cduLookupPending || cduDescriptionKnown || cduDescriptionSaved || description.length < 3 || cduDescriptionReadyToSave !== cduDescription) return;
+    if (!ready || !editable || !code || cduMergedTarget || cduLookupPending || cduDescriptionKnown || cduDescriptionSaved || description.length < 3 || cduDescriptionReadyToSave !== cduDescription) return;
     let active = true;
     const timer = window.setTimeout(async () => {
       const { error } = await createClient().rpc("save_cdu_code_description", { cdu_code_value: code, description_value: description });
@@ -341,15 +351,18 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
       setCduDescriptionKnown(true);
     }, 500);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [cduCode, cduDescription, cduDescriptionReadyToSave, cduDescriptionKnown, cduDescriptionSaved, cduLookupPending, editable, ready]);
+  }, [cduCode, cduDescription, cduDescriptionReadyToSave, cduDescriptionKnown, cduDescriptionSaved, cduLookupPending, cduMergedTarget, editable, ready]);
   useEffect(() => {
     const prefix = cduCode.trim();
     if (!cduCatalogOpen || !prefix) { setCduCatalogSuggestions([]); return; }
     let active = true;
     const timer = window.setTimeout(() => {
       createClient().from("cdu_code_descriptions").select("cdu_code,description,validated")
-        .gte("cdu_code", prefix).lt("cdu_code", `${prefix}\uffff`).order("cdu_code").limit(7)
-        .then(({ data, error }) => { if (active) setCduCatalogSuggestions(error ? [] : data ?? []); });
+        .is("merged_into_code", null).gte("cdu_code", prefix).lt("cdu_code", `${prefix}\uffff`).order("cdu_code").limit(7)
+        .then(async (response) => {
+          if (response.error?.code === "42703" || response.error?.code === "PGRST204") response = await createClient().from("cdu_code_descriptions").select("cdu_code,description,validated").gte("cdu_code", prefix).lt("cdu_code", `${prefix}\uffff`).order("cdu_code").limit(7);
+          if (active) setCduCatalogSuggestions(response.error ? [] : response.data ?? []);
+        });
     }, 180);
     return () => { active = false; window.clearTimeout(timer); };
   }, [cduCode, cduCatalogOpen]);
@@ -669,5 +682,5 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
       <div className="cataloging-card-details__notes"><label><CatalogingFieldLabel icon="person">Designação da orientação</CatalogingFieldLabel><input disabled={!editable} minLength={3} maxLength={60} value={cardDetails.advisorNoteLabel} onChange={(event) => setCardDetails((current) => ({ ...current, advisorNoteLabel: event.target.value }))} /></label>{people.some((person) => person.role === "coadvisor") && <label><CatalogingFieldLabel icon="person">Designação da coorientação</CatalogingFieldLabel><input disabled={!editable} minLength={3} maxLength={60} value={cardDetails.coadvisorNoteLabel} onChange={(event) => setCardDetails((current) => ({ ...current, coadvisorNoteLabel: event.target.value }))} /></label>}</div>
     </fieldset>
 
-  </section>{pendingTarget && createPortal(reviewSummary, pendingTarget)}{previewTarget && createPortal(<><section className="review-cataloging-preview"><div className="review-cataloging-preview__header"><div className="review-cataloging-preview__header-copy"><div className="review-cataloging-preview__title"><AppIcon name="document" /><h2>Prévia da ficha</h2></div><p>Edite os trechos na tela e confira no PDF a versão para impressão.</p></div><button className="button button--secondary button--small" type="button" disabled={openingPreviewPdf} onClick={() => void openPreviewPdf(Boolean(homologatedAt))}><AppIcon name={homologatedAt ? "document" : "external"} />{openingPreviewPdf ? "Gerando PDF…" : homologatedAt ? "Baixar PDF da ficha" : "Conferir PDF da ficha"}</button></div><section className="review-cataloging-preview__sheet"><div className="review-cataloging-preview__sheet-heading"><div><strong>Como ficará no PDF do estudante</strong><span>{homologatedAt ? "Ficha homologada" : "Prévia para conferência — ainda não homologada"}</span></div>{editable && <span className="review-cataloging-preview__edit-hint"><AppIcon name="edit" />Clique nos trechos pontilhados para editar. A alteração também atualiza o campo correspondente na análise.</span>}</div><div className="review-cataloging-preview__canvas"><CatalogingCardPreview snapshot={shownSnapshot} previewPlaceholders={previewOptions.previewPlaceholders} invalidSubjectPositions={previewOptions.invalidSubjectPositions} onPlaceholderClick={editable ? openPreviewPendingField : undefined} cduDescriptionPending={cduDescriptionPending && !cduLookupPending} onFreeNotesChange={editable ? setFreeNotes : undefined} onConfirmFreeNote={editable ? confirmFreeNote : undefined} onFreeNoteFocus={() => { freeNoteEditStart.current = lastSavedCataloging.current ?? catalogingSnapshot; }} onFreeNoteBlur={finishFreeNoteEdit} directEdit={previewDirectEdit} /></div>{editable && cduDescriptionPending && !cduLookupPending && <div className="cataloging-cdu-preview-notice" role="status"><AppIcon name="help" /><div><strong>{cduLookupFailed ? "Não foi possível consultar o cadastro da CDU" : "CDU sem descrição cadastrada"}</strong><p>{cduLookupFailed ? "Confira a conexão e a descrição antes de homologar." : "Confira a CDU, 2ª edição impressa, e registre a descrição desse código."}</p></div><button className="button button--secondary button--small" type="button" onClick={() => { const field = document.getElementById("cataloging-cdu-description") as HTMLTextAreaElement | null; field?.scrollIntoView({ behavior: "smooth", block: "center" }); field?.focus({ preventScroll: true }); }}><AppIcon name="arrowRight" />Ir para a descrição</button></div>}</section><CatalogingCardHomologation requestId={requestId} snapshot={shownSnapshot} homologatedAt={homologatedAt} canHomologate={canHomologate} pendingReason={homologationPendingReason} nadaConstaApproved={nadaConstaApproved} /></section></>, previewTarget)}</>;
+  </section>{pendingTarget && createPortal(reviewSummary, pendingTarget)}{previewTarget && createPortal(<><section className="review-cataloging-preview"><div className="review-cataloging-preview__header"><div className="review-cataloging-preview__header-copy"><div className="review-cataloging-preview__title"><AppIcon name="document" /><h2>Prévia da ficha</h2></div><p>Edite os trechos na tela e confira no PDF a versão para impressão.</p></div><button className="button button--secondary button--small" type="button" disabled={openingPreviewPdf} onClick={() => void openPreviewPdf(Boolean(homologatedAt))}><AppIcon name={homologatedAt ? "document" : "external"} />{openingPreviewPdf ? "Gerando PDF…" : homologatedAt ? "Baixar PDF da ficha" : "Conferir PDF da ficha"}</button></div><section className="review-cataloging-preview__sheet"><div className="review-cataloging-preview__sheet-heading"><div><strong>Como ficará no PDF do estudante</strong><span>{homologatedAt ? "Ficha homologada" : "Prévia para conferência — ainda não homologada"}</span></div>{editable && <span className="review-cataloging-preview__edit-hint"><AppIcon name="edit" />Clique nos trechos pontilhados para editar. A alteração também atualiza o campo correspondente na análise.</span>}</div><div className="review-cataloging-preview__canvas"><CatalogingCardPreview snapshot={shownSnapshot} previewPlaceholders={previewOptions.previewPlaceholders} invalidSubjectPositions={previewOptions.invalidSubjectPositions} onPlaceholderClick={editable ? openPreviewPendingField : undefined} cduDescriptionPending={cduDescriptionPending && !cduLookupPending} onFreeNotesChange={editable ? setFreeNotes : undefined} onConfirmFreeNote={editable ? confirmFreeNote : undefined} onFreeNoteFocus={() => { freeNoteEditStart.current = lastSavedCataloging.current ?? catalogingSnapshot; }} onFreeNoteBlur={finishFreeNoteEdit} directEdit={previewDirectEdit} /></div>{editable && cduDescriptionPending && !cduLookupPending && !cduMergedTarget && <div className="cataloging-cdu-preview-notice" role="status"><AppIcon name="help" /><div><strong>{cduLookupFailed ? "Não foi possível consultar o cadastro da CDU" : "CDU sem descrição cadastrada"}</strong><p>{cduLookupFailed ? "Confira a conexão e a descrição antes de homologar." : "Confira a CDU, 2ª edição impressa, e registre a descrição desse código."}</p></div><button className="button button--secondary button--small" type="button" onClick={() => { const field = document.getElementById("cataloging-cdu-description") as HTMLTextAreaElement | null; field?.scrollIntoView({ behavior: "smooth", block: "center" }); field?.focus({ preventScroll: true }); }}><AppIcon name="arrowRight" />Ir para a descrição</button></div>}{editable && cduMergedTarget && <div className="notice" role="status"><p>Este código foi mesclado no cadastro CDU {cduMergedTarget}. As fichas anteriores permanecem intactas; para este atendimento, escolha o cadastro atual.</p><button type="button" className="button button--secondary button--small" onClick={() => setCduCode(cduMergedTarget)}>Escolher CDU {cduMergedTarget}</button></div>}</section><CatalogingCardHomologation requestId={requestId} snapshot={shownSnapshot} homologatedAt={homologatedAt} canHomologate={canHomologate} pendingReason={homologationPendingReason} nadaConstaApproved={nadaConstaApproved} /></section></>, previewTarget)}</>;
 }

@@ -7131,3 +7131,19 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .repository-guide__step-content { display: grid; grid-column: 1 / -1; gap: 16px; min-width: 0; margin-top: 8px; }
 
 .repository-guide__reminders--single { grid-template-columns: minmax(0,1fr); }
+
+/* Catalogue creation and deliberate, accessible merge confirmation. */
+.catalogue-create { margin-block: 1.25rem; display: grid; gap: 1rem; }
+.catalogue-create label, .catalogue-merge-dialog > label { display: grid; gap: .45rem; }
+.catalogue-inline-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.catalogue-merge-dialog { width: min(44rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; color: var(--text); background: var(--surface); }
+.catalogue-merge-dialog::backdrop { background: rgb(0 0 0 / .6); }
+.catalogue-merge-dialog p { line-height: 1.6; }
+.catalogue-merge-dialog__targets { display: grid; gap: .5rem; max-height: 15rem; overflow: auto; margin-block: 1rem; }
+.catalogue-merge-dialog__targets label { display: flex; align-items: flex-start; gap: .65rem; padding: .65rem; border: 1px solid var(--line); border-radius: .5rem; cursor: pointer; }
+.catalogue-merge-dialog__targets input { flex: 0 0 auto; width: auto; margin-top: .25rem; }
+.catalogue-merge-dialog__targets span { display: grid; gap: .25rem; }
+.catalogue-merge-dialog__targets small { overflow-wrap: anywhere; }
+.catalogue-merge-dialog__preview { border-inline-start: 3px solid var(--institutional); padding-inline-start: 1rem; }
+.catalogue-merge-dialog__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+@media (max-width: 600px) { .catalogue-merge-dialog__actions > button { width: 100%; } }

@@ -93,9 +93,14 @@ const icons = {
   work: IconBriefcase,
 } as const;
 
-export type AppIconName = keyof typeof icons | "logout";
+export type AppIconName = keyof typeof icons | "logout" | "accessibility";
 
 export function AppIcon({ name, className, ...props }: { name: AppIconName } & SVGProps<SVGSVGElement>) {
+  if (name === "accessibility") return <svg className={className} aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M4.1 9.7a13.2 13.2 0 0 1 23.8 0M2.8 16.1a13.2 13.2 0 0 0 4.6 10M11.6 29a13.2 13.2 0 0 0 8.8 0M24.6 26.1a13.2 13.2 0 0 0 4.6-10" />
+    <path d="M3 13.3q13 9.4 26 0M16 18l-7 10M16 18l7 10" />
+    <g fill="var(--accessibility-symbol-fill, #43c3ed)"><circle cx="16" cy="8.1" r="3.6" /><circle cx="3" cy="13.3" r="1.8" /><circle cx="29" cy="13.3" r="1.8" /><circle cx="9" cy="28" r="1.8" /><circle cx="23" cy="28" r="1.8" /></g>
+  </svg>;
   if (name === "logout") return <svg className={className} aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 3h13v18H4" /><path d="M4 3l8 2v14l-8 2V3Z" /><circle cx="9.5" cy="12" r=".7" fill="currentColor" stroke="none" /><path d="M14 12h8m-3.5-3.5L22 12l-3.5 3.5" /></svg>;
   const Icon = icons[name];
   return <Icon className={className} aria-hidden="true" size={24} stroke={1.8} {...props} />;

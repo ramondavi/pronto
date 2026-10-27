@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import { CatalogueMergeDialog } from "./catalogue-merge-dialog";
 import { AppIcon } from "@/components/app-icon";
 import { createClient } from "@/lib/supabase/client";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 import { SavedForm, SaveButton } from "./saved-form";
 
-type Entry = { cdu_code: string; description: string; composition_notes: string | null; auxiliary_codes: string[]; related_codes: string[]; source_reference: string | null; validated: boolean };
-type Status = "all" | "pending" | "validated";
+type Entry = { cdu_code: string; description: string; composition_notes: string | null; auxiliary_codes: string[]; related_codes: string[]; source_reference: string | null; validated: boolean; merged_into_code?: string | null };
+type Status = "all" | "pending" | "validated" | "merged";
 const pageSize = 20;
 
 export function CduCatalogAdmin({ entries }: { entries: Entry[] }) {
@@ -17,12 +18,15 @@ export function CduCatalogAdmin({ entries }: { entries: Entry[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState("");
+  const [merging, setMerging] = useState<Entry | null>(null);
   const [creating, setCreating] = useState(false);
   const supabase = createClient();
-  const pending = items.filter((entry) => !entry.validated).length;
-  const withoutSource = items.filter((entry) => !entry.source_reference?.trim()).length;
+  const currentItems = items.filter((entry) => !entry.merged_into_code);
+  const pending = currentItems.filter((entry) => !entry.validated).length;
+  const withoutSource = currentItems.filter((entry) => !entry.source_reference?.trim()).length;
   const normalizedQuery = query.trim().toLocaleLowerCase("pt-BR");
   const filtered = items.filter((entry) => {
+    if (status === "merged" ? !entry.merged_into_code : entry.merged_into_code) return false;
     if (status === "pending" && entry.validated) return false;
     if (status === "validated" && !entry.validated) return false;
     if (!normalizedQuery) return true;
@@ -80,22 +84,24 @@ export function CduCatalogAdmin({ entries }: { entries: Entry[] }) {
     <header className="admin-section__lead cdu-catalog-admin__heading"><span className="admin-section__icon"><AppIcon name="book" aria-hidden="true" /></span><div><p className="eyebrow">Classificação</p><h2>Descrições e validação</h2><p>Cadastre códigos com suas descrições, revise registros e confirme a validação técnica.</p></div><button className="button button--primary button--small" type="button" aria-expanded={creating} onClick={() => { setCreating((current) => !current); setMessage(""); }}><AppIcon name="book" />{creating ? "Fechar cadastro" : "Cadastrar CDU"}</button></header>
     {creating && <form className="cdu-catalog-admin__create" action={create}><div className="cdu-catalog-admin__create-heading"><AppIcon name="book" /><div><strong>Novo código CDU</strong><p>Informe a descrição conforme a edição impressa consultada. O registro fica pendente de validação.</p></div></div><div className="cdu-catalog-admin__create-fields"><label>Código CDU<input name="code" required maxLength={80} autoFocus placeholder="Ex.: 711.4" /></label><label>Descrição técnica<input name="description" required minLength={3} maxLength={1000} placeholder="Descrição conforme a CDU" /></label><label>Fonte consultada <small>Opcional; ajuda na revisão.</small><input name="source" maxLength={1000} placeholder="Ex.: CDU, 2ª edição impressa" /></label></div><div className="cdu-catalog-admin__create-actions"><button className="button button--primary button--small" disabled={busy === "creating"}>{busy === "creating" ? "Cadastrando…" : "Cadastrar código"}</button><button className="button button--secondary button--small" type="button" disabled={busy === "creating"} onClick={() => setCreating(false)}>Cancelar</button></div></form>}
     <div className="cdu-catalog-admin__overview" aria-label="Resumo do catálogo CDU">
-      <button type="button" className={status === "all" ? "is-selected" : ""} onClick={() => chooseStatus("all")}><AppIcon name="book" /><span><strong>{items.length}</strong> cadastrados</span></button>
+      <button type="button" className={status === "all" ? "is-selected" : ""} onClick={() => chooseStatus("all")}><AppIcon name="book" /><span><strong>{currentItems.length}</strong> cadastrados</span></button>
       <button type="button" className={status === "pending" ? "is-selected" : ""} onClick={() => chooseStatus("pending")}><AppIcon name="help" /><span><strong>{pending}</strong> pendentes</span></button>
-      <button type="button" className={status === "validated" ? "is-selected" : ""} onClick={() => chooseStatus("validated")}><AppIcon name="check" /><span><strong>{items.length - pending}</strong> validados</span></button>
+      <button type="button" className={status === "validated" ? "is-selected" : ""} onClick={() => chooseStatus("validated")}><AppIcon name="check" /><span><strong>{currentItems.length - pending}</strong> validados</span></button>
       <div className="cdu-catalog-admin__stat"><AppIcon name="document" /><span><strong>{withoutSource}</strong> sem fonte</span></div>
     </div>
-    <div className="cdu-catalog-admin__toolbar"><label>Buscar código ou descrição<span className="cdu-catalog-admin__search"><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(0); setEditing(null); }} placeholder="Código, descrição, auxiliar ou fonte" /></span></label><label>Situação<select value={status} onChange={(event) => chooseStatus(event.target.value as Status)}><option value="all">Todas</option><option value="pending">Pendentes</option><option value="validated">Validados</option></select></label></div>
+    <div className="cdu-catalog-admin__toolbar"><label>Buscar código ou descrição<span className="cdu-catalog-admin__search"><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(0); setEditing(null); }} placeholder="Código, descrição, auxiliar ou fonte" /></span></label><label>Situação<select value={status} onChange={(event) => chooseStatus(event.target.value as Status)}><option value="all">Todas</option><option value="pending">Pendentes</option><option value="validated">Validados</option><option value="merged">Mesclados</option></select></label></div>
     <div className="cdu-catalog-admin__results"><p aria-live="polite">{filtered.length} {filtered.length === 1 ? "código encontrado" : "códigos encontrados"}</p>{(query || status !== "all") && <button type="button" onClick={() => { setQuery(""); chooseStatus("all"); }}>Limpar filtros</button>}</div>
     {message && <p className="auth-feedback" role="status">{message}</p>}
     <div className="cdu-catalog-admin__list">{visible.map((entry) => <article className={`cdu-catalog-admin__item${entry.validated ? "" : " is-pending"}`} key={entry.cdu_code}>
-      <div className="cdu-catalog-admin__item-heading"><div><span className="cdu-catalog-admin__code">CDU {entry.cdu_code}</span><span className={`cdu-catalog-admin__state${entry.validated ? " is-validated" : ""}`}>{entry.validated ? "Validado" : "Pendente"}</span></div><button type="button" className="button button--secondary button--small" aria-expanded={editing === entry.cdu_code} onClick={() => setEditing((current) => current === entry.cdu_code ? null : entry.cdu_code)}><AppIcon name="edit" />{editing === entry.cdu_code ? "Fechar edição" : "Revisar código"}</button></div>
+      <div className="cdu-catalog-admin__item-heading"><div><span className="cdu-catalog-admin__code">CDU {entry.cdu_code}</span><span className={`cdu-catalog-admin__state${entry.validated ? " is-validated" : ""}`}>{entry.validated ? "Validado" : "Pendente"}</span></div>{!entry.merged_into_code && <div className="catalogue-inline-actions"><button type="button" className="button button--secondary button--small" onClick={() => setMerging(entry)}>Mesclar</button><button type="button" className="button button--secondary button--small" aria-expanded={editing === entry.cdu_code} onClick={() => setEditing((current) => current === entry.cdu_code ? null : entry.cdu_code)}><AppIcon name="edit" />{editing === entry.cdu_code ? "Fechar edição" : "Revisar código"}</button></div>}</div>
+      {entry.merged_into_code && <p>Mesclado no código <strong>{entry.merged_into_code}</strong>. Este registro foi preservado para consulta histórica.</p>}
       <p className="cdu-catalog-admin__description">{entry.description || "Descrição ainda não informada."}</p>
       <div className="cdu-catalog-admin__details"><span><strong>Fonte</strong>{entry.source_reference || "Não registrada"}</span><span><strong>Composição</strong>{entry.composition_notes ? "Registrada" : "Não registrada"}</span><span><strong>Auxiliares</strong>{entry.auxiliary_codes.length || "Nenhum"}</span><span><strong>Relacionados</strong>{entry.related_codes.length || "Nenhum"}</span></div>
       {editing === entry.cdu_code && <SavedForm className="cdu-catalog-admin__edit" onSave={(form) => save(entry, form)}><div className="cdu-catalog-admin__edit-fields"><label className="cdu-catalog-admin__wide">Descrição técnica <small>Reproduza a descrição da CDU consultada.</small><textarea name="description" required minLength={3} maxLength={1000} rows={2} defaultValue={entry.description} /></label><label className="cdu-catalog-admin__wide">Memória de composição<textarea name="composition" maxLength={4000} rows={3} defaultValue={entry.composition_notes ?? ""} /></label><label>Auxiliares empregados <small>Separe os códigos por vírgula.</small><input name="auxiliary" defaultValue={entry.auxiliary_codes.join(", ")} /></label><label>Códigos relacionados <small>Separe os códigos por vírgula.</small><input name="related" defaultValue={entry.related_codes.join(", ")} /></label><label className="cdu-catalog-admin__wide">Fonte consultada<input name="source" maxLength={1000} defaultValue={entry.source_reference ?? ""} /></label></div><div className="cdu-catalog-admin__edit-actions"><label className="compact-check"><input name="validated" type="checkbox" defaultChecked={entry.validated} /> Código validado</label><div><SaveButton className="button button--primary button--small" disabled={busy === entry.cdu_code}>Salvar registro</SaveButton><button type="button" className="button button--secondary button--small" disabled={busy === entry.cdu_code} onClick={() => setEditing(null)}>Cancelar</button></div></div></SavedForm>}
     </article>)}</div>
     {filtered.length === 0 && <div className="cdu-catalog-admin__empty"><AppIcon name="search" /><strong>Nenhum código encontrado</strong><p>Ajuste a busca ou limpe os filtros para ver outros registros.</p></div>}
     {pageCount > 1 && <nav className="cdu-catalog-admin__pages" aria-label="Páginas do catálogo CDU"><button type="button" className="button button--secondary button--small" disabled={currentPage === 0} onClick={() => { setPage(currentPage - 1); setEditing(null); }}>Anterior</button><span>Página {currentPage + 1} de {pageCount}</span><button type="button" className="button button--secondary button--small" disabled={currentPage + 1 >= pageCount} onClick={() => { setPage(currentPage + 1); setEditing(null); }}>Próxima</button></nav>}
+    {merging && <CatalogueMergeDialog kind="cdu" sourceKey={merging.cdu_code} sourceLabel={`${merging.cdu_code} — ${merging.description}`} onClose={() => setMerging(null)} onMerged={(key) => { const source = merging.cdu_code; setItems((current) => current.map((item) => item.cdu_code === source || item.merged_into_code === source ? { ...item, merged_into_code: key } : item)); setMerging(null); setEditing(null); setStatus("all"); setQuery(key); setPage(0); }} />}
     <p className="cdu-catalog-admin__guidance"><AppIcon name="help" />A validação confirma a revisão técnica do registro. A escolha da CDU para cada ficha continua sendo feita pelo bibliotecário.</p>
   </section>;
 }

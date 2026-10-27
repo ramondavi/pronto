@@ -10,6 +10,8 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - E-mails: 26 variantes do parecer de 22/10 em docs/revisao-emails/. Conclusão unificada; sem RI, registro público. Lembretes abrem preparação; rodapé/URLs padronizados.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
+- Em preparação separada: cadastro de assuntos e mesclagem segura de assuntos/CDU; ícone de acessibilidade atualizado. Migração 202610260001 testada apenas localmente; aplicação remota pendente de confirmação. Guia: gestao-catalogos.md.
+
 ## Verificação e operação
 
 - Evidências/limites: validacao-mvp.md (133 testes, tipos/lint/build; 261 de banco; 39 públicos, três repetidos por timeout).

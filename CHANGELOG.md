@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 26 de outubro de 2026
+
+- Permite cadastrar assuntos pela Administração e mesclar assuntos ou CDU duplicados, mantendo fichas e vínculos históricos, com conferência, auditoria e proteção de atendimentos abertos. Substitui o ícone de acessibilidade pelo símbolo de pessoa em círculo. A ativação das funções depende da nova migração, sem aplicação remota automática.
+
 ### 24 de outubro de 2026
 
 - Prepara checksum de transporte nos envios ao bucket com retenção, mantendo a conferência SHA-256 após o download. Acrescenta progresso e diagnóstico por códigos fixos na cópia real, sem publicar dados do banco, nomes de arquivos, mensagens do provedor ou credenciais. As proteções de consistência e a agenda desativada permanecem.

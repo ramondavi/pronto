@@ -203,7 +203,7 @@ export function AccessibilityControls() {
 
   return (
     <nav ref={widgetRef} className="accessibility-widget" aria-label={t[4]}>
-      <button ref={triggerRef} className="accessibility-widget__trigger" type="button" aria-label={t[4]} aria-expanded={open} aria-controls="accessibility-widget-panel" onClick={() => setOpen((current) => !current)}><AppIcon name="eye" /></button>
+      <button ref={triggerRef} className="accessibility-widget__trigger" type="button" aria-label={t[4]} aria-expanded={open} aria-controls="accessibility-widget-panel" onClick={() => setOpen((current) => !current)}><AppIcon name="accessibility" /></button>
       <div className={`accessibility-widget__panel${open ? " is-open" : ""}`} id="accessibility-widget-panel" inert={!open}>
         <div className="accessibility-widget__heading"><strong>{t[4]}</strong><button type="button" aria-label={closeCopy[effectiveLanguage]} onClick={() => { setOpen(false); triggerRef.current?.focus(); }}><AppIcon name="close" /></button></div>
         <div className="accessibility-bar__links">

@@ -27,3 +27,5 @@ Backup, recuperação e preservação: protocolo-backup-recuperacao.md (metas, c
 Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; workflows backup.yml e backup-checks.yml.
 
 Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.
+
+- Cadastro e mesclagem de assuntos/CDU: docs/gestao-catalogos.md; src/components/catalogue-merge-dialog.tsx; supabase/migrations/202610260001_catalogue_creation_and_merges.sql.

@@ -1,3 +1,4 @@
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { bigint, boolean, date, integer, jsonb, pgEnum, pgTable, text, time, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", ["student", "cataloger", "administrator"]);
@@ -272,6 +273,9 @@ export const requestCatalogingPeople = pgTable("request_cataloging_people", {
 });
 
 export const controlledTerms = pgTable("controlled_terms", {
+  mergedIntoId: uuid("merged_into_id").references((): AnyPgColumn => controlledTerms.id, { onDelete: "restrict" }),
+  mergedAt: timestamp("merged_at", { withTimezone: true }),
+  mergedBy: uuid("merged_by").references(() => profiles.id, { onDelete: "restrict" }),
   id: uuid("id").defaultRandom().primaryKey(),
   preferredLabelPt: text("preferred_label_pt").notNull(),
   normalizedLabelPt: text("normalized_label_pt").notNull().unique(),
