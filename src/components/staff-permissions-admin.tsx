@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { cataloguePermissionCopy } from "@/lib/catalogue-permission-copy";
 import { AppIcon } from "@/components/app-icon";
 
 export type PermissionDefinition = {
@@ -48,12 +49,13 @@ function PermissionPeriodField({ name, label }: { name: "starts" | "ends"; label
   return <div className="staff-permissions__period"><label htmlFor={id}>{label}</label><div className="staff-permissions__period-controls"><input id={id} type="date" value={date} onChange={(event) => setDate(event.target.value)} /><input type="hidden" name={name} value={date ? allDay ? date : `${date}T${time}` : ""} />{!allDay && <input type="time" aria-label={`Horário de ${name === "starts" ? "início" : "fim"}`} value={time} onChange={(event) => setTime(event.target.value)} />}<label className="calendar-editor__all-day"><input type="checkbox" name={`${name}_all_day`} checked={allDay} onChange={(event) => setAllDay(event.target.checked)} />Dia todo</label></div></div>;
 }
 
-export function StaffPermissionsAdmin({ users, definitions, initialOverrides, initialRoles }: {
+export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, initialOverrides, initialRoles }: {
   users: StaffUser[];
   definitions: PermissionDefinition[];
   initialOverrides: PermissionOverride[];
   initialRoles: InheritedRole[];
 }) {
+  const definitions = useMemo(() => storedDefinitions.map(item => ({ ...item, ...cataloguePermissionCopy[item.code] })), [storedDefinitions]);
   const staff = users.filter((item) => item.role === "cataloger" || item.role === "administrator");
   const [selectedId, setSelectedId] = useState(staff[0]?.id ?? "");
   const [search, setSearch] = useState("");

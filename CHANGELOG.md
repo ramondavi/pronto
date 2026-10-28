@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- Reorganiza os fluxos de cadastro e montagem CDU e revisão de autoridades com etapas, controles e grades do design system. A gestão de permissões descreve importação, mesclagem, hierarquia e composição sem alterar acessos. Falhas de cadastro preservam os campos e mostram orientações específicas; códigos CDU de um algarismo continuam aceitos.
+
 - Ativa a importação confirmada de autoridades e a busca por variantes somente na prévia autorizada, com proteção contra duplicatas no salvamento automático. Funções, permissões, RLS e preservação das fichas e vínculos anteriores verificados após CI aprovado.
 
 ### 27 de outubro de 2026

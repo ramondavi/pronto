@@ -7308,3 +7308,113 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .subject-authority-dialog { width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; margin: auto; padding: 24px; }
 .subject-authority-dialog > h2 { margin-bottom: 16px; padding-right: 42px; }
+
+/* Catalogue workflows share the panel typography, controls and spacing tokens. */
+.catalogue-workflow { display: grid; gap: 24px; min-width: 0; color: var(--text); }
+.catalogue-workflow__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.catalogue-workflow__header > div { min-width: 0; flex: 1; }
+.catalogue-workflow__icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.catalogue-workflow__icon svg { width: 22px; height: 22px; }
+.catalogue-workflow :is(h3,h4,p) { margin: 0; }
+.catalogue-workflow h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 650; }
+.catalogue-workflow h4, .catalogue-step-heading { font-size: .9375rem; line-height: 1.5; font-weight: 650; }
+.catalogue-workflow :is(p,small,.field-help) { font-size: .8125rem; font-weight: 400; line-height: 1.6; color: var(--text-muted); }
+.catalogue-workflow .eyebrow { color: var(--institutional); font-size: .6875rem; font-weight: 700; margin-bottom: 4px; }
+.catalogue-workflow__header p:last-child { margin-top: 6px; }
+.catalogue-workflow__section { display: grid; gap: 16px; margin: 0; padding: 20px; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-workflow__section > legend { padding-inline: 8px; font-size: .875rem; font-weight: 650; }
+.catalogue-workflow label { min-width: 0; }
+.catalogue-workflow label:not(:has(> input[type="checkbox"])) { display: grid; align-content: start; gap: 8px; }
+.catalogue-workflow .catalogue-field-label { font-size: .8125rem; font-weight: 650; line-height: 1.4; }
+.catalogue-workflow :is(input:not([type="checkbox"]),select,textarea) { box-sizing: border-box; width: 100%; min-width: 0; font-size: .875rem; font-weight: 400; }
+.catalogue-workflow :is(input:not([type="checkbox"]),select) { min-height: 46px; }
+.catalogue-workflow textarea { resize: vertical; min-height: 88px; line-height: 1.55; }
+.catalogue-workflow__wide { grid-column: 1 / -1; }
+.catalogue-workflow__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+.catalogue-workflow__structure { min-width: 0; border: 0; padding: 0; margin: 0; }
+.cdu-catalog-admin__create.catalogue-workflow { padding: 24px; background: var(--surface-raised); border-radius: var(--radius); }
+.cdu-catalog-admin__create-fields { grid-template-columns: minmax(160px,.7fr) minmax(240px,1fr); gap: 16px 20px; align-items: start; }
+.cdu-catalog-admin__create-fields label:last-child { grid-column: 1 / -1; }
+.cdu-structure-fields.catalogue-workflow__section { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px 20px; }
+.cdu-structure-fields[data-special="true"] > label:first-of-type { grid-column: auto; }
+.cdu-structure-fields[data-special="true"] > label:nth-of-type(3) { grid-column: 1 / -1; }
+.cdu-composer.catalogue-workflow { padding: 24px; background: var(--surface-raised); border-radius: var(--radius); }
+.cdu-composer__setup { grid-template-columns: minmax(220px,1fr) minmax(0,1fr); align-items: start; padding: 20px; background: var(--surface); border-radius: var(--radius); }
+.cdu-composer__setup .catalogue-mode-switch { align-self: start; padding-top: 23px; }
+.catalogue-mode-switch { display: flex; gap: 0; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.catalogue-mode-switch .button { flex: 1; min-width: 0; border-color: transparent; box-shadow: none; }
+.catalogue-mode-switch [aria-pressed="true"] { background: var(--institutional-soft); color: var(--institutional); border-color: var(--institutional); }
+.cdu-composer__guided { gap: 20px; }
+.cdu-composer__group { gap: 16px; align-content: start; }
+.cdu-composer__block { gap: 12px; padding: 16px; background: var(--surface); }
+.cdu-composer__block > strong { font-size: .8125rem; }
+.cdu-composer__block > .button { justify-self: start; }
+.cdu-composer__preview { display: grid; gap: 8px; padding: 20px; background: var(--institutional-soft); border: 1px solid var(--line); border-radius: var(--radius); }
+.cdu-composer__preview output { display: block; overflow-wrap: anywhere; font-size: 1.5rem; font-weight: 650; line-height: 1.4; }
+.cdu-composer__review { gap: 16px; }
+.cdu-composer__review > .button { justify-self: end; }
+.catalogue-workflow__guidance { border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.catalogue-workflow__guidance summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .8125rem; font-weight: 600; }
+.catalogue-workflow__guidance summary svg { width: 18px; height: 18px; }
+.catalogue-workflow__guidance p { padding-top: 8px; }
+.subject-authority-dialog { padding: 0; width: min(1040px,calc(100vw - 32px)); }
+.catalogue-modal__header { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 16px; padding: 20px 64px 20px 24px; border-bottom: 1px solid var(--line); background: var(--surface-raised); }
+.catalogue-modal__header .eyebrow { margin: 0 0 4px; color: var(--institutional); }
+.catalogue-modal__header h2 { margin: 0; font-size: 1.25rem; line-height: 1.4; }
+.subject-authority-importer.catalogue-workflow { padding: 24px; border: 0; border-radius: 0; gap: 24px; }
+.authority-import-preview { padding: 0; gap: 20px; border: 0; border-radius: 0; background: transparent; }
+.authority-import-preview__header { display: grid; gap: 4px; }
+.authority-import-preview__inputs { gap: 20px; align-items: start; }
+.authority-import-preview__inputs > label { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.authority-import-preview__result { border-top: 1px solid var(--line); padding-top: 24px; gap: 16px; }
+.authority-import-preview__result > h4 { font-size: 1.125rem; }
+.authority-import-preview__warnings { display: grid; gap: 8px; padding: 16px; border-inline-start: 3px solid var(--institutional); background: var(--institutional-soft); border-radius: var(--radius-sm); }
+.authority-import-preview__warnings ul, .authority-import-preview__sections ul { margin: 0; padding-left: 20px; }
+.authority-import-preview__warnings li { font-size: .8125rem; line-height: 1.6; }
+.authority-import-preview__sections { gap: 12px; }
+.authority-import-preview details { padding: 14px 16px; background: var(--surface); }
+.authority-import-preview summary { font-size: .8125rem; font-weight: 650; line-height: 1.5; }
+.authority-import-preview details li { font-size: .8125rem; line-height: 1.55; }
+.authority-import-preview details li strong { font-weight: 600; }
+.authority-import-preview details li span { margin-top: 2px; font-size: .75rem; }
+.subject-authority-importer__confirmation { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px 20px; }
+.subject-authority-importer__confirmation > :is(.checkbox-choice,p) { grid-column: 1 / -1; }
+.subject-authority-importer .checkbox-choice { font-size: .8125rem; line-height: 1.6; font-weight: 400; }
+.subject-authority-field__empty { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.subject-authority-field__empty > .field-help { flex: 1 1 150px; margin: 0; font-size: .75rem; line-height: 1.5; }
+.subject-authority-field__empty > .button { flex: 0 0 auto; }
+@supports (appearance: base-select) {
+ .catalogue-workflow select > button { width: 100%; min-height: 44px; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; line-height: 44px; text-align: left; }
+ .catalogue-workflow selectedcontent { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}
+@media(max-width:820px) {
+ .cdu-composer__setup { grid-template-columns: minmax(0,1fr); }
+ .cdu-composer__setup .catalogue-mode-switch { padding-top: 0; }
+ .catalogue-workflow__header { flex-wrap: wrap; }
+ .catalogue-workflow__header > .button { margin-left: auto; }
+}
+@media(max-width:620px) {
+ .cdu-catalog-admin__create.catalogue-workflow, .cdu-composer.catalogue-workflow, .subject-authority-importer.catalogue-workflow { padding: 16px; gap: 20px; }
+ .catalogue-workflow__section { padding: 16px; }
+ .cdu-catalog-admin__create-fields, .cdu-structure-fields.catalogue-workflow__section, .subject-authority-importer__confirmation { grid-template-columns: minmax(0,1fr); }
+ .catalogue-workflow__actions > .button { flex: 1 1 150px; }
+ .catalogue-mode-switch { flex-wrap: wrap; gap: 4px; }
+ .catalogue-modal__header { padding: 16px 60px 16px 16px; }
+ .authority-import-preview__inputs > label { padding: 12px; }
+ .subject-authority-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+}
+.cdu-catalog-admin__heading, .controlled-terms-admin__heading { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.cdu-catalog-admin__heading > div, .controlled-terms-admin__heading > div { flex: 1 1 260px; min-width: 0; }
+@media(max-width:620px) {
+ .cdu-catalog-admin__heading > div, .controlled-terms-admin__heading > div { flex: 1 1 0; }
+ .cdu-catalog-admin__heading > .button, .controlled-terms-admin__heading > .button { flex: 1 1 100%; margin: 0; }
+}
+@media(max-width:620px) {
+ .catalogue-mode-switch { display: grid; grid-template-columns: minmax(0,1fr); gap: 4px; }
+ .catalogue-mode-switch .button { width: 100%; justify-content: flex-start; text-align: left; white-space: normal; overflow-wrap: normal; word-break: normal; }
+ .catalogue-mode-switch .button svg { flex-shrink: 0; }
+}
+.catalogue-workflow select { box-sizing: border-box; height: 46px; min-height: 46px; padding-block: 0; }
+@supports (appearance: base-select) {
+ .catalogue-workflow select > button { display: block; height: 44px; min-height: 44px; line-height: 44px; }
+}
