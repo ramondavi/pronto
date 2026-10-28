@@ -7418,3 +7418,21 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 @supports (appearance: base-select) {
  .catalogue-workflow select > button { display: block; height: 44px; min-height: 44px; line-height: 44px; }
 }
+
+/* Importação: superfície de upload compartilhada com a geração da ficha. */
+.authority-import-preview__inputs > .authority-import-preview__input-card { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.authority-import-preview__input-card > textarea, .authority-import-preview__file { height: 192px; min-height: 192px; margin: 0; box-sizing: border-box; }
+.authority-import-preview__input-card > textarea { resize: none; overflow: auto; }
+.authority-import-preview__file.nada-consta-picker { display: grid; grid-template-columns: auto minmax(0,1fr); align-content: center; }
+.authority-import-preview__file > .nada-consta-picker__actions { grid-column: 1 / -1; justify-content: flex-start; }
+.authority-import-preview__file strong { overflow-wrap: anywhere; }
+.authority-import-preview__help { display: grid; gap: 10px; color: var(--text-muted); font-size: .8125rem; line-height: 1.55; }
+.authority-import-preview__help p { display: flex; align-items: flex-start; gap: 8px; margin: 0; }
+.authority-import-preview__help > p > svg { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; color: var(--institutional); }
+.authority-import-preview__help strong { font-weight: 600; color: var(--text); }
+@media (max-width: 620px) { .authority-import-preview__inputs > .authority-import-preview__input-card { padding: 12px; } }
+
+.catalogue-workflow .authority-import-preview__input-card > label.catalogue-field-label { display: flex; align-items: center; gap: 8px; }
+.authority-import-preview__file > .nada-consta-picker__actions { margin-left: 0; flex-wrap: wrap; }
+
+.authority-import-preview__input-card > input[type=file] { display: none; }
