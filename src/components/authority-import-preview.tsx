@@ -3,7 +3,8 @@
 import { useId, useRef, useState } from "react";
 import { AppIcon } from "./app-icon";
 import { CatalogueSelect } from "./catalogue-select";
-import { authorityInputLimit, authoritySources, readAuthorityPreview, type AuthorityPreview, type AuthoritySource, type AuthorityValue } from "@/lib/authority-preview";
+import { AuthoritySourceSelect } from "./authority-source-select";
+import { authorityInputLimit, readAuthorityPreview, type AuthorityPreview, type AuthoritySource, type AuthorityValue } from "@/lib/authority-preview";
 
 export function AuthorityImportPreview({ initialSource = "bn", disabled = false, onRecordChange }: { initialSource?: AuthoritySource; disabled?: boolean; onRecordChange?: (record: AuthorityPreview | null) => void } = {}) {
  const inputId = useId();
@@ -25,7 +26,7 @@ export function AuthorityImportPreview({ initialSource = "bn", disabled = false,
  const sections: [string, AuthorityValue[]][] = record ? [["Componentes do cabeçalho", record.components], ["Termos preferidos e idiomas", record.labels], ["Formas variantes", record.variants], ["Relações entre assuntos", record.relations], ["Correspondências externas", record.mappings], ["Notas de uso", record.notes], ["Fontes citadas", record.citations]] : [];
  return <div className="authority-import-preview">
   <header className="authority-import-preview__header"><p className="eyebrow">Etapa 1 · Registro da fonte</p><h3>Abrir uma autoridade</h3><p>Escolha a fonte e cole o registro completo ou selecione um arquivo. A leitura ainda não cadastra o assunto.</p></header>
-  <label><span className="catalogue-field-label"><AppIcon name="globe" />Fonte do registro</span><CatalogueSelect value={source} onChange={e => { setSource(e.target.value as AuthoritySource); reset(); }} disabled={busy || disabled}>{Object.entries(authoritySources).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</CatalogueSelect></label>
+  <AuthoritySourceSelect value={source} onChange={value => { setSource(value); reset(); }} disabled={busy || disabled} />
   <div className="authority-import-preview__inputs">
    <div className="authority-import-preview__input-card"><label htmlFor={`${inputId}-text`} className="catalogue-field-label"><AppIcon name="document" />Registro em texto</label><textarea id={`${inputId}-text`} aria-describedby={`${inputId}-text-help`} rows={7} value={text} onChange={e => { setText(e.target.value); reset(); }} placeholder="Cole o registro completo, incluindo os campos e identificadores da fonte." disabled={busy || disabled} /><div id={`${inputId}-text-help`} className="authority-import-preview__help"><p><AppIcon name="copy" /><span><strong>O que colar:</strong> MARC em texto, MARCXML ou JSON-LD/NDJSON. Copie o registro completo, não apenas o nome do assunto.</span></p><p><AppIcon name="document" /><span><strong>Limites:</strong> até 2 MB e 100 registros por leitura. Para MARC binário (ISO 2709), selecione o arquivo.</span></p><p><AppIcon name="eye" /><span><strong>Como continuar:</strong> clique em Conferir texto. O assunto só será cadastrado após sua revisão e confirmação.</span></p></div></div>
    <div className="authority-import-preview__input-card"><label htmlFor={`${inputId}-file`} className="catalogue-field-label"><AppIcon name="upload" />Selecionar arquivo de importação</label><input ref={fileInput} id={`${inputId}-file`} className="browser-pdf-delivery__file-input" type="file" accept=".txt,.mrc,.marc,.xml,.json,.jsonld,.ndjson" aria-describedby={`${inputId}-file-help`} disabled={busy || disabled} onChange={async e => {

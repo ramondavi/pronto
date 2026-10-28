@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- O seletor de fontes da importação mostra logos oficiais disponíveis e separa a seleção do acesso ao site: somente o ícone externo abre nova aba.
+
 - Esclarece formatos e limites da importação de autoridades com ícones, upload no padrão da geração de ficha e áreas de texto/arquivo com a mesma altura.
 
 - Reorganiza os fluxos de cadastro e montagem CDU e revisão de autoridades com etapas, controles e grades do design system. A gestão de permissões descreve importação, mesclagem, hierarquia e composição sem alterar acessos. Falhas de cadastro preservam os campos e mostram orientações específicas; códigos CDU de um algarismo continuam aceitos.
