@@ -21,7 +21,7 @@ A alternativa respeita a cobertura de public/auth/storage/supabase_migrations e 
 
 O responsável precisa eliminar cada cópia manual ao fim de 90 dias, salvo preservação necessária documentada. O vencimento no recibo não apaga mídia desconectada. Não reduzir o prazo nem manter cópias indefinidas para contornar indisponibilidade. O registro automático no B2/monitor não recebe a execução manual; conferir o recibo local e registrar a ocorrência operacional sem dados pessoais.
 
-Não há botão de restauração, leitura de senha ou aba administrativa nesta entrega. O pacote não substitui o primeiro ensaio real, o teste de alertas, a custódia institucional e o substituto. Até comprovar o ensaio, manter BACKUP_ENABLED=false.
+Não há botão de restauração, leitura de senha ou aba administrativa nesta entrega. O pacote não substitui o primeiro ensaio real, o teste de alertas, a custódia institucional e o substituto. O ensaio foi comprovado em 24 e 26/10, mas BACKUP_ENABLED continua false até o aceite operacional e a definição dos responsáveis. Resumo vigente: [Operação dos backups](operacao-backups.md).
 
 ## Ferramentas e manutenção
 
@@ -38,3 +38,7 @@ PR 15 incorporado com todas as checagens aprovadas. A primeira verificação rem
 Em 23/10/2026, os 53 testes Python passaram, incluindo exportação, criptografia, abertura e restauração real de dados exclusivamente fictícios em PostgreSQL local isolado, com as ferramentas portáteis para Windows. A aplicação passou em 138 testes, tipos, lint e build; o lint manteve 13 avisos preexistentes em arquivos não alterados. O formulário local foi conferido no navegador com execução simulada, sem conexão com produção. Essas verificações não comprovam restauração dos dados reais.
 
 Em 24/10/2026, após redefinição pessoal e recadastro protegido da senha, a conexão de produção deixou de apresentar recusa de credenciais. A verificação parou em readonly_connection_required, antes de SELECT 1 ou leitura de registros. A correção inicia BEGIN READ ONLY e continua exigindo transaction_read_only=on; não depende apenas de PGOPTIONS atravessar o pooler. Os 54 testes Python passaram com restauração sintética e um teste de conexão cuja sessão permite escrita por padrão. A nova execução remota continua pendente de incorporação; BACKUP_ENABLED permanece false.
+
+## Retomada de 28/10/2026
+
+Os ensaios de restauração/Auth/site e os avisos foram concluídos conforme as evidências de 24 e 26/10. A agenda continua desligada. Entrega do pacote e acessos ao substituto, custódia institucional, cópia atual e aceite da operação permanecem pendentes; não reconstruir nem substituir um pacote comprovado por versão sem os ensaios exigidos. Nenhum novo ensaio ou pacote foi executado nesta retomada. Ver operacao-backups.md.

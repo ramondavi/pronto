@@ -1,5 +1,8 @@
 # Implantação do backup independente no Backblaze B2
 
+> Situação em 28/10/2026: a cópia real, a restauração, Auth/perfis e os avisos foram concluídos e documentados. Os diagnósticos abaixo permanecem como histórico, não como estado atual. Agenda ainda desligada; substituto, custódia institucional, aceite de ativação e acompanhamento do ciclo real pendentes. Resumo vigente: [Operação dos backups](operacao-backups.md). A nova cópia operacional aguarda autorização específica após bloqueio da revisão automática.
+
+
 Preparado em 23/10/2026. O executor está em `scripts/backup/run_backup.py`; a rotina agendada está em `.github/workflows/backup.yml`. Esta entrega prepara a integração; não cria conta, bucket, chaves ou cópias de produção. A ativação depende dos itens abaixo e de confirmação de acesso remoto conforme as regras do projeto.
 
 ## Funcionamento
