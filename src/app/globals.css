@@ -7534,3 +7534,11 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .authority-source-mark--ufba .authority-source-mark__art, .authority-source-mark--pergamum .authority-source-mark__art { height: 27px; }
 .authority-source-mark__badge { font-size: .5rem; padding: 1px 5px; }
 .authority-source-mark--loc { max-width: 58px; }
+
+/* Estado vazio da ajuda flutuante: uma orientação por linha. */
+.backend-help__panel .help-search__suggestions .search-empty-state { align-items: flex-start; gap: 12px; padding: 14px 12px; }
+.backend-help__panel .help-search__suggestions .search-empty-state__content { display: grid; gap: 12px; flex: 1; min-width: 0; }
+.backend-help__panel .help-search__suggestions .search-empty-state__content > strong { display: block; margin: 0; font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+.backend-help__panel .help-search__suggestions .search-empty-state ul { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.backend-help__panel .help-search__suggestions .search-empty-state li { display: flex; align-items: flex-start; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; font-size: .8125rem; line-height: 1.55; overflow-wrap: anywhere; }
+.backend-help__panel .help-search__suggestions .search-empty-state li svg { flex: 0 0 15px; width: 15px; height: 15px; margin-top: 3px; }
