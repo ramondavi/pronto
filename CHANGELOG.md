@@ -8,6 +8,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- Registra a meta, antes de concluir o teste RAU+E, de 10/10 em segurança/integridade e em continuidade sem dependência do responsável, com avaliação documentada e sem declarar risco zero ou prontidão já atingida.
+
+- Divide a importação de autoridades em quatro etapas, com escolha exclusiva entre texto e arquivo, conferência comum e confirmação final; inclui os logos enviados de BN/LC e iguala as áreas de entrada.
+
 - O seletor de fontes da importação mostra logos oficiais disponíveis e separa a seleção do acesso ao site: somente o ícone externo abre nova aba.
 
 - Esclarece formatos e limites da importação de autoridades com ícones, upload no padrão da geração de ficha e áreas de texto/arquivo com a mesma altura.

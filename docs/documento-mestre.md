@@ -589,7 +589,7 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - Em telas pequenas, setas compactas com fundo próprio ficam dentro da barra de guias e selecionam a guia anterior ou a próxima, sem desaparecer nos extremos. A guia selecionada fica centralizada sempre que a largura permite e recebe destaque visual; a faixa também aceita rolagem lateral por toque, sem barra de rolagem aparente. Ao passar o cursor ou focar a faixa, as setas somem suavemente para liberar a navegação direta. Sombras internas nas extremidades indicam a continuidade das guias, e as transições respeitam movimento reduzido.
 - Ao trocar de guia na Administração, a barra conserva sua posição anterior durante a navegação e desliza para a nova seleção no sentido da seta acionada. Ao abrir ou recarregar diretamente uma guia, ela aparece centralizada sem percorrer a barra desde o início.
 
-- Revisão de 28/10/2026: cadastro CDU, composição e importação de assuntos compartilham identificação, organização e revisão com grade responsiva, campos de 46 px, rótulos e ajuda consistentes. A revisão de autoridades distingue abrir, conferir e confirmar; as ações principais ficam junto ao fechamento. Erro no cadastro conserva os campos e informa sua categoria. Os textos visíveis das permissões de assuntos/CDU explicam cadastro, importação, mesclagem, hierarquia e montagem, sem criar permissões ou modificar concessões. Catálogo público interoperável foi discutido como proposta, sem autorização de publicação.
+- Revisão de 28/10/2026: cadastro CDU, composição e importação de assuntos compartilham identificação, organização e revisão com grade responsiva, campos de 46 px, rótulos e ajuda consistentes. A importação de autoridades percorre Fonte, Texto ou arquivo, Conferência e Confirmação. Texto e arquivo são alternativas exclusivas; a leitura ocorre pela ação comum “Conferir registro”, e “Limpar leitura” remove ambas as entradas e o resultado mantendo a fonte. Voltar preserva o conteúdo; alterar fonte, método ou entrada exige nova conferência. Os logos enviados de BN e LC identificam as respectivas fontes. A revisão de autoridades distingue abrir, conferir e confirmar; as ações principais ficam junto ao fechamento. Erro no cadastro conserva os campos e informa sua categoria. Os textos visíveis das permissões de assuntos/CDU explicam cadastro, importação, mesclagem, hierarquia e montagem, sem criar permissões ou modificar concessões. Catálogo público interoperável foi discutido como proposta, sem autorização de publicação.
 
 ### 20.1. Perguntas frequentes e ajuda
 
@@ -753,6 +753,12 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 - O lançamento usa Vercel e Supabase, mas nenhuma migração remota é aplicada sem revisão de impacto e confirmação explícita. O lançamento público depende também das URLs definitivas, SMTP e textos de e-mail aprovados.
 - A validação com estudantes e bibliotecários produz evidências de tarefas e severidade sem registrar CPF, senha, arquivo acadêmico, token ou comentário interno.
 
+
+### 27.1. Meta para encerramento do teste com a RAU+E — decisão de 28/10/2026
+
+- Antes de concluir o teste com a RAU+E, a meta aprovada é alcançar **10/10 na avaliação interna de segurança e integridade** e **10/10 na continuidade do Pronto! sem depender de Ramon Davi Santana**, com outros bibliotecários à frente da operação.
+- As duas notas são metas de prontidão, ainda não declaradas atingidas. O atingimento deve ser sustentado por critérios de avaliação e evidências documentadas, a detalhar e validar com o responsável; estimativas informais da conversa não constituem aceite. A avaliação deve abranger a proteção e recuperação dos dados e a capacidade de outra pessoa assumir operação, manutenção e resposta a incidentes com documentação, acessos institucionais e responsabilidades definidas.
+- A meta não representa segurança absoluta, risco zero, certificação ou auditoria independente. Riscos residuais e dependências devem permanecer explícitos. O registro desta meta não autoriza alterações remotas, despesas, concessão de acessos ou decisões institucionais ainda pendentes.
 
 ## Decisões de 20/10/2026 — depósitos posteriores e acesso
 

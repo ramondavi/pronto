@@ -7455,3 +7455,34 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .authority-source-select__row.is-selected { border-color: var(--institutional); background: var(--institutional-soft); }
 .authority-source-select__check { display: grid; place-items: center; flex: 0 0 20px; margin-left: auto; color: var(--institutional); }
 .authority-source-select__check svg { width: 18px; height: 18px; }
+
+/* Assistente de importação: uma tarefa por etapa, uma única entrada ativa. */
+.authority-import-wizard__steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; list-style: none; margin: 0; padding: 0; }
+.authority-import-wizard__steps li { display: flex; gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); min-width: 0; }
+.authority-import-wizard__steps li > span { display: grid; place-items: center; flex: 0 0 28px; color: var(--text-muted); }
+.authority-import-wizard__steps svg { width: 22px; height: 22px; }
+.authority-import-wizard__steps li > div { display: grid; gap: 2px; }
+.authority-import-wizard__steps small { font-size: .6875rem; color: var(--text-muted); }
+.authority-import-wizard__steps strong { font-size: .8125rem; }
+.authority-import-wizard__steps li[aria-current=step] { border-color: var(--institutional); background: var(--institutional-soft); }
+.authority-import-wizard__steps li[aria-current=step] > span, .authority-import-wizard__steps .is-complete > span { color: var(--institutional); }
+.authority-import-wizard__stage { display: grid; gap: 20px; min-width: 0; }
+.authority-import-wizard__stage > header { display: grid; gap: 8px; }
+.authority-import-wizard__title { display: flex; align-items: center; gap: 10px; }
+.authority-import-wizard__title > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.authority-import-wizard__methods { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 12px; }
+.authority-import-wizard__methods > span { color: var(--text-muted); font-size: .75rem; font-weight: 700; }
+.authority-import-wizard__methods .is-selected { border-color: var(--institutional); color: var(--institutional); background: var(--institutional-soft); }
+.authority-import-wizard .authority-import-preview__input-card { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); min-width: 0; }
+.authority-import-wizard .authority-import-preview__input-card > textarea, .authority-import-wizard .authority-import-preview__file { display: grid; height: 208px; min-height: 208px; max-height: 208px; margin: 0; box-sizing: border-box; }
+.authority-import-wizard .authority-import-preview__input-card > textarea { display: block; width: 100%; resize: none; }
+.authority-import-wizard__read-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.authority-import-wizard__summary { display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); min-width: 0; }
+.authority-import-wizard__summary > svg { color: var(--institutional); flex: 0 0 24px; }
+.authority-import-wizard__summary > div { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.authority-import-wizard__summary span { color: var(--text-muted); font-size: .8125rem; }
+.authority-source-select__identity img.authority-source-select__logo--bn { width: 190px; height: 40px; background: #403c32; padding: 4px; }
+.authority-source-select__identity img.authority-source-select__logo--loc { width: 88px; height: 48px; padding: 2px 4px; }
+@media(max-width:620px) { .authority-import-wizard__steps { grid-template-columns: repeat(2,minmax(0,1fr)); } .authority-import-wizard__steps li { padding: 8px; gap: 6px; } .authority-import-wizard__methods { gap: 8px; } .authority-import-wizard__methods .button { padding-inline: 8px; font-size: .8125rem; } .authority-import-wizard .authority-import-preview__input-card { padding: 12px; } }
+
+.authority-import-wizard .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
