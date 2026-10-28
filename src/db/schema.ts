@@ -287,6 +287,21 @@ export const controlledTerms = pgTable("controlled_terms", {
   ...timestamps,
 });
 
+export const subjectAuthorities = pgTable("subject_authorities", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  sourceCode: text("source_code").notNull(),
+  sourceIdentifier: text("source_identifier").notNull(),
+  controlledTermId: uuid("controlled_term_id").references(() => controlledTerms.id, { onDelete: "cascade" }).notNull(),
+  record: jsonb("record").$type<Record<string, unknown>>().notNull(),
+  importedBy: uuid("imported_by").references(() => profiles.id).notNull(),
+  importedAt: timestamp("imported_at", { withTimezone: true }).defaultNow().notNull(),
+}, table => [uniqueIndex("subject_authorities_source_identity").on(table.sourceCode, table.sourceIdentifier)]);
+export const subjectAuthorityVariants = pgTable("subject_authority_variants", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  authorityId: uuid("authority_id").references(() => subjectAuthorities.id, { onDelete: "cascade" }).notNull(),
+  label: text("label").notNull(),
+  language: text("language").default("").notNull(),
+});
 export const requestControlledTerms = pgTable("request_controlled_terms", {
   id: uuid("id").defaultRandom().primaryKey(),
   requestId: uuid("request_id").references(() => catalogingRequests.id, { onDelete: "cascade" }).notNull(),

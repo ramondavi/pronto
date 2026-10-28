@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 27 de outubro de 2026
 
+- Prepara importação confirmada de autoridades e busca por variantes. Na análise, a ação aparece somente após busca completa sem resultados; erros não são tratados como ausência. Identidade e versões preservam a proveniência e os assuntos/fichas anteriores. Migração remota ainda não aplicada.
+
 - Acrescenta conferência local de arquivos de autoridades na gestão de assuntos, com componentes, variantes, relações, idiomas, notas e alertas. A leitura não grava termos nem consulta bases externas.
 
 - Padroniza a grade e os controles CDU na Administração e na análise bibliotecária. Inclui resposta rápida didática na ajuda, restrita à equipe, com campos, auxiliares, relações e exemplos de composição.

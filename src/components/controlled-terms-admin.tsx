@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AuthorityImportPreview } from "./authority-import-preview";
+import { SubjectAuthorityImporter } from "./subject-authority-importer";
 import { CatalogueMergeDialog } from "./catalogue-merge-dialog";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -142,9 +142,9 @@ export function ControlledTermsAdmin() {
   }
 
   return <section className="panel admin-section controlled-terms-admin">
-    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Cadastre assuntos, revise os termos da catalogação e reúna duplicatas preservando as fichas anteriores.</p></div><button type="button" className="button button--primary button--small" aria-expanded={creating} onClick={() => { setCreating(!creating); setPreviewing(false); setCreateSource(""); }}><AppIcon name={creating ? "close" : "tag"} />{creating ? "Fechar cadastro" : "Cadastrar assunto"}</button><button type="button" className="button button--secondary button--small" aria-expanded={previewing} onClick={() => { setPreviewing(!previewing); setCreating(false); }}><AppIcon name={previewing ? "close" : "upload"} />{previewing ? "Fechar conferência" : "Conferir importação"}</button></header>
+    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Cadastre assuntos, revise os termos da catalogação e reúna duplicatas preservando as fichas anteriores.</p></div><button type="button" className="button button--primary button--small" aria-expanded={creating} onClick={() => { setCreating(!creating); setPreviewing(false); setCreateSource(""); }}><AppIcon name={creating ? "close" : "tag"} />{creating ? "Fechar cadastro" : "Cadastrar assunto"}</button><button type="button" className="button button--secondary button--small" aria-expanded={previewing} onClick={() => { setPreviewing(!previewing); setCreating(false); }}><AppIcon name={previewing ? "close" : "upload"} />{previewing ? "Fechar importação" : "Importar autoridade"}</button></header>
 
-    {previewing && <AuthorityImportPreview />}
+    {previewing && <SubjectAuthorityImporter source="bn" onClose={() => setPreviewing(false)} onImported={() => setRevision(value => value + 1)} />}
     {creating && <SavedForm className="controlled-terms-admin__edit catalogue-create" onSave={create} initiallySaved={false}>
       <div className="catalogue-form-heading"><AppIcon name="tag" /><div><h3>Novo assunto</h3><p>Escolha a fonte e registre o termo preferido. O equivalente em inglês é opcional.</p></div></div>
       <label><span className="catalogue-field-label"><AppIcon name="book" />Fonte consultada</span><select name="source" required value={createSource} onChange={(event) => setCreateSource(event.target.value)}><option value="">Escolha a fonte antes de preencher</option>{Object.entries(sourceNames).map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>

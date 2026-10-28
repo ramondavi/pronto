@@ -151,7 +151,7 @@ function linkedData(text: string, source: AuthoritySource): AuthorityPreview[] {
   }
   if (!candidates.length) throw new Error("Nenhum conceito principal reconhecido. JSON genérico não é um registro de autoridade.");
   for (const n of candidates) {
-   const r = empty(source, "JSON-LD", JSON.stringify(n, null, 2));
+   const r = empty(source, "JSON-LD", JSON.stringify(doc, null, 2));
    r.identifier = typeof n["@id"] === "string" ? n["@id"] : null; r.labels = labels(n); r.title = r.labels.find(v => v.language?.startsWith("pt"))?.value ?? r.labels[0].value;
    if (list(n["@type"]).some(v => String(v).includes("Deprecated"))) warn(r, "A autoridade está descontinuada segundo o tipo do registro. Revisão obrigatória antes de qualquer uso.");
    r.variants = literals([...prop(n, "skos", "altLabel"), ...prop(n, "skosxl", "altLabel")]);

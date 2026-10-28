@@ -275,6 +275,8 @@ Graduação, Especialização, Mestrado e Doutorado.
 
 - Conferência de autoridades autorizada em 27/10/2026: a gestão de assuntos oferece leitura local de amostras MARC em texto, MARCXML, ISO 2709 UTF-8 e JSON-LD/NDJSON das fontes indicadas. Preserva componentes, variantes, relações, idiomas, notas e identificadores reconhecidos e sinaliza lacunas. Não consulta serviços, não traduz, não resolve referências nem grava ou mescla autoridades. Esta etapa não autoriza um modelo persistente de autoridades ou importação remota; formatos e campos não reconhecidos exigem conferência no original.
 
+- Ampliação autorizada em 27/10/2026: na análise, importar autoridade é oferecido somente após busca concluída sem resultados no catálogo completo, incluindo variantes. Campo vazio, busca em andamento, erro e sugestões existentes não exibem a ação. Preenchimento manual permanece; Administração mantém importação disponível. A confirmação preserva o registro lido e seus dados estruturados, usa fonte e identificador como identidade, exige forma portuguesa conferida e vínculo explícito para texto já cadastrado. Reimportação idêntica reutiliza o cadastro; versão diferente exige revisão, sem sobrescrever. Relações sem destino permanecem referências pendentes; não criam termos automaticamente. Importar prepara o assunto, sem homologar ou reescrever fichas anteriores. Nova estrutura remota depende de autorização de aplicação; preparação e ensaios locais não significam ativação na prévia.
+
 ### 9.2. Assistente CDU
 
 - Preenchimento e decisão final são manuais pelo bibliotecário.

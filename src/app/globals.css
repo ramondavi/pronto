@@ -5278,7 +5278,7 @@ body:has(.dashboard-main--analysis) .dashboard-daily-quote { flex: 0 1 58%; widt
 .cataloging-term__controls .radio-choice { display: inline-flex; align-items: center; gap: 6px; min-width: 0; font-size: .75rem; }
 .cataloging-term__controls .radio-choice input { width: auto; margin: 0; }
 .cataloging-term__controls .text-action { font-size: .75rem; }
-.cataloging-term__fields { display: grid; grid-template-columns: minmax(165px, .9fr) minmax(220px, 1.25fr) minmax(190px, 1fr); gap: 14px; align-items: end; padding: 16px; }
+.cataloging-term__fields { display: grid; grid-template-columns: minmax(165px, .9fr) minmax(220px, 1.25fr) minmax(190px, 1fr); gap: 14px; align-items: start; padding: 16px; }
 .cataloging-term__fields label { min-width: 0; }
 .cataloging-term__fields :is(input, select) { box-sizing: border-box; min-width: 0; }
 .assisted-cataloging :is(#cataloging-people, #cataloging-terms) > .button { justify-self: start; }
@@ -7296,3 +7296,15 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .authority-import-preview li span { display: block; color: var(--muted); font-size: .875rem; }
 .authority-import-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 20rem; overflow: auto; font-size: .8rem; }
 @media (max-width: 820px) { .authority-import-preview__inputs, .authority-import-preview__sections { grid-template-columns: minmax(0, 1fr); } }
+.subject-authority-field { min-width: 0; display: grid; align-content: start; gap: 8px; }
+.subject-authority-field__empty { display: grid; justify-items: start; gap: 8px; }
+.subject-authority-field .cataloging-autocomplete small { display: block; color: var(--muted); }
+.subject-authority-importer { display: grid; gap: 16px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
+
+.subject-authority-importer__confirmation { display: grid; gap: 12px; }
+.subject-authority-importer__confirmation > label:not(.checkbox-choice) { display: grid; gap: 8px; min-width: 0; }
+.subject-authority-importer .checkbox-choice { display: flex; gap: 8px; align-items: flex-start; }
+.subject-authority-importer .checkbox-choice input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 3px; }
+
+.subject-authority-dialog { width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; margin: auto; padding: 24px; }
+.subject-authority-dialog > h2 { margin-bottom: 16px; padding-right: 42px; }

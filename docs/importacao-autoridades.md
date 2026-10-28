@@ -1,0 +1,17 @@
+# Importação de autoridades de assuntos
+
+Preparada em 27/10/2026. Regra: Documento-Mestre §9.1. Ativação remota ainda pendente de autorização.
+
+Na análise, digitar ou colar um termo consulta o catálogo completo e as variantes. A ação de importar aparece somente após resposta sem resultados; não aparece com campo vazio, busca pendente, falha ou sugestões. O cadastro manual com fonte continua disponível. Importar requer arquivo/registro completo e revisão profissional; colar somente o nome não consulta a fonte externa.
+
+Na Administração a ação permanece disponível. O bibliotecário confere fonte, identificador, português, equivalente opcional, notas e alertas. Fonte e identificador identificam a autoridade; rótulo igual exige confirmação explícita de correspondência ao cadastro existente. Não se mesclam registros apenas pelo texto. Reimportação idêntica reutiliza a identidade; versão diferente fica bloqueada para revisão, sem sobrescrita automática. Autoridade e variantes acompanham o destino de mesclagens explícitas do catálogo. Importações de registros identificados como obsoletos são bloqueadas na interface.
+
+Registro lido, componentes, idiomas, variantes, relações, correspondências, notas, citações e conteúdo não reconhecido ficam preservados no JSON; variantes são pesquisáveis separadamente. JSON-LD guarda também o grafo/contexto recebido, sem resolver recursos externos. Relações sem destino ficam pendentes, sem criar ou vincular termos por texto. Não infere traduções, vigência ou autorização geral de subdivisões. Os limites e formatos da conferência continuam válidos. Não oferece atualização automática de versões nem navegação completa da hierarquia nesta entrega.
+
+Migração `202610280001_subject_authority_import.sql`: cria duas tabelas auxiliares e duas funções e amplia o salvamento existente para recusar variantes como novos assuntos. Não altera assuntos existentes, vínculos de protocolos, snapshots ou arquivos. Leitura por RLS somente à equipe ativa, sem escrita direta; importação administrativa exige permissão de gestão, e a análise exige atendimento próprio aberto e ainda não homologado. Operações são auditadas. Excluir explicitamente um assunto sem uso remove seus registros importados; cadastros usados continuam protegidos pelo histórico existente.
+
+A migração foi aplicada apenas ao ambiente local sintético. Aplicação à prévia requer confirmação explícita; produção preservada. Enquanto a função de busca não estiver habilitada, a tela conserva sugestões iniciais e preenchimento manual e informa a indisponibilidade da busca completa, sem oferecer importação como se o assunto não existisse.
+
+Validação local: 179 testes da aplicação, tipos/lint/build e 347 verificações de banco (39 próprias desta ampliação). Cobertura: acesso público/estudante/bloqueado/inativo, propriedade do atendimento, escrita direta recusada, identidade/reimportação, conflito de versões e de texto, normalização, variantes após mesclagem, exclusão sem uso e preservação integral dos vínculos e textos históricos. A interface foi ensaiada com autoridade fictícia no atendimento de um bibliotecário fictício; nenhum registro real foi importado.
+
+O salvamento automático também recusa criar um novo assunto cujo texto seja uma variante reconhecida de outro termo. A tela orienta a selecionar o termo preferido; nenhuma substituição é feita silenciosamente. O rascunho continua preservado. A nova migração amplia a função de salvamento existente mantendo as demais validações e verificando o responsável antes de consultar variantes.
