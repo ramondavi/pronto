@@ -15,3 +15,11 @@ A migração foi aplicada à prévia cfntochwiztdcawbaedx em 28/10/2026, após a
 Validação local: 179 testes da aplicação, tipos/lint/build e 347 verificações de banco (39 próprias desta ampliação). Cobertura: acesso público/estudante/bloqueado/inativo, propriedade do atendimento, escrita direta recusada, identidade/reimportação, conflito de versões e de texto, normalização, variantes após mesclagem, exclusão sem uso e preservação integral dos vínculos e textos históricos. A interface foi ensaiada com autoridade fictícia no atendimento de um bibliotecário fictício; nenhum registro real foi importado.
 
 O salvamento automático também recusa criar um novo assunto cujo texto seja uma variante reconhecida de outro termo. A tela orienta a selecionar o termo preferido; nenhuma substituição é feita silenciosamente. O rascunho continua preservado. A nova migração amplia a função de salvamento existente mantendo as demais validações e verificando o responsável antes de consultar variantes.
+
+## Cadastro manual estruturado — preparação de 28/10/2026
+
+O cadastro manual passou a ter origem, cabeçalho com subdivisões tipadas/ordenadas, variantes, nota e revisão. Identificador externo é opcional; o UUID interno não é apresentado como código da fonte. A fonte continua sendo a declaração de consulta profissional. O modelo não fabrica MARC nem autoriza automaticamente combinações.
+
+Migração nova 202610280002 preparada e ainda não aplicada: acrescenta a origem às autoridades e permite identificador externo ausente apenas nos registros manuais. A função administrativa grava tudo numa transação, preserva dados existentes, exige vínculo explícito em duplicatas e registra auditoria. Variantes usam a estrutura existente para busca e proteção contra duplicatas. A leitura continua protegida pela RLS existente; não há escrita direta nem novos acessos públicos. A interface mantém a gravação explicitamente desabilitada até a ativação autorizada; não faz fallback que descarte a estrutura.
+
+Propostas locais estão desabilitadas na interface enquanto se define se devem aguardar revisão ou permitir uso após confirmação. A migração preparada conserva propostas locais inativas; isso ainda não constitui decisão aplicada. Esta etapa foi implementada sem testes, validações, navegação ou capturas, por solicitação do responsável.

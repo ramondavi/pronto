@@ -19,7 +19,7 @@ function SourceMark({ source }: { source: AuthoritySource }) {
   {item.badge && <span className="authority-source-mark__badge" aria-hidden="true">{item.badge}</span>}
  </span>;
 }
-export function AuthoritySourceSelect({ value, disabled, onChange }: { value: AuthoritySource; disabled?: boolean; onChange: (source: AuthoritySource) => void }) {
+export function AuthoritySourceSelect({ value, disabled, onChange }: { value: AuthoritySource | ""; disabled?: boolean; onChange: (source: AuthoritySource) => void }) {
  const id = useId();
  return <fieldset className="authority-source-options"><legend className="catalogue-field-label"><AppIcon name="globe" />Fonte do registro</legend><div className="authority-source-options__grid">{(Object.keys(authoritySources) as AuthoritySource[]).map(source => <div className={`authority-source-options__card${value === source ? " is-selected" : ""}`} key={source}><label className="authority-source-options__choice" htmlFor={`${id}-${source}`}><input id={`${id}-${source}`} type="radio" name={`${id}-source`} value={source} checked={value === source} disabled={disabled} onChange={() => onChange(source)} aria-label={authoritySources[source]} /><SourceMark source={source} /></label><a className="authority-source-options__external" href={presentation[source].href} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${authoritySources[source]} em nova aba`} title={`Abrir ${authoritySources[source]} em nova aba`}><AppIcon name="external" /></a></div>)}</div><p className="field-help">Selecione um logo. Somente o ícone externo abre o site em nova aba.</p></fieldset>;
 }

@@ -7546,3 +7546,24 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .subject-authority-importer .button--primary:disabled, .subject-authority-importer .button--primary:disabled:hover { color: var(--text-muted); background: var(--surface); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; opacity: 1; }
 .catalogue-workflow label.authority-review__acknowledgment { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; font-size: .8125rem; line-height: 1.5; }
 .authority-review__acknowledgment input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--institutional); }
+
+.manual-authority { display:grid; gap:20px; padding:20px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
+.manual-authority__fields,.manual-authority__parts { display:grid; gap:16px; min-width:0; }
+.manual-authority__fields > label { display:grid; gap:8px; }
+.manual-authority__part { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:12px; padding:16px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-raised); }
+.manual-authority__part > .eyebrow,.manual-authority__part > .catalogue-inline-actions { grid-column:1/-1; }
+.manual-authority__variant { display:flex; gap:12px; align-items:flex-end; }
+.manual-authority__variant > label { flex:1; min-width:0; }
+.manual-authority__preview { display:grid; gap:8px; padding:16px; border:1px solid var(--institutional); border-radius:var(--radius); background:var(--institutional-soft); overflow-wrap:anywhere; }
+.manual-authority__preview p { margin:0; }
+.manual-authority__review { display:grid; gap:10px; margin:0; padding:0; }
+.manual-authority__review > div { display:grid; grid-template-columns:minmax(120px,1fr) minmax(0,3fr); gap:12px; padding:12px; border:1px solid var(--line); border-radius:var(--radius-sm); }
+.manual-authority__review dt { font-size:.8125rem; color:var(--text-muted); }
+.manual-authority__review dd { margin:0; font-size:.875rem; overflow-wrap:anywhere; }
+.catalogue-workflow .manual-authority__fields label.checkbox-choice { display:flex; align-items:flex-start; gap:10px; line-height:1.6; }
+.manual-authority .checkbox-choice input { flex:0 0 18px; width:18px; height:18px; margin-top:3px; }
+.manual-authority .button:disabled,.manual-authority .button:disabled:hover { color:var(--text-muted); background:var(--surface); border-color:var(--line); box-shadow:none; transform:none; cursor:not-allowed; opacity:1; }
+.manual-authority-details { display:grid; gap:12px; margin-top:12px; }
+.manual-authority-details > div,.manual-authority-details article { display:grid; gap:10px; min-width:0; }
+.manual-authority-details article { padding:14px; border:1px solid var(--line); border-radius:var(--radius); }
+@media(max-width:620px) { .manual-authority { padding:14px; } .manual-authority__part,.manual-authority__review > div { grid-template-columns:minmax(0,1fr); } .manual-authority__variant { align-items:stretch; flex-direction:column; } }

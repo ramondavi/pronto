@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ManualSubjectAuthorityForm } from "./manual-subject-authority-form";
+import { SubjectAuthorityDetails } from "./subject-authority-details";
 import { SubjectAuthorityImporter } from "./subject-authority-importer";
 import { CatalogueMergeDialog } from "./catalogue-merge-dialog";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +29,6 @@ function Sources({ sources }: { sources: string[] }) {
 export function ControlledTermsAdmin() {
   const [creating, setCreating] = useState(false);
   const [previewing, setPreviewing] = useState(false);
-  const [createSource, setCreateSource] = useState("");
   const [merging, setMerging] = useState<Term | null>(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
@@ -82,20 +83,6 @@ export function ControlledTermsAdmin() {
   function refresh() { setRevision((value) => value + 1); }
   function chooseReview(value: string) { setReview(value); setOffset(0); }
 
-  async function create(form: FormData) {
-    setBusy("creating"); setError("");
-    const supabase = createClient();
-    const { data, error: failure } = await supabase.rpc("admin_create_controlled_term", {
-      label_pt: String(form.get("labelPt") ?? ""), label_en: String(form.get("labelEn") ?? ""), source_code_value: createSource,
-    });
-    setBusy(null);
-    if (failure || !data) {
-      const reason = failure?.code === "23505" ? "Já existe um cadastro com esse termo. Procure o assunto existente, inclusive entre os mesclados." : "Não foi possível cadastrar. Confira o termo, a fonte e se esta opção já está disponível na prévia.";
-      setError(reason); showPanelChangeError("Assunto não cadastrado", reason); return false;
-    }
-    setCreating(false); setCreateSource(""); setQuery(""); setStatus("active"); setReview("all"); setOffset(0); refresh();
-    showPanelChange("Assunto cadastrado"); return true;
-  }
 
   async function persist(term: Term, labelPt: string, labelEn: string, enabled: boolean) {
     if (labelPt === term.preferred_label_pt && labelEn === (term.preferred_label_en ?? "") && enabled === term.active) { setEditing(null); return true; }
@@ -142,16 +129,10 @@ export function ControlledTermsAdmin() {
   }
 
   return <section className="panel admin-section controlled-terms-admin">
-    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Cadastre assuntos, revise os termos da catalogação e reúna duplicatas preservando as fichas anteriores.</p></div><button type="button" className="button button--primary button--small" aria-expanded={creating} onClick={() => { setCreating(!creating); setPreviewing(false); setCreateSource(""); }}><AppIcon name={creating ? "close" : "tag"} />{creating ? "Fechar cadastro" : "Cadastrar manualmente"}</button><button type="button" className="button button--secondary button--small" aria-expanded={previewing} onClick={() => { setPreviewing(!previewing); setCreating(false); }}><AppIcon name={previewing ? "close" : "upload"} />{previewing ? "Fechar importação" : "Importar autoridade"}</button></header>
+    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Cadastre assuntos, revise os termos da catalogação e reúna duplicatas preservando as fichas anteriores.</p></div><button type="button" className="button button--primary button--small" aria-expanded={creating} onClick={() => { setCreating(!creating); setPreviewing(false); }}><AppIcon name={creating ? "close" : "tag"} />{creating ? "Fechar cadastro" : "Cadastrar manualmente"}</button><button type="button" className="button button--secondary button--small" aria-expanded={previewing} onClick={() => { setPreviewing(!previewing); setCreating(false); }}><AppIcon name={previewing ? "close" : "upload"} />{previewing ? "Fechar importação" : "Importar autoridade"}</button></header>
 
     {previewing && <SubjectAuthorityImporter source="bn" onClose={() => setPreviewing(false)} onImported={() => setRevision(value => value + 1)} />}
-    {creating && <SavedForm className="controlled-terms-admin__edit catalogue-create" onSave={create} initiallySaved={false}>
-      <div className="catalogue-form-heading"><AppIcon name="tag" /><div><h3>Cadastro manual de assunto</h3><p>Escolha a fonte e registre o termo preferido. O equivalente em inglês é opcional.</p></div></div>
-      <label><span className="catalogue-field-label"><AppIcon name="book" />Fonte consultada</span><select name="source" required value={createSource} onChange={(event) => setCreateSource(event.target.value)}><option value="">Escolha a fonte antes de preencher</option>{Object.entries(sourceNames).map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
-      <label><span className="catalogue-field-label"><AppIcon name="tag" />Termo preferido em português</span><input name="labelPt" required minLength={2} maxLength={120} disabled={!createSource} /></label>
-      <label><span className="catalogue-field-label"><AppIcon name="globe" />Equivalente em inglês</span><input name="labelEn" maxLength={120} disabled={!createSource} /><small>Opcional, quando confirmado na fonte</small></label>
-      <div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={!createSource || busy === "creating"}>Cadastrar manualmente</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setCreating(false)}><AppIcon name="close" />Cancelar</button></div>
-    </SavedForm>}
+    {creating && <ManualSubjectAuthorityForm onClose={() => setCreating(false)} onSaved={() => { setCreating(false); setQuery(""); setStatus("all"); setReview("all"); setOffset(0); refresh(); showPanelChange("Autoridade manual cadastrada"); }} />}
     <div className="controlled-terms-admin__overview" aria-label="Resumo dos assuntos">
       <button type="button" className={status === "all" && review === "all" ? "is-selected" : ""} onClick={() => { setStatus("all"); chooseReview("all"); }}><AppIcon name="book" /><span><strong>{overview?.total_count ?? "—"}</strong> cadastrados</span></button>
       <button type="button" className={status === "active" && review === "all" ? "is-selected" : ""} onClick={() => { setStatus("active"); chooseReview("all"); }}><AppIcon name="check" /><span><strong>{overview?.active_count ?? "—"}</strong> ativos</span></button>
@@ -169,8 +150,8 @@ export function ControlledTermsAdmin() {
     {error && <div className="notice notice--error controlled-terms-admin__error" role="alert"><span>{error}</span><button type="button" onClick={refresh}><AppIcon name="redo" />Tentar novamente</button></div>}
 
     <div className="controlled-terms-admin__list">{items.map((term) => <article className={`controlled-terms-admin__item${term.active ? "" : " is-inactive"}`} key={term.id}>
-      {editing === term.id ? <SavedForm className="controlled-terms-admin__edit" onSave={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label><span className="catalogue-field-label"><AppIcon name="tag" />Termo preferido em português</span><input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label><span className="catalogue-field-label"><AppIcon name="globe" />Equivalente em inglês</span><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /><small>Opcional, quando confirmado na fonte</small></label></div><Sources sources={term.sources} /><div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}><AppIcon name="close" />Cancelar</button></div></SavedForm> : <>
-        <div className="controlled-terms-admin__main"><div className="controlled-terms-admin__title"><strong>{term.preferred_label_pt}</strong><span className={`controlled-terms-admin__state${term.active ? " is-active" : ""}`}>{term.active ? "Ativo" : "Inativo"}</span></div><p className="controlled-terms-admin__english"><span>EN</span>{term.preferred_label_en ?? "Sem equivalente em inglês"}</p><Sources sources={term.sources} /></div>
+      {editing === term.id ? <SavedForm className="controlled-terms-admin__edit" onSave={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label><span className="catalogue-field-label"><AppIcon name="tag" />Termo preferido em português</span><input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label><span className="catalogue-field-label"><AppIcon name="globe" />Equivalente em inglês</span><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /><small>Opcional, quando confirmado na fonte</small></label></div><Sources sources={term.sources} /><SubjectAuthorityDetails termId={term.id} /><div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}><AppIcon name="close" />Cancelar</button></div></SavedForm> : <>
+        <div className="controlled-terms-admin__main"><div className="controlled-terms-admin__title"><strong>{term.preferred_label_pt}</strong><span className={`controlled-terms-admin__state${term.active ? " is-active" : ""}`}>{term.active ? "Ativo" : "Inativo"}</span></div><p className="controlled-terms-admin__english"><span>EN</span>{term.preferred_label_en ?? "Sem equivalente em inglês"}</p><Sources sources={term.sources} /><SubjectAuthorityDetails termId={term.id} /></div>
         <div className="controlled-terms-admin__side"><div className="controlled-terms-admin__usage"><strong>{term.usage_count}</strong><span>{term.usage_count === 1 ? "protocolo" : "protocolos"}</span></div><div className="controlled-terms-admin__actions">{!term.merged_into_id && <><button type="button" className="button button--secondary button--small" onClick={() => { setEditing(term.id); setExpanded(null); }}><AppIcon name="edit" /> Editar</button><button type="button" className="button button--secondary button--small" disabled={busy === term.id} onClick={() => persist(term, term.preferred_label_pt, term.preferred_label_en ?? "", !term.active)}><AppIcon name={term.active ? "eyeOff" : "check"} />{term.active ? "Desativar" : "Ativar"}</button><button type="button" className="button button--secondary button--small" onClick={() => setMerging(term)}><AppIcon name="hierarchy" />Mesclar</button>{term.usage_count === 0 && <button type="button" className="button button--secondary button--small controlled-terms-admin__delete" onClick={() => setDeleting(term)}><AppIcon name="close" />Excluir</button>}</>}{term.merged_into_id && <span>Mesclado em {term.merged_into_label}</span>}</div></div>
         {term.usage_count > 0 && <div className="controlled-terms-admin__details"><button type="button" aria-expanded={expanded === term.id} onClick={() => showUsage(term)}>{expanded === term.id ? "Ocultar protocolos" : "Ver protocolos que usam este assunto"}<span aria-hidden="true">{expanded === term.id ? "↑" : "↓"}</span></button>{expanded === term.id && <div className="controlled-terms-admin__protocols">{loadingUsage === term.id ? <p>Carregando protocolos…</p> : (usage[term.id] ?? []).map((entry) => <Link key={entry.request_id} href={`/painel/atendimento/${entry.request_id}`}><strong>{entry.protocol}</strong><span>{statusNames[entry.request_status] ?? entry.request_status}{entry.is_primary ? " · Assunto principal" : ""}{entry.source_code ? ` · ${sourceNames[entry.source_code] ?? entry.source_code}` : " · Fonte não registrada"}</span><AppIcon name="arrowRight" /></Link>)}{term.usage_count > 30 && <p>Exibindo os 30 protocolos mais recentes.</p>}</div>}</div>}
       </>}
