@@ -74,6 +74,7 @@ begin
   then raise exception 'variant_as_new_subject'; end if;
  select * into term from public.controlled_terms where normalized_label_pt=lower(clean_pt) for update;
  if found then
+  if status_value='local_proposal' then raise exception 'local_proposal_existing_term'; end if;
   if existing_term_id is distinct from term.id then raise exception 'authority_label_conflict'; end if;
   if not term.active or term.merged_into_id is not null then raise exception 'active_merge_target_required'; end if;
   if clean_en is not null and term.preferred_label_en is not null and lower(clean_en)<>lower(term.preferred_label_en) then raise exception 'controlled_term_english_conflict'; end if;
