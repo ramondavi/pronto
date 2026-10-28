@@ -6,6 +6,13 @@ import { CatalogueSelect } from "./catalogue-select";
 import { AuthoritySourceSelect } from "./authority-source-select";
 import { authorityInputLimit, authoritySources, readAuthorityPreview, type AuthorityPreview, type AuthoritySource, type AuthorityValue } from "@/lib/authority-preview";
 
+function reviewIssue(warning: string) {
+ if (/idioma|português/i.test(warning)) return { title: "Forma e idioma a confirmar", action: "Confira na fonte a forma autorizada em português." };
+ if (/obsoleto|excluído|descontinuada/i.test(warning)) return { title: "Vigência da autoridade", action: "Consulte a fonte e escolha um registro vigente para novos usos." };
+ if (/líder|008|MARC completo/i.test(warning)) return { title: "Registro incompleto para conferência", action: "Compare com o registro completo disponível na fonte." };
+ return { title: "Informação pendente de verificação", action: "Confira esta informação na fonte antes de confirmar a importação." };
+}
+
 type Props = { initialSource?: AuthoritySource; disabled?: boolean; onRecordChange?: (record: AuthorityPreview | null) => void; step?: number; onStepChange?: (step: number) => void; onContinue?: () => void };
 export function AuthorityImportPreview({ initialSource = "bn", disabled = false, onRecordChange, step, onStepChange, onContinue }: Props = {}) {
  const inputId = useId();
@@ -47,10 +54,9 @@ export function AuthorityImportPreview({ initialSource = "bn", disabled = false,
   {busy && <p role="status">Lendo o registro…</p>}{error && <p role="alert" className="notice notice--error">{error}</p>}
   {currentStep === 3 && record && <section className="authority-import-preview__result" aria-label="Resultado da conferência" aria-live="polite"><h3 className="authority-import-wizard__title"><AppIcon name="review" />Resultado da leitura</h3>
    <label><span className="catalogue-field-label"><AppIcon name="tag" />Registro conferido ({records.length})</span><CatalogueSelect value={selected} onChange={e => { const index = Number(e.target.value); setSelected(index); onRecordChange?.(records[index]); }}>{records.map((r, i) => <option key={i} value={i}>{i + 1}. {r.title}</option>)}</CatalogueSelect></label>
-   <h4>{record.title}</h4><p>{record.format} · {record.identifier ?? "Identificador não informado"}</p>
-   {record.geography && <p>Subdivisão geográfica: {record.geography}</p>}
-   {record.modified && <p>Data informada na origem: {record.modified}</p>}
-   {!!record.warnings.length && <div className="authority-import-preview__warnings"><h4 className="authority-import-wizard__title"><AppIcon name="help" />Pontos para conferir</h4><ul>{record.warnings.map(w => <li key={w}>{w}</li>)}</ul></div>}
+   <div className="authority-review__record"><span className="authority-review__record-icon"><AppIcon name="tag" /></span><div><span className="eyebrow">Autoridade lida</span><h4>{record.title}</h4><dl><div><dt>Formato</dt><dd>{record.format}</dd></div><div><dt>Identificador</dt><dd>{record.identifier ?? "Não informado"}</dd></div></dl></div></div>
+   {(record.geography || record.modified) && <dl className="authority-review__metadata">{record.geography && <div><dt><AppIcon name="globe" />Subdivisão geográfica</dt><dd>{record.geography}</dd></div>}{record.modified && <div><dt><AppIcon name="calendar" />Data informada na origem</dt><dd>{record.modified}</dd></div>}</dl>}
+   {!!record.warnings.length && <section className="authority-review__issues" aria-label="Pendências de verificação"><header><span className="authority-review__issue-icon"><AppIcon name="help" /></span><div><h4>Pendências de verificação ({record.warnings.length})</h4><p>Estes pontos precisam ser conferidos na fonte antes da confirmação. A leitura do arquivo não comprova a qualidade ou a vigência da autoridade.</p></div></header><ul>{record.warnings.map((warning,index) => { const issue=reviewIssue(warning); return <li key={`${index}-${warning}`}><span className="authority-review__issue-number">{index+1}</span><div><strong>{issue.title}</strong><p>{warning}</p><small><AppIcon name="search" />{issue.action}</small></div></li>; })}</ul></section>}
    <div className="authority-import-preview__sections">{sections.filter(([, values]) => values.length).map(([label, values]) => <details key={label} open><summary>{label} ({values.length})</summary><ul>{values.map((v, i) => <li key={i}><strong>{v.value}</strong><span>{v.kind}{v.language ? ` · idioma: ${v.language}` : ""}{v.identifier ? ` · ${v.identifier}` : ""}</span></li>)}</ul></details>)}</div>
    <details><summary>Conteúdo lido do registro</summary><pre>{record.original}</pre></details>
   </section>}

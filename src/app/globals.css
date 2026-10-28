@@ -7437,25 +7437,6 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 .authority-import-preview__input-card > input[type=file] { display: none; }
 
-.authority-source-select { position: relative; display: grid; gap: 8px; min-width: 0; }
-.authority-source-select__control, .authority-source-select__row { display: flex; align-items: stretch; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--field); }
-.authority-source-select__trigger, .authority-source-select__option { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; min-height: 64px; padding: 10px 14px; border: 0; border-radius: inherit; color: var(--text); background: transparent; cursor: pointer; text-align: left; }
-.authority-source-select__trigger > svg { margin-left: auto; flex-shrink: 0; width: 18px; height: 18px; color: var(--institutional); }
-.authority-source-select__trigger:disabled { cursor: not-allowed; opacity: .6; }
-.authority-source-select__identity { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; min-width: 0; }
-.authority-source-select__identity img { width: 120px; height: 32px; object-fit: contain; padding: 3px 6px; border-radius: 4px; background: #fff; }
-.authority-source-select__identity small { color: var(--text-muted); font-size: .8125rem; }
-.authority-source-select__name { font-weight: 600; font-size: .875rem; }
-.authority-source-select__external { display: grid; place-items: center; flex: 0 0 48px; width: 48px; min-height: 48px; border-inline-start: 1px solid var(--line); border-start-end-radius: inherit; border-end-end-radius: inherit; color: var(--institutional); }
-.authority-source-select__external svg { width: 19px; height: 19px; }
-.authority-source-select__trigger:hover:not(:disabled), .authority-source-select__option:hover, .authority-source-select__external:hover { background: var(--institutional-soft); }
-.authority-source-select :is(button,a):focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
-.authority-source-select__choices { display: grid; gap: 4px; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); max-height: 380px; overflow-y: auto; }
-.authority-source-select__row { border-color: transparent; background: var(--surface); }
-.authority-source-select__row.is-selected { border-color: var(--institutional); background: var(--institutional-soft); }
-.authority-source-select__check { display: grid; place-items: center; flex: 0 0 20px; margin-left: auto; color: var(--institutional); }
-.authority-source-select__check svg { width: 18px; height: 18px; }
-
 /* Assistente de importação: uma tarefa por etapa, uma única entrada ativa. */
 .authority-import-wizard__steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; list-style: none; margin: 0; padding: 0; }
 .authority-import-wizard__steps li { display: flex; gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); min-width: 0; }
@@ -7481,8 +7462,63 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .authority-import-wizard__summary > svg { color: var(--institutional); flex: 0 0 24px; }
 .authority-import-wizard__summary > div { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
 .authority-import-wizard__summary span { color: var(--text-muted); font-size: .8125rem; }
-.authority-source-select__identity img.authority-source-select__logo--bn { width: 190px; height: 40px; background: #403c32; padding: 4px; }
-.authority-source-select__identity img.authority-source-select__logo--loc { width: 88px; height: 48px; padding: 2px 4px; }
 @media(max-width:620px) { .authority-import-wizard__steps { grid-template-columns: repeat(2,minmax(0,1fr)); } .authority-import-wizard__steps li { padding: 8px; gap: 6px; } .authority-import-wizard__methods { gap: 8px; } .authority-import-wizard__methods .button { padding-inline: 8px; font-size: .8125rem; } .authority-import-wizard .authority-import-preview__input-card { padding: 12px; } }
 
 .authority-import-wizard .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* Fonte: seleção única permanente, sem menu suspenso ou fundo nos logos. */
+.authority-source-options { display: grid; gap: 14px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.authority-source-options > legend { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; padding: 0; }
+.authority-source-options__grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.authority-source-options__card { display: flex; align-items: stretch; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.authority-source-options__card.is-selected { border-color: var(--institutional); background: var(--institutional-soft); box-shadow: inset 0 0 0 1px var(--institutional); }
+.catalogue-workflow .authority-source-options label.authority-source-options__choice { display: flex; flex: 1; align-items: center; justify-content: center; gap: 12px; min-width: 0; min-height: 104px; padding: 16px 12px; cursor: pointer; }
+.authority-source-options__choice input[type=radio] { flex: 0 0 18px; width: 18px; height: 18px; margin: 0; accent-color: var(--institutional); }
+.authority-source-options__choice:has(input:disabled) { opacity: .6; cursor: not-allowed; }
+.authority-source-options__choice:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: -4px; border-radius: inherit; }
+.authority-source-options__external { display: grid; place-items: center; flex: 0 0 38px; width: 38px; border-inline-start: 1px solid var(--line); color: var(--institutional); border-radius: 0 var(--radius) var(--radius) 0; }
+.authority-source-options__external svg { width: 18px; height: 18px; }
+.authority-source-options__external:hover { background: var(--institutional-soft); }
+.authority-source-options__external:focus-visible { outline: 2px solid var(--focus); outline-offset: -4px; }
+.authority-source-mark { position: relative; display: block; flex: 1; min-width: 0; max-width: 180px; height: 58px; color: var(--text); }
+.authority-source-mark__bn { display: block; width: 100%; height: 100%; overflow: visible; }
+.authority-source-mark__art { display: block; width: 100%; height: 100%; background: currentColor; mask-size: contain; mask-position: center; mask-repeat: no-repeat; -webkit-mask-size: contain; -webkit-mask-position: center; -webkit-mask-repeat: no-repeat; }
+.authority-source-mark--ufba .authority-source-mark__art, .authority-source-mark--pergamum .authority-source-mark__art { height: 40px; }
+.authority-source-mark__badge { position: absolute; bottom: 0; right: 0; padding: 2px 7px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .625rem; font-weight: 750; letter-spacing: .14em; color: var(--institutional); line-height: 1.2; }
+.authority-source-mark--loc { max-width: 84px; }
+/* A moldura recorta a rolagem interna e preserva os cantos em todas as etapas. */
+dialog.pronto-modal.subject-authority-dialog { box-sizing: border-box; max-height: calc(100dvh - 32px); border-radius: var(--radius); overflow: hidden; padding: 0; }
+dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-direction: column; }
+.subject-authority-dialog > .catalogue-modal__header { flex: 0 0 auto; position: relative; }
+.subject-authority-dialog > .subject-authority-importer { min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; flex: 1 1 auto; }
+.authority-review__record { display: flex; align-items: flex-start; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); min-width: 0; }
+.authority-review__record-icon { display: grid; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; border-radius: var(--radius-sm); color: var(--institutional); background: var(--institutional-soft); }
+.authority-review__record-icon svg { width: 22px; height: 22px; }
+.authority-review__record > div { display: grid; gap: 8px; min-width: 0; }
+.authority-review__record h4 { font-size: 1.125rem; overflow-wrap: anywhere; }
+.authority-review__record dl, .authority-review__metadata { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 0; }
+.authority-review__record dl > div, .authority-review__metadata > div { display: grid; gap: 4px; min-width: 0; }
+.authority-review__record dt, .authority-review__metadata dt { color: var(--text-muted); font-size: .75rem; font-weight: 600; }
+.authority-review__record dd, .authority-review__metadata dd { margin: 0; font-size: .8125rem; overflow-wrap: anywhere; }
+.authority-review__metadata { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
+.authority-review__metadata dt { display: flex; gap: 6px; align-items: center; }
+.authority-review__metadata dt svg { width: 16px; height: 16px; }
+.authority-review__issues { display: grid; gap: 16px; padding: 18px; border: 1px solid var(--line); border-inline-start: 4px solid var(--gold-dark); border-radius: var(--radius); background: var(--surface-raised); }
+.authority-review__issues > header { display: flex; gap: 12px; align-items: flex-start; }
+.authority-review__issue-icon { display: grid; place-items: center; flex: 0 0 24px; color: var(--gold-dark); }
+.authority-review__issue-icon svg { width: 24px; height: 24px; }
+.authority-review__issues > header p { margin-top: 6px; color: var(--text-muted); font-size: .8125rem; line-height: 1.6; }
+.authority-review__issues ul { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.authority-review__issues li { display: flex; gap: 12px; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-review__issue-number { display: grid; place-items: center; flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--institutional-soft); color: var(--institutional); font-size: .75rem; font-weight: 700; }
+.authority-review__issues li > div { display: grid; gap: 6px; min-width: 0; }
+.authority-review__issues li strong { font-size: .8125rem; }
+.authority-review__issues li p { margin: 0; font-size: .8125rem; line-height: 1.6; overflow-wrap: anywhere; }
+.authority-review__issues li small { display: flex; gap: 6px; align-items: flex-start; color: var(--text-muted); font-size: .75rem; line-height: 1.5; }
+.authority-review__issues li small svg { width: 15px; height: 15px; flex: 0 0 15px; margin-top: 2px; }
+.authority-import-preview__sections { align-items: start; }
+.authority-import-preview__sections details { min-width: 0; }
+.authority-import-preview__sections ul { display: grid; gap: 8px; list-style: none; padding: 0; margin-top: 12px; }
+.authority-import-preview__sections details li { display: grid; gap: 4px; margin: 0; padding: 12px; background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+@media(max-width:820px) { .authority-source-options__grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:620px) { .authority-source-options__grid { grid-template-columns: minmax(0,1fr); } dialog.pronto-modal.subject-authority-dialog { max-height: calc(100dvh - 24px); width: calc(100vw - 24px); } .authority-review__record dl, .authority-review__metadata { grid-template-columns: minmax(0,1fr); } .authority-review__issues { padding: 14px; } }
