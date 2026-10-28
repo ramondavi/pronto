@@ -35,7 +35,7 @@ export function CatalogingCardHomologation({ requestId, snapshot, homologatedAt,
       const bold = await document.embedFont(StandardFonts.HelveticaBold);
       drawCatalogingCard(page, snapshot, { regular, bold });
       const { error: homologationError } = await createClient().rpc("homologate_cataloging_card", { target_request_id: requestId });
-      if (homologationError) throw homologationError;
+      if (homologationError) { if (homologationError.message.includes("local_subject_proposal_pending")) throw new Error("Há assunto local aguardando revisão e ativação. A ficha ainda não pode ser homologada."); throw homologationError; }
       setConfirming(false);
       showPanelChange("Ficha homologada!", undefined, { celebration: true, guidance: nadaConstaApproved ? "A ficha será liberada ao estudante." : "A liberação aguardará a aprovação do Nada Consta." });
       router.refresh();

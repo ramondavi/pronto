@@ -7567,3 +7567,9 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .manual-authority-details > div,.manual-authority-details article { display:grid; gap:10px; min-width:0; }
 .manual-authority-details article { padding:14px; border:1px solid var(--line); border-radius:var(--radius); }
 @media(max-width:620px) { .manual-authority { padding:14px; } .manual-authority__part,.manual-authority__review > div { grid-template-columns:minmax(0,1fr); } .manual-authority__variant { align-items:stretch; flex-direction:column; } }
+
+.subject-authority-field__pending,.subject-proposals-notice { display:flex; align-items:flex-start; flex-wrap:wrap; gap:10px; padding:12px; border:1px solid var(--line); border-inline-start:3px solid var(--gold-dark); border-radius:var(--radius); background:var(--surface-raised); }
+.subject-authority-field__pending > svg,.subject-proposals-notice > svg { flex:0 0 20px; width:20px; height:20px; color:var(--gold-dark); }
+.subject-authority-field__pending > div,.subject-proposals-notice > div { flex:1; min-width:160px; }
+.subject-authority-field__pending p,.subject-proposals-notice p { margin:4px 0 0; font-size:.8125rem; line-height:1.5; }
+.cataloging-card__pending-subject { display:inline-block; margin-inline:4px; padding:1px 4px; border:1px solid var(--line); border-radius:var(--radius-sm); color:var(--institutional); background:var(--institutional-soft); font-size:.65rem; font-family:var(--font-body, sans-serif); }

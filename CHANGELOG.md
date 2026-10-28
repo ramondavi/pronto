@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- Prepara propostas locais vinculadas ao rascunho do atendimento, com marcação de revisão na prévia e bloqueio de homologação/PDF até ativação. A migração ampliada continua pendente de autorização para a prévia.
+
 - Define propostas locais de assuntos como inativas até revisão e ativação explícita, sem autorização externa presumida; ativação da gravação estruturada na prévia ainda depende de migração autorizada.
 
 - Prepara cadastro manual estruturado de autoridades com origem, subdivisões, variantes, nota de uso e revisão de duplicatas; estrutura/origem consultáveis no catálogo. A gravação depende de migração remota ainda não autorizada nem aplicada.

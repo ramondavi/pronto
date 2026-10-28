@@ -7,7 +7,7 @@ import { ModalCloseButton } from "./modal-close-button";
 import { createClient } from "@/lib/supabase/client";
 import { authorityImportError, normalizeSubjectLabel, type SubjectCatalogueMatch } from "@/lib/subject-authority";
 import type { AuthorityPreview, AuthoritySource } from "@/lib/authority-preview";
-export type ImportedSubject = SubjectCatalogueMatch & { source_code: string; reused: boolean };
+export type ImportedSubject = SubjectCatalogueMatch & { source_code: string; reused: boolean; active?:boolean };
 export function SubjectAuthorityImporter({ source, requestId, onImported, onClose }: { source: AuthoritySource; requestId?: string; onImported?: (term: ImportedSubject) => void; onClose: () => void }) {
  const content = useRef<HTMLElement>(null);
  const dialog = useRef<HTMLDialogElement>(null); const titleId = useId(); const [mounted, setMounted] = useState(false);
