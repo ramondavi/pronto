@@ -11,3 +11,6 @@ export function authorityImportError(code: string): string {
  return "Não foi possível confirmar a importação. Confira a conexão e tente novamente. Se o problema persistir, avise a administração.";
 }
 export const normalizeSubjectLabel = (value: string) => value.replace(/[\p{Cc}<>]/gu, "").replace(/\s+/gu, " ").replace(/^[ .;,:]+|[ .;,:]+$/g, "");
+
+// Ativar somente após autorização e aplicação da migração 202610280002 na prévia.
+export const manualSubjectStorageEnabled = false;

@@ -9,6 +9,7 @@ import { dismissPanelChange, showPanelChange, showPanelChangeError } from "@/com
 import { createPortal } from "react-dom";
 import { PDFDocument, StandardFonts, degrees } from "pdf-lib";
 import { createClient } from "@/lib/supabase/client";
+import { manualSubjectStorageEnabled } from "@/lib/subject-authority";
 import { CatalogingCardPreview, type CardDirectEdit } from "@/components/cataloging-card-preview";
 import { CatalogingCardHomologation } from "@/components/cataloging-card-homologation";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
@@ -139,7 +140,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   const pendingSubjects = catalogingTerms.filter(term=>term.pendingReview);
   const proposalSignature = pendingSubjects.map(term=>term.termId).join("|");
   useEffect(()=>{
-    if(!ready || !editable || homologatedAt)return;
+    if(!manualSubjectStorageEnabled || !ready || !editable || homologatedAt)return;
     let live=true;
     const refreshProposals=async()=>{
       const result=await createClient().rpc("get_request_subject_proposals",{target_request_id:requestId});

@@ -5,12 +5,10 @@ import { AppIcon } from "./app-icon";
 import { CatalogueSelect } from "./catalogue-select";
 import { AuthoritySourceSelect } from "./authority-source-select";
 import { createClient } from "@/lib/supabase/client";
-import { normalizeSubjectLabel, type SubjectCatalogueMatch } from "@/lib/subject-authority";
+import { manualSubjectStorageEnabled as manualStorageEnabled, normalizeSubjectLabel, type SubjectCatalogueMatch } from "@/lib/subject-authority";
 import type { AuthoritySource } from "@/lib/authority-preview";
 
 type Part = { id: string; kind: string; value: string };
-// Ativação somente após autorização e aplicação da migração na prévia.
-const manualStorageEnabled = false;
 const partKinds = ["Subdivisão temática", "Subdivisão geográfica", "Subdivisão cronológica", "Subdivisão de forma"];
 const normalized = (value: string) => normalizeSubjectLabel(value).toLocaleLowerCase("pt-BR");
 export type ManualSubjectResult = { id:string; preferred_label_pt:string; preferred_label_en:string|null; source_code:string; active:boolean };
