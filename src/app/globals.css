@@ -7542,3 +7542,7 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .backend-help__panel .help-search__suggestions .search-empty-state ul { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .backend-help__panel .help-search__suggestions .search-empty-state li { display: flex; align-items: flex-start; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; font-size: .8125rem; line-height: 1.55; overflow-wrap: anywhere; }
 .backend-help__panel .help-search__suggestions .search-empty-state li svg { flex: 0 0 15px; width: 15px; height: 15px; margin-top: 3px; }
+
+.subject-authority-importer .button--primary:disabled, .subject-authority-importer .button--primary:disabled:hover { color: var(--text-muted); background: var(--surface); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; opacity: 1; }
+.catalogue-workflow label.authority-review__acknowledgment { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; font-size: .8125rem; line-height: 1.5; }
+.authority-review__acknowledgment input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--institutional); }

@@ -13,8 +13,8 @@ function reviewIssue(warning: string) {
  return { title: "Informação pendente de verificação", action: "Confira esta informação na fonte antes de confirmar a importação." };
 }
 
-type Props = { initialSource?: AuthoritySource; disabled?: boolean; onRecordChange?: (record: AuthorityPreview | null) => void; step?: number; onStepChange?: (step: number) => void; onContinue?: () => void };
-export function AuthorityImportPreview({ initialSource = "bn", disabled = false, onRecordChange, step, onStepChange, onContinue }: Props = {}) {
+type Props = { initialSource?: AuthoritySource; disabled?: boolean; onRecordChange?: (record: AuthorityPreview | null) => void; step?: number; onStepChange?: (step: number) => void; onContinue?: () => void; onReviewChange?: (complete: boolean) => void };
+export function AuthorityImportPreview({ initialSource = "bn", disabled = false, onRecordChange, step, onStepChange, onContinue, onReviewChange }: Props = {}) {
  const inputId = useId();
  const fileInput = useRef<HTMLInputElement>(null);
  const [localStep, setLocalStep] = useState(1);
@@ -26,10 +26,11 @@ export function AuthorityImportPreview({ initialSource = "bn", disabled = false,
  const [text, setText] = useState("");
  const [records, setRecords] = useState<AuthorityPreview[]>([]);
  const [selected, setSelected] = useState(0);
+ const [reviewed, setReviewed] = useState<Set<number>>(new Set());
  const [error, setError] = useState("");
  const [busy, setBusy] = useState(false);
  const locked = busy || disabled;
- const reset = () => { setRecords([]); setSelected(0); setError(""); onRecordChange?.(null); };
+ const reset = () => { setRecords([]); setSelected(0); setError(""); setReviewed(new Set()); onRecordChange?.(null); onReviewChange?.(false); };
  const clear = () => { setText(""); setFile(null); reset(); go(2); };
  const ready = method === "text" ? !!text.trim() : !!file;
  async function read() {
@@ -37,11 +38,12 @@ export function AuthorityImportPreview({ initialSource = "bn", disabled = false,
   reset(); setBusy(true);
   try {
    const input = method === "text" ? text : new Uint8Array(await file!.arrayBuffer());
-   const next = readAuthorityPreview(input, source); setRecords(next); onRecordChange?.(next[0] ?? null);
+   const next = readAuthorityPreview(input, source); setRecords(next); onRecordChange?.(next[0] ?? null); onReviewChange?.(!!next[0] && next[0].warnings.length === 0);
   } catch (e) { setError(e instanceof Error ? e.message : "Não foi possível ler o registro."); }
   finally { setBusy(false); }
  }
  const record = records[selected];
+ const reviewComplete = !!record && reviewed.size === record.warnings.length;
  const sections: [string, AuthorityValue[]][] = record ? [["Componentes do cabeçalho", record.components], ["Termos preferidos e idiomas", record.labels], ["Formas variantes", record.variants], ["Relações entre assuntos", record.relations], ["Correspondências externas", record.mappings], ["Notas de uso", record.notes], ["Fontes citadas", record.citations]] : [];
  if (currentStep === 4) return null;
  return <div className="authority-import-preview authority-import-wizard">
@@ -53,13 +55,13 @@ export function AuthorityImportPreview({ initialSource = "bn", disabled = false,
   {currentStep === 3 && <section className="authority-import-wizard__stage"><header><h3 className="authority-import-wizard__title" data-authority-step-heading tabIndex={-1}><AppIcon name="search" />Confira o registro</h3><p>A mesma conferência é usada para texto e arquivo. Ela organiza os dados para sua revisão, sem cadastrar o assunto.</p></header><div className="authority-import-wizard__summary"><AppIcon name={method === "file" ? "upload" : "copy"} /><div><strong>{method === "file" ? file?.name : "Registro fornecido em texto"}</strong><span>{authoritySources[source]}</span></div></div><div className="authority-import-wizard__read-actions"><button type="button" className="button button--primary button--small" disabled={locked || !ready} onClick={() => void read()}><AppIcon name="search" />{busy ? "Conferindo…" : record ? "Conferir novamente" : "Conferir registro"}</button><button type="button" className="button button--secondary button--small" disabled={locked} onClick={clear}><AppIcon name="close" />Limpar leitura</button></div><p className="field-help">Limpar leitura remove o texto, o arquivo selecionado e o resultado. A fonte é mantida.</p></section>}
   {busy && <p role="status">Lendo o registro…</p>}{error && <p role="alert" className="notice notice--error">{error}</p>}
   {currentStep === 3 && record && <section className="authority-import-preview__result" aria-label="Resultado da conferência" aria-live="polite"><h3 className="authority-import-wizard__title"><AppIcon name="review" />Resultado da leitura</h3>
-   <label><span className="catalogue-field-label"><AppIcon name="tag" />Registro conferido ({records.length})</span><CatalogueSelect value={selected} onChange={e => { const index = Number(e.target.value); setSelected(index); onRecordChange?.(records[index]); }}>{records.map((r, i) => <option key={i} value={i}>{i + 1}. {r.title}</option>)}</CatalogueSelect></label>
+   <label><span className="catalogue-field-label"><AppIcon name="tag" />Registro conferido ({records.length})</span><CatalogueSelect value={selected} onChange={e => { const index = Number(e.target.value); setSelected(index); setReviewed(new Set()); onRecordChange?.(records[index]); onReviewChange?.(records[index].warnings.length === 0); }}>{records.map((r, i) => <option key={i} value={i}>{i + 1}. {r.title}</option>)}</CatalogueSelect></label>
    <div className="authority-review__record"><span className="authority-review__record-icon"><AppIcon name="tag" /></span><div><span className="eyebrow">Autoridade lida</span><h4>{record.title}</h4><dl><div><dt>Formato</dt><dd>{record.format}</dd></div><div><dt>Identificador</dt><dd>{record.identifier ?? "Não informado"}</dd></div></dl></div></div>
    {(record.geography || record.modified) && <dl className="authority-review__metadata">{record.geography && <div><dt><AppIcon name="globe" />Subdivisão geográfica</dt><dd>{record.geography}</dd></div>}{record.modified && <div><dt><AppIcon name="calendar" />Data informada na origem</dt><dd>{record.modified}</dd></div>}</dl>}
-   {!!record.warnings.length && <section className="authority-review__issues" aria-label="Pendências de verificação"><header><span className="authority-review__issue-icon"><AppIcon name="help" /></span><div><h4>Pendências de verificação ({record.warnings.length})</h4><p>Estes pontos precisam ser conferidos na fonte antes da confirmação. A leitura do arquivo não comprova a qualidade ou a vigência da autoridade.</p></div></header><ul>{record.warnings.map((warning,index) => { const issue=reviewIssue(warning); return <li key={`${index}-${warning}`}><span className="authority-review__issue-number">{index+1}</span><div><strong>{issue.title}</strong><p>{warning}</p><small><AppIcon name="search" />{issue.action}</small></div></li>; })}</ul></section>}
+   {!!record.warnings.length && <section className="authority-review__issues" aria-label="Pendências de verificação"><header><span className="authority-review__issue-icon"><AppIcon name="help" /></span><div><h4>Pendências de verificação ({record.warnings.length})</h4><p>Estes pontos precisam ser conferidos na fonte antes da confirmação. A leitura do arquivo não comprova a qualidade ou a vigência da autoridade.</p></div></header><ul>{record.warnings.map((warning,index) => { const issue=reviewIssue(warning); return <li key={`${index}-${warning}`}><span className="authority-review__issue-number">{index+1}</span><div><strong>{issue.title}</strong><p>{warning}</p><small><AppIcon name="search" />{issue.action}</small><label className="authority-review__acknowledgment"><input type="checkbox" checked={reviewed.has(index)} disabled={locked} onChange={event => { const next = new Set(reviewed); if (event.target.checked) next.add(index); else next.delete(index); setReviewed(next); onReviewChange?.(next.size === record.warnings.length); }} />Conferi este ponto na fonte consultada</label></div></li>; })}</ul></section>}
    <div className="authority-import-preview__sections">{sections.filter(([, values]) => values.length).map(([label, values]) => <details key={label} open><summary>{label} ({values.length})</summary><ul>{values.map((v, i) => <li key={i}><strong>{v.value}</strong><span>{v.kind}{v.language ? ` · idioma: ${v.language}` : ""}{v.identifier ? ` · ${v.identifier}` : ""}</span></li>)}</ul></details>)}</div>
    <details><summary>Conteúdo lido do registro</summary><pre>{record.original}</pre></details>
   </section>}
-  {currentStep === 3 && <div className="catalogue-workflow__actions"><button type="button" className="button button--secondary button--small" disabled={locked} onClick={() => go(2)}><AppIcon name="undo" />Voltar: registro</button>{onContinue && <button type="button" className="button button--primary button--small" disabled={locked || !record} onClick={onContinue}>Continuar: confirmação<AppIcon name="arrowRight" /></button>}</div>}
+  {currentStep === 3 && <div className="catalogue-workflow__actions"><button type="button" className="button button--secondary button--small" disabled={locked} onClick={() => go(2)}><AppIcon name="undo" />Voltar: registro</button>{onContinue && <button type="button" className="button button--primary button--small" disabled={locked || !record || !reviewComplete} onClick={onContinue}>{record && !reviewComplete ? `Confira ${record.warnings.length - reviewed.size} pendência(s)` : "Continuar: confirmação"}<AppIcon name="arrowRight" /></button>}</div>}
  </div>;
 }

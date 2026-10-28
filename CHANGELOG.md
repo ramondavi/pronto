@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- Bloqueia o avanço e a confirmação da importação até a conferência explícita das pendências da leitura, com botão desabilitado e indicação do que falta.
+
 - Identifica o cadastro de assuntos sem importação como Cadastrar manualmente.
 
 - Organiza a ajuda flutuante sem resultados em uma coluna, com separação entre título, orientações e ícones.
