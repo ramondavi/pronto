@@ -1,6 +1,6 @@
 # Importação de autoridades de assuntos
 
-Preparada em 27/10/2026. Regra: Documento-Mestre §9.1. Ativação remota ainda pendente de autorização.
+Preparada em 27/10/2026. Regra: Documento-Mestre §9.1. Ativada exclusivamente na prévia em 28/10/2026, após autorização explícita e CI aprovado.
 
 Na análise, digitar ou colar um termo consulta o catálogo completo e as variantes. A ação de importar aparece somente após resposta sem resultados; não aparece com campo vazio, busca pendente, falha ou sugestões. O cadastro manual com fonte continua disponível. Importar requer arquivo/registro completo e revisão profissional; colar somente o nome não consulta a fonte externa.
 
@@ -10,7 +10,7 @@ Registro lido, componentes, idiomas, variantes, relações, correspondências, n
 
 Migração `202610280001_subject_authority_import.sql`: cria duas tabelas auxiliares e duas funções e amplia o salvamento existente para recusar variantes como novos assuntos. Não altera assuntos existentes, vínculos de protocolos, snapshots ou arquivos. Leitura por RLS somente à equipe ativa, sem escrita direta; importação administrativa exige permissão de gestão, e a análise exige atendimento próprio aberto e ainda não homologado. Operações são auditadas. Excluir explicitamente um assunto sem uso remove seus registros importados; cadastros usados continuam protegidos pelo histórico existente.
 
-A migração foi aplicada apenas ao ambiente local sintético. Aplicação à prévia requer confirmação explícita; produção preservada. Enquanto a função de busca não estiver habilitada, a tela conserva sugestões iniciais e preenchimento manual e informa a indisponibilidade da busca completa, sem oferecer importação como se o assunto não existisse.
+A migração foi aplicada à prévia cfntochwiztdcawbaedx em 28/10/2026, após autorização explícita e aprovação do CI no commit e988679. Simulação confirmou apenas a nova migração, sem seeds, roles ou Vault. Histórico oficial, funções, RLS, bloqueio de acesso público e de escrita direta foram verificados. Assinaturas de integridade confirmaram que assuntos, vínculos, snapshots e metadados anteriores permaneceram iguais. Produção preservada. Enquanto a função de busca não estiver habilitada, a tela conserva sugestões iniciais e preenchimento manual e informa a indisponibilidade da busca completa, sem oferecer importação como se o assunto não existisse.
 
 Validação local: 179 testes da aplicação, tipos/lint/build e 347 verificações de banco (39 próprias desta ampliação). Cobertura: acesso público/estudante/bloqueado/inativo, propriedade do atendimento, escrita direta recusada, identidade/reimportação, conflito de versões e de texto, normalização, variantes após mesclagem, exclusão sem uso e preservação integral dos vínculos e textos históricos. A interface foi ensaiada com autoridade fictícia no atendimento de um bibliotecário fictício; nenhum registro real foi importado.
 

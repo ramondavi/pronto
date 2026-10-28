@@ -6,9 +6,13 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação — 0.1.0
 
+### 28 de outubro de 2026
+
+- Ativa a importação confirmada de autoridades e a busca por variantes somente na prévia autorizada, com proteção contra duplicatas no salvamento automático. Funções, permissões, RLS e preservação das fichas e vínculos anteriores verificados após CI aprovado.
+
 ### 27 de outubro de 2026
 
-- Prepara importação confirmada de autoridades e busca por variantes. Na análise, a ação aparece somente após busca completa sem resultados; erros não são tratados como ausência. Identidade e versões preservam a proveniência e os assuntos/fichas anteriores. Migração remota ainda não aplicada.
+- Prepara importação confirmada de autoridades e busca por variantes. Na análise, a ação aparece somente após busca completa sem resultados; erros não são tratados como ausência. Identidade e versões preservam a proveniência e os assuntos/fichas anteriores. Ativada somente na prévia em 28/10/2026 após autorização.
 
 - Acrescenta conferência local de arquivos de autoridades na gestão de assuntos, com componentes, variantes, relações, idiomas, notas e alertas. A leitura não grava termos nem consulta bases externas.
 

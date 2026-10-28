@@ -10,7 +10,7 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - E-mails: 26 variantes do parecer de 22/10 em docs/revisao-emails/. Conclusão unificada; sem RI, registro público. Lembretes abrem preparação; rodapé/URLs padronizados.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
-- Assuntos/CDU: gestao-catalogos.md. Estrutura na prévia: cdu-repertorio-local.md.
+- Assuntos/CDU: gestao-catalogos.md. Estrutura na prévia: cdu-repertorio-local.md. Importação de autoridades ativa somente na prévia desde 28/10: importacao-autoridades.md.
 
 ## Verificação e operação
 

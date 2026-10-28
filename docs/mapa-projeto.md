@@ -34,4 +34,4 @@ Contingência de backup manual: backup-manual-independente.md; scripts/backup/ma
 - Lógica de composições CDU e revisão do material didático: docs/cdu-logica-composicoes.md; src/lib/cdu-symbols.ts; src/lib/cdu-notation.ts; src/components/cdu-symbol-editor.tsx.
 
 - Avaliação das opções externas do RI (sem integração ativada): docs/interoperabilidade-ri-2026-10-27.md.
-- Autoridades de assuntos: docs/importacao-autoridades.md; src/components/subject-authority-field.tsx e subject-authority-importer.tsx; supabase/migrations/202610280001_subject_authority_import.sql (ativação remota pendente).
+- Autoridades de assuntos: docs/importacao-autoridades.md; src/components/subject-authority-field.tsx e subject-authority-importer.tsx; supabase/migrations/202610280001_subject_authority_import.sql (aplicada somente à prévia em 28/10/2026).
