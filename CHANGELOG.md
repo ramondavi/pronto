@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 27 de outubro de 2026
 
+- Acrescenta conferência local de arquivos de autoridades na gestão de assuntos, com componentes, variantes, relações, idiomas, notas e alertas. A leitura não grava termos nem consulta bases externas.
+
 - Padroniza a grade e os controles CDU na Administração e na análise bibliotecária. Inclui resposta rápida didática na ajuda, restrita à equipe, com campos, auxiliares, relações e exemplos de composição.
 
 - Amplia a composição CDU com extensão consecutiva, grupos aninhados, especificações alfabéticas, códigos externos com fonte, síntese interna de auxiliares e intercalação. A divisão paralela exige instrução declarada e hierarquia registrada; preserva a ordem escolhida e a conferência profissional. A revisão considerou o material didático fornecido, sem importar tabelas.

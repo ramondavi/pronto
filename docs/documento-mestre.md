@@ -273,6 +273,8 @@ Graduação, Especialização, Mestrado e Doutorado.
 - Os termos selecionados podem ser reordenados por arrastar e soltar; a marcação independente de um termo principal é preservada para registro e sugestão de CDU.
 - Cada termo controlado incluído em novos salvamentos deve ter uma fonte documentária indicada pelo bibliotecário: autoridades de assuntos da Biblioteca Nacional, Tesauro de Arte e Arquitetura (Getty), Pergamum UFBA ou autoridades da Rede Pergamum. A interface apresenta links para consulta e exige a fonte por termo. As palavras-chave livres do estudante servem de apoio à decisão profissional e não iniciam automaticamente o cadastro controlado. O banco registra a fonte usada em cada protocolo, preserva as fontes de um termo reutilizado, sanitiza os rótulos e rejeita termos repetidos no mesmo atendimento e equivalentes ingleses conflitantes. A seleção da fonte representa declaração do bibliotecário; confirmação automática de existência no catálogo externo depende de integração futura.
 
+- Conferência de autoridades autorizada em 27/10/2026: a gestão de assuntos oferece leitura local de amostras MARC em texto, MARCXML, ISO 2709 UTF-8 e JSON-LD/NDJSON das fontes indicadas. Preserva componentes, variantes, relações, idiomas, notas e identificadores reconhecidos e sinaliza lacunas. Não consulta serviços, não traduz, não resolve referências nem grava ou mescla autoridades. Esta etapa não autoriza um modelo persistente de autoridades ou importação remota; formatos e campos não reconhecidos exigem conferência no original.
+
 ### 9.2. Assistente CDU
 
 - Preenchimento e decisão final são manuais pelo bibliotecário.
