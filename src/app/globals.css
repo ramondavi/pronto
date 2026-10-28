@@ -7522,3 +7522,15 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .authority-import-preview__sections details li { display: grid; gap: 4px; margin: 0; padding: 12px; background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 @media(max-width:820px) { .authority-source-options__grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:620px) { .authority-source-options__grid { grid-template-columns: minmax(0,1fr); } dialog.pronto-modal.subject-authority-dialog { max-height: calc(100dvh - 24px); width: calc(100vw - 24px); } .authority-review__record dl, .authority-review__metadata { grid-template-columns: minmax(0,1fr); } .authority-review__issues { padding: 14px; } }
+
+/* Fontes compactas em uma única faixa, inclusive em telas estreitas. */
+.authority-source-options__grid { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; padding: 3px; scrollbar-width: thin; }
+.authority-source-options__card { flex: 1 0 156px; }
+.catalogue-workflow .authority-source-options label.authority-source-options__choice { min-height: 66px; padding: 8px; gap: 7px; }
+.authority-source-options__choice input[type=radio] { flex-basis: 15px; width: 15px; height: 15px; }
+.authority-source-options__external { flex-basis: 28px; width: 28px; }
+.authority-source-options__external svg { width: 15px; height: 15px; }
+.authority-source-mark { height: 40px; max-width: 125px; }
+.authority-source-mark--ufba .authority-source-mark__art, .authority-source-mark--pergamum .authority-source-mark__art { height: 27px; }
+.authority-source-mark__badge { font-size: .5rem; padding: 1px 5px; }
+.authority-source-mark--loc { max-width: 58px; }

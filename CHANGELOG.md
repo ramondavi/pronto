@@ -8,6 +8,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
+- Compacta as cinco fontes de autoridades em uma única linha, com rolagem horizontal em telas estreitas.
+
 - Troca o menu de fontes por seleção única com logos sem fundo na renderização, mantém a moldura arredondada do modal com rolagem interna, remove Cancelar e informa no botão final a pendência que impede importar. A conferência organiza dados e pendências em cartões.
 
 - Registra a meta, antes de concluir o teste RAU+E, de 10/10 em segurança/integridade e em continuidade sem dependência do responsável, com avaliação documentada e sem declarar risco zero ou prontidão já atingida.
