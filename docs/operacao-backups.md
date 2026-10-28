@@ -18,10 +18,10 @@ Não há comprovação de restauração de PDFs reais: nenhum existia nos ensaio
 ## Pendências para ativar e declarar operação
 
 - Incorporar o PR [#20](https://github.com/ramondavi/pronto/pull/20), após autorização de merge e verificações obrigatórias aprovadas.
-- Definir o substituto nominalmente e seu contato institucional. Não compartilhar a conta pessoal do responsável.
-- Confirmar a custódia institucional da chave de recuperação e o acesso individual mínimo do substituto; guardar a chave separada do B2 e do GitHub. Não registrar valores na documentação, chat ou logs.
+- Substituto designado pelo responsável em 28/10. A identificação e o contato devem permanecer no registro operacional restrito, fora do repositório público. Ainda falta comprovar acesso, treinamento e recebimento dos alertas; não compartilhar a conta pessoal do responsável.
+- Proton Pass escolhido pelo responsável em 28/10 para a custódia. Ainda falta organizar o cofre destinado à biblioteca, guardar pessoalmente a identidade de recuperação e confirmar o acesso individual do substituto. A escolha do serviço não comprova entrega, titularidade institucional ou aceite. Guardar a chave separada do B2 e do GitHub; não registrar valores na documentação, chat ou logs.
 - Garantir que o substituto disponha do pacote manual e dos acessos necessários antes de uma indisponibilidade. A existência do código no Git não comprova entrega, treinamento ou acesso ao pacote.
-- Autorizar uma cópia operacional atual. A última execução bem-sucedida consultada em 28/10 continua sendo a de 24/10; as execuções agendadas seguintes foram ignoradas com BACKUP_ENABLED=false.
+- Cópia operacional atual concluída em 28/10, após autorização explícita para banco/Auth/documentos privados de produção criptografados no B2. Execução [40724106039](https://github.com/ramondavi/pronto/actions/runs/40724106039), iniciada às 13h15min06s e concluída às 13h19min03s de Brasília; a rotina informou nova cópia conferida. Esse resultado não é um novo ensaio de restauração. A agenda permaneceu desligada.
 - Dar aceite explícito para ativar a agenda. A variável permanece false nesta retomada.
 - Após ativação, acompanhar um ciclo agendado real e seu relatório de integridade. Não confundir cron configurado, execução ignorada ou aviso UP com prova suficiente de uma cópia atual recuperável.
 
@@ -45,3 +45,9 @@ A agenda e a tolerância atuais não comprovam a meta nominal de proteger mudan�
 Registrar data, responsável, substituto e localização institucional dos procedimentos e materiais, sem segredos. A passagem só fica comprovada quando outra pessoa consegue localizar os acessos, gerar uma cópia e participar de uma recuperação orientada usando a documentação, sem depender de Ramon ou desta conversa.
 
 O próximo ensaio trimestral de referência é janeiro de 2027, contado do ensaio de outubro; isso é uma orientação operacional, não um agendamento externo criado nesta retomada. A aba de administração de backups continua uma entrega separada, sem implementação por este documento.
+
+## Registro da execução operacional de 28/10
+
+O workflow de produção executou a etapa Verificar mudanças e preservar cópia com resultado success. A mensagem fixa do executor confirmou nova cópia conferida, distinguindo o resultado de uma conferência sem alterações. Não foram publicados SQL, documentos, nomes privados ou credenciais. O intervalo do workflow inclui preparo das ferramentas e não mede recuperação do serviço. Nenhum ensaio de restauração foi repetido; as evidências de restauração permanecem as de 24 e 26/10.
+
+A tentativa inicial de disparo foi bloqueada pela revisão automática por exigir consentimento específico para exportação sensível. O responsável autorizou expressamente a mesma finalidade e o mesmo destino; só então o run acima foi iniciado. A identificação pessoal do substituto não foi incorporada ao Git público.

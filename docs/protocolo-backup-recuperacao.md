@@ -4,7 +4,7 @@ Decisão de 23/10/2026. Este documento complementa o Documento-Mestre e a polít
 
 ## 1. Objetivo e responsabilidade
 
-Ramon Davi Santana acompanha a execução, os alertas e as evidências. A execução técnica deve ter responsável e substituto nominalmente registrados antes do lançamento, com acesso institucional individual e mínimo necessário. A UFBA mantém as competências institucionais de custódia e privacidade.
+Ramon Davi Santana acompanha a execução, os alertas e as evidências. Em 28/10/2026 foi designado o substituto; nome e contato integram o registro operacional restrito, sem publicação no Git. Proton Pass foi escolhido para a custódia, ainda sem entrega/acesso institucional comprovados. A execução técnica deve ter responsável e substituto nominalmente registrados antes do lançamento, com acesso institucional individual e mínimo necessário. A UFBA mantém as competências institucionais de custódia e privacidade.
 
 Metas iniciais: nenhuma alteração deve passar mais de 24 horas sem cópia recuperável; restabelecimento em até um dia útil. Uma cópia antiga continua válida quando a verificação diária comprova ausência de mudanças. São metas a comprovar no ensaio, não garantias atuais do serviço. Se o ensaio não as cumprir, registrar o bloqueio e corrigir a rotina ou submeter nova meta ao responsável.
 

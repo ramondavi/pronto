@@ -17,4 +17,4 @@ Atualizado em 26/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
 - PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
 - Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backup: ensaios concluídos; agenda desligada. Substituto, custódia, cópia atual e aceite pendentes. Ver operacao-backups.md e evidências de 24/26-10.
+- Backup: cópia atual concluída em 28/10; agenda desligada. Substituto designado; custódia no Proton Pass/aceite pendentes. Ver operacao-backups.md.

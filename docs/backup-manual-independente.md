@@ -41,4 +41,4 @@ Em 24/10/2026, após redefinição pessoal e recadastro protegido da senha, a co
 
 ## Retomada de 28/10/2026
 
-Os ensaios de restauração/Auth/site e os avisos foram concluídos conforme as evidências de 24 e 26/10. A agenda continua desligada. Entrega do pacote e acessos ao substituto, custódia institucional, cópia atual e aceite da operação permanecem pendentes; não reconstruir nem substituir um pacote comprovado por versão sem os ensaios exigidos. Nenhum novo ensaio ou pacote foi executado nesta retomada. Ver operacao-backups.md.
+Os ensaios de restauração/Auth/site e os avisos foram concluídos conforme as evidências de 24 e 26/10. A agenda continua desligada. O substituto foi designado, e uma nova cópia operacional foi concluída no run 40724106039 em 28/10. Entrega do pacote/acessos ao substituto, custódia no Proton Pass e aceite da operação permanecem pendentes; não reconstruir nem substituir um pacote comprovado por versão sem os ensaios exigidos. Nenhum novo ensaio ou pacote foi executado nesta retomada. Ver operacao-backups.md.

@@ -8,7 +8,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ### 28 de outubro de 2026
 
-- Consolida as evidências de recuperação e alertas, corrige estados históricos desatualizados e prepara a operação/passagem dos backups. Agenda permanece desligada; nova cópia e ativação dependem de autorização, com substituto e custódia institucional ainda pendentes. Registra os atrasos observados nos eventos do cron sem prometer a meta de 24 horas.
+- Consolida as evidências de recuperação e alertas, corrige estados históricos desatualizados e prepara a operação/passagem dos backups. Nova cópia autorizada e concluída em 28/10, substituto designado e Proton Pass escolhido; agenda permanece desligada, com custódia/acesso e ativação pendentes. Registra os atrasos observados nos eventos do cron sem prometer a meta de 24 horas.
  — 0.1.0
 
 ### 26 de outubro de 2026
