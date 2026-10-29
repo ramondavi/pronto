@@ -427,6 +427,7 @@ def execute_drill(master_id, master_key, identity, progress=lambda _: None, *, a
                   "archive_sha256": receipt["sha256"], "backup_created_at": created.isoformat(),
                   "duration_seconds": round(time.monotonic() - start, 1), "tables_verified": tables,
                   "documents_verified": len(manifest.get("objects", [])), "schema_equivalent": True,
+                  "operator_toolkits_requiring_reinstall": len(manifest.get("independent_operator_tools", [])),
                   "schema_comparison": database.schema_comparison,
                   "source_dump_text_identical": database.schema_comparison == "direct_dump",
                   "container_removed": True, "temporary_reader_revoked": True,

@@ -186,7 +186,7 @@ class ExecutionTest(unittest.TestCase):
     @patch.object(backup, "DatabaseSnapshot")
     def test_new_copy_records_success_only_after_verified_encrypted_upload(self, db_class):
         def snapshot(connection, folder):
-            db = Mock(server_version="17", table_hashes=[])
+            db = Mock(server_version="17", table_hashes=[], independent_operator_tools=[])
             db.fingerprint.return_value = "synthetic-fingerprint"
             db.inventory.return_value = []
             db.dump.side_effect = lambda: (folder / "database.dump").write_bytes(b"private synthetic record")
@@ -287,6 +287,41 @@ class ExecutionTest(unittest.TestCase):
              patch.dict(os.environ, {"SUPABASE_URL": "https://synthetic.supabase.co", "BACKUP_STORAGE_READ_TOKEN": "synthetic"}):
             with self.assertRaisesRegex(backup.BackupError, "storage_content_changed"):
                 backup.download_storage(inventory, Path(temp))
+
+
+class ReviewedStorageInventoryTest(unittest.TestCase):
+    def inventory(self, rows):
+        snapshot = backup.DatabaseSnapshot(Mock(), Path("synthetic-folder"))
+        snapshot.query = Mock(return_value=rows)
+        return snapshot, snapshot.inventory()
+
+    def test_installer_is_explicitly_referenced_without_copying_tool_bytes_as_documents(self):
+        name = "windows/" + "a" * 64 + "/Pronto-Backup-Manual.zip"
+        snapshot, documents = self.inventory([
+            ("backup-tools", name, {"size": 100, "mimetype": "application/zip"}, "synthetic-time"),
+            ("nada-consta", "synthetic.pdf", {"size": 20}, "synthetic-time"),
+        ])
+        self.assertEqual([item["bucket"] for item in documents], ["nada-consta"])
+        self.assertEqual(snapshot.independent_operator_tools, [{"bucket": "backup-tools", "name": name, "bytes": 100, "sha256": "a" * 64}])
+        self.assertIn("FROM storage.objects", snapshot.query.call_args.args[0])
+
+    def test_unknown_bucket_never_becomes_silent_data_loss(self):
+        with self.assertRaisesRegex(backup.BackupError, "unreviewed_storage_bucket"):
+            self.inventory([("unreviewed", "synthetic.pdf", {"size": 20}, "time")])
+
+    def test_only_digest_addressed_zip_toolkit_with_reviewed_size_and_mime_is_excluded(self):
+        valid = "windows/" + "a" * 64 + "/Pronto-Backup-Manual.zip"
+        invalid = [
+            ("windows/short/Pronto-Backup-Manual.zip", {"size": 10, "mimetype": "application/zip"}),
+            (valid.replace("Pronto-Backup-Manual.zip", "private.pdf"), {"size": 10, "mimetype": "application/zip"}),
+            (valid, {"size": 0, "mimetype": "application/zip"}),
+            (valid, {"size": True, "mimetype": "application/zip"}),
+            (valid, {"size": 51 * 1024 * 1024, "mimetype": "application/zip"}),
+            (valid, {"size": 10, "mimetype": "application/pdf"}),
+        ]
+        for name, metadata in invalid:
+            with self.subTest(name=name, metadata=metadata), self.assertRaisesRegex(backup.BackupError, "unreviewed_operator_toolkit"):
+                self.inventory([("backup-tools", name, metadata, "time")])
 
 
 @unittest.skipUnless(os.environ.get("BACKUP_INTEGRATION") == "1", "requires synthetic local PostgreSQL and age")
