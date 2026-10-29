@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: corrige a exibição de Backup e restauro na barra lateral, compartilhando a regra de acesso entre a navegação e a página.
+
 - 29/10/2026: adiciona na prévia a tela Backup e restauro, com consulta das execuções, roteiros de contingência/recuperação e leitura local de recibos, exclusiva de administradores ativos.
 
 - 29/10/2026: simplifica cartões de assuntos, abre autoridade em janela própria e exige confirmação para desativar assuntos ou retirar validação de CDU na prévia.

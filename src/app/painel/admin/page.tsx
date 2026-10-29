@@ -46,9 +46,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role,status").eq("id", user.id).single() : { data: null };
   if (!profile || profile.status !== "active" || !["administrator", "cataloger"].includes(profile.role)) redirect("/painel");
-  const permissions = (await userAdminPermissions(supabase, profile.role)).filter(code => code !== "admin.backups.view");
-  // Operational guidance is restricted to active administrators; no delegated execution rights.
-  if (profile.role === "administrator") permissions.push("admin.backups.view");
+  const permissions = await userAdminPermissions(supabase, profile.role, profile.status);
   if (!adminSections.some((item) => item.tabs.some((entry) => canOpenAdminTab(entry.id, permissions)))) redirect("/painel");
   if (!params.aba) {
     if (params.area && !section.tabs.some((entry) => canOpenAdminTab(entry.id, permissions))) redirect("/painel/admin");
