@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: cadastro manual de assuntos começa somente com dois botões de escolha, no padrão CDU; o formulário aparece após escolher transcrição ou termo local.
+
 - 28/10/2026: padroniza o modal de mesclagem de assuntos/CDU, isolando estilos herdados, organizando origem, destino e conferência e preservando cantos e rolagem interna.
 
 - 28/10/2026: separa transcrição de fonte externa e criação de termo local com origem Pronto, justificativa e referências internas restritas, incluindo trabalho do próprio atendimento. Corrige a exibição da validação imediata por gestores.
