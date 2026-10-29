@@ -7663,3 +7663,55 @@ dialog.pronto-modal.request-audit-dialog[open] { display: flex; flex-direction: 
 }
 
 .controlled-terms-admin__details > button[aria-expanded="true"] > svg { transform: rotate(180deg); }
+
+/* Authority consultation and confirmation share the catalogue modal surface. */
+dialog.pronto-modal.catalogue-record-dialog { box-sizing: border-box; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); }
+dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-direction: column; }
+.catalogue-record-dialog > .catalogue-modal__header { flex: 0 0 auto; position: relative; }
+.catalogue-record-dialog .catalogue-modal__header h2 { display: flex; align-items: center; gap: 10px; }
+.catalogue-record-dialog .catalogue-modal__header h2 svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.catalogue-record-dialog__body { display: flex; flex-direction: column; gap: 18px; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 24px; }
+.catalogue-record-dialog__body > * { flex: 0 0 auto; }
+.catalogue-record-dialog__body p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.catalogue-record-dialog__body .notice { display: flex; align-items: flex-start; gap: 10px; }
+.catalogue-record-dialog__body .notice > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 3px; }
+.catalogue-record-dialog__footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--surface-raised); }
+.catalogue-record-dialog .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.catalogue-record-dialog .button svg { width: 16px; height: 16px; }
+.authority-record__identity { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--institutional-soft); overflow-wrap: anywhere; }
+.authority-record__identity > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.authority-record__identity > div { display: grid; gap: 4px; }
+.authority-record__identity small { color: var(--text-muted); }
+.authority-record { display: grid; gap: 18px; min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); overflow-wrap: anywhere; }
+.authority-record > header { display: flex; gap: 10px; align-items: flex-start; }
+.authority-record > header > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.authority-record h3 { margin: 0 0 4px; font-size: 1rem; }
+.authority-record > header p { color: var(--text-muted); font-size: .8rem; }
+.authority-record h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: .85rem; }
+.authority-record h4 svg { width: 17px; height: 17px; color: var(--institutional); }
+.authority-record > section { padding-top: 16px; border-top: 1px solid var(--line); }
+.authority-record > section > p + p { margin-top: 10px; }
+.authority-record__metadata { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 0; }
+.authority-record__metadata > div, .authority-record__parts > div { display: grid; gap: 5px; min-width: 0; }
+.authority-record dt { color: var(--text-muted); font-size: .76rem; }
+.authority-record dd { margin: 0; font-size: .85rem; }
+.authority-record__parts { display: grid; gap: 12px; margin: 0; padding: 14px; border-radius: var(--radius-sm); background: var(--surface); }
+.authority-record ul { margin: 0; padding-left: 22px; line-height: 1.65; }
+.authority-record__technical { font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--line); padding-top: 12px; }
+.authority-record__technical summary { cursor: pointer; }
+.authority-record__technical p { margin-top: 8px; }
+/* The record card is a summary, with one separate authority consultation action. */
+.controlled-terms-admin__item { padding: 0; border-left-width: 1px; }
+.controlled-terms-admin__main { padding: 18px 20px; gap: 12px; }
+.controlled-terms-admin__title > strong { font-size: 1rem; }
+.controlled-terms-admin__english { gap: 10px; }
+.controlled-terms-admin__english > span { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.controlled-terms-admin__sources { gap: 7px; }
+.controlled-terms-admin__sources > span:first-child { font-size: .74rem; }
+.controlled-terms-admin__source { background: var(--surface); color: var(--text-muted); border-color: var(--line); }
+.controlled-terms-admin__side { margin: 0; padding: 12px 20px; background: var(--surface); }
+.controlled-terms-admin__usage { font-size: .76rem; }
+.controlled-terms-admin__details { margin: 0; }
+.controlled-terms-admin__details > button { padding-inline: 20px; }
+.controlled-terms-admin__edit { padding: 20px; }
+@media(max-width:600px) { .catalogue-record-dialog__body { padding: 16px; } .catalogue-record-dialog__footer { padding: 14px 16px; } .authority-record { padding: 16px; } .authority-record__metadata { grid-template-columns: 1fr; } .controlled-terms-admin__side { display: grid; } .controlled-terms-admin__actions { justify-content: flex-start; } }
