@@ -3,6 +3,7 @@ import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type
 import { CatalogueRecordDialog } from "./catalogue-record-dialog";
 import { AppIcon, type AppIconName } from "./app-icon";
 
+function pageVisible(){return document.visibilityState !== "hidden";}
 const workflow = "https://github.com/ramondavi/pronto/actions/workflows/backup.yml";
 const dateFormat = new Intl.DateTimeFormat("pt-BR",{dateStyle:"short",timeStyle:"short",timeZone:"America/Sao_Paulo"});
 const formatDate = (date:string) => dateFormat.format(new Date(date));
@@ -41,7 +42,7 @@ export function BackupAdmin(){
  const [dispatchState,setDispatchState]=useState<DispatchState|null>(null);const [confirming,setConfirming]=useState(false);const [acknowledged,setAcknowledged]=useState(false);const [dispatching,setDispatching]=useState(false);const [dispatchMessage,setDispatchMessage]=useState("");const [dispatchError,setDispatchError]=useState("");const [uncertain,setUncertain]=useState(false);const [visible,setVisible]=useState(true);
  const runsRef=useRef<Run[]|null>(null);const requestRef=useRef<AbortController|null>(null);const failures=useRef(0);const dispatchId=useRef("");const dispatchBusy=useRef(false);
  const refresh=useCallback(async()=>{
-  if(requestRef.current || document.visibilityState==="hidden" || !navigator.onLine)return;
+  if(requestRef.current || !pageVisible() || !navigator.onLine)return;
   const controller=new AbortController();requestRef.current=controller;const timeout=window.setTimeout(()=>controller.abort("timeout"),12000);setLoading(true);
   try{const response=await fetch("/api/admin/backups",{cache:"no-store",signal:controller.signal});const result=await response.json();if(controller.signal.aborted)return;if(!response.ok)throw new Error(result.error || "Consulta indisponível.");runsRef.current=result.runs;setRuns(result.runs);setCheckedAt(result.checkedAt);setDispatchState(result.dispatch);setError("");failures.current=0;}
   catch{if(controller.signal.reason!=="paused"){failures.current++;setDispatchState(null);setError("Não foi possível atualizar as execuções. Os dados anteriores podem estar desatualizados; a consulta será tentada novamente.");}}
@@ -57,9 +58,9 @@ export function BackupAdmin(){
  useEffect(()=>{
   if(section!=="routine")return;
   let stopped=false;let ticking=false;let timer:number|undefined;
-  const pause=()=>{window.clearTimeout(timer);requestRef.current?.abort("paused");setVisible(document.visibilityState!=="hidden");};
-  const tick=async()=>{window.clearTimeout(timer);if(ticking || stopped || document.visibilityState==="hidden" || !navigator.onLine)return;ticking=true;try{await refresh();}finally{ticking=false;}if(stopped || document.visibilityState==="hidden")return;const running=runsRef.current?.some(run=>run.status!=="completed");const delay=failures.current?Math.min(300000,60000*2**Math.min(failures.current-1,3)):running?15000:60000;timer=window.setTimeout(()=>void tick(),delay);};
-  const resume=()=>{setVisible(document.visibilityState!=="hidden");if(document.visibilityState==="hidden" || !navigator.onLine)pause();else void tick();};
+  const pause=()=>{window.clearTimeout(timer);requestRef.current?.abort("paused");setVisible(pageVisible());};
+  const tick=async()=>{window.clearTimeout(timer);if(ticking || stopped || !pageVisible() || !navigator.onLine)return;ticking=true;try{await refresh();}finally{ticking=false;}if(stopped || !pageVisible())return;const running=runsRef.current?.some(run=>run.status!=="completed");const delay=failures.current?Math.min(300000,60000*2**Math.min(failures.current-1,3)):running?15000:60000;timer=window.setTimeout(()=>void tick(),delay);};
+  const resume=()=>{setVisible(pageVisible());if(!pageVisible() || !navigator.onLine)pause();else void tick();};
   document.addEventListener("visibilitychange",resume);window.addEventListener("online",resume);window.addEventListener("offline",resume);resume();
   return()=>{stopped=true;window.clearTimeout(timer);requestRef.current?.abort("paused");document.removeEventListener("visibilitychange",resume);window.removeEventListener("online",resume);window.removeEventListener("offline",resume);};
  },[section,refresh,inProgress]);
