@@ -39,7 +39,7 @@ export const adminTabPermissions: Record<AdminTab, readonly string[]> = {
   backups: ["admin.backups.view"],
 };
 
-export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate", "admin.deposits.send", "admin.deposits.history", "admin.deposits.publication"])];
+export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.backups.execute", "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate", "admin.deposits.send", "admin.deposits.history", "admin.deposits.publication"])];
 
 export function canOpenAdminTab(tab: AdminTab, permissions: readonly string[]) {
   return adminTabPermissions[tab].some((code) => permissions.includes(code));

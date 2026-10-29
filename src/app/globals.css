@@ -7778,3 +7778,15 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .backup-admin__receipt dd { margin: 0; font-size: .83rem; overflow-wrap: anywhere; }
 @media(max-width:1000px) { .backup-admin__policies,.backup-admin__services { grid-template-columns: 1fr; } .backup-admin__runs > li { grid-template-columns: 20px minmax(0,1fr); } .backup-admin__runs .backup-admin__status,.backup-admin__runs .button { grid-column: 2; justify-self: start; } }
 @media(max-width:600px) { .backup-admin__block { padding: 16px; } .backup-admin__navigation { display: grid; grid-template-columns: 1fr; } .backup-admin__navigation button { justify-content: flex-start; } .backup-admin__receipt dl { grid-template-columns: 1fr; } }
+
+.backup-admin__polling { display: flex; align-items: center; gap: 8px; }
+.backup-admin__polling > svg { width: 16px; height: 16px; color: var(--institutional); }
+.backup-admin__confirm { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); font-size: .85rem; line-height: 1.6; }
+.backup-admin__confirm > input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 4px; accent-color: var(--institutional); }
+.button.backup-admin__dispatch:disabled { color: var(--text-muted); border-color: var(--line); background: var(--surface); box-shadow: none; transform: none; opacity: 1; cursor: not-allowed; }
+
+.backup-admin__package-info { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .8rem; }
+.backup-admin__package-info summary { cursor: pointer; font-weight: 700; }
+.backup-admin__package-info dl { display: grid; gap: 12px; }
+.backup-admin__package-info dt { color: var(--text-muted); margin-bottom: 5px; }
+.backup-admin__package-info dd { margin: 0; overflow-wrap: anywhere; }

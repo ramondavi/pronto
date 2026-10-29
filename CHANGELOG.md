@@ -6,6 +6,10 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: prepara download administrativo do pacote portátil existente; hospedagem privada e liberação ficam para a publicação em produção, sem upload nesta etapa.
+
+- 29/10/2026: atualiza execuções automaticamente e prepara pedido de backup confirmado e auditado; credencial e acionamento exclusivos da produção, ainda bloqueados na prévia.
+
 - 29/10/2026: corrige a exibição de Backup e restauro na barra lateral, compartilhando a regra de acesso entre a navegação e a página.
 
 - 29/10/2026: adiciona na prévia a tela Backup e restauro, com consulta das execuções, roteiros de contingência/recuperação e leitura local de recibos, exclusiva de administradores ativos.

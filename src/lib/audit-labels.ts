@@ -1,4 +1,6 @@
 const actionLabels: Record<string, string> = {
+  backup_panel_requested: "Solicitou backup pelo painel",
+  backup_panel_dispatch_reported: "Registrou resposta do acionamento de backup",
   account_administration_changed: "Alterou uma conta",
   author_birth_year_validation_revoked: "Revogou a validação do ano de nascimento",
   card_equivalent_title_decided: "Definiu o uso do título equivalente na ficha",

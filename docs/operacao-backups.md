@@ -51,3 +51,21 @@ O próximo ensaio trimestral de referência é janeiro de 2027, contado do ensai
 O workflow de produção executou a etapa Verificar mudanças e preservar cópia com resultado success. A mensagem fixa do executor confirmou nova cópia conferida, distinguindo o resultado de uma conferência sem alterações. Não foram publicados SQL, documentos, nomes privados ou credenciais. O intervalo do workflow inclui preparo das ferramentas e não mede recuperação do serviço. Nenhum ensaio de restauração foi repetido; as evidências de restauração permanecem as de 24 e 26/10.
 
 A tentativa inicial de disparo foi bloqueada pela revisão automática por exigir consentimento específico para exportação sensível. O responsável autorizou expressamente a mesma finalidade e o mesmo destino; só então o run acima foi iniciado. A identificação pessoal do substituto não foi incorporada ao Git público.
+
+## Painel de acompanhamento e pedido — 29/10/2026
+
+Implementação somente na prévia, sem testes de navegação ou disparo de workflow nesta entrega. Atualização em 60 segundos, ou 15 em execução, pausada com a aba oculta e com recuo em falhas. Os metadados públicos podem ter cache de até 60 segundos sem credencial; o navegador conserva os últimos dados com aviso de falha, sem fingir atualização.
+
+O responsável orientou reservar a credencial exclusivamente à produção. A prévia não recebe token e o servidor recusa acionamento fora de produção. Após autorização de publicação: aplicar separadamente 202610290001 em produção e cadastrar BACKUP_PANEL_GITHUB_TOKEN como segredo somente do ambiente production, com token fine-grained restrito a ramondavi/pronto e Actions: Read and write; BACKUP_PANEL_DISPATCH_ENABLED=true somente nesse ambiente. Não usar a chave do Supabase nem reutilizar credenciais do B2. O cadastro dessas variáveis ainda não foi autorizado nem realizado. Nenhum segredo é solicitado no navegador do Pronto!.
+
+Acionamento exige administrador ativo, permissão específica no banco e confirmação da exportação criptografada para o destino existente. A reserva transacional usa UUID idempotente; cinco minutos entre pedidos aceitos/recusados, uma hora para pedidos reservados ou incertos, além de bloqueio enquanto houver execução ativa. Não reenviar automaticamente POST. Um aceite do GitHub significa apenas pedido aceito; conferir o produtor para distinguir cópia nova de verificação sem mudanças. O pedido usa master e first_copy=false: não contorna BACKUP_ENABLED=false.
+
+Auditoria registra somente ator, horário, identificador do pedido e estados fixos, sem credenciais, dados exportados ou logs do produtor. A migração foi aplicada apenas em cfntochwiztdcawbaedx, com histórico 202610290001; produção não foi alterada.
+
+### Distribuição do pacote local — preparada, sem hospedagem
+
+O responsável indicou o pacote existente e determinou hospedar somente ao publicar produção. O ZIP permanece fora do Git, em tmp/Pronto-Backup-Manual.zip do worktree protocolo-preservacao-dados, ao lado da pasta extraída de mesmo nome. A enumeração encontrou 907 arquivos, um inventário de integridade e configuração com apenas project_url, recipient e ca_certificate; não foram encontrados arquivos de backup ou extensões privadas na enumeração. Nenhuma ferramenta foi executada, reconstruída ou novamente ensaiada nesta preparação.
+
+Distribuição proposta e preparada: bucket privado backup-tools, objeto windows/f62fc8b4/Pronto-Backup-Manual.zip, tamanho 46.537.177 bytes e SHA-256 f62fc8b46dba4ed5e04e6972d504793eb742d2f676695d38d7145d68eea79845. Migração 202610290002 preparada, não aplicada. Após autorização da publicação, confirmar que o pacote corresponde ao recebido e permanece sem credenciais, aplicar política privada, enviar esse ZIP por acesso administrativo e conferir tamanho/hash antes de liberar o botão. O endpoint usa sessão normal e RLS, sem service_role, com link temporário de 60 segundos. O servidor nunca envia o ZIP junto ao código da Vercel.
+
+Não houve upload do pacote, criação de bucket ou alteração de produção. Download não é backup nem ensaio de restauração. A configuração pública do pacote inclui o destinatário de criptografia: mudanças da identidade de recuperação exigem preparar e validar uma nova versão antes de substituir a distribuída.

@@ -5,12 +5,12 @@ Atualizado em 28/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 ## Entrega
 
 - MVP consolidado no PR #10: retrospectivo RAU+E, coautoria, administração, ficha/QR e guia RI traduzido.
-- Prévia: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app, banco cfntochwiztdcawbaedx até 202610280004. Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo; preservar contas, programas, protocolos e configurações.
-- Produção: PR #22 publicado, migrações até 202610280003 aplicadas. Fundamentação local: 202610280004 aplicada somente na prévia; produção permanece até 003.
+- Prévia: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app, banco cfntochwiztdcawbaedx até 202610290001. Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo; preservar contas, programas, protocolos e configurações.
+- Produção: PR #22 publicado, migrações até 202610280003 aplicadas. Fundamentação local: 202610280004 e controle de pedidos de backup 202610290001 aplicados somente na prévia; produção permanece até 003.
 - E-mails: parecer e 26 variantes em docs/revisao-emails/; operação em operacao-mvp.md.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
-- Backup e restauro: tela de consulta e roteiros na prévia, em Administração > Controle, exclusiva de administradores ativos. Sem acionamento interno ou restauração de produção.
+- Backup e restauro: tela de consulta e roteiros na prévia, em Administração > Controle, exclusiva de administradores ativos. Atualização automática implementada e acionamento preparado; credencial somente em produção, ainda não cadastrada. Download do pacote preparado para hospedagem apenas na publicação; 202610290002 não aplicada. Nenhuma restauração pelo painel.
 - PR #23 fechado sem merge; testes/publicação aguardam sinal.
 - Assuntos/CDU: gestao-catalogos.md; cdu-repertorio-local.md. Importação publicada em 28/10: importacao-autoridades.md.
 
