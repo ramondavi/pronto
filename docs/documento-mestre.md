@@ -904,3 +904,5 @@ VM Linux UFBA/STI, Docker/Docker Compose, Nginx, Let's Encrypt ou certificado in
 
 
 - Consolidação e lançamento (22/10/2026): responsável autoriza os testes anteriormente adiados, PR, migrações necessárias e atualização em produção do conjunto aprovado. Consolidar os pareceres de e-mail e as decisões posteriores como redação vigente. Tutorial de PDF/A usa o mesmo link discreto com ícone do tutorial de cadastro. Preservar contas, programas, configurações e protocolos existentes; não enviar convites à secretaria nem mensagens de teste a estudantes. Não importar dados de ensaio para produção. Evidências em validacao-mvp.md; histórico detalhado de preparação em historico-preparacao-outubro-2026.md.
+
+- Fluxo de desenvolvimento definido em 28/10/2026: manter alterações em uma prévia; abrir PR, executar testes/validações e publicar em produção somente após sinal do responsável. Testes de navegação e capturas dependem de autorização específica. O PR #23 foi fechado sem merge para adequar a entrega a esse fluxo; a migração de fundamentação foi autorizada somente no banco da prévia.
