@@ -14,6 +14,13 @@ import type { PermissionOverride } from "@/components/staff-permissions-admin";
 import { userAdminPermissions } from "@/lib/staff-permissions";
 import { legacyIssueTemplateFields } from "@/lib/issue-template-fields";
 import { supportedLanguages, type InterfaceLanguage } from "@/lib/interface-language";
+async function cduCatalogue(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const fields = "cdu_code,description,composition_notes,auxiliary_codes,related_codes,source_reference,validated";
+  const result = await supabase.from("cdu_code_descriptions").select(`${fields},merged_into_code,parent_code,notation_kind,auxiliary_scope_code,usage_notes`).order("cdu_code");
+  if (result.error?.code === "42703" || result.error?.code === "PGRST204") return supabase.from("cdu_code_descriptions").select(fields).order("cdu_code");
+  return result;
+}
+
 type AdminSearchParams = { area?: string; aba?: string; conteudo?: string; idioma?: string; programa?: string; busca?: string; pagina?: string };
 export async function generateMetadata({ searchParams }: { searchParams: Promise<AdminSearchParams> }) { const { area, aba } = await searchParams; return panelMetadata("/painel/admin", { area, tab: aba }); }
 
@@ -61,7 +68,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     tab === "audit" ? supabase.from("audit_logs").select("id,action,entity_type,entity_id,metadata,occurred_at,profiles:actor_id(full_name)").order("occurred_at", { ascending: false }).limit(200) : Promise.resolve({ data: null }),
     tab === "retention" ? supabase.from("nada_consta_documents").select("id,request_id,object_path,purge_after,cataloging_requests(protocol)").lte("purge_after", new Date().toISOString()).not("object_path", "is", null).order("purge_after") : Promise.resolve({ data: null }),
     tab === "faq" ? supabase.from("frequently_asked_questions").select("id,question,answer,position,active,featured_position,created_at,updated_at").order("position") : Promise.resolve({ data: null }),
-    tab === "cdu" ? supabase.from("cdu_code_descriptions").select("cdu_code,description,composition_notes,auxiliary_codes,related_codes,source_reference,validated").order("cdu_code") : Promise.resolve({ data: null }),
+    tab === "cdu" ? cduCatalogue(supabase) : Promise.resolve({ data: null }),
     tab === "faq" ? supabase.from("knowledge_base_entries").select("id,slug,kind,title,summary,body_html,translations,category,audiences,active,position,featured_position,created_at,updated_at,published_at").order("position") : Promise.resolve({ data: null }),
     tab === "library" ? supabase.from("library_daily_hours").select("service_date,closing_time").order("service_date") : Promise.resolve({ data: null }),
     tab === "permissions" ? supabase.from("permission_definitions").select("code,area,screen,action,description,default_roles,delegable").order("area").order("screen").order("action") : Promise.resolve({ data: null }),

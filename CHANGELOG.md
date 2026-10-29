@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 28/10/2026: prepara publicação consolidada de assuntos e CDU, habilita cadastro manual estruturado e propostas locais com revisão obrigatória; resolve a integração com a versão publicada preservando fichas e vínculos históricos.
+
 ### 28 de outubro de 2026
 
 - Consolida as evidências de recuperação e alertas, corrige estados históricos desatualizados e prepara a operação/passagem dos backups. Nova cópia autorizada e concluída em 28/10, substituto designado e Proton Pass escolhido; agenda permanece desligada, com custódia/acesso e ativação pendentes. Registra os atrasos observados nos eventos do cron sem prometer a meta de 24 horas.
@@ -24,6 +26,61 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 - Comprova o aviso por ausência de sinais em monitor separado de ensaio, com confirmação de recebimento pelo responsável e pausa ao final. O monitor diário e a agenda automática não foram alterados; login após restauração e substituto seguem pendentes.
 
 - Registra a entrega ao responsável dos avisos reais de falha e recuperação do backup, confirmada pelas capturas dos e-mails de 24/10. Alerta por ausência de execução, login após restauração e substituto permanecem pendentes; agenda desativada.
+
+### 28 de outubro de 2026
+
+- Prepara propostas locais vinculadas ao rascunho do atendimento, com marcação de revisão na prévia e bloqueio de homologação/PDF até ativação. A migração ampliada continua pendente de autorização para a prévia.
+
+- Define propostas locais de assuntos como inativas até revisão e ativação explícita, sem autorização externa presumida; ativação da gravação estruturada na prévia ainda depende de migração autorizada.
+
+- Prepara cadastro manual estruturado de autoridades com origem, subdivisões, variantes, nota de uso e revisão de duplicatas; estrutura/origem consultáveis no catálogo. A gravação depende de migração remota ainda não autorizada nem aplicada.
+
+- Bloqueia o avanço e a confirmação da importação até a conferência explícita das pendências da leitura, com botão desabilitado e indicação do que falta.
+
+- Identifica o cadastro de assuntos sem importação como Cadastrar manualmente.
+
+- Organiza a ajuda flutuante sem resultados em uma coluna, com separação entre título, orientações e ícones.
+
+- Compacta as cinco fontes de autoridades em uma única linha, com rolagem horizontal em telas estreitas.
+
+- Troca o menu de fontes por seleção única com logos sem fundo na renderização, mantém a moldura arredondada do modal com rolagem interna, remove Cancelar e informa no botão final a pendência que impede importar. A conferência organiza dados e pendências em cartões.
+
+- Registra a meta, antes de concluir o teste RAU+E, de 10/10 em segurança/integridade e em continuidade sem dependência do responsável, com avaliação documentada e sem declarar risco zero ou prontidão já atingida.
+
+- Divide a importação de autoridades em quatro etapas, com escolha exclusiva entre texto e arquivo, conferência comum e confirmação final; inclui os logos enviados de BN/LC e iguala as áreas de entrada.
+
+- O seletor de fontes da importação mostra logos oficiais disponíveis e separa a seleção do acesso ao site: somente o ícone externo abre nova aba.
+
+- Esclarece formatos e limites da importação de autoridades com ícones, upload no padrão da geração de ficha e áreas de texto/arquivo com a mesma altura.
+
+- Reorganiza os fluxos de cadastro e montagem CDU e revisão de autoridades com etapas, controles e grades do design system. A gestão de permissões descreve importação, mesclagem, hierarquia e composição sem alterar acessos. Falhas de cadastro preservam os campos e mostram orientações específicas; códigos CDU de um algarismo continuam aceitos.
+
+- Ativa a importação confirmada de autoridades e a busca por variantes somente na prévia autorizada, com proteção contra duplicatas no salvamento automático. Funções, permissões, RLS e preservação das fichas e vínculos anteriores verificados após CI aprovado.
+
+### 27 de outubro de 2026
+
+- Prepara importação confirmada de autoridades e busca por variantes. Na análise, a ação aparece somente após busca completa sem resultados; erros não são tratados como ausência. Identidade e versões preservam a proveniência e os assuntos/fichas anteriores. Ativada somente na prévia em 28/10/2026 após autorização.
+
+- Acrescenta conferência local de arquivos de autoridades na gestão de assuntos, com componentes, variantes, relações, idiomas, notas e alertas. A leitura não grava termos nem consulta bases externas.
+
+- Padroniza a grade e os controles CDU na Administração e na análise bibliotecária. Inclui resposta rápida didática na ajuda, restrita à equipe, com campos, auxiliares, relações e exemplos de composição.
+
+- Amplia a composição CDU com extensão consecutiva, grupos aninhados, especificações alfabéticas, códigos externos com fonte, síntese interna de auxiliares e intercalação. A divisão paralela exige instrução declarada e hierarquia registrada; preserva a ordem escolhida e a conferência profissional. A revisão considerou o material didático fornecido, sem importar tabelas.
+
+- Reúne os caminhos de inclusão no catálogo administrativo em “Adicionar CDU”, com escolha explicada entre cadastrar um código e montar uma notação. A análise mantém o compositor junto ao preenchimento manual.
+
+- Acrescenta compositor CDU por escolhas explícitas no catálogo e na análise bibliotecária, com relações, auxiliares, aplicação por assunto/conjunto, conferência da edição e confirmação antes de usar. Registra a composição como pendente, preservando o preenchimento manual e as fichas anteriores.
+
+- Esclarece a organização dos códigos CDU com perguntas e ajuda junto a cada campo. A classe de aplicação aparece somente para auxiliares especiais; os campos seguem uma coluna contínua, sem lacunas.
+
+- Padroniza as abas Assuntos e Catálogo CDU com campos e ações identificados por ícones, formulários responsivos e dropdowns de altura e alinhamento uniformes no design system.
+
+- Seleção da edição CDU com padrão IBICT 2007 e edição IBICT 1997 no grupo de edição defasada. Prepara repertório próprio com hierarquia, tipos de tabelas, âmbito de auxiliares especiais, relações navegáveis e proteção contra ciclos. Registros antigos preservam a proveniência conhecida. As migrações de mesclagem e estrutura hierárquica foram aplicadas somente à prévia autorizada; produção preservada.
+
+
+### 26 de outubro de 2026
+
+- Permite cadastrar assuntos pela Administração e mesclar assuntos ou CDU duplicados, mantendo fichas e vínculos históricos, com conferência, auditoria e proteção de atendimentos abertos. Substitui o ícone de acessibilidade pelo símbolo de pessoa em círculo. A ativação das funções depende da nova migração, sem aplicação remota automática.
 
 ### 24 de outubro de 2026
 

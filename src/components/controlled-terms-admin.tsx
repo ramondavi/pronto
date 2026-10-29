@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { ManualSubjectAuthorityForm } from "./manual-subject-authority-form";
+import { SubjectAuthorityDetails } from "./subject-authority-details";
+import { SubjectAuthorityImporter } from "./subject-authority-importer";
+import { CatalogueMergeDialog } from "./catalogue-merge-dialog";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AppIcon } from "@/components/app-icon";
@@ -8,7 +12,7 @@ import { showPanelChange, showPanelChangeError } from "@/components/panel-change
 import { SavedForm, SaveButton } from "./saved-form";
 import { createClient } from "@/lib/supabase/client";
 
-type Term = { id: string; preferred_label_pt: string; preferred_label_en: string | null; active: boolean; usage_count: number; sources: string[]; total_count: number };
+type Term = { id: string; preferred_label_pt: string; preferred_label_en: string | null; active: boolean; usage_count: number; sources: string[]; total_count: number; merged_into_id?: string | null; merged_into_label?: string | null };
 type Overview = { total_count: number; active_count: number; unused_count: number; without_source_count: number };
 type Usage = { request_id: string; protocol: string; request_status: string; source_code: string | null; is_primary: boolean };
 
@@ -23,6 +27,9 @@ function Sources({ sources }: { sources: string[] }) {
 }
 
 export function ControlledTermsAdmin() {
+  const [creating, setCreating] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const [merging, setMerging] = useState<Term | null>(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [review, setReview] = useState("all");
@@ -53,7 +60,11 @@ export function ControlledTermsAdmin() {
     let active = true;
     const timer = window.setTimeout(async () => {
       setLoading(true);
-      const { data, error: loadError } = await createClient().rpc("admin_search_controlled_terms", { search_query: query, status_filter: status, review_filter: review, page_offset: offset });
+      const supabase = createClient();
+      const parameters = { search_query: query, status_filter: status, review_filter: review, page_offset: offset };
+      let response = await supabase.rpc("admin_subject_catalog", parameters);
+      if (response.error?.code === "PGRST202") response = await supabase.rpc("admin_search_controlled_terms", parameters);
+      const { data, error: loadError } = response;
       if (!active) return;
       if (loadError) setError("Não foi possível carregar os assuntos. Tente novamente.");
       else {
@@ -71,6 +82,7 @@ export function ControlledTermsAdmin() {
   useEffect(() => { if (deleting) confirmRef.current?.focus(); }, [deleting]);
   function refresh() { setRevision((value) => value + 1); }
   function chooseReview(value: string) { setReview(value); setOffset(0); }
+
 
   async function persist(term: Term, labelPt: string, labelEn: string, enabled: boolean) {
     if (labelPt === term.preferred_label_pt && labelEn === (term.preferred_label_en ?? "") && enabled === term.active) { setEditing(null); return true; }
@@ -117,8 +129,10 @@ export function ControlledTermsAdmin() {
   }
 
   return <section className="panel admin-section controlled-terms-admin">
-    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Revise os termos reutilizados na catalogação e retire das sugestões os registros de teste.</p></div></header>
+    <header className="admin-section__lead controlled-terms-admin__heading"><span className="admin-section__icon"><AppIcon name="tag" aria-hidden="true" /></span><div><p className="eyebrow">Catálogo de termos</p><h2>Vocabulário controlado</h2><p>Cadastre assuntos, revise os termos da catalogação e reúna duplicatas preservando as fichas anteriores.</p></div><button type="button" className="button button--primary button--small" aria-expanded={creating} onClick={() => { setCreating(!creating); setPreviewing(false); }}><AppIcon name={creating ? "close" : "tag"} />{creating ? "Fechar cadastro" : "Cadastrar manualmente"}</button><button type="button" className="button button--secondary button--small" aria-expanded={previewing} onClick={() => { setPreviewing(!previewing); setCreating(false); }}><AppIcon name={previewing ? "close" : "upload"} />{previewing ? "Fechar importação" : "Importar autoridade"}</button></header>
 
+    {previewing && <SubjectAuthorityImporter source="bn" onClose={() => setPreviewing(false)} onImported={() => setRevision(value => value + 1)} />}
+    {creating && <ManualSubjectAuthorityForm onClose={() => setCreating(false)} onSaved={() => { setCreating(false); setQuery(""); setStatus("all"); setReview("all"); setOffset(0); refresh(); showPanelChange("Autoridade manual cadastrada"); }} />}
     <div className="controlled-terms-admin__overview" aria-label="Resumo dos assuntos">
       <button type="button" className={status === "all" && review === "all" ? "is-selected" : ""} onClick={() => { setStatus("all"); chooseReview("all"); }}><AppIcon name="book" /><span><strong>{overview?.total_count ?? "—"}</strong> cadastrados</span></button>
       <button type="button" className={status === "active" && review === "all" ? "is-selected" : ""} onClick={() => { setStatus("active"); chooseReview("all"); }}><AppIcon name="check" /><span><strong>{overview?.active_count ?? "—"}</strong> ativos</span></button>
@@ -127,26 +141,27 @@ export function ControlledTermsAdmin() {
     </div>
 
     <div className="controlled-terms-admin__toolbar">
-      <label className="controlled-terms-admin__search"><span>Buscar assunto</span><span className="controlled-terms-admin__search-control"><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setOffset(0); }} placeholder="Digite o termo em português ou inglês" /></span></label>
-      <label>Situação<select value={status} onChange={(event) => { setStatus(event.target.value); setOffset(0); }}><option value="all">Todas</option><option value="active">Ativos</option><option value="inactive">Inativos</option></select></label>
-      <label>Mostrar<select value={review} onChange={(event) => chooseReview(event.target.value)}><option value="all">Todos</option><option value="unused">Sem uso</option><option value="used">Com uso</option><option value="without_source">Sem fonte registrada</option></select></label>
+      <label className="controlled-terms-admin__search"><span className="catalogue-field-label"><AppIcon name="search" />Buscar assunto</span><span className="controlled-terms-admin__search-control"><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setOffset(0); }} placeholder="Digite o termo em português ou inglês" /></span></label>
+      <label><span className="catalogue-field-label"><AppIcon name="check" />Situação</span><select value={status} onChange={(event) => { setStatus(event.target.value); setOffset(0); }}><option value="all">Todas</option><option value="active">Ativos</option><option value="inactive">Inativos</option><option value="merged">Mesclados</option></select></label>
+      <label><span className="catalogue-field-label"><AppIcon name="settings" />Mostrar</span><select value={review} onChange={(event) => chooseReview(event.target.value)}><option value="all">Todos</option><option value="unused">Sem uso</option><option value="used">Com uso</option><option value="without_source">Sem fonte registrada</option></select></label>
     </div>
 
-    <div className="controlled-terms-admin__results"><p aria-live="polite">{loading ? "Carregando assuntos…" : `${total} ${total === 1 ? "assunto encontrado" : "assuntos encontrados"}`}</p>{(query || status !== "all" || review !== "all") && <button type="button" onClick={() => { setQuery(""); setStatus("all"); chooseReview("all"); }}>Limpar filtros</button>}</div>
-    {error && <div className="notice notice--error controlled-terms-admin__error" role="alert"><span>{error}</span><button type="button" onClick={refresh}>Tentar novamente</button></div>}
+    <div className="controlled-terms-admin__results"><p aria-live="polite">{loading ? "Carregando assuntos…" : `${total} ${total === 1 ? "assunto encontrado" : "assuntos encontrados"}`}</p>{(query || status !== "all" || review !== "all") && <button type="button" onClick={() => { setQuery(""); setStatus("all"); chooseReview("all"); }}><AppIcon name="close" />Limpar filtros</button>}</div>
+    {error && <div className="notice notice--error controlled-terms-admin__error" role="alert"><span>{error}</span><button type="button" onClick={refresh}><AppIcon name="redo" />Tentar novamente</button></div>}
 
     <div className="controlled-terms-admin__list">{items.map((term) => <article className={`controlled-terms-admin__item${term.active ? "" : " is-inactive"}`} key={term.id}>
-      {editing === term.id ? <SavedForm className="controlled-terms-admin__edit" onSave={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label>Termo preferido em português<input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label>Equivalente em inglês <small>Opcional, quando confirmado na fonte</small><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /></label></div><Sources sources={term.sources} /><div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}>Cancelar</button></div></SavedForm> : <>
-        <div className="controlled-terms-admin__main"><div className="controlled-terms-admin__title"><strong>{term.preferred_label_pt}</strong><span className={`controlled-terms-admin__state${term.active ? " is-active" : ""}`}>{term.active ? "Ativo" : "Inativo"}</span></div><p className="controlled-terms-admin__english"><span>EN</span>{term.preferred_label_en ?? "Sem equivalente em inglês"}</p><Sources sources={term.sources} /></div>
-        <div className="controlled-terms-admin__side"><div className="controlled-terms-admin__usage"><strong>{term.usage_count}</strong><span>{term.usage_count === 1 ? "protocolo" : "protocolos"}</span></div><div className="controlled-terms-admin__actions"><button type="button" className="button button--secondary button--small" onClick={() => { setEditing(term.id); setExpanded(null); }}><AppIcon name="edit" /> Editar</button><button type="button" className="button button--secondary button--small" disabled={busy === term.id} onClick={() => persist(term, term.preferred_label_pt, term.preferred_label_en ?? "", !term.active)}>{term.active ? "Desativar" : "Ativar"}</button>{term.usage_count === 0 && <button type="button" className="button button--secondary button--small controlled-terms-admin__delete" onClick={() => setDeleting(term)}>Excluir</button>}</div></div>
+      {editing === term.id ? <SavedForm className="controlled-terms-admin__edit" onSave={(form) => persist(term, String(form.get("labelPt") ?? "").trim(), String(form.get("labelEn") ?? "").trim(), term.active)}><div className="controlled-terms-admin__edit-heading"><AppIcon name="edit" /><strong>Editar assunto</strong><span>As fichas anteriores preservam a forma registrada nelas.</span></div><div className="controlled-terms-admin__edit-fields"><label><span className="catalogue-field-label"><AppIcon name="tag" />Termo preferido em português</span><input name="labelPt" required minLength={2} maxLength={120} defaultValue={term.preferred_label_pt} /></label><label><span className="catalogue-field-label"><AppIcon name="globe" />Equivalente em inglês</span><input name="labelEn" maxLength={120} defaultValue={term.preferred_label_en ?? ""} /><small>Opcional, quando confirmado na fonte</small></label></div><Sources sources={term.sources} /><SubjectAuthorityDetails termId={term.id} /><div className="controlled-terms-admin__actions"><SaveButton className="button button--primary button--small" disabled={busy === term.id}>Salvar alterações</SaveButton><button type="button" className="button button--secondary button--small" onClick={() => setEditing(null)}><AppIcon name="close" />Cancelar</button></div></SavedForm> : <>
+        <div className="controlled-terms-admin__main"><div className="controlled-terms-admin__title"><strong>{term.preferred_label_pt}</strong><span className={`controlled-terms-admin__state${term.active ? " is-active" : ""}`}>{term.active ? "Ativo" : "Inativo"}</span></div><p className="controlled-terms-admin__english"><span>EN</span>{term.preferred_label_en ?? "Sem equivalente em inglês"}</p><Sources sources={term.sources} /><SubjectAuthorityDetails termId={term.id} /></div>
+        <div className="controlled-terms-admin__side"><div className="controlled-terms-admin__usage"><strong>{term.usage_count}</strong><span>{term.usage_count === 1 ? "protocolo" : "protocolos"}</span></div><div className="controlled-terms-admin__actions">{!term.merged_into_id && <><button type="button" className="button button--secondary button--small" onClick={() => { setEditing(term.id); setExpanded(null); }}><AppIcon name="edit" /> Editar</button><button type="button" className="button button--secondary button--small" disabled={busy === term.id} onClick={() => persist(term, term.preferred_label_pt, term.preferred_label_en ?? "", !term.active)}><AppIcon name={term.active ? "eyeOff" : "check"} />{term.active ? "Desativar" : "Ativar"}</button><button type="button" className="button button--secondary button--small" onClick={() => setMerging(term)}><AppIcon name="hierarchy" />Mesclar</button>{term.usage_count === 0 && <button type="button" className="button button--secondary button--small controlled-terms-admin__delete" onClick={() => setDeleting(term)}><AppIcon name="close" />Excluir</button>}</>}{term.merged_into_id && <span>Mesclado em {term.merged_into_label}</span>}</div></div>
         {term.usage_count > 0 && <div className="controlled-terms-admin__details"><button type="button" aria-expanded={expanded === term.id} onClick={() => showUsage(term)}>{expanded === term.id ? "Ocultar protocolos" : "Ver protocolos que usam este assunto"}<span aria-hidden="true">{expanded === term.id ? "↑" : "↓"}</span></button>{expanded === term.id && <div className="controlled-terms-admin__protocols">{loadingUsage === term.id ? <p>Carregando protocolos…</p> : (usage[term.id] ?? []).map((entry) => <Link key={entry.request_id} href={`/painel/atendimento/${entry.request_id}`}><strong>{entry.protocol}</strong><span>{statusNames[entry.request_status] ?? entry.request_status}{entry.is_primary ? " · Assunto principal" : ""}{entry.source_code ? ` · ${sourceNames[entry.source_code] ?? entry.source_code}` : " · Fonte não registrada"}</span><AppIcon name="arrowRight" /></Link>)}{term.usage_count > 30 && <p>Exibindo os 30 protocolos mais recentes.</p>}</div>}</div>}
       </>}
     </article>)}</div>
 
     {!loading && !error && items.length === 0 && <div className="controlled-terms-admin__empty"><AppIcon name="search" /><strong>Nenhum assunto encontrado</strong><p>Ajuste a busca ou limpe os filtros para ver outros termos.</p></div>}
-    {total > 40 && <nav className="controlled-terms-admin__pages" aria-label="Páginas dos assuntos"><button className="button button--secondary button--small" type="button" disabled={offset === 0 || loading} onClick={() => setOffset((value) => Math.max(0, value - 40))}>Anterior</button><span>Página {Math.floor(offset / 40) + 1} de {Math.ceil(total / 40)}</span><button className="button button--secondary button--small" type="button" disabled={offset + 40 >= total || loading} onClick={() => setOffset((value) => value + 40)}>Próxima</button></nav>}
+    {total > 40 && <nav className="controlled-terms-admin__pages" aria-label="Páginas dos assuntos"><button className="button button--secondary button--small" type="button" disabled={offset === 0 || loading} onClick={() => setOffset((value) => Math.max(0, value - 40))}><AppIcon name="undo" />Anterior</button><span>Página {Math.floor(offset / 40) + 1} de {Math.ceil(total / 40)}</span><button className="button button--secondary button--small" type="button" disabled={offset + 40 >= total || loading} onClick={() => setOffset((value) => value + 40)}><AppIcon name="arrowRight" />Próxima</button></nav>}
     <p className="controlled-terms-admin__guidance"><AppIcon name="help" />Assuntos usados podem ser desativados, preservando as fichas anteriores. Um atendimento aberto impede alterações nesse cadastro; assuntos sem uso podem ser excluídos.</p>
 
-    {deleting && createPortal(<div className="pronto-modal-overlay controlled-terms-admin__overlay" onKeyDown={(event) => { if (event.key === "Escape" && !busy) setDeleting(null); }}><section className="pronto-modal-surface controlled-terms-admin__dialog" role="dialog" aria-modal="true" aria-labelledby="delete-term-title" aria-describedby="delete-term-description"><p className="eyebrow">Excluir assunto</p><h2 id="delete-term-title">Excluir “{deleting.preferred_label_pt}”?</h2><p id="delete-term-description">Este assunto não está ligado a nenhum protocolo. A exclusão é permanente.</p><div className="controlled-terms-admin__actions"><button ref={confirmRef} type="button" className="button button--danger" disabled={busy === deleting.id} onClick={remove}>Excluir assunto</button><button type="button" className="button button--secondary" disabled={busy === deleting.id} onClick={() => setDeleting(null)}>Cancelar</button></div></section></div>, document.body)}
+    {merging && <CatalogueMergeDialog kind="subject" sourceKey={merging.id} sourceLabel={merging.preferred_label_pt} onClose={() => setMerging(null)} onMerged={(_id, label) => { setMerging(null); setQuery(label); setStatus("active"); setReview("all"); setOffset(0); setUsage({}); setExpanded(null); refresh(); }} />}
+    {deleting && createPortal(<div className="pronto-modal-overlay controlled-terms-admin__overlay" onKeyDown={(event) => { if (event.key === "Escape" && !busy) setDeleting(null); }}><section className="pronto-modal-surface controlled-terms-admin__dialog" role="dialog" aria-modal="true" aria-labelledby="delete-term-title" aria-describedby="delete-term-description"><p className="eyebrow">Excluir assunto</p><h2 id="delete-term-title">Excluir “{deleting.preferred_label_pt}”?</h2><p id="delete-term-description">Este assunto não está ligado a nenhum protocolo. A exclusão é permanente.</p><div className="controlled-terms-admin__actions"><button ref={confirmRef} type="button" className="button button--danger" disabled={busy === deleting.id} onClick={remove}>Excluir assunto</button><button type="button" className="button button--secondary" disabled={busy === deleting.id} onClick={() => setDeleting(null)}><AppIcon name="close" />Cancelar</button></div></section></div>, document.body)}
   </section>;
 }

@@ -28,6 +28,14 @@ Implantação do backup B2: configuracao-backup-b2.md; executor scripts/backup; 
 
 Contingência de backup manual: backup-manual-independente.md; scripts/backup/manual_backup.py, manual_server.py e build_manual_package.py.
 
+- Cadastro e mesclagem de assuntos/CDU: docs/gestao-catalogos.md; src/components/catalogue-merge-dialog.tsx; supabase/migrations/202610260001_catalogue_creation_and_merges.sql.
+
+- Repertório próprio CDU, hierarquia, auxiliares e edições: docs/cdu-repertorio-local.md; src/lib/cdu-structure.ts.
+- Lógica de composições CDU e revisão do material didático: docs/cdu-logica-composicoes.md; src/lib/cdu-symbols.ts; src/lib/cdu-notation.ts; src/components/cdu-symbol-editor.tsx.
+
+- Avaliação das opções externas do RI (sem integração ativada): docs/interoperabilidade-ri-2026-10-27.md.
+- Autoridades de assuntos: docs/importacao-autoridades.md; src/components/subject-authority-field.tsx e subject-authority-importer.tsx; supabase/migrations/202610280001_subject_authority_import.sql (aplicada somente à prévia em 28/10/2026).
+
 Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; evidência real: validacao-restauracao-2026-10-24.md; scripts/backup/restore_drill.py e restore_server.py.
 
 Ensaio de ausência de execução e entrega do aviso: validacao-alerta-ausencia-2026-10-26.md.

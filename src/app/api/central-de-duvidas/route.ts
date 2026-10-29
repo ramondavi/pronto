@@ -8,11 +8,12 @@ export async function GET(request: Request) {
   const requestedContext = params.get("context");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).single() : { data: null };
-  const context = requestedContext === "administracao" && profile?.role === "administrator" ? "administracao"
-    : requestedContext === "atendimento" && (profile?.role === "cataloger" || profile?.role === "administrator") ? "atendimento"
-    : requestedContext === "estudante" && profile?.role === "student" ? "estudante"
-    : requestedContext === "painel" && user ? "painel" : null;
+  const { data: profile } = user ? await supabase.from("profiles").select("role,status").eq("id", user.id).single() : { data: null };
+  const active = profile?.status === "active";
+  const context = requestedContext === "administracao" && active && profile?.role === "administrator" ? "administracao"
+    : requestedContext === "atendimento" && active && (profile?.role === "cataloger" || profile?.role === "administrator") ? "atendimento"
+    : requestedContext === "estudante" && active && profile?.role === "student" ? "estudante"
+    : requestedContext === "painel" && active ? "painel" : null;
   const entries = await getPublishedKnowledge(!context);
   const audience = context === "administracao" ? "administrator" : context === "atendimento" ? "cataloger" : context === "estudante" ? "student" : "panel";
   const contextual = context ? entries.filter((entry) => entry.audiences.includes(audience) || entry.audiences.includes("panel")) : entries;
