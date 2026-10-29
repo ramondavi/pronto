@@ -11,8 +11,9 @@ test("erros CDU distinguem duplicidade, acesso, hierarquia e disponibilidade", (
  assert.match(cduMutationError({message:"valid_cdu_description_required"}),/1 a 80/);
  assert.match(cduMutationError(null),/campos foram preservados/);
 });
-test("textos refletem as novas ações sem criar códigos de permissão", () => {
- assert.deepEqual(Object.keys(cataloguePermissionCopy).sort(),["admin.cdu.manage","admin.cdu.view","admin.subjects.manage","admin.subjects.view"]);
+test("textos refletem catálogo e o acionamento de backup exclusivo de administradores", () => {
+ assert.deepEqual(Object.keys(cataloguePermissionCopy).sort(),["admin.backups.execute","admin.cdu.manage","admin.cdu.view","admin.subjects.manage","admin.subjects.view"]);
  assert.match(cataloguePermissionCopy["admin.subjects.manage"].description,/importar e mesclar/);
  assert.match(cataloguePermissionCopy["admin.cdu.manage"].description,/montar notações/);
+ assert.match(cataloguePermissionCopy["admin.backups.execute"].description,/Somente administradores ativos/);
 });

@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { backupPollingDelay } from "@/lib/backup-control";
 import { CatalogueRecordDialog } from "./catalogue-record-dialog";
 import { AppIcon, type AppIconName } from "./app-icon";
 
@@ -59,7 +60,7 @@ export function BackupAdmin(){
   if(section!=="routine")return;
   let stopped=false;let ticking=false;let timer:number|undefined;
   const pause=()=>{window.clearTimeout(timer);requestRef.current?.abort("paused");setVisible(pageVisible());};
-  const tick=async()=>{window.clearTimeout(timer);if(ticking || stopped || !pageVisible() || !navigator.onLine)return;ticking=true;try{await refresh();}finally{ticking=false;}if(stopped || !pageVisible())return;const running=runsRef.current?.some(run=>run.status!=="completed");const delay=failures.current?Math.min(300000,60000*2**Math.min(failures.current-1,3)):running?15000:60000;timer=window.setTimeout(()=>void tick(),delay);};
+  const tick=async()=>{window.clearTimeout(timer);if(ticking || stopped || !pageVisible() || !navigator.onLine)return;ticking=true;try{await refresh();}finally{ticking=false;}if(stopped || !pageVisible())return;const running=runsRef.current?.some(run=>run.status!=="completed");const delay=backupPollingDelay(Boolean(running),failures.current);timer=window.setTimeout(()=>void tick(),delay);};
   const resume=()=>{setVisible(pageVisible());if(!pageVisible() || !navigator.onLine)pause();else void tick();};
   document.addEventListener("visibilitychange",resume);window.addEventListener("online",resume);window.addEventListener("offline",resume);resume();
   return()=>{stopped=true;window.clearTimeout(timer);requestRef.current?.abort("paused");document.removeEventListener("visibilitychange",resume);window.removeEventListener("online",resume);window.removeEventListener("offline",resume);};

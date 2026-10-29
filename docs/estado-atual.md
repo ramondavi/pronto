@@ -1,24 +1,17 @@
 # Estado atual — Pronto!
 
-Atualizado em 28/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico: historico-preparacao-outubro-2026.md.
+Atualizado em 29/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico: historico-preparacao-outubro-2026.md.
 
 ## Entrega
 
-- MVP consolidado no PR #10: retrospectivo RAU+E, coautoria, administração, ficha/QR e guia RI traduzido.
-- Prévia: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app, banco cfntochwiztdcawbaedx até 202610290001. Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo; preservar contas, programas, protocolos e configurações.
-- Produção: PR #22 publicado, migrações até 202610280003 aplicadas. Fundamentação local: 202610280004 e controle de pedidos de backup 202610290001 aplicados somente na prévia; produção permanece até 003.
-- E-mails: parecer e 26 variantes em docs/revisao-emails/; operação em operacao-mvp.md.
-- PDF/A: link como no tutorial de cadastro, sem capturas.
+- MVP: PR #10 consolidado. Produção prontobib.vercel.app: PR #22, migrações até 202610280003, banco vsdkxmpzqwauzotnbdxo. Preservar contas, programas, protocolos e configurações.
+- Prévia única: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app; banco cfntochwiztdcawbaedx até 202610290001. Fundamentação local: 202610280004; pedidos de backup: 202610290001, ambas somente na prévia.
+- Em 29/10, responsável autorizou testes, PR e publicação, incluindo preparativos. Validação em curso. PR #23 anterior fechado sem merge. Sem publicação concluída nesta retomada.
+- Backup e restauro: consulta automática e roteiros; acionamento e download preparados, exclusivos de produção. Credencial cadastrada em produção pelo formulário local, sem disparo de backup. Pacote existente fora do Git, sem hospedagem; 202610290002 ainda não aplicada. Ver operacao-backups.md.
+- Assuntos/CDU: gestao-catalogos.md, cdu-repertorio-local.md e importacao-autoridades.md. E-mails/parecer: docs/revisao-emails/. Recuperação/Auth: operacao-mvp.md.
 
-- Backup e restauro: tela de consulta e roteiros na prévia, em Administração > Controle, exclusiva de administradores ativos. Atualização automática implementada e acionamento preparado; credencial somente em produção, ainda não cadastrada. Download do pacote preparado para hospedagem apenas na publicação; 202610290002 não aplicada. Nenhuma restauração pelo painel.
-- PR #23 fechado sem merge; testes/publicação aguardam sinal.
-- Assuntos/CDU: gestao-catalogos.md; cdu-repertorio-local.md. Importação publicada em 28/10: importacao-autoridades.md.
+## Operação
 
-## Verificação e operação
-
-- Evidências e limites: validacao-mvp.md.
-- Recuperação de senha e e-mails: operacao-mvp.md.
-- Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
-- PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
-- Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backup: PR #20 incorporado e agenda ativada em 28/10; chave confirmada no Proton Pass. Primeiro ciclo e passagem ao substituto: operacao-backups.md.
+- Evidências e limites: validacao-mvp.md. Aceite assistido após retrospectivo RAU+E; coordenações cadastradas. Secretaria sem convite automático.
+- Migrações incorporadas imutáveis; nunca resetar remoto nem copiar seeds para produção.
+- Backup: PR #20 incorporado e agenda ativada em 28/10; chave confirmada no Proton Pass. Primeiro ciclo e passagem ao substituto: operacao-backups.md. Não declarar continuidade integral.
