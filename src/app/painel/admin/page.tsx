@@ -44,9 +44,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const pageTitle = currentTab?.label ?? "Administração";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).single() : { data: null };
-  if (!profile || !["administrator", "cataloger"].includes(profile.role)) redirect("/painel");
-  const permissions = await userAdminPermissions(supabase, profile.role);
+  const { data: profile } = user ? await supabase.from("profiles").select("role,status").eq("id", user.id).single() : { data: null };
+  if (!profile || profile.status !== "active" || !["administrator", "cataloger"].includes(profile.role)) redirect("/painel");
+  const permissions = await userAdminPermissions(supabase, profile.role, profile.status);
   if (!adminSections.some((item) => item.tabs.some((entry) => canOpenAdminTab(entry.id, permissions)))) redirect("/painel");
   if (!params.aba) {
     if (params.area && !section.tabs.some((entry) => canOpenAdminTab(entry.id, permissions))) redirect("/painel/admin");

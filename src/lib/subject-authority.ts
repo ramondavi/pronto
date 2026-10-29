@@ -1,4 +1,4 @@
-export type SubjectCatalogueMatch = { id: string; preferred_label_pt: string; preferred_label_en: string | null; matched_variant?: string | null };
+export type SubjectCatalogueMatch = { id: string; preferred_label_pt: string; preferred_label_en: string | null; source_code?: string | null; matched_variant?: string | null };
 export function canOfferAuthorityImport(value: string, matches: SubjectCatalogueMatch[], searchState: "pending" | "ready" | "error" | "idle") {
  return searchState === "ready" && value.trim().length >= 2 && matches.length === 0;
 }

@@ -69,9 +69,9 @@ insert into public.controlled_terms(id,preferred_label_pt,normalized_label_pt,cr
 insert into public.request_controlled_terms(request_id,controlled_term_id,label_pt_snapshot,is_primary,position,source_code) values('40000000-0000-4000-8000-000000000001','50000000-0000-4000-8000-000000000001','Texto histórico da ficha',true,0,'bn');
 
 create function pg_temp.manual_fixture(label text, status_value text default 'existing') returns jsonb language sql as $$
- select jsonb_build_object('draft_id',gen_random_uuid(),'source','bn','status',status_value,'heading_type','topic',
+ select jsonb_build_object('draft_id',gen_random_uuid(),'source',case when status_value='existing' then 'bn' else 'pronto' end,'status',status_value,'heading_type','topic',
  'components',jsonb_build_array(jsonb_build_object('kind','Assunto-base','value',label),jsonb_build_object('kind','Subdivisão geográfica','value','Bahia')),
- 'variants',jsonb_build_array(jsonb_build_object('value','Variante '||label)),'note','Nota sintética'); $$;
+ 'variants',jsonb_build_array(jsonb_build_object('value','Variante '||label)),'note','Nota sintética','foundation',case when status_value='existing' then null else jsonb_build_object('rationale','Necessidade conceitual sintética documentada','references',jsonb_build_array(jsonb_build_object('kind','bibliographic','citation','Obra sintética, 2026','evidence','Discussão sintética do conceito'))) end); $$;
 set local role anon;
 select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Teste público'))$$,'42501',null,'público não cria autoridade manual');
 set local role authenticated;
@@ -134,5 +134,34 @@ set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000005';
 select is(public.can_validate_local_subject(),false,'bloqueado não recebe capacidade');
 set local role anon;
 select throws_ok($$select public.can_validate_local_subject()$$,'42501',null,'capacidade não é pública');
+
+set local role authenticated;
+set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000004';
+select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Sem base','local_validated')-'foundation')$$,'P0001','local_authority_foundation_required','termo local exige fundamentação no banco');
+select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Origem falsa','local_validated')||'{"source":"bn"}'::jsonb)$$,'P0001','manual_authority_origin_mismatch','termo local não é atribuído a fonte externa');
+select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Transcrição falsa')||'{"source":"pronto"}'::jsonb)$$,'P0001','manual_authority_origin_mismatch','Pronto não é fonte externa de transcrição');
+select is((select source_code from public.subject_authorities where record->>'title'='Local validado - Bahia'),'pronto','origem local preservada no catálogo');
+select is(public.search_subject_catalogue('Local validado')->0->>'source_code','pronto','busca identifica origem local para reutilização');
+select is((select count(*) from public.subject_authority_foundations f join public.subject_authorities a on a.id=f.authority_id where a.record->>'title'='Local validado - Bahia'),1::bigint,'gestor consulta fundamentação');
+select ok((select not (record->'manual_input' ? 'foundation') and position('Obra sintética' in record::text)=0 from public.subject_authorities where record->>'title'='Local validado - Bahia'),'referências não ficam na leitura geral das autoridades');
+select throws_ok($$insert into public.subject_authority_foundations(authority_id,rationale,references_data,created_by) values(gen_random_uuid(),'Fundamentação sintética','[{}]','10000000-0000-4000-8000-000000000004')$$,'42501',null,'sem escrita direta na fundamentação');
+select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Protocolo inacessível','local_validated')||jsonb_build_object('foundation',jsonb_build_object('rationale','Justificativa sintética suficiente','references',jsonb_build_array(jsonb_build_object('kind','request','protocol','FC-INEXISTENTE','evidence','Discussão do conceito')))))$$,'P0001','authority_reference_not_accessible','protocolo inexistente não vincula trabalho');
+set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000003';
+select is((select count(*) from public.subject_authority_foundations f join public.subject_authorities a on a.id=f.authority_id where a.record->>'title'='Local validado - Bahia'),0::bigint,'outro catalogador não lê referências restritas');
+reset role;
+update public.cataloging_requests set assigned_to='10000000-0000-4000-8000-000000000003' where id='40000000-0000-4000-8000-000000000002';
+update public.cataloging_requests set assigned_to='10000000-0000-4000-8000-000000000004' where id='40000000-0000-4000-8000-000000000001';
+set local role authenticated;
+set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000003';
+select throws_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Referência alheia','local_proposal')||jsonb_build_object('foundation',jsonb_build_object('rationale','Justificativa sintética suficiente','references',jsonb_build_array(jsonb_build_object('kind','request','request_id','40000000-0000-4000-8000-000000000001','evidence','Discussão do conceito')))),null,'40000000-0000-4000-8000-000000000002')$$,'P0001','authority_reference_not_accessible','catalogador não referencia trabalho alheio');
+select lives_ok($$select public.create_manual_subject_authority(pg_temp.manual_fixture('Referência própria','local_proposal')||jsonb_build_object('foundation',jsonb_build_object('rationale','Justificativa sintética suficiente','references',jsonb_build_array(jsonb_build_object('kind','request','request_id','40000000-0000-4000-8000-000000000002','evidence','Discussão do conceito','location','p. 42')))),null,'40000000-0000-4000-8000-000000000002')$$,'catalogador referencia trabalho próprio na proposta');
+select is((select f.references_data->0->>'request_id' from public.subject_authority_foundations f join public.subject_authorities a on a.id=f.authority_id where a.record->>'title'='Referência própria - Bahia'),'40000000-0000-4000-8000-000000000002','referência interna guarda vínculo explícito');
+select ok((select f.references_data->0->>'protocol' is null and f.references_data->0->>'title' is null from public.subject_authority_foundations f join public.subject_authorities a on a.id=f.authority_id where a.record->>'title'='Referência própria - Bahia'),'não copia protocolo nem título para referência');
+select throws_ok($$select public.save_assisted_cataloging_v2('40000000-0000-4000-8000-000000000002',jsonb_build_object('people',jsonb_build_array(jsonb_build_object('role','author'),jsonb_build_object('role','advisor')),'terms',jsonb_build_array(jsonb_build_object('labelPt','Termo inventado sem registro','sourceCode','pronto'))))$$,'P0001','local_subject_requires_registration','salvamento não cria termo local ativo por atalho');
+select lives_ok($$select public.save_assisted_cataloging_v2('40000000-0000-4000-8000-000000000002',jsonb_build_object('people',jsonb_build_array(jsonb_build_object('role','author','transcribedName','Ana Silva','authorizedName','Silva, Ana'),jsonb_build_object('role','advisor','transcribedName','Bruno Souza','authorizedName','Souza, Bruno')),'terms',jsonb_build_array(jsonb_build_object('labelPt','Local validado - Bahia','sourceCode','pronto','isPrimary',true),jsonb_build_object('labelPt','Manual existente - Bahia','sourceCode','bn'),jsonb_build_object('labelPt','Assunto anterior','sourceCode','bn')),'cduCode','72','cutterCode','S586'))$$,'salvamento aceita autoridade local validada e preserva origem');
+set local request.jwt.claim.sub='10000000-0000-4000-8000-000000000005';
+select is((select count(*) from public.subject_authority_foundations),0::bigint,'bloqueado não lê fundamentação');
+set local role anon;
+select throws_ok($$select * from public.subject_authority_foundations$$,'42501',null,'fundamentação não é pública');
 select * from finish();
 rollback;

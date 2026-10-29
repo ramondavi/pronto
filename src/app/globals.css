@@ -7134,19 +7134,41 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 /* Catalogue creation and deliberate, accessible merge confirmation. */
 .catalogue-create { margin-block: 1.25rem; display: grid; gap: 1rem; }
-.catalogue-create label, .catalogue-merge-dialog > label { display: grid; gap: .45rem; }
+.catalogue-create label, .catalogue-merge-dialog__body > label { display: grid; gap: .45rem; }
 .catalogue-inline-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-.catalogue-merge-dialog { width: min(44rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; color: var(--text); background: var(--surface); }
-.catalogue-merge-dialog::backdrop { background: rgb(0 0 0 / .6); }
-.catalogue-merge-dialog p { line-height: 1.6; }
-.catalogue-merge-dialog__targets { display: grid; gap: .5rem; max-height: 15rem; overflow: auto; margin-block: 1rem; }
-.catalogue-merge-dialog__targets label { display: flex; align-items: flex-start; gap: .65rem; padding: .65rem; border: 1px solid var(--line); border-radius: .5rem; cursor: pointer; }
-.catalogue-merge-dialog__targets input { flex: 0 0 auto; width: auto; margin-top: .25rem; }
-.catalogue-merge-dialog__targets span { display: grid; gap: .25rem; }
-.catalogue-merge-dialog__targets small { overflow-wrap: anywhere; }
-.catalogue-merge-dialog__preview { border-inline-start: 3px solid var(--institutional); padding-inline-start: 1rem; }
-.catalogue-merge-dialog__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
-@media (max-width: 600px) { .catalogue-merge-dialog__actions > button { width: 100%; } }
+dialog.pronto-modal.catalogue-merge-dialog { box-sizing: border-box; width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); background: var(--surface); }
+dialog.pronto-modal.catalogue-merge-dialog[open] { display: flex; flex-direction: column; }
+.catalogue-merge-dialog > .catalogue-modal__header { position: relative; flex: 0 0 auto; }
+.catalogue-merge-dialog .catalogue-modal__header h2 { display: flex; align-items: center; gap: 10px; }
+.catalogue-merge-dialog .catalogue-modal__header h2 > svg { width: 22px; height: 22px; flex: 0 0 22px; color: var(--institutional); }
+.catalogue-merge-dialog__body { min-height: 0; min-width: 0; display: grid; gap: 16px; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 24px; }
+.catalogue-merge-dialog__body p { margin: 0; line-height: 1.55; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__body > label { display: grid; gap: 8px; min-width: 0; }
+.catalogue-merge-dialog__body input[type="search"] { box-sizing: border-box; width: 100%; min-width: 0; height: 46px; min-height: 46px; }
+.catalogue-merge-dialog__source { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__source > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.catalogue-merge-dialog__source > div, .catalogue-merge-dialog__destination { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__source small, .catalogue-merge-dialog__destination small { color: var(--text-muted); font-size: .76rem; }
+.catalogue-merge-dialog__targets { display: grid; gap: 8px; min-width: 0; max-height: min(17rem, 40dvh); overflow: auto; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+.catalogue-merge-dialog__targets legend { padding: 0 6px; font-size: .82rem; font-weight: 750; }
+.catalogue-merge-dialog__targets label { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+.catalogue-merge-dialog__targets label.is-selected { border-color: var(--institutional); background: var(--surface-raised); }
+.catalogue-merge-dialog__targets label:focus-within { outline: 2px solid var(--institutional); outline-offset: 2px; }
+.catalogue-merge-dialog__targets input[type="radio"] { flex: 0 0 16px; width: 16px; height: 16px; min-height: 0; margin: 3px 0 0; accent-color: var(--institutional); }
+.catalogue-merge-dialog__targets span { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__targets small { color: var(--text-muted); line-height: 1.45; }
+.catalogue-merge-dialog__preview { display: grid; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-left: 3px solid var(--institutional); border-radius: var(--radius); }
+.catalogue-merge-dialog__preview h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .95rem; }
+.catalogue-merge-dialog__preview h3 > svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--institutional); }
+.catalogue-merge-dialog__counts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 0; }
+.catalogue-merge-dialog__counts > div { display: grid; gap: 4px; min-width: 0; }
+.catalogue-merge-dialog__counts dt { color: var(--text-muted); font-size: .76rem; }
+.catalogue-merge-dialog__counts dd { margin: 0; font-weight: 750; font-size: 1.15rem; }
+.catalogue-merge-dialog__preview .field-help { display: flex; align-items: flex-start; gap: 8px; }
+.catalogue-merge-dialog__preview .field-help svg { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; }
+.catalogue-merge-dialog__actions { flex: 0 0 auto; display: flex; justify-content: flex-end; gap: 12px; margin: 0; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--surface-raised); }
+.catalogue-merge-dialog__actions > button { max-width: 100%; white-space: normal; }
+@media (max-width: 600px) { dialog.pronto-modal.catalogue-merge-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); } .catalogue-merge-dialog__body { padding: 16px; } .catalogue-merge-dialog__actions { padding: 14px 16px; } .catalogue-merge-dialog__actions > button { width: 100%; } }
 
 .cdu-structure-fields { display: grid; gap: 1rem; min-width: 0; padding: 1rem; margin-block: 1rem; border: 1px solid var(--line); border-radius: var(--radius); }
 .cdu-structure-fields label { display: grid; gap: .4rem; min-width: 0; }
@@ -7161,7 +7183,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .catalogue-field-label svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); }
 :is(.controlled-terms-admin, .cdu-catalog-admin) label:not(.compact-check) { align-content: start; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select, textarea),
-.catalogue-merge-dialog > label input { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
+.catalogue-merge-dialog__body > label input { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select) { height: 46px; min-height: 46px; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) select { padding-block: 0; line-height: normal; text-align: left; }
 @supports (appearance: base-select) {
@@ -7573,3 +7595,198 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .subject-authority-field__pending > div,.subject-proposals-notice > div { flex:1; min-width:160px; }
 .subject-authority-field__pending p,.subject-proposals-notice p { margin:4px 0 0; font-size:.8125rem; line-height:1.5; }
 .cataloging-card__pending-subject { display:inline-block; margin-inline:4px; padding:1px 4px; border:1px solid var(--line); border-radius:var(--radius-sm); color:var(--institutional); background:var(--institutional-soft); font-size:.65rem; font-family:var(--font-body, sans-serif); }
+
+/* Merge comparison follows the shared catalogue modal and conditional-action style. */
+.catalogue-merge-dialog__comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; min-width: 0; }
+.catalogue-merge-dialog__comparison .catalogue-merge-dialog__source { margin: 0; padding: 14px; }
+.catalogue-merge-dialog__source.is-destination { border-color: var(--institutional); background: var(--institutional-soft); }
+.catalogue-merge-dialog__source.is-awaiting strong { color: var(--text-muted); font-weight: 550; }
+.catalogue-merge-dialog__dates { display: grid; gap: 5px; margin-top: 6px; min-width: 0; color: var(--text-muted); font-size: .72rem; font-weight: 500; line-height: 1.5; }
+.catalogue-merge-dialog__dates > span { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+.catalogue-merge-dialog__dates svg { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 3px; }
+.catalogue-merge-dialog__dates time { font-weight: 650; }
+.catalogue-merge-dialog__body .catalogue-merge-dialog__hint { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
+.catalogue-merge-dialog__hint > svg { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; }
+.catalogue-merge-dialog__targets { max-height: min(22rem,42dvh); padding: 12px; }
+.catalogue-merge-dialog__targets input[type="radio"] { box-sizing: border-box; padding: 0; min-width: 16px; }
+.catalogue-merge-dialog__targets .catalogue-merge-dialog__dates { display: grid; gap: 5px; margin-top: 6px; }
+.catalogue-merge-dialog__dates > span > span { display: inline; }
+.catalogue-merge-dialog__empty { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; color: var(--text-muted); font-size: .82rem; }
+.catalogue-merge-dialog__empty > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; }
+.catalogue-merge-dialog__counts > div { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__message { display: flex; align-items: flex-start; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__message > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--institutional); }
+.catalogue-merge-dialog__message > div { display: grid; gap: 6px; min-width: 0; font-size: .8rem; line-height: 1.5; }
+.catalogue-merge-dialog__message.is-blocking { border-color: var(--danger); }
+.catalogue-merge-dialog__message.is-blocking > svg { color: var(--danger); }
+.catalogue-merge-dialog__message.is-caution { background: var(--surface); }
+.catalogue-merge-dialog__message .button { justify-self: start; margin-top: 4px; }
+.catalogue-merge-dialog__actions .button { min-height: 46px; line-height: 1.4; }
+.catalogue-merge-dialog__actions .button:disabled, .catalogue-merge-dialog__actions .button:disabled:hover { color: var(--text-muted); background: var(--surface); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; opacity: 1; }
+@media(max-width:600px) { .catalogue-merge-dialog__comparison { grid-template-columns: minmax(0,1fr); } .catalogue-merge-dialog__counts { gap: 8px; } }
+
+/* Catalogue dialogs: one scrolling body, no compressed or overlapping steps. */
+.catalogue-merge-dialog__body { display: flex; flex-direction: column; flex: 1 1 auto; align-items: stretch; }
+.catalogue-merge-dialog__body > * { flex: 0 0 auto; min-width: 0; }
+.catalogue-merge-dialog__targets { max-height: none; overflow: visible; }
+.catalogue-merge-dialog__preview { position: static; isolation: auto; margin: 0; background: var(--surface-raised); }
+.catalogue-merge-dialog__comparison { align-items: stretch; }
+.catalogue-merge-dialog__source { margin: 0; }
+/* Keep the audit surface rounded; only its content scrolls. */
+dialog.pronto-modal.request-audit-dialog { box-sizing: border-box; padding: 0; overflow: hidden; border-radius: var(--radius-lg); max-height: calc(100dvh - 32px); }
+dialog.pronto-modal.request-audit-dialog[open] { display: flex; flex-direction: column; }
+.request-audit-dialog > .timeline-dialog__header { position: relative; flex: 0 0 auto; padding-bottom: 20px; border-bottom: 1px solid var(--line); background: var(--surface-raised); }
+.request-audit-dialog__body { min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding-bottom: 22px; }
+/* Subject records: clear identity, compact actions and full-width details. */
+.controlled-terms-admin__list { gap: 14px; }
+.controlled-terms-admin__item { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 18px 18px 0; overflow: hidden; }
+.controlled-terms-admin__main { gap: 10px; padding-bottom: 14px; }
+.controlled-terms-admin__title { align-items: flex-start; justify-content: space-between; gap: 10px 16px; }
+.controlled-terms-admin__title > strong { display: flex; align-items: flex-start; gap: 8px; min-width: 0; font-size: .95rem; line-height: 1.5; }
+.controlled-terms-admin__title > strong svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--institutional); }
+.controlled-terms-admin__state { flex-shrink: 0; }
+.controlled-terms-admin__side { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.controlled-terms-admin__usage { align-items: center; gap: 6px; }
+.controlled-terms-admin__usage svg { width: 16px; height: 16px; color: var(--institutional); }
+.controlled-terms-admin__actions { justify-content: flex-end; gap: 8px; }
+.controlled-terms-admin__actions .button { min-height: 36px; }
+.controlled-terms-admin__main > .manual-authority-details { margin-top: 0; }
+.controlled-terms-admin__main > .manual-authority-details > button { justify-self: start; }
+.controlled-terms-admin__main .manual-authority-details article { background: var(--surface); line-height: 1.5; overflow-wrap: anywhere; }
+.controlled-terms-admin__main .manual-authority-details article > :is(p, small) { margin: 0; color: var(--text-muted); }
+.controlled-terms-admin__details { margin: 0 -18px; }
+.controlled-terms-admin__details > button svg { flex: 0 0 16px; width: 16px; height: 16px; }
+@media (max-width: 600px) {
+ .controlled-terms-admin__side { align-items: flex-start; }
+ .controlled-terms-admin__actions { justify-content: flex-start; }
+ .request-audit-dialog > .timeline-dialog__header { padding-left: 16px; }
+}
+
+.controlled-terms-admin__details > button[aria-expanded="true"] > svg { transform: rotate(180deg); }
+
+/* Authority consultation and confirmation share the catalogue modal surface. */
+dialog.pronto-modal.catalogue-record-dialog { box-sizing: border-box; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); }
+dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-direction: column; }
+.catalogue-record-dialog > .catalogue-modal__header { flex: 0 0 auto; position: relative; }
+.catalogue-record-dialog .catalogue-modal__header h2 { display: flex; align-items: center; gap: 10px; }
+.catalogue-record-dialog .catalogue-modal__header h2 svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.catalogue-record-dialog__body { display: flex; flex-direction: column; gap: 18px; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 24px; }
+.catalogue-record-dialog__body > * { flex: 0 0 auto; }
+.catalogue-record-dialog__body p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.catalogue-record-dialog__body .notice { display: flex; align-items: flex-start; gap: 10px; }
+.catalogue-record-dialog__body .notice > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 3px; }
+.catalogue-record-dialog__footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--surface-raised); }
+.catalogue-record-dialog .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.catalogue-record-dialog .button svg { width: 16px; height: 16px; }
+.authority-record__identity { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--institutional-soft); overflow-wrap: anywhere; }
+.authority-record__identity > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.authority-record__identity > div { display: grid; gap: 4px; }
+.authority-record__identity small { color: var(--text-muted); }
+.authority-record { display: grid; gap: 18px; min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); overflow-wrap: anywhere; }
+.authority-record > header { display: flex; gap: 10px; align-items: flex-start; }
+.authority-record > header > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.authority-record h3 { margin: 0 0 4px; font-size: 1rem; }
+.authority-record > header p { color: var(--text-muted); font-size: .8rem; }
+.authority-record h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: .85rem; }
+.authority-record h4 svg { width: 17px; height: 17px; color: var(--institutional); }
+.authority-record > section { padding-top: 16px; border-top: 1px solid var(--line); }
+.authority-record > section > p + p { margin-top: 10px; }
+.authority-record__metadata { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 0; }
+.authority-record__metadata > div, .authority-record__parts > div { display: grid; gap: 5px; min-width: 0; }
+.authority-record dt { color: var(--text-muted); font-size: .76rem; }
+.authority-record dd { margin: 0; font-size: .85rem; }
+.authority-record__parts { display: grid; gap: 12px; margin: 0; padding: 14px; border-radius: var(--radius-sm); background: var(--surface); }
+.authority-record ul { margin: 0; padding-left: 22px; line-height: 1.65; }
+.authority-record__technical { font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--line); padding-top: 12px; }
+.authority-record__technical summary { cursor: pointer; }
+.authority-record__technical p { margin-top: 8px; }
+/* The record card is a summary, with one separate authority consultation action. */
+.controlled-terms-admin__item { padding: 0; border-left-width: 1px; }
+.controlled-terms-admin__main { padding: 18px 20px; gap: 12px; }
+.controlled-terms-admin__title > strong { font-size: 1rem; }
+.controlled-terms-admin__english { gap: 10px; }
+.controlled-terms-admin__english > span { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.controlled-terms-admin__sources { gap: 7px; }
+.controlled-terms-admin__sources > span:first-child { font-size: .74rem; }
+.controlled-terms-admin__source { background: var(--surface); color: var(--text-muted); border-color: var(--line); }
+.controlled-terms-admin__side { margin: 0; padding: 12px 20px; background: var(--surface); }
+.controlled-terms-admin__usage { font-size: .76rem; }
+.controlled-terms-admin__details { margin: 0; }
+.controlled-terms-admin__details > button { padding-inline: 20px; }
+.controlled-terms-admin__edit { padding: 20px; }
+@media(max-width:600px) { .catalogue-record-dialog__body { padding: 16px; } .catalogue-record-dialog__footer { padding: 14px 16px; } .authority-record { padding: 16px; } .authority-record__metadata { grid-template-columns: 1fr; } .controlled-terms-admin__side { display: grid; } .controlled-terms-admin__actions { justify-content: flex-start; } }
+
+/* Backup operations: read-only provider status and local recovery guidance. */
+.admin-operations[data-active-tab="backups"] > .admin-section.backup-admin { display: grid; gap: 22px; }
+.backup-admin { min-width: 0; }
+.backup-admin :is(h3,h4,p) { margin: 0; }
+.backup-admin p { font-size: .84rem; line-height: 1.6; color: var(--text-muted); }
+.backup-admin .button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; white-space: normal; }
+.backup-admin .button svg { flex: 0 0 16px; width: 16px; height: 16px; }
+.backup-admin :is(h3,h4) { line-height: 1.4; }
+.backup-admin h3 { display: flex; align-items: center; gap: 9px; font-size: 1rem; }
+.backup-admin h3 > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.backup-admin__scope,.backup-admin__note { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--institutional-soft); }
+.backup-admin__scope > svg,.backup-admin__note > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); margin-top: 2px; }
+.backup-admin__note { background: var(--surface); }
+.backup-admin__note.is-caution { border-left: 3px solid var(--institutional); }
+.backup-admin__navigation { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.backup-admin__navigation button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.backup-admin__navigation button[aria-current="page"] { border-color: var(--institutional); background: var(--institutional-soft); color: var(--institutional); }
+.backup-admin__navigation button svg { width: 18px; height: 18px; }
+.backup-admin__content { display: grid; gap: 20px; min-width: 0; }
+.backup-admin__policies,.backup-admin__services { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.backup-admin__policies > article { display: flex; align-items: flex-start; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.backup-admin__policies > article > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.backup-admin__policies > article > div { display: grid; gap: 6px; }
+.backup-admin__policies small { font-size: .75rem; color: var(--text-muted); }
+.backup-admin__policies strong { font-size: 1.15rem; }
+.backup-admin__policies p { font-size: .76rem; }
+.backup-admin__block { display: grid; gap: 18px; min-width: 0; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.backup-admin__heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.backup-admin__heading > div { display: grid; gap: 7px; flex: 1 1 280px; min-width: 0; }
+.backup-admin__heading > button { flex: 0 1 auto; }
+.backup-admin__empty { display: flex; gap: 10px; padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius-sm); align-items: center; }
+.backup-admin__empty svg { width: 20px; height: 20px; color: var(--text-muted); }
+.backup-admin__runs { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.backup-admin__runs > li { display: grid; grid-template-columns: 20px minmax(0,1fr) minmax(120px,.6fr) auto; gap: 12px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.backup-admin__runs > li > svg { width: 20px; height: 20px; color: var(--institutional); }
+.backup-admin__runs > li > div { display: grid; gap: 4px; }
+.backup-admin__runs strong { font-size: .81rem; }
+.backup-admin__runs time { font-size: .74rem; color: var(--text-muted); }
+.backup-admin__status { font-size: .74rem; padding: 5px 8px; border-radius: var(--radius-sm); background: var(--surface); color: var(--text-muted); }
+.backup-admin__services > article { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); }
+.backup-admin__services > article > p { flex: 1; }
+.backup-admin__steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.backup-admin__steps > li { display: flex; align-items: flex-start; gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+.backup-admin__steps > li:first-child { padding-top: 0; border-top: 0; }
+.backup-admin__steps > li:last-child { padding-bottom: 0; }
+.backup-admin__steps > li > span { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); font-weight: 800; }
+.backup-admin__steps > li > div { display: grid; gap: 6px; min-width: 0; }
+.backup-admin__steps h4 { font-size: .87rem; }
+.backup-admin__upload { position: relative; display: grid; justify-items: center; gap: 8px; padding: 24px; border: 1px dashed var(--institutional); border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: center; }
+.backup-admin__upload > svg { width: 25px; height: 25px; color: var(--institutional); }
+.backup-admin__upload span { font-size: .76rem; color: var(--text-muted); }
+.backup-admin__upload input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.backup-admin__upload:focus-within { outline: 2px solid var(--institutional); outline-offset: 3px; }
+.backup-admin__receipt { display: grid; gap: 16px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); }
+.backup-admin__receipt h4 { font-size: .88rem; }
+.backup-admin__receipt dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 0; }
+.backup-admin__receipt dl > div { display: grid; gap: 5px; min-width: 0; }
+.backup-admin__receipt .is-wide { grid-column: 1 / -1; }
+.backup-admin__receipt dt { font-size: .74rem; color: var(--text-muted); }
+.backup-admin__receipt dd { margin: 0; font-size: .83rem; overflow-wrap: anywhere; }
+@media(max-width:1000px) { .backup-admin__policies,.backup-admin__services { grid-template-columns: 1fr; } .backup-admin__runs > li { grid-template-columns: 20px minmax(0,1fr); } .backup-admin__runs .backup-admin__status,.backup-admin__runs .button { grid-column: 2; justify-self: start; } }
+@media(max-width:600px) { .backup-admin__block { padding: 16px; } .backup-admin__navigation { display: grid; grid-template-columns: 1fr; } .backup-admin__navigation button { justify-content: flex-start; } .backup-admin__receipt dl { grid-template-columns: 1fr; } }
+
+.backup-admin__polling { display: flex; align-items: center; gap: 8px; }
+.backup-admin__polling > svg { width: 16px; height: 16px; color: var(--institutional); }
+.backup-admin__confirm { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); font-size: .85rem; line-height: 1.6; }
+.backup-admin__confirm > input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 4px; accent-color: var(--institutional); }
+.button.backup-admin__dispatch:disabled { color: var(--text-muted); border-color: var(--line); background: var(--surface); box-shadow: none; transform: none; opacity: 1; cursor: not-allowed; }
+
+.backup-admin__package-info { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .8rem; }
+.backup-admin__package-info summary { cursor: pointer; font-weight: 700; }
+.backup-admin__package-info dl { display: grid; gap: 12px; }
+.backup-admin__package-info dt { color: var(--text-muted); margin-bottom: 5px; }
+.backup-admin__package-info dd { margin: 0; overflow-wrap: anywhere; }

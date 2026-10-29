@@ -6,6 +6,32 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: atualiza o pacote manual e o executor para reconhecer o instalador privado como ferramenta independente, com referência explícita no manifesto e bloqueio de arquivos não revisados.
+
+- 29/10/2026: corrige a retomada imediata da consulta automática após cancelamento e documenta a preparação conferida de banco e pacote privado para publicação.
+
+- 29/10/2026: valida fundamento de termos locais, revisão dos catálogos e painel de backup; inclui testes de autorização, idempotência e acionamento fixo, sem executar cópia real durante os testes.
+
+- 29/10/2026: prepara download administrativo do pacote portátil existente; hospedagem privada e liberação ficam para a publicação em produção, sem upload nesta etapa.
+
+- 29/10/2026: atualiza execuções automaticamente e prepara pedido de backup confirmado e auditado; credencial e acionamento exclusivos da produção, ainda bloqueados na prévia.
+
+- 29/10/2026: corrige a exibição de Backup e restauro na barra lateral, compartilhando a regra de acesso entre a navegação e a página.
+
+- 29/10/2026: adiciona na prévia a tela Backup e restauro, com consulta das execuções, roteiros de contingência/recuperação e leitura local de recibos, exclusiva de administradores ativos.
+
+- 29/10/2026: simplifica cartões de assuntos, abre autoridade em janela própria e exige confirmação para desativar assuntos ou retirar validação de CDU na prévia.
+
+- 29/10/2026: padroniza mesclagem de CDU e assuntos, evita sobreposição da conferência, preserva cantos do registro de ações e reorganiza a lista de assuntos na prévia.
+
+- 29/10/2026: mesclagem de assuntos mostra criação/atualização dos destinos em horário de Brasília, organiza a comparação e mantém o motivo do bloqueio dentro da ação desativada.
+
+- 29/10/2026: cadastro manual de assuntos começa somente com dois botões de escolha, no padrão CDU; o formulário aparece após escolher transcrição ou termo local.
+
+- 28/10/2026: padroniza o modal de mesclagem de assuntos/CDU, isolando estilos herdados, organizando origem, destino e conferência e preservando cantos e rolagem interna.
+
+- 28/10/2026: separa transcrição de fonte externa e criação de termo local com origem Pronto, justificativa e referências internas restritas, incluindo trabalho do próprio atendimento. Corrige a exibição da validação imediata por gestores.
+
 - 28/10/2026: permite validar e ativar termos locais no próprio cadastro por quem gerencia assuntos, inclusive na análise, preservando proposta pendente e origem local.
 
 - 28/10/2026: prepara publicação consolidada de assuntos e CDU, habilita cadastro manual estruturado e propostas locais com revisão obrigatória; resolve a integração com a versão publicada preservando fichas e vínculos históricos.

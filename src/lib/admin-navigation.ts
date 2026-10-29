@@ -15,6 +15,7 @@ export const adminSections = [
     { id: "stats", label: "Indicadores", icon: "review", description: "Veja números e tendências do serviço." },
     { id: "deposits", label: "Depósitos pendentes", icon: "upload", description: "Acompanhe trabalhos sem publicação no RI e envie lembretes após habilitar o guia." },
     { id: "retention", label: "Arquivos e retenção", icon: "archive", description: "Acompanhe prazos de guarda e limpeza dos documentos." },
+    { id: "backups", label: "Backup e restauro", icon: "shield", description: "Acompanhe execuções, confira recibos locais e prepare a recuperação dos dados." },
     { id: "audit", label: "Auditoria", icon: "document", description: "Consulte ações administrativas e operacionais registradas." },
   ] },
 ] as const;
@@ -35,9 +36,10 @@ export const adminTabPermissions: Record<AdminTab, readonly string[]> = {
   deposits: ["admin.deposits.view"],
   retention: ["admin.retention.view", "admin.retention.manage"],
   audit: ["admin.audit.view"],
+  backups: ["admin.backups.view"],
 };
 
-export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate", "admin.deposits.send", "admin.deposits.history", "admin.deposits.publication"])];
+export const adminPermissionCodes = [...new Set([...Object.values(adminTabPermissions).flat(), "admin.backups.execute", "admin.feedback.view", "admin.feedback.export", "admin.feedback.activate", "admin.deposits.send", "admin.deposits.history", "admin.deposits.publication"])];
 
 export function canOpenAdminTab(tab: AdminTab, permissions: readonly string[]) {
   return adminTabPermissions[tab].some((code) => permissions.includes(code));

@@ -36,10 +36,13 @@ export async function userHasPermission(supabase: SupabaseClient, code: string, 
   return false;
 }
 
-export async function userAdminPermissions(supabase: SupabaseClient, role: string): Promise<string[]> {
+export async function userAdminPermissions(supabase: SupabaseClient, role: string, status?: string): Promise<string[]> {
   const { data, error } = await supabase.rpc("list_effective_staff_permissions");
-  if (!error && Array.isArray(data)) return data.filter((code): code is string => typeof code === "string" && adminPermissionCodes.includes(code));
-  return (await Promise.all(adminPermissionCodes.map(async (code) =>
-    await userHasPermission(supabase, code, role) ? code : null,
-  ))).filter((code): code is string => code !== null);
+  const codes = adminPermissionCodes.filter(code => code !== "admin.backups.view");
+  const permissions = !error && Array.isArray(data)
+    ? data.filter((code): code is string => typeof code === "string" && codes.includes(code))
+    : (await Promise.all(codes.map(async code => await userHasPermission(supabase, code, role) ? code : null))).filter((code): code is string => code !== null);
+  // Consultation-only screen: same role restriction in navigation, page and API.
+  if (role === "administrator" && status === "active") permissions.push("admin.backups.view");
+  return permissions;
 }

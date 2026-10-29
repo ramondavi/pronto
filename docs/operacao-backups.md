@@ -51,3 +51,23 @@ O próximo ensaio trimestral de referência é janeiro de 2027, contado do ensai
 O workflow de produção executou a etapa Verificar mudanças e preservar cópia com resultado success. A mensagem fixa do executor confirmou nova cópia conferida, distinguindo o resultado de uma conferência sem alterações. Não foram publicados SQL, documentos, nomes privados ou credenciais. O intervalo do workflow inclui preparo das ferramentas e não mede recuperação do serviço. Nenhum ensaio de restauração foi repetido; as evidências de restauração permanecem as de 24 e 26/10.
 
 A tentativa inicial de disparo foi bloqueada pela revisão automática por exigir consentimento específico para exportação sensível. O responsável autorizou expressamente a mesma finalidade e o mesmo destino; só então o run acima foi iniciado. A identificação pessoal do substituto não foi incorporada ao Git público.
+
+## Painel de acompanhamento e pedido — 29/10/2026
+
+Implementação somente na prévia, sem testes de navegação ou disparo de workflow nesta entrega. Atualização em 60 segundos, ou 15 em execução, pausada com a aba oculta e com recuo em falhas. Os metadados públicos podem ter cache de até 60 segundos sem credencial; o navegador conserva os últimos dados com aviso de falha, sem fingir atualização.
+
+O responsável orientou reservar a credencial exclusivamente à produção. A prévia não recebe token e o servidor recusa acionamento fora de produção. Após autorização de publicação: aplicar separadamente 202610290001 em produção e cadastrar BACKUP_PANEL_GITHUB_TOKEN como segredo somente do ambiente production, com token fine-grained restrito a ramondavi/pronto e Actions: Read and write; BACKUP_PANEL_DISPATCH_ENABLED=true somente nesse ambiente. Não usar a chave do Supabase nem reutilizar credenciais do B2. O cadastro dessas variáveis ainda não foi autorizado nem realizado. Nenhum segredo é solicitado no navegador do Pronto!.
+
+Acionamento exige administrador ativo, permissão específica no banco e confirmação da exportação criptografada para o destino existente. A reserva transacional usa UUID idempotente; cinco minutos entre pedidos aceitos/recusados, uma hora para pedidos reservados ou incertos, além de bloqueio enquanto houver execução ativa. Não reenviar automaticamente POST. Um aceite do GitHub significa apenas pedido aceito; conferir o produtor para distinguir cópia nova de verificação sem mudanças. O pedido usa master e first_copy=false: não contorna BACKUP_ENABLED=false.
+
+Auditoria registra somente ator, horário, identificador do pedido e estados fixos, sem credenciais, dados exportados ou logs do produtor. A migração foi aplicada apenas em cfntochwiztdcawbaedx, com histórico 202610290001; produção não foi alterada.
+
+### Distribuição do pacote local
+
+Migração 202610290002 aplicada somente em produção: bucket backup-tools privado, leitura por administrador ativo e URL de 60 segundos. A prévia não distribui o pacote. O ZIP original permanece preservado no computador; sua cópia temporária foi retirada do bucket com autorização explícita, antes de corrigir a compatibilidade do executor.
+
+Versão revisada de 29/10: 45171644 bytes, SHA-256 7fb551a9b33061583c4041796eeaf268e7cc168b0a61cc953db98f65fb32b82f, objeto windows/7fb551a9b33061583c4041796eeaf268e7cc168b0a61cc953db98f65fb32b82f/Pronto-Backup-Manual.zip. Somente app/run_backup.py, instruções e inventário de hashes foram atualizados; ferramentas nativas e configuração pública foram preservadas. A publicação e o envio definitivo dependem do CI final. O pacote nunca integra Git ou Vercel Functions.
+
+O executor reconhece exclusivamente esse padrão de instalador privado (ZIP Windows endereçado por SHA-256, até 50 MiB). Registra a referência no manifesto; os bytes do instalador são mantidos separadamente, não duplicados em cada cópia. Metadados Storage continuam no dump. Banco, Auth e documentos Nada Consta continuam cobertos; buckets ou arquivos desconhecidos permanecem bloqueados. Na recuperação, reinstalar ferramentas a partir do ZIP separado. Pacotes manuais antigos devem ser substituídos por esta versão antes de novas cópias.
+
+Download não é backup nem ensaio de recuperação. A configuração mantém o destinatário público original; mudanças da chave exigem nova preparação validada.

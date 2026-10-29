@@ -33,6 +33,9 @@ RENEW_AFTER = timedelta(days=80)
 MAX_STORED_BYTES = 8_000_000_000  # Reserve below B2's 10 GB free allowance.
 MAX_ARCHIVE_BYTES = 2_000_000_000
 MAX_OBJECT_BYTES = 5 * 1024 * 1024  # Current Nada Consta application limit.
+OPERATOR_TOOL_PATH = re.compile(r"windows/([0-9a-f]{64})/Pronto-Backup-Manual\.zip")
+MAX_OPERATOR_TOOL_BYTES = 50 * 1024 * 1024
+
 
 
 class BackupError(Exception):
@@ -223,11 +226,22 @@ def database_tls():
                 os.environ["PGSSLROOTCERT"] = previous
 
 
+def operator_tool_reference(bucket, name, metadata):
+    """Reviewed installer asset, recovered from its separately held offline copy."""
+    match = OPERATOR_TOOL_PATH.fullmatch(name) if isinstance(name, str) else None
+    size = metadata.get("size") if isinstance(metadata, dict) else None
+    require(bucket == "backup-tools" and match is not None
+            and isinstance(size, int) and not isinstance(size, bool) and 0 < size <= MAX_OPERATOR_TOOL_BYTES
+            and metadata.get("mimetype") == "application/zip", "unreviewed_operator_toolkit")
+    return {"bucket": bucket, "name": name, "bytes": size, "sha256": match.group(1)}
+
+
 class DatabaseSnapshot:
     def __init__(self, connection, folder: Path):
         self.connection = connection
         self.folder = folder
         self.snapshot = ""
+        self.independent_operator_tools = []
 
     def query(self, statement, params=None):
         return self.connection.execute(statement, params).fetchall()
@@ -308,9 +322,15 @@ class DatabaseSnapshot:
     def inventory(self):
         rows = self.query("""SELECT bucket_id, name, metadata, updated_at::text
             FROM storage.objects ORDER BY bucket_id, name""")
-        require(all(bucket == "nada-consta" for bucket, _, _, _ in rows), "unreviewed_storage_bucket")
-        return [{"bucket": bucket, "name": name, "metadata": metadata or {}, "updated_at": updated}
-                for bucket, name, metadata, updated in rows]
+        documents = []
+        self.independent_operator_tools = []
+        for bucket, name, metadata, updated in rows:
+            if bucket == "backup-tools":
+                self.independent_operator_tools.append(operator_tool_reference(bucket, name, metadata))
+                continue
+            require(bucket == "nada-consta", "unreviewed_storage_bucket")
+            documents.append({"bucket": bucket, "name": name, "metadata": metadata or {}, "updated_at": updated})
+        return documents
 
     def dump(self):
         report_progress("export_database")
@@ -467,6 +487,7 @@ def encrypted_snapshot(db, connect, folder: Path, root: Path, fingerprint: str, 
                 "source_id": os.environ["BACKUP_SOURCE_ID"], "server_version": db.server_version,
                 "code_revision": os.environ.get("GITHUB_SHA", "local"), "tables": db.table_hashes,
                 "schemas": SCHEMAS, "objects": objects,
+                "independent_operator_tools": db.independent_operator_tools,
                 "files": {p.name: digest_file(p) for p in folder.iterdir() if p.is_file()}}
     (folder / "manifest.json").write_text(json.dumps(manifest, default=str), encoding="utf-8")
     report_progress("package_encrypt")

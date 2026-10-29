@@ -56,7 +56,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     userHasPermission(supabase, "library.calendar.view", profile.role),
     userHasPermission(supabase, "library.calendar.manage", profile.role),
   ]) : [false, false, false, false, false, false];
-  const adminPermissions = staff ? await userAdminPermissions(supabase, profile.role) : [];
+  const adminPermissions = staff ? await userAdminPermissions(supabase, profile.role, profile.status) : [];
   const serviceStatus = profile.role === "student" || canPreviewStudent ? await studentServiceStatus(supabase) : undefined;
   const { data: repositoryRequests } = profile.role === "student" ? await supabase.from("cataloging_requests").select("id,academic_enrollments(academic_programs(repository_deposit_enabled))").order("submitted_at", { ascending: false }) : { data: [] };
   const repositoryAccess = (repositoryRequests ?? []).map((request) => {

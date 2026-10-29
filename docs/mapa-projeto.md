@@ -43,3 +43,7 @@ Ensaio de ausência de execução e entrega do aviso: validacao-alerta-ausencia-
 Auth após restauração (ensaio fictício): validacao-auth-restauracao-2026-10-26.md; scripts/backup/restore_auth.py e test_restore_auth_integration.py.
 
 Fluxo do site com contas fictícias: validacao-site-recuperacao-2026-10-26.md; tests/e2e/website-recovery-drill.spec.ts e playwright.website-drill.config.ts.
+
+Tela administrativa de backup e restauro (prévia): src/components/backup-admin.tsx; consulta restrita de metadados públicos: src/app/api/admin/backups/route.ts. Sem execução ou custódia de credenciais no painel.
+
+Pacote local para download (somente preparado): src/lib/backup-manual-package.ts; endpoint autenticado src/app/api/admin/backups/pacote/route.ts; política privada em 202610290002_backup_manual_package.sql, não aplicada. Acionamento: src/lib/backup-panel.ts e 202610290001_backup_panel_dispatch.sql, aplicada apenas na prévia.

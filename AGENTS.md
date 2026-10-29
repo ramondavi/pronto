@@ -17,11 +17,12 @@
 - Migração remota exige explicação do impacto e confirmação explícita.
 
 ## Git e validação
+- Fluxo vigente: alterações só em uma prévia. Abrir PR, testar, validar e publicar produção apenas após sinal do responsável. Navegação e capturas exigem autorização específica.
 - Use o clone GitHub com .git e confirme que `git remote get-url origin` aponta para `ramondavi/pronto`, nunca `pronto-historico-privado`, ZIP ou cópia Cloud. Antes de editar: árvore limpa, master atual e branch nova.
 - Em cada PR, acrescente a CHANGELOG.md uma nota datada na seção Em preparação; a descrição deve registrar o efeito para usuários ou operação. Use nomes de branches e mensagens de commit referentes ao trabalho, sem nomes de ferramentas, inclusive em prefixos automáticos. Configure a autoria dos novos commits como Ramon Davi Santana. Revise diff/segredos antes do commit; faça commit claro e PR. Sem merge automático, force push, reescrita da master ou exclusão de branches não solicitada.
 - Quando o usuário solicitar abertura de PR: execute npm run verify (test, typecheck, lint e build). Use -- --only test typecheck lint build selecionando apenas os afetados para revalidar. Leia o resumo; investigue trechos dos logs de falhas/avisos, nunca despeje todos. Antes disso, adie testes e validações a pedido do usuário. Análise somente leitura não exige rodar testes. Preserve o CI.
 - Build sem configuração local: valores públicos/fictícios. Resuma saídas; diferencie falhas de código de limitações do ambiente.
-- Mudança visual: execute a aplicação, verifique os fluxos afetados e registre captura consolidada antes do PR. Testes locais seguros e correções do escopo estão autorizados; não peça confirmação técnica repetida. Banco remoto e decisões institucionais continuam exigindo confirmação.
+- Mudança visual: quando autorizado, execute a aplicação e confira os fluxos; capturas somente com autorização específica. Testes locais seguros e correções do escopo estão autorizados; não peça confirmação técnica repetida. Banco remoto e decisões institucionais continuam exigindo confirmação.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
