@@ -63,9 +63,11 @@ export function CatalogueMergeDialog({ kind, sourceKey, sourceLabel, onClose, on
     if (response.error || !Array.isArray(response.data)) throw new Error("destinations_unavailable");
     const items = response.data as Target[];
     let metadata: Record<string, Dates> = {}; let datesUnavailable = false;
-    if (kind === "subject") {
+    {
      try {
-      const timestampResponse = await client.from("controlled_terms").select("id,created_at,updated_at").in("id", [sourceKey, ...items.map(item => item.record_key)]);
+      const timestampResponse = kind === "subject"
+       ? await client.from("controlled_terms").select("id,created_at,updated_at").in("id", [sourceKey, ...items.map(item => item.record_key)])
+       : await client.from("cdu_code_descriptions").select("id:cdu_code,created_at:submitted_at,updated_at").in("cdu_code", [sourceKey, ...items.map(item => item.record_key)]);
       if (timestampResponse.error) throw new Error("dates_unavailable");
       metadata = Object.fromEntries((timestampResponse.data ?? []).map(item => [item.id, { created_at: item.created_at, updated_at: item.updated_at }]));
      } catch { datesUnavailable = true; }
@@ -109,13 +111,13 @@ export function CatalogueMergeDialog({ kind, sourceKey, sourceLabel, onClose, on
   <div className="catalogue-merge-dialog__body">
    <p id={`${titleId}-description`}>Indique qual cadastro deve permanecer disponível nas novas escolhas. O duplicado continuará no histórico.</p>
    <div className="catalogue-merge-dialog__comparison">
-    <section className="catalogue-merge-dialog__source" aria-label="Cadastro duplicado"><AppIcon name={kind === "subject" ? "tag" : "book"} /><div><small>Duplicado — sai das novas escolhas</small><strong>{sourceLabel}</strong>{kind === "subject" && <RecordDates dates={dates[sourceKey]} loading={loading} />}</div></section>
-    <section className={`catalogue-merge-dialog__source${target ? " is-destination" : " is-awaiting"}`} aria-label="Cadastro que será mantido"><AppIcon name={target ? "check" : "search"} /><div><small>Destino — permanece disponível</small><strong>{target?.label ?? "Escolha um cadastro abaixo"}</strong>{kind === "subject" && target && <RecordDates dates={dates[target.record_key]} loading={loading} />}</div></section>
+    <section className="catalogue-merge-dialog__source" aria-label="Cadastro duplicado"><AppIcon name={kind === "subject" ? "tag" : "book"} /><div><small>Duplicado — sai das novas escolhas</small><strong>{sourceLabel}</strong>{<RecordDates dates={dates[sourceKey]} loading={loading} />}</div></section>
+    <section className={`catalogue-merge-dialog__source${target ? " is-destination" : " is-awaiting"}`} aria-label="Cadastro que será mantido"><AppIcon name={target ? "check" : "search"} /><div><small>Destino — permanece disponível</small><strong>{target?.label ?? "Escolha um cadastro abaixo"}</strong>{target && <RecordDates dates={dates[target.record_key]} loading={loading} />}</div></section>
    </div>
    <label><span className="catalogue-field-label"><AppIcon name="search" />1. Localize o cadastro que deve permanecer</span><input type="search" maxLength={120} value={query} disabled={busy} placeholder={kind === "subject" ? "Buscar assunto em português ou inglês" : "Buscar código ou descrição CDU"} onChange={event => { setQuery(event.target.value); setTarget(null); setConfirmation(null); setMergeError(""); setMergeBlock(""); }} /></label>
-   {kind === "subject" && <p className="catalogue-merge-dialog__hint"><AppIcon name="clock" /><span>Datas de criação e atualização do cadastro, em horário de Brasília. Use-as como apoio; confira também a forma preferida e o uso do assunto.</span></p>}
+   {<p className="catalogue-merge-dialog__hint"><AppIcon name="clock" /><span>Datas de criação e atualização do cadastro, em horário de Brasília. Use-as como apoio; confira também a descrição e o uso do cadastro.</span></p>}
    <fieldset disabled={busy || loading} className="catalogue-merge-dialog__targets"><legend>Cadastros disponíveis para manter</legend>
-    {loading ? <div className="catalogue-merge-dialog__empty" role="status"><AppIcon name="clock" /><p>Buscando destinos e datas…</p></div> : currentResults?.error ? <div className="catalogue-merge-dialog__empty" role="alert"><AppIcon name="help" /><p>{currentResults.error}</p></div> : !targets.length ? <div className="catalogue-merge-dialog__empty"><AppIcon name="search" /><p>Nenhum destino encontrado. Ajuste a busca. O próprio duplicado não aparece nesta lista.</p></div> : targets.map(item => <label key={item.record_key} className={target?.record_key === item.record_key ? "is-selected" : undefined}><input type="radio" name={titleId} checked={target?.record_key === item.record_key} onChange={() => choose(item)} /><span><strong>{item.label}</strong>{item.description && <small>{item.description}</small>}{kind === "subject" && <RecordDates dates={dates[item.record_key]} />}</span></label>)}
+    {loading ? <div className="catalogue-merge-dialog__empty" role="status"><AppIcon name="clock" /><p>Buscando destinos e datas…</p></div> : currentResults?.error ? <div className="catalogue-merge-dialog__empty" role="alert"><AppIcon name="help" /><p>{currentResults.error}</p></div> : !targets.length ? <div className="catalogue-merge-dialog__empty"><AppIcon name="search" /><p>Nenhum destino encontrado. Ajuste a busca. O próprio duplicado não aparece nesta lista.</p></div> : targets.map(item => <label key={item.record_key} className={target?.record_key === item.record_key ? "is-selected" : undefined}><input type="radio" name={titleId} checked={target?.record_key === item.record_key} onChange={() => choose(item)} /><span><strong>{item.label}</strong>{item.description && <small>{item.description}</small>}{<RecordDates dates={dates[item.record_key]} />}</span></label>)}
    </fieldset>
    {currentResults?.error && <button type="button" className="button button--secondary button--small" disabled={busy} onClick={() => setRetrySearch(value => value + 1)}><AppIcon name="search" />Tentar carregar os destinos novamente</button>}
    {currentResults?.datesUnavailable && <p className="catalogue-merge-dialog__hint"><AppIcon name="help" /><span>As datas não puderam ser consultadas agora. A conferência dos vínculos continua disponível.</span></p>}

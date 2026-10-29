@@ -7624,3 +7624,42 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .catalogue-merge-dialog__actions .button { min-height: 46px; line-height: 1.4; }
 .catalogue-merge-dialog__actions .button:disabled, .catalogue-merge-dialog__actions .button:disabled:hover { color: var(--text-muted); background: var(--surface); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; opacity: 1; }
 @media(max-width:600px) { .catalogue-merge-dialog__comparison { grid-template-columns: minmax(0,1fr); } .catalogue-merge-dialog__counts { gap: 8px; } }
+
+/* Catalogue dialogs: one scrolling body, no compressed or overlapping steps. */
+.catalogue-merge-dialog__body { display: flex; flex-direction: column; flex: 1 1 auto; align-items: stretch; }
+.catalogue-merge-dialog__body > * { flex: 0 0 auto; min-width: 0; }
+.catalogue-merge-dialog__targets { max-height: none; overflow: visible; }
+.catalogue-merge-dialog__preview { position: static; isolation: auto; margin: 0; background: var(--surface-raised); }
+.catalogue-merge-dialog__comparison { align-items: stretch; }
+.catalogue-merge-dialog__source { margin: 0; }
+/* Keep the audit surface rounded; only its content scrolls. */
+dialog.pronto-modal.request-audit-dialog { box-sizing: border-box; padding: 0; overflow: hidden; border-radius: var(--radius-lg); max-height: calc(100dvh - 32px); }
+dialog.pronto-modal.request-audit-dialog[open] { display: flex; flex-direction: column; }
+.request-audit-dialog > .timeline-dialog__header { position: relative; flex: 0 0 auto; padding-bottom: 20px; border-bottom: 1px solid var(--line); background: var(--surface-raised); }
+.request-audit-dialog__body { min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding-bottom: 22px; }
+/* Subject records: clear identity, compact actions and full-width details. */
+.controlled-terms-admin__list { gap: 14px; }
+.controlled-terms-admin__item { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 18px 18px 0; overflow: hidden; }
+.controlled-terms-admin__main { gap: 10px; padding-bottom: 14px; }
+.controlled-terms-admin__title { align-items: flex-start; justify-content: space-between; gap: 10px 16px; }
+.controlled-terms-admin__title > strong { display: flex; align-items: flex-start; gap: 8px; min-width: 0; font-size: .95rem; line-height: 1.5; }
+.controlled-terms-admin__title > strong svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--institutional); }
+.controlled-terms-admin__state { flex-shrink: 0; }
+.controlled-terms-admin__side { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.controlled-terms-admin__usage { align-items: center; gap: 6px; }
+.controlled-terms-admin__usage svg { width: 16px; height: 16px; color: var(--institutional); }
+.controlled-terms-admin__actions { justify-content: flex-end; gap: 8px; }
+.controlled-terms-admin__actions .button { min-height: 36px; }
+.controlled-terms-admin__main > .manual-authority-details { margin-top: 0; }
+.controlled-terms-admin__main > .manual-authority-details > button { justify-self: start; }
+.controlled-terms-admin__main .manual-authority-details article { background: var(--surface); line-height: 1.5; overflow-wrap: anywhere; }
+.controlled-terms-admin__main .manual-authority-details article > :is(p, small) { margin: 0; color: var(--text-muted); }
+.controlled-terms-admin__details { margin: 0 -18px; }
+.controlled-terms-admin__details > button svg { flex: 0 0 16px; width: 16px; height: 16px; }
+@media (max-width: 600px) {
+ .controlled-terms-admin__side { align-items: flex-start; }
+ .controlled-terms-admin__actions { justify-content: flex-start; }
+ .request-audit-dialog > .timeline-dialog__header { padding-left: 16px; }
+}
+
+.controlled-terms-admin__details > button[aria-expanded="true"] > svg { transform: rotate(180deg); }
