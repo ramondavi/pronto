@@ -5,7 +5,7 @@ import { ManualSubjectAuthorityForm,type ManualSubjectResult } from "./manual-su
 import { ModalCloseButton } from "./modal-close-button";
 import { AppIcon } from "./app-icon";
 import type { AuthoritySource } from "@/lib/authority-preview";
-export function ManualSubjectAuthorityDialog({requestId,source,onClose,onSaved}:{requestId:string;source:AuthoritySource;onClose:()=>void;onSaved:(term:ManualSubjectResult)=>void}) {
+export function ManualSubjectAuthorityDialog({requestId,source,onClose,onSaved}:{requestId:string;source?:AuthoritySource;onClose:()=>void;onSaved:(term:ManualSubjectResult)=>void}) {
  const dialog=useRef<HTMLDialogElement>(null);const id=useId();const [mounted,setMounted]=useState(false);
  useEffect(()=>setMounted(true),[]);
  useEffect(()=>{if(!mounted)return;const element=dialog.current;element?.showModal();return()=>{if(element?.open)element.close();};},[mounted]);

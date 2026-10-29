@@ -16,7 +16,7 @@ type Term = { id: string; preferred_label_pt: string; preferred_label_en: string
 type Overview = { total_count: number; active_count: number; unused_count: number; without_source_count: number };
 type Usage = { request_id: string; protocol: string; request_status: string; source_code: string | null; is_primary: boolean };
 
-const sourceNames: Record<string, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress" };
+const sourceNames: Record<string, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress", pronto: "Pronto! — termo local" };
 const statusNames: Record<string, string> = { submitted: "Solicitado", in_review: "Em análise", changes_requested: "Ajustes solicitados", approved: "Aprovado", completed: "Concluído", canceled: "Cancelado" };
 
 function Sources({ sources }: { sources: string[] }) {

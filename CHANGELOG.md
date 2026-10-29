@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 28/10/2026: separa transcrição de fonte externa e criação de termo local com origem Pronto, justificativa e referências internas restritas, incluindo trabalho do próprio atendimento. Corrige a exibição da validação imediata por gestores.
+
 - 28/10/2026: permite validar e ativar termos locais no próprio cadastro por quem gerencia assuntos, inclusive na análise, preservando proposta pendente e origem local.
 
 - 28/10/2026: prepara publicação consolidada de assuntos e CDU, habilita cadastro manual estruturado e propostas locais com revisão obrigatória; resolve a integração com a versão publicada preservando fichas e vínculos históricos.

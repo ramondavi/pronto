@@ -290,7 +290,8 @@ export const controlledTerms = pgTable("controlled_terms", {
 export const subjectAuthorities = pgTable("subject_authorities", {
   id: uuid("id").defaultRandom().primaryKey(),
   sourceCode: text("source_code").notNull(),
-  sourceIdentifier: text("source_identifier").notNull(),
+  sourceIdentifier: text("source_identifier"),
+  origin: text("origin").$type<"imported" | "manual">().default("imported").notNull(),
   controlledTermId: uuid("controlled_term_id").references(() => controlledTerms.id, { onDelete: "cascade" }).notNull(),
   record: jsonb("record").$type<Record<string, unknown>>().notNull(),
   importedBy: uuid("imported_by").references(() => profiles.id).notNull(),
@@ -301,6 +302,13 @@ export const subjectAuthorityVariants = pgTable("subject_authority_variants", {
   authorityId: uuid("authority_id").references(() => subjectAuthorities.id, { onDelete: "cascade" }).notNull(),
   label: text("label").notNull(),
   language: text("language").default("").notNull(),
+});
+export const subjectAuthorityFoundations = pgTable("subject_authority_foundations", {
+  authorityId: uuid("authority_id").references(() => subjectAuthorities.id, { onDelete: "cascade" }).primaryKey(),
+  rationale: text("rationale").notNull(),
+  referencesData: jsonb("references_data").$type<Record<string, unknown>[]>().notNull(),
+  createdBy: uuid("created_by").references(() => profiles.id).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 export const requestControlledTerms = pgTable("request_controlled_terms", {
   id: uuid("id").defaultRandom().primaryKey(),
