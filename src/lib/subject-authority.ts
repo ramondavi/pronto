@@ -12,5 +12,5 @@ export function authorityImportError(code: string): string {
 }
 export const normalizeSubjectLabel = (value: string) => value.replace(/[\p{Cc}<>]/gu, "").replace(/\s+/gu, " ").replace(/^[ .;,:]+|[ .;,:]+$/g, "");
 
-// Ativar somente após autorização e aplicação da migração 202610280002 na prévia.
-export const manualSubjectStorageEnabled = false;
+// Publicação depende da migração 202610280002; o banco mantém as guardas de acesso.
+export const manualSubjectStorageEnabled = true;

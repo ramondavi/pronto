@@ -35,3 +35,11 @@ Contingência de backup manual: backup-manual-independente.md; scripts/backup/ma
 
 - Avaliação das opções externas do RI (sem integração ativada): docs/interoperabilidade-ri-2026-10-27.md.
 - Autoridades de assuntos: docs/importacao-autoridades.md; src/components/subject-authority-field.tsx e subject-authority-importer.tsx; supabase/migrations/202610280001_subject_authority_import.sql (aplicada somente à prévia em 28/10/2026).
+
+Ensaio de recuperação isolada: ensaio-restauracao-isolada.md; evidência real: validacao-restauracao-2026-10-24.md; scripts/backup/restore_drill.py e restore_server.py.
+
+Ensaio de ausência de execução e entrega do aviso: validacao-alerta-ausencia-2026-10-26.md.
+
+Auth após restauração (ensaio fictício): validacao-auth-restauracao-2026-10-26.md; scripts/backup/restore_auth.py e test_restore_auth_integration.py.
+
+Fluxo do site com contas fictícias: validacao-site-recuperacao-2026-10-26.md; tests/e2e/website-recovery-drill.spec.ts e playwright.website-drill.config.ts.

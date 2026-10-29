@@ -2,9 +2,9 @@ import { existsSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 const profiles = [
-  { name: "estudante", state: ".auth/student.json", path: "/painel", heading: /Seu acompanhamento/ },
-  { name: "catalogador", state: ".auth/cataloger.json", path: "/painel/fila", heading: "Fila geral" },
-  { name: "administrador", state: ".auth/administrator.json", path: "/painel/admin", heading: "Administração e operação" },
+  { name: "estudante", state: ".auth/student.json", path: "/painel", heading: "Visão geral" },
+  { name: "catalogador", state: ".auth/cataloger.json", path: "/painel/fila", heading: "Fila de solicitações" },
+  { name: "administrador", state: ".auth/administrator.json", path: "/painel/admin", heading: "Administração" },
 ] as const;
 
 for (const profile of profiles) {

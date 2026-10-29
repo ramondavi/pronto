@@ -155,14 +155,14 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
   },[requestId,ready,editable,homologatedAt,proposalSignature]);
 
 
-  const previewSnapshot = useMemo<CatalogingCardSnapshot>(() => ({
+  const previewSnapshot: CatalogingCardSnapshot = {
     ...previewBase,
     request: { ...previewBase.request, includeEquivalentTitle, depositYear: cardDetails.depositYear, defenseYear: cardDetails.defenseYear, publicationPlace: cardDetails.publicationPlace, extentUnit: cardDetails.extentUnit, extentCount: cardDetails.extentCount, hasIllustrations: cardDetails.hasIllustrations, dimensions: cardDetails.dimensions, accompanyingMaterial: cardDetails.accompanyingMaterial },
     people: catalogingPeople.map((person, position) => ({ ...person, noteLabel: person.role === "advisor" ? cardDetails.advisorNoteLabel : person.role === "coadvisor" ? cardDetails.coadvisorNoteLabel : null, position })),
     subjects: catalogingTerms.map((term, position) => ({ labelPt: term.labelPt, labelEn: term.labelEn, isPrimary: term.isPrimary, position })),
     classification: { cdu: cduCode, cutter: normalizeCutterCode(cutterCode) },
     freeNotes,
-  }), [previewBase, cardDetails, people, terms, cduCode, cutterCode, includeEquivalentTitle, freeNotes]);
+  };
   const shownSnapshot = homologationSnapshot ?? previewSnapshot;
   const cduDescriptionPending = Boolean(editable && cduCode.trim() && (cduLookupPending || cduLookupFailed || Boolean(cduMergedTarget) || (!cduDescriptionKnown && !cduDescriptionSaved)));
   const previewOptions = {
@@ -175,7 +175,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
     return () => window.clearTimeout(timer);
   }, [cduDescriptionPending]);
 
-  const valid = useMemo(() => catalogingPeople.length > 0
+  const valid = catalogingPeople.length > 0
     && catalogingPeople.every((person) => person.transcribedName.trim().length >= 3 && person.authorizedName.trim().length >= 3)
     && catalogingTerms.length >= 3 && catalogingTerms.every((term) => term.labelPt.trim().length >= 2 && Boolean(term.sourceCode) && !term.pendingReview)
     && new Set(catalogingTerms.map((term) => term.labelPt.trim().toLocaleLowerCase("pt-BR"))).size === catalogingTerms.length
@@ -185,7 +185,7 @@ export function AssistedCatalogingWorkspace({ requestId, editable, homologationA
     && cardDetails.defenseYear >= 1900 && cardDetails.extentCount > 0
     && cardDetails.publicationPlace.trim().length >= 2 && cardDetails.publicationPlace.trim().length <= 120
     && cardDetails.dimensions.length <= 120 && cardDetails.accompanyingMaterial.length <= 240
-    && freeNotes.every((note) => note.trim().length >= 3 && note.trim().length <= 500), [catalogingPeople, catalogingTerms, cardDetails, freeNotes]);
+    && freeNotes.every((note) => note.trim().length >= 3 && note.trim().length <= 500);
   const catalogingSnapshot = JSON.stringify({ people, terms, cduCode, cutterCode, cardDetails, cduDescription, freeNotes });
   const currentCataloging = useRef(catalogingSnapshot);
   useEffect(() => { currentCataloging.current = catalogingSnapshot; }, [catalogingSnapshot]);

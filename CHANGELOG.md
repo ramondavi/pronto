@@ -4,7 +4,28 @@ Este arquivo registra a evolução funcional do **Pronto!** desde o início do p
 
 A partir de agora, cada pull request deve acrescentar uma nota datada à seção **Em preparação**, descrevendo mudanças para estudantes, equipe ou operação. Ao publicar uma versão, essas notas serão agrupadas sob o número e a data da versão.
 
-## Em preparação — 0.1.0
+## Em preparação
+
+- 28/10/2026: prepara publicação consolidada de assuntos e CDU, habilita cadastro manual estruturado e propostas locais com revisão obrigatória; resolve a integração com a versão publicada preservando fichas e vínculos históricos.
+
+### 28 de outubro de 2026
+
+- Consolida as evidências de recuperação e alertas, corrige estados históricos desatualizados e prepara a operação/passagem dos backups. Nova cópia autorizada e concluída em 28/10, substituto designado e Proton Pass escolhido; agenda permanece desligada, com custódia/acesso e ativação pendentes. Registra os atrasos observados nos eventos do cron sem prometer a meta de 24 horas.
+ — 0.1.0
+
+### 26 de outubro de 2026
+
+- Comprova o fluxo local do site com contas fictícias no computador e no celular: login, sessão após recarga, saída e rejeição de acessos indevidos. Atualiza os títulos esperados dos testes antigos e mantém a evidência separada da restauração real, sem alterar produção ou agenda.
+
+- Comprova Auth e permissões na cópia real restaurada: 96 tabelas conferidas e seis contas fictícias validadas, incluindo bloqueados/inativos, com ambiente removido e credencial temporária revogada. Mantém login pelo site como pendência, produção intacta e agenda desligada.
+
+- Prepara etapa opcional de Auth na cópia real restaurada, após conferir sua integridade, com contas fictícias, prevenção de conflitos e resultado separado do login pelo site. Mantém produção intacta e agenda desligada.
+
+- Acrescenta ensaio isolado de login após cópia criptografada e restauração com seis contas fictícias, conferindo sessões e permissões de estudantes/equipe, incluindo bloqueados e inativos. Mantém explícita a pendência do login sobre a cópia real e pelo site, sem ativar a agenda.
+
+- Comprova o aviso por ausência de sinais em monitor separado de ensaio, com confirmação de recebimento pelo responsável e pausa ao final. O monitor diário e a agenda automática não foram alterados; login após restauração e substituto seguem pendentes.
+
+- Registra a entrega ao responsável dos avisos reais de falha e recuperação do backup, confirmada pelas capturas dos e-mails de 24/10. Alerta por ausência de execução, login após restauração e substituto permanecem pendentes; agenda desativada.
 
 ### 28 de outubro de 2026
 
@@ -62,6 +83,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 - Permite cadastrar assuntos pela Administração e mesclar assuntos ou CDU duplicados, mantendo fichas e vínculos históricos, com conferência, auditoria e proteção de atendimentos abertos. Substitui o ícone de acessibilidade pelo símbolo de pessoa em círculo. A ativação das funções depende da nova migração, sem aplicação remota automática.
 
 ### 24 de outubro de 2026
+
+- Prepara ensaio local de recuperação com banco descartável sem rede, conferência de hashes e estrutura, remoção do ambiente e formulário protegido com acompanhamento das etapas. Divergências de estrutura geram somente contagens por categoria, sem SQL ou nomes privados. Prepara comparação adicional com a exportação independente da estrutura em um banco vazio isolado, distinguindo equivalência estrutural de igualdade textual. Registra ensaio real concluído: 96 tabelas conferidas, nenhum PDF e limpeza confirmada, em 68,4 segundos; login pelo serviço Auth e alertas continuam pendentes. Não altera produção nem ativa a agenda.
 
 - Prepara checksum de transporte nos envios ao bucket com retenção, mantendo a conferência SHA-256 após o download. Acrescenta progresso e diagnóstico por códigos fixos na cópia real, sem publicar dados do banco, nomes de arquivos, mensagens do provedor ou credenciais. As proteções de consistência e a agenda desativada permanecem.
 

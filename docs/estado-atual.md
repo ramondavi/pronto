@@ -14,9 +14,9 @@ Atualizado em 28/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 
 ## Verificação e operação
 
-- Evidências/limites: validacao-mvp.md (133 testes, tipos/lint/build; 261 de banco; 39 públicos, três repetidos por timeout).
-- PR #12 publicado em fdfd7a7. Em 22/10, responsável confirmou nova senha e teste transacional entregue numa tentativa. Detalhes: operacao-mvp.md.
+- Evidências e limites: validacao-mvp.md.
+- Recuperação de senha e e-mails: operacao-mvp.md.
 - Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
 - PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
 - Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backups: PR #20 aberto, ensaios de recuperação/alertas aprovados; agenda desligada e substituto pendente. Guias: configuracao-backup-b2.md e backup-manual-independente.md.
+- Backup: PR #20 incorporado e agenda ativada em 28/10; chave confirmada no Proton Pass. Primeiro ciclo e passagem ao substituto: operacao-backups.md.
