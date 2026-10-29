@@ -1,5 +1,11 @@
 # Importação de autoridades de assuntos
 
+## Catálogo público na prévia — 29/10/2026
+
+A opção 2 foi aprovada para a prévia existente: consulta pública e exportação por autoridade em MARCXML e SKOS/JSON-LD. O catálogo começa vazio; gestor com `admin.subjects.manage` confere cada registro ativo, as condições de publicação e redistribuição e os indicadores MARC21 do cabeçalho e das referências antes de liberar. Fonte, variantes, subdivisões, notas e relações registradas aparecem na página; relações externas sem destino HTTPS confirmado não viram vínculos SKOS. JSON bruto, fundamentos locais, protocolos e dados de atendimento permanecem protegidos. Alterar termo, autoridade ou variantes retira sua publicação.
+
+A migração `202610290003` foi aplicada seletivamente ao banco de prévia `cfntochwiztdcawbaedx` em 29/10/2026, com `--skip-vault`, sem seeds ou roles. A simulação listou apenas esta migração; o histórico remoto confirmou a versão. A migração `202610290002` do pacote de backup não foi aplicada à prévia. Produção não foi alterada por esta publicação.
+
 Preparada em 27/10/2026. Regra: Documento-Mestre §9.1. Ativada exclusivamente na prévia em 28/10/2026, após autorização explícita e CI aprovado.
 
 Na análise, digitar ou colar um termo consulta o catálogo completo e as variantes. A ação de importar aparece somente após resposta sem resultados; não aparece com campo vazio, busca pendente, falha ou sugestões. O cadastro manual com fonte continua disponível. Importar requer arquivo/registro completo e revisão profissional; colar somente o nome não consulta a fonte externa.
