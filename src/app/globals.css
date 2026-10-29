@@ -7595,3 +7595,32 @@ dialog.pronto-modal.subject-authority-dialog[open] { display: flex; flex-directi
 .subject-authority-field__pending > div,.subject-proposals-notice > div { flex:1; min-width:160px; }
 .subject-authority-field__pending p,.subject-proposals-notice p { margin:4px 0 0; font-size:.8125rem; line-height:1.5; }
 .cataloging-card__pending-subject { display:inline-block; margin-inline:4px; padding:1px 4px; border:1px solid var(--line); border-radius:var(--radius-sm); color:var(--institutional); background:var(--institutional-soft); font-size:.65rem; font-family:var(--font-body, sans-serif); }
+
+/* Merge comparison follows the shared catalogue modal and conditional-action style. */
+.catalogue-merge-dialog__comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; min-width: 0; }
+.catalogue-merge-dialog__comparison .catalogue-merge-dialog__source { margin: 0; padding: 14px; }
+.catalogue-merge-dialog__source.is-destination { border-color: var(--institutional); background: var(--institutional-soft); }
+.catalogue-merge-dialog__source.is-awaiting strong { color: var(--text-muted); font-weight: 550; }
+.catalogue-merge-dialog__dates { display: grid; gap: 5px; margin-top: 6px; min-width: 0; color: var(--text-muted); font-size: .72rem; font-weight: 500; line-height: 1.5; }
+.catalogue-merge-dialog__dates > span { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+.catalogue-merge-dialog__dates svg { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 3px; }
+.catalogue-merge-dialog__dates time { font-weight: 650; }
+.catalogue-merge-dialog__body .catalogue-merge-dialog__hint { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
+.catalogue-merge-dialog__hint > svg { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; }
+.catalogue-merge-dialog__targets { max-height: min(22rem,42dvh); padding: 12px; }
+.catalogue-merge-dialog__targets input[type="radio"] { box-sizing: border-box; padding: 0; min-width: 16px; }
+.catalogue-merge-dialog__targets .catalogue-merge-dialog__dates { display: grid; gap: 5px; margin-top: 6px; }
+.catalogue-merge-dialog__dates > span > span { display: inline; }
+.catalogue-merge-dialog__empty { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; color: var(--text-muted); font-size: .82rem; }
+.catalogue-merge-dialog__empty > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; }
+.catalogue-merge-dialog__counts > div { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__message { display: flex; align-items: flex-start; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__message > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--institutional); }
+.catalogue-merge-dialog__message > div { display: grid; gap: 6px; min-width: 0; font-size: .8rem; line-height: 1.5; }
+.catalogue-merge-dialog__message.is-blocking { border-color: var(--danger); }
+.catalogue-merge-dialog__message.is-blocking > svg { color: var(--danger); }
+.catalogue-merge-dialog__message.is-caution { background: var(--surface); }
+.catalogue-merge-dialog__message .button { justify-self: start; margin-top: 4px; }
+.catalogue-merge-dialog__actions .button { min-height: 46px; line-height: 1.4; }
+.catalogue-merge-dialog__actions .button:disabled, .catalogue-merge-dialog__actions .button:disabled:hover { color: var(--text-muted); background: var(--surface); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; opacity: 1; }
+@media(max-width:600px) { .catalogue-merge-dialog__comparison { grid-template-columns: minmax(0,1fr); } .catalogue-merge-dialog__counts { gap: 8px; } }
