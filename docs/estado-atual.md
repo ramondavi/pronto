@@ -5,12 +5,12 @@ Atualizado em 28/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 ## Entrega
 
 - MVP consolidado no PR #10: retrospectivo RAU+E, coautoria, administração, ficha/QR e guia RI traduzido.
-- Prévia: pronto-git-codex-ajustes-administrac-c0c3a4-ramondavis-projects.vercel.app, banco cfntochwiztdcawbaedx até 202610280001. Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo; preservar contas, programas, protocolos e configurações.
-- Produção: 13 migrações até 202610220003, lint sem erros, simulação sem pendências; quatro modelos Auth atualizados. Site consolidado pela master após CI do PR #10.
+- Prévia: pronto-git-codex-ajustes-administrac-c0c3a4-ramondavis-projects.vercel.app, banco cfntochwiztdcawbaedx até 202610280002. Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo; preservar contas, programas, protocolos e configurações.
+- Produção: PR #21 publicado, migrações até 202610280002 aplicadas e histórico preservado. Validação local imediata: 202610280003 preparada, ainda sem aplicação remota.
 - E-mails: 26 variantes do parecer de 22/10 em docs/revisao-emails/. Conclusão unificada; sem RI, registro público. Lembretes abrem preparação; rodapé/URLs padronizados.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
-- Assuntos/CDU: gestao-catalogos.md; cdu-repertorio-local.md. Importação na prévia desde 28/10: importacao-autoridades.md.
+- Assuntos/CDU: gestao-catalogos.md; cdu-repertorio-local.md. Importação publicada em 28/10: importacao-autoridades.md.
 
 ## Verificação e operação
 
