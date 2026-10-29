@@ -1,17 +1,17 @@
 # Estado atual — Pronto!
 
-Atualizado em 29/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico: historico-preparacao-outubro-2026.md.
+Atualizado em 29/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md.
 
 ## Entrega
 
-- MVP: PR #10 consolidado. Produção prontobib.vercel.app: PR #22, migrações até 202610280003, banco vsdkxmpzqwauzotnbdxo. Preservar contas, programas, protocolos e configurações.
-- Prévia única: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app; banco cfntochwiztdcawbaedx até 202610290001. Fundamentação local: 202610280004; pedidos de backup: 202610290001, ambas somente na prévia.
-- Publicação autorizada em 29/10; PR #24 em validação. PR #23 fechado sem merge. Produção ainda não atualizada.
-- Backup e restauro: consulta automática e roteiros; acionamento e download preparados, exclusivos de produção. Credencial cadastrada somente em produção; nenhum disparo. Pacote existente fora do Git, sem hospedagem; 202610290002 ainda não aplicada. Ver operacao-backups.md.
-- Assuntos/CDU: gestao-catalogos.md, cdu-repertorio-local.md e importacao-autoridades.md. E-mails/parecer: docs/revisao-emails/. Recuperação/Auth: operacao-mvp.md.
+- Publicação do PR #24 autorizada em 29/10, condicionada ao CI e deploy READY. Evidências: validacao-publicacao-2026-10-29.md. PR #23 fechado sem merge.
+- Produção: prontobib.vercel.app, banco vsdkxmpzqwauzotnbdxo até 202610290002. Contagens/fingerprints dos seis conjuntos protegidos preservados na migração. Sem reset, seed remoto ou reescrita de fichas.
+- Prévia única: pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app; banco cfntochwiztdcawbaedx até 202610290001.
+- Backup: consulta automática e roteiros; acionamento confirmado/auditado e download exclusivos de produção. Credencial cadastrada pelo formulário local; pacote existente hospedado em bucket privado, hash conferido. Nenhum disparo de backup/restauração nos testes. Ver operacao-backups.md.
+- Autoridades/CDU: gestao-catalogos.md, cdu-repertorio-local.md, importacao-autoridades.md. Fundamentação local em 202610280004; pedidos de backup em 202610290001; pacote em 202610290002.
 
 ## Operação
 
-- Evidências e limites: validacao-mvp.md. Aceite assistido após retrospectivo RAU+E; coordenações cadastradas. Secretaria sem convite automático.
+- Evidências e limites gerais: validacao-mvp.md. Aceite assistido após retrospectivo RAU+E; secretaria sem convite automático. E-mails/Auth: operacao-mvp.md.
 - Migrações incorporadas imutáveis; nunca resetar remoto nem copiar seeds para produção.
-- Backup: PR #20 incorporado e agenda ativada em 28/10; chave confirmada no Proton Pass. Primeiro ciclo e passagem ao substituto: operacao-backups.md. Não declarar continuidade integral.
+- Backup: PR #20 incorporado, agenda ativada e chave confirmada no Proton Pass. Primeiro ciclo, custódia e treinamento do substituto: operacao-backups.md. Não declarar continuidade integral.

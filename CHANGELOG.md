@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: corrige a retomada imediata da consulta automática após cancelamento e documenta a preparação conferida de banco e pacote privado para publicação.
+
 - 29/10/2026: valida fundamento de termos locais, revisão dos catálogos e painel de backup; inclui testes de autorização, idempotência e acionamento fixo, sem executar cópia real durante os testes.
 
 - 29/10/2026: prepara download administrativo do pacote portátil existente; hospedagem privada e liberação ficam para a publicação em produção, sem upload nesta etapa.

@@ -59,11 +59,11 @@ export function BackupAdmin(){
  useEffect(()=>{
   if(section!=="routine")return;
   let stopped=false;let ticking=false;let timer:number|undefined;
-  const pause=()=>{window.clearTimeout(timer);requestRef.current?.abort("paused");setVisible(pageVisible());};
+  const pause=()=>{window.clearTimeout(timer);const pending=requestRef.current;requestRef.current=null;pending?.abort("paused");setLoading(false);setVisible(pageVisible());if(!navigator.onLine)setError("Sem conexão. Os dados anteriores podem estar desatualizados; a consulta será retomada quando a conexão voltar.");};
   const tick=async()=>{window.clearTimeout(timer);if(ticking || stopped || !pageVisible() || !navigator.onLine)return;ticking=true;try{await refresh();}finally{ticking=false;}if(stopped || !pageVisible())return;const running=runsRef.current?.some(run=>run.status!=="completed");const delay=backupPollingDelay(Boolean(running),failures.current);timer=window.setTimeout(()=>void tick(),delay);};
   const resume=()=>{setVisible(pageVisible());if(!pageVisible() || !navigator.onLine)pause();else void tick();};
   document.addEventListener("visibilitychange",resume);window.addEventListener("online",resume);window.addEventListener("offline",resume);resume();
-  return()=>{stopped=true;window.clearTimeout(timer);requestRef.current?.abort("paused");document.removeEventListener("visibilitychange",resume);window.removeEventListener("online",resume);window.removeEventListener("offline",resume);};
+  return()=>{stopped=true;window.clearTimeout(timer);const pending=requestRef.current;requestRef.current=null;pending?.abort("paused");document.removeEventListener("visibilitychange",resume);window.removeEventListener("online",resume);window.removeEventListener("offline",resume);};
  },[section,refresh,inProgress]);
  const dispatchReason=dispatching?"Enviando pedido…":uncertain?"Confira o pedido anterior no GitHub":loading?"Aguarde a consulta das execuções":error?"Atualize as execuções antes de solicitar":!dispatchState?"Aguarde a consulta do executor":!dispatchState.ready?dispatchState.reason:inProgress?"Aguarde a execução em andamento":"";
  async function dispatch(){
