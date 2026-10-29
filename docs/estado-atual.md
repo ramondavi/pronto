@@ -1,6 +1,6 @@
 # Estado atual — Pronto!
 
-Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico: historico-preparacao-outubro-2026.md.
+Atualizado em 26/10/2026. Regras: documento-mestre.md; pendências: decisoes-pendentes.md; caminhos: mapa-projeto.md. Histórico: historico-preparacao-outubro-2026.md.
 
 ## Entrega
 
@@ -17,4 +17,4 @@ Atualizado em 23/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - Coordenações cadastradas; aceite assistido após teste do retrospectivo RAU+E.
 - PR #13 publicado: verificacao-recuperacao-2026-10-23.md.
 - Operação: operacao-mvp.md. Migrações imutáveis; nunca resetar remoto nem copiar seeds para produção. Secretaria sem convite automático.
-- Backup desativado; acessos validados. Primeira cópia sem sucesso confirmado; correção de envio/diagnóstico em revisão. Ensaio e alertas pendentes. Guias: configuracao-backup-b2.md e backup-manual-independente.md.
+- Backup: cópia atual concluída em 28/10; agenda desligada. Substituto designado; custódia no Proton Pass/aceite pendentes. Ver operacao-backups.md.

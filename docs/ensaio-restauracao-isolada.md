@@ -1,0 +1,52 @@
+# Ensaio local de recuperação
+
+Atualizado em 24/10/2026. Complementa a seção 5 de protocolo-backup-recuperacao.md. O responsável autorizou este computador para o ensaio temporário com dados reais; produção não pode ser sobrescrita.
+
+## Situação comprovada
+
+A primeira cópia real foi concluída e conferida no [run 40146034584](https://github.com/ramondavi/pronto/actions/runs/40146034584), em 24/10/2026 às 21h19 de Brasília. A agenda continua desativada. O responsável informou que ainda não existem PDFs de solicitações; o inventário real deve ser conferido pelo ensaio, sem presumir arquivos inexistentes.
+
+O ensaio sintético restaurou três tabelas de banco/Auth/Storage, comparou contagens, hashes de todas as linhas e estrutura incluindo RLS, e removeu o banco descartável. O ensaio real também passou em 24/10/2026 às 22h19 de Brasília: 96 tabelas e nenhum PDF, em 68,4 segundos. Estrutura equivalente comprovada pela referência isolada; ambiente removido e credencial temporária revogada. Evidência e limites: validacao-restauracao-2026-10-24.md.
+
+## Procedimento protegido
+
+1. Preparar as ferramentas oficiais de PostgreSQL 17 e age e carregar previamente a imagem Supabase PostgreSQL fixada no executor por digest. Não baixar software durante a abertura de dados privados.
+2. Abrir `restore_server.py` em loopback. O responsável informa pessoalmente identificador/chave principal B2 e somente a linha nativa da identidade age do gerenciador de senhas. Nunca enviar pelo chat, salvar nos argumentos do processo ou inspecionar campos preenchidos.
+3. O botão explica e autoriza uma credencial temporária com `listFiles`/`readFiles`, restrita ao bucket privado pronto-backups e prefixo pronto-production/, com duração máxima de uma hora. O executor revoga somente a credencial criada para este ensaio após baixar a cópia. A chave principal não é persistida. Falha de revogação impede registrar sucesso.
+4. Selecionar o último marcador de cópia concluída, conferir tamanho e SHA-256 do arquivo criptografado, abrir com a identidade fornecida por entrada padrão e validar todos os arquivos contra o manifesto. Extração bloqueia travessia de pastas, links, caminhos Windows ambíguos, duplicações e excesso de tamanho.
+5. Restaurar em um único contêiner identificado pela sessão, sem rede ou portas, sem pastas do computador montadas, sem logs do banco e com sistema de arquivos somente leitura. Dados do PostgreSQL ficam em tmpfs. Não iniciar Auth, API, SMTP, agendadores, webhooks ou integrações. Dados descriptografados de preparação ficam em pasta temporária com ACL privada, removida ao encerrar; não se promete apagamento físico seguro de SSD/swap.
+6. Recriar apenas os nomes dos papéis como NOLOGIN e sem atributos elevados; não executar cegamente roles.sql. Restaurar estrutura, dados e permissões com falha imediata. Restabelecer o padrão USAGE de public após recriação limpa e e reaplicar a ACL de public selecionada do catálogo do próprio dump, preservando revogações explícitas; não ignorar divergências de permissões.
+7. Comparar todas as tabelas do manifesto por contagem e hashes calculados no banco, a estrutura por SQL canônico e os bytes dos documentos por SHA-256. Se o texto do esquema divergir, recriar o schema.sql já validado em um segundo banco vazio, no mesmo contêiner sem rede, e comparar as duas exportações pela mesma versão do PostgreSQL. O banco de referência não recebe registros. Continuar exigindo igualdade de definições, donos, ACLs e políticas; divergência persistente impede sucesso. Remover somente o contêiner desta sessão, revalidando identificação e isolamento antes da remoção. Remover as cópias temporárias antes de registrar sucesso.
+8. Guardar relatório apenas com horário, duração, hash da cópia, totais conferidos e confirmação de limpeza/revogação. Não incluir SQL, nomes de pessoas, tabelas, arquivos privados, credenciais ou conteúdo dos registros.
+
+O formulário responde imediatamente e acompanha fases a cada três segundos. A sessão aceita um único ensaio; o servidor mantém o resultado por dez minutos e fecha após uma hora se ninguém iniciar. Falhas exibem somente códigos fixos. Em caso de interrupção forçada do processo ou queda do Docker, a limpeza precisa ser conferida antes de repetir; expiração da credencial limita acesso, mas não prova sua revogação.
+
+## Limites e próximas verificações
+
+Mesmo um resultado positivo deste executor comprova recuperação e integridade em nível de banco/arquivos, não o funcionamento completo do serviço. Atributos privilegiados/login dos papéis não são reaplicados automaticamente. Configurações externas de Auth/SMTP/domínio, login pelo site, isolamento entre perfis e bloqueio de contas e reaplicação dos expurgos exigem verificações específicas em ambiente autorizado antes de declarar o protocolo operacional. Também permanece pendente definir o substituto autorizado.
+
+Não ativar BACKUP_ENABLED com base apenas no resultado deste ensaio. A aba administrativa de backups continua entrega separada.
+
+## Validação técnica
+
+Testes unitários: `python -m unittest discover -s scripts/backup -p 'test_*.py'`. A integração adicional com Docker exige `BACKUP_DOCKER_INTEGRATION=1`, ferramentas oficiais disponíveis e PostgreSQL sintético em loopback na porta 55432. Ela cria e remove somente drill_source com credenciais fictícias. Nunca apontar o teste para produção.
+
+Em divergência da estrutura, o executor registra apenas quantidades de linhas por categorias fixas (permissões, propriedade, configuração, comentários, definições e outros), sem SQL, nomes ou valores. O diagnóstico não transforma divergência em sucesso. Após falha, os arquivos e o banco temporário também são removidos; uma nova análise exige nova submissão pessoal das credenciais.
+
+O relatório distingue comparação direta dos dumps de comparação com referência isolada. Quando a segunda é necessária, registra `schema_equivalent=true`, `schema_comparison=isolated_reference` e `source_dump_text_identical=false`; não afirma igualdade textual do dump original. O schema.sql é uma exportação independente já incluída no manifesto conferido, não é reconstruído a partir do banco restaurado. Somente a criação redundante do esquema public é retirada do fluxo de referência, preservando sua base initdb e todas as alterações de dono e ACL da origem.
+
+Entrega de avisos confirmada em 26/10/2026 pelas capturas do responsável: DOWN por falha explícita e UP por recuperação, recebidos em 24/10. Isso não cobre ausência de execução. O substituto ainda será definido. Detalhes e horários em validacao-restauracao-2026-10-24.md.
+
+Ensaio adicional de ausência concluído em 26/10/2026: monitor separado com período de um minuto e tolerância de um minuto, sinal inicial único, transição automática para atraso/ausência e recebimento do aviso DOWN confirmado pelo responsável. Monitor de ensaio pausado ao final. Não alterou o monitor diário nem comprova o prazo real do cron de produção. Evidência: validacao-alerta-ausencia-2026-10-26.md.
+
+Ensaio sintético de Auth/perfis concluído em 26/10: seis logins após restauração, sessões e RLS conferidos, incluindo contas bloqueadas/inativas. Usa executor optativo separado; o procedimento protegido real acima permanece sem iniciar Auth. Limites e reprodução: validacao-auth-restauracao-2026-10-26.md.
+
+## Etapa Auth opcional na cópia real
+
+O executor aceita --auth-binary com o binário oficial previamente conferido. Sem essa opção, mantém o procedimento anterior e auth_service_login_tested=false. Com a opção, confere primeiro todas as tabelas, documentos e estrutura; só depois cria contas fictícias na cópia descartável, recusando identificadores/e-mails de teste já presentes. Nenhuma conta existente é sobrescrita e nenhuma senha real é usada. A configuração local permite login apenas ao papel limitado do serviço Auth; não importa atributos elevados da origem nem executa migrações.
+
+A etapa valida as seis contas e suas permissões com o mesmo Auth isolado do ensaio sintético. Falha em qualquer ponto impede sucesso e mantém a remoção do destino. O relatório distingue auth_validation_scope=synthetic_accounts_in_verified_restored_copy de recuperação de senhas reais e de login pelo site, ambos explicitamente não comprovados. A integridade registrada descreve a cópia antes da inserção fictícia. O ambiente inteiro é removido ao final; os registros fictícios nunca são enviados à produção ou ao backup original.
+
+Ensaio Auth na cópia real concluído em 26/10 às 19h55 de Brasília: 96 tabelas conferidas antes da inserção de seis contas fictícias; login, sessões e RLS passaram, com limpeza e revogação confirmadas. Login pelo site e senhas de contas reais não foram testados. Evidência atualizada: validacao-auth-restauracao-2026-10-26.md.
+
+Fluxo local do site conferido em base fictícia separada em 26/10: dez casos desktop e dez celular, com login, recarga, cookies, saída e rejeição de acessos indevidos. Isso complementa a prova Auth/RLS da cópia real sem expor seus registros ao navegador. Evidência e limites: validacao-site-recuperacao-2026-10-26.md.

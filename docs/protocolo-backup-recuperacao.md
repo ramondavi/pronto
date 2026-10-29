@@ -4,7 +4,7 @@ Decisão de 23/10/2026. Este documento complementa o Documento-Mestre e a polít
 
 ## 1. Objetivo e responsabilidade
 
-Ramon Davi Santana acompanha a execução, os alertas e as evidências. A execução técnica deve ter responsável e substituto nominalmente registrados antes do lançamento, com acesso institucional individual e mínimo necessário. A UFBA mantém as competências institucionais de custódia e privacidade.
+Ramon Davi Santana acompanha a execução, os alertas e as evidências. Em 28/10/2026 foi designado o substituto; nome e contato integram o registro operacional restrito, sem publicação no Git. Proton Pass foi escolhido para a custódia, ainda sem entrega/acesso institucional comprovados. A execução técnica deve ter responsável e substituto nominalmente registrados antes do lançamento, com acesso institucional individual e mínimo necessário. A UFBA mantém as competências institucionais de custódia e privacidade.
 
 Metas iniciais: nenhuma alteração deve passar mais de 24 horas sem cópia recuperável; restabelecimento em até um dia útil. Uma cópia antiga continua válida quando a verificação diária comprova ausência de mudanças. São metas a comprovar no ensaio, não garantias atuais do serviço. Se o ensaio não as cumprir, registrar o bloqueio e corrigir a rotina ou submeter nova meta ao responsável.
 
@@ -17,7 +17,7 @@ Metas iniciais: nenhuma alteração deve passar mais de 24 horas sem cópia recu
 - Guardar as chaves de recuperação em mecanismo institucional separado das cópias, acessível ao responsável e substituto autorizados. Nunca colocar backups, credenciais ou material de recuperação no Git, em logs, chats ou pastas públicas.
 - Manter inventário de dependências de recuperação: versão do código e migrações, configurações de Auth, modelos de e-mail, SMTP, domínio e hospedagem. O inventário registra nomes e responsáveis, nunca valores secretos. Recuperar segredos somente pelo mecanismo institucional autorizado.
 
-Backblaze B2 foi escolhido para preparar a integração com franquia gratuita, com executor separado da Vercel. Conta, destino, credenciais, limites e ativação permanecem pendentes. Vercel e Supabase usam plano Free, conforme informado pelo responsável em 23/10/2026. Implantação: docs/configuracao-backup-b2.md. Recursos pagos não estão autorizados por este protocolo. Confirmar o plano atual; se gratuito, não pressupor backup nativo recuperável. Redundância do provedor e replicação não substituem cópias históricas independentes.
+Backblaze B2 foi escolhido para preparar a integração com franquia gratuita, com executor separado da Vercel. Conta, destino e credenciais foram configurados nas etapas posteriores; evidências e pendências operacionais vigentes estão em docs/operacao-backups.md. A agenda permanece desligada, sem aceite final. Vercel e Supabase usam plano Free, conforme informado pelo responsável em 23/10/2026. Implantação: docs/configuracao-backup-b2.md. Recursos pagos não estão autorizados por este protocolo. Confirmar o plano atual; se gratuito, não pressupor backup nativo recuperável. Redundância do provedor e replicação não substituem cópias históricas independentes.
 
 ## 3. Retenção e preservação
 
@@ -56,3 +56,9 @@ A proteção só pode ser declarada operacional quando houver destino e respons�
 ## 7. Contingência independente dos serviços de backup
 
 Em 23/10/2026, o responsável aprovou preparar a alternativa local descrita em backup-manual-independente.md. Ela deve estar instalada antes de uma indisponibilidade, guardar somente saída criptografada no destino escolhido e usar a mesma cobertura, consistência e integridade da rotina automática. Não depende de GitHub, B2, Healthchecks ou painel durante a geração; continua dependente de Supabase e internet. Na mídia local, expurgo de 90 dias e conferência do recibo ficam a cargo do responsável. Não equivale a cópia imutável nem substitui alertas e ensaios.
+
+## Evidências disponíveis em 26/10/2026
+
+Cópia real e recuperação conferidas, incluindo Auth/RLS com contas fictícias dentro da cópia isolada; fluxo local do site conferido em base fictícia separada. Entrega dos avisos de falha, recuperação e ausência confirmada. Evidências: validacao-restauracao-2026-10-24.md, validacao-auth-restauracao-2026-10-26.md, validacao-site-recuperacao-2026-10-26.md e validacao-alerta-ausencia-2026-10-26.md.
+
+A agenda continua desativada e o substituto autorizado ainda será definido. As evidências não significam rotina diária operacional nem comprovam o prazo efetivo do cron diário. Não ativar ou incorporar automaticamente com base no encerramento destes testes.
