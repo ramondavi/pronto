@@ -7134,19 +7134,41 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 
 /* Catalogue creation and deliberate, accessible merge confirmation. */
 .catalogue-create { margin-block: 1.25rem; display: grid; gap: 1rem; }
-.catalogue-create label, .catalogue-merge-dialog > label { display: grid; gap: .45rem; }
+.catalogue-create label, .catalogue-merge-dialog__body > label { display: grid; gap: .45rem; }
 .catalogue-inline-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-.catalogue-merge-dialog { width: min(44rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; color: var(--text); background: var(--surface); }
-.catalogue-merge-dialog::backdrop { background: rgb(0 0 0 / .6); }
-.catalogue-merge-dialog p { line-height: 1.6; }
-.catalogue-merge-dialog__targets { display: grid; gap: .5rem; max-height: 15rem; overflow: auto; margin-block: 1rem; }
-.catalogue-merge-dialog__targets label { display: flex; align-items: flex-start; gap: .65rem; padding: .65rem; border: 1px solid var(--line); border-radius: .5rem; cursor: pointer; }
-.catalogue-merge-dialog__targets input { flex: 0 0 auto; width: auto; margin-top: .25rem; }
-.catalogue-merge-dialog__targets span { display: grid; gap: .25rem; }
-.catalogue-merge-dialog__targets small { overflow-wrap: anywhere; }
-.catalogue-merge-dialog__preview { border-inline-start: 3px solid var(--institutional); padding-inline-start: 1rem; }
-.catalogue-merge-dialog__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
-@media (max-width: 600px) { .catalogue-merge-dialog__actions > button { width: 100%; } }
+dialog.pronto-modal.catalogue-merge-dialog { box-sizing: border-box; width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); background: var(--surface); }
+dialog.pronto-modal.catalogue-merge-dialog[open] { display: flex; flex-direction: column; }
+.catalogue-merge-dialog > .catalogue-modal__header { position: relative; flex: 0 0 auto; }
+.catalogue-merge-dialog .catalogue-modal__header h2 { display: flex; align-items: center; gap: 10px; }
+.catalogue-merge-dialog .catalogue-modal__header h2 > svg { width: 22px; height: 22px; flex: 0 0 22px; color: var(--institutional); }
+.catalogue-merge-dialog__body { min-height: 0; min-width: 0; display: grid; gap: 16px; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 24px; }
+.catalogue-merge-dialog__body p { margin: 0; line-height: 1.55; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__body > label { display: grid; gap: 8px; min-width: 0; }
+.catalogue-merge-dialog__body input[type="search"] { box-sizing: border-box; width: 100%; min-width: 0; height: 46px; min-height: 46px; }
+.catalogue-merge-dialog__source { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.catalogue-merge-dialog__source > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.catalogue-merge-dialog__source > div, .catalogue-merge-dialog__destination { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__source small, .catalogue-merge-dialog__destination small { color: var(--text-muted); font-size: .76rem; }
+.catalogue-merge-dialog__targets { display: grid; gap: 8px; min-width: 0; max-height: min(17rem, 40dvh); overflow: auto; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+.catalogue-merge-dialog__targets legend { padding: 0 6px; font-size: .82rem; font-weight: 750; }
+.catalogue-merge-dialog__targets label { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+.catalogue-merge-dialog__targets label.is-selected { border-color: var(--institutional); background: var(--surface-raised); }
+.catalogue-merge-dialog__targets label:focus-within { outline: 2px solid var(--institutional); outline-offset: 2px; }
+.catalogue-merge-dialog__targets input[type="radio"] { flex: 0 0 16px; width: 16px; height: 16px; min-height: 0; margin: 3px 0 0; accent-color: var(--institutional); }
+.catalogue-merge-dialog__targets span { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.catalogue-merge-dialog__targets small { color: var(--text-muted); line-height: 1.45; }
+.catalogue-merge-dialog__preview { display: grid; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-left: 3px solid var(--institutional); border-radius: var(--radius); }
+.catalogue-merge-dialog__preview h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .95rem; }
+.catalogue-merge-dialog__preview h3 > svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--institutional); }
+.catalogue-merge-dialog__counts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 0; }
+.catalogue-merge-dialog__counts > div { display: grid; gap: 4px; min-width: 0; }
+.catalogue-merge-dialog__counts dt { color: var(--text-muted); font-size: .76rem; }
+.catalogue-merge-dialog__counts dd { margin: 0; font-weight: 750; font-size: 1.15rem; }
+.catalogue-merge-dialog__preview .field-help { display: flex; align-items: flex-start; gap: 8px; }
+.catalogue-merge-dialog__preview .field-help svg { flex: 0 0 16px; width: 16px; height: 16px; margin-top: 2px; }
+.catalogue-merge-dialog__actions { flex: 0 0 auto; display: flex; justify-content: flex-end; gap: 12px; margin: 0; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--surface-raised); }
+.catalogue-merge-dialog__actions > button { max-width: 100%; white-space: normal; }
+@media (max-width: 600px) { dialog.pronto-modal.catalogue-merge-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); } .catalogue-merge-dialog__body { padding: 16px; } .catalogue-merge-dialog__actions { padding: 14px 16px; } .catalogue-merge-dialog__actions > button { width: 100%; } }
 
 .cdu-structure-fields { display: grid; gap: 1rem; min-width: 0; padding: 1rem; margin-block: 1rem; border: 1px solid var(--line); border-radius: var(--radius); }
 .cdu-structure-fields label { display: grid; gap: .4rem; min-width: 0; }
@@ -7161,7 +7183,7 @@ select:not([multiple]):not([size]) { appearance: none; padding-right: 38px; back
 .catalogue-field-label svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); }
 :is(.controlled-terms-admin, .cdu-catalog-admin) label:not(.compact-check) { align-content: start; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select, textarea),
-.catalogue-merge-dialog > label input { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
+.catalogue-merge-dialog__body > label input { box-sizing: border-box; min-width: 0; width: 100%; font-size: .84rem; font-weight: 500; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) :is(input:not([type="checkbox"]), select) { height: 46px; min-height: 46px; }
 :is(.controlled-terms-admin, .cdu-catalog-admin) select { padding-block: 0; line-height: normal; text-align: left; }
 @supports (appearance: base-select) {
