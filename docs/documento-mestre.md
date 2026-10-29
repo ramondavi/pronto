@@ -514,6 +514,9 @@ O fluxo observado e confirmado é: coleção; tipo de documento; cinco grupos de
 
 ## 17. Estatísticas, relatórios e backup
 
+- Tela de backup e restauro autorizada em 29/10/2026, somente na prévia: em Administração > Controle, acesso exclusivo a administradores ativos, sem delegação ou nova permissão de execução. Consulta pública e somente de leitura dos metadados do workflow de produção, sob autenticação do painel; não lê logs, segredos ou arquivos do backup. Distingue conclusão do workflow de comprovação da cópia. Inclui roteiros locais e leitura de recibo manual somente na memória do navegador; não envia arquivos ao servidor, não verifica o arquivo criptografado nem declara restauração. Acionamento continua no GitHub/executor local. Nenhuma restauração sobre produção, alteração de agenda, nova cópia ou migração remota é autorizada por abrir esta tela.
+
+
 - Admin: versão simples com volume por período, status, curso/programa e bibliotecário.
 - Exportação básica CSV/JSON e backup de dados essenciais.
 - Relatórios avançados ficam para depois; não criar módulo separado de relatórios anuais.

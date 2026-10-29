@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: adiciona na prévia a tela Backup e restauro, com consulta das execuções, roteiros de contingência/recuperação e leitura local de recibos, exclusiva de administradores ativos.
+
 - 29/10/2026: simplifica cartões de assuntos, abre autoridade em janela própria e exige confirmação para desativar assuntos ou retirar validação de CDU na prévia.
 
 - 29/10/2026: padroniza mesclagem de CDU e assuntos, evita sobreposição da conferência, preserva cantos do registro de ações e reorganiza a lista de assuntos na prévia.

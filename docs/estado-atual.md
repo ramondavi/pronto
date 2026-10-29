@@ -10,6 +10,7 @@ Atualizado em 28/10/2026. Regras: documento-mestre.md; pendências: decisoes-pen
 - E-mails: parecer e 26 variantes em docs/revisao-emails/; operação em operacao-mvp.md.
 - PDF/A: link como no tutorial de cadastro, sem capturas.
 
+- Backup e restauro: tela de consulta e roteiros na prévia, em Administração > Controle, exclusiva de administradores ativos. Sem acionamento interno ou restauração de produção.
 - PR #23 fechado sem merge; testes/publicação aguardam sinal.
 - Assuntos/CDU: gestao-catalogos.md; cdu-repertorio-local.md. Importação publicada em 28/10: importacao-autoridades.md.
 

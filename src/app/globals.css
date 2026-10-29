@@ -7715,3 +7715,66 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .controlled-terms-admin__details > button { padding-inline: 20px; }
 .controlled-terms-admin__edit { padding: 20px; }
 @media(max-width:600px) { .catalogue-record-dialog__body { padding: 16px; } .catalogue-record-dialog__footer { padding: 14px 16px; } .authority-record { padding: 16px; } .authority-record__metadata { grid-template-columns: 1fr; } .controlled-terms-admin__side { display: grid; } .controlled-terms-admin__actions { justify-content: flex-start; } }
+
+/* Backup operations: read-only provider status and local recovery guidance. */
+.admin-operations[data-active-tab="backups"] > .admin-section.backup-admin { display: grid; gap: 22px; }
+.backup-admin { min-width: 0; }
+.backup-admin :is(h3,h4,p) { margin: 0; }
+.backup-admin p { font-size: .84rem; line-height: 1.6; color: var(--text-muted); }
+.backup-admin .button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; white-space: normal; }
+.backup-admin .button svg { flex: 0 0 16px; width: 16px; height: 16px; }
+.backup-admin :is(h3,h4) { line-height: 1.4; }
+.backup-admin h3 { display: flex; align-items: center; gap: 9px; font-size: 1rem; }
+.backup-admin h3 > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); }
+.backup-admin__scope,.backup-admin__note { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--institutional-soft); }
+.backup-admin__scope > svg,.backup-admin__note > svg { flex: 0 0 20px; width: 20px; height: 20px; color: var(--institutional); margin-top: 2px; }
+.backup-admin__note { background: var(--surface); }
+.backup-admin__note.is-caution { border-left: 3px solid var(--institutional); }
+.backup-admin__navigation { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.backup-admin__navigation button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.backup-admin__navigation button[aria-current="page"] { border-color: var(--institutional); background: var(--institutional-soft); color: var(--institutional); }
+.backup-admin__navigation button svg { width: 18px; height: 18px; }
+.backup-admin__content { display: grid; gap: 20px; min-width: 0; }
+.backup-admin__policies,.backup-admin__services { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.backup-admin__policies > article { display: flex; align-items: flex-start; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.backup-admin__policies > article > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.backup-admin__policies > article > div { display: grid; gap: 6px; }
+.backup-admin__policies small { font-size: .75rem; color: var(--text-muted); }
+.backup-admin__policies strong { font-size: 1.15rem; }
+.backup-admin__policies p { font-size: .76rem; }
+.backup-admin__block { display: grid; gap: 18px; min-width: 0; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.backup-admin__heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.backup-admin__heading > div { display: grid; gap: 7px; flex: 1 1 280px; min-width: 0; }
+.backup-admin__heading > button { flex: 0 1 auto; }
+.backup-admin__empty { display: flex; gap: 10px; padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius-sm); align-items: center; }
+.backup-admin__empty svg { width: 20px; height: 20px; color: var(--text-muted); }
+.backup-admin__runs { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.backup-admin__runs > li { display: grid; grid-template-columns: 20px minmax(0,1fr) minmax(120px,.6fr) auto; gap: 12px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.backup-admin__runs > li > svg { width: 20px; height: 20px; color: var(--institutional); }
+.backup-admin__runs > li > div { display: grid; gap: 4px; }
+.backup-admin__runs strong { font-size: .81rem; }
+.backup-admin__runs time { font-size: .74rem; color: var(--text-muted); }
+.backup-admin__status { font-size: .74rem; padding: 5px 8px; border-radius: var(--radius-sm); background: var(--surface); color: var(--text-muted); }
+.backup-admin__services > article { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); }
+.backup-admin__services > article > p { flex: 1; }
+.backup-admin__steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.backup-admin__steps > li { display: flex; align-items: flex-start; gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+.backup-admin__steps > li:first-child { padding-top: 0; border-top: 0; }
+.backup-admin__steps > li:last-child { padding-bottom: 0; }
+.backup-admin__steps > li > span { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); font-weight: 800; }
+.backup-admin__steps > li > div { display: grid; gap: 6px; min-width: 0; }
+.backup-admin__steps h4 { font-size: .87rem; }
+.backup-admin__upload { position: relative; display: grid; justify-items: center; gap: 8px; padding: 24px; border: 1px dashed var(--institutional); border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: center; }
+.backup-admin__upload > svg { width: 25px; height: 25px; color: var(--institutional); }
+.backup-admin__upload span { font-size: .76rem; color: var(--text-muted); }
+.backup-admin__upload input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.backup-admin__upload:focus-within { outline: 2px solid var(--institutional); outline-offset: 3px; }
+.backup-admin__receipt { display: grid; gap: 16px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); }
+.backup-admin__receipt h4 { font-size: .88rem; }
+.backup-admin__receipt dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 0; }
+.backup-admin__receipt dl > div { display: grid; gap: 5px; min-width: 0; }
+.backup-admin__receipt .is-wide { grid-column: 1 / -1; }
+.backup-admin__receipt dt { font-size: .74rem; color: var(--text-muted); }
+.backup-admin__receipt dd { margin: 0; font-size: .83rem; overflow-wrap: anywhere; }
+@media(max-width:1000px) { .backup-admin__policies,.backup-admin__services { grid-template-columns: 1fr; } .backup-admin__runs > li { grid-template-columns: 20px minmax(0,1fr); } .backup-admin__runs .backup-admin__status,.backup-admin__runs .button { grid-column: 2; justify-self: start; } }
+@media(max-width:600px) { .backup-admin__block { padding: 16px; } .backup-admin__navigation { display: grid; grid-template-columns: 1fr; } .backup-admin__navigation button { justify-content: flex-start; } .backup-admin__receipt dl { grid-template-columns: 1fr; } }

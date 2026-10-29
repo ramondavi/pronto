@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { adminSections, adminTabHref, canOpenAdminTab, type AdminArea } from "@/lib/admin-navigation";
 import { showPanelChange, showPanelChangeError } from "@/components/panel-change-toast";
 import { KnowledgeBaseAdmin, type KnowledgeEntry } from "./knowledge-base-admin";
+import { BackupAdmin } from "./backup-admin";
 import { CduCatalogAdmin } from "./cdu-catalog-admin";
 import { ControlledTermsAdmin } from "./controlled-terms-admin";
 import { AppIcon, type AppIconName } from "./app-icon";
@@ -1170,6 +1171,7 @@ export function AdminOperations(props: {
       </section>
       <CduCatalogAdmin entries={props.cduEntries} />
       <ControlledTermsAdmin />
+      {activeTab === "backups" && props.grantedPermissions.includes("admin.backups.view") && <BackupAdmin />}
       {props.depositFollowup && <section className="panel admin-section deposit-followup-admin">{props.depositFollowup}</section>}
     </div>
   );
