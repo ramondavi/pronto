@@ -18,6 +18,8 @@ import { homeJourneyCopy } from "@/lib/home-journey-copy";
 import { benefitIcons, homeBenefitsCopy } from "@/lib/home-benefits-copy";
 import { uiText } from "@/lib/ui-text";
 import { authorityDiscoveryCopy } from "@/lib/authority-discovery-copy";
+import { authorityUsageCopy } from "@/lib/authority-usage-copy";
+import { authorityPublicCopy } from "@/lib/authority-public-copy";
 
 const catalogPhrases = {
   pt: "Fichas catalográficas",
@@ -44,7 +46,11 @@ export default async function HomePage() {
   const catalogPosition = t.lead.indexOf(catalogPhrase);
   const benefits = homeBenefitsCopy[language];
   const discovery = authorityDiscoveryCopy[language];
+  const usageCopy = authorityUsageCopy[language];
+  const publicThemeCopy = authorityPublicCopy[language];
   const supabase = await createClient();
+  const { data: usageData } = await supabase.rpc("list_public_authority_usage_summary");
+  const mostUsed = Array.isArray(usageData) ? usageData as { id: string; label: string; count: number }[] : [];
   const { data: { user } } = await supabase.auth.getUser();
   const faqs = (await getPublishedKnowledge()).filter((entry) => entry.kind === "faq").map((entry) => {
     const legacyIndex = fallbackHomeFaqs.pt.findIndex(([question]) => question === entry.title);
@@ -88,7 +94,7 @@ export default async function HomePage() {
 
         <section className="authority-discovery" aria-labelledby="authority-discovery-title">
           <AuthorityDiscoveryGeometry />
-          <div className="container authority-discovery__inner"><div className="authority-discovery__heading"><p className="eyebrow">{discovery.eyebrow}</p><h2 id="authority-discovery-title">{discovery.title}</h2><p>{discovery.intro}</p></div><AuthorityDiscoverySearch variant="home" /></div>
+          <div className="container authority-discovery__inner"><div className="authority-discovery__heading"><p className="eyebrow">{discovery.eyebrow}</p><h2 id="authority-discovery-title">{discovery.title}</h2><p>{discovery.intro}</p><Link className="authority-discovery__area-link" href="/autoridades/explorar">{publicThemeCopy.browse} ↗</Link></div><AuthorityDiscoverySearch variant="home" />{mostUsed.length > 0 && <div className="authority-discovery__popular"><div><p className="eyebrow">{usageCopy.title}</p><p>{usageCopy.intro}</p></div><ol>{mostUsed.map((item) => <li key={item.id}><Link href={`/autoridades/${item.id}`}>{item.label}<span>{item.count} {usageCopy.count} ↗</span></Link></li>)}</ol></div>}</div>
         </section>
 
         <section id="como-funciona" className="section section--muted">

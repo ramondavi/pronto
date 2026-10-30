@@ -7,9 +7,9 @@ function Rectangles() {
   return rectangles.map(([x, y, width, height]) => <rect key={`${x}-${y}`} x={x} y={y} width={width} height={height} />);
 }
 
-export function Geometry({ repeat = false, accent = false }: { repeat?: boolean; accent?: boolean }) {
+export function Geometry({ repeat = false, accent = false, idPrefix = "hero" }: { repeat?: boolean; accent?: boolean; idPrefix?: string }) {
   if (repeat) {
-    const patternId = accent ? "hero-geometry-pattern-accent" : "hero-geometry-pattern";
+    const patternId = accent ? `${idPrefix}-geometry-pattern-accent` : `${idPrefix}-geometry-pattern`;
     return <svg className={`geometry${accent ? " geometry--accent" : ""}`} aria-hidden="true">
       <defs><pattern id={patternId} width="1200" height="560" patternUnits="userSpaceOnUse"><Rectangles /></pattern></defs>
       <rect className="geometry__plane" width="100%" height="100%" />

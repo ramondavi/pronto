@@ -6,6 +6,9 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 30/10/2026: amplia a busca pública para toda a largura da seção inicial, anima o fundo e o placeholder, retira o botão redundante e renova o catálogo e a exploração por áreas com modos de cartões e árvore; reúne recursos técnicos em áreas para bibliotecários.
+- 30/10/2026: prepara um resumo público dos temas mais usados em fichas homologadas, exibido apenas após cinco usos e liberação individual do registro, sem divulgar referências a atendimentos.
+
 - 30/10/2026: amplia a descoberta pública com histórico local, temas frequentes, correção, relações e áreas; oferece filtros adicionais, comparação, destaque e exportação em lote de autoridades liberadas, e reorganiza o acionamento de backup na administração.
 
 - 30/10/2026: destaca na página inicial a descoberta dos temas da Faculdade, com sugestões de busca e animação geométrica; aprimora a consulta pública de autoridades com filtros, operadores, ordenação e páginas internas renovadas na prévia.
