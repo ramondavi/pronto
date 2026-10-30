@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 29/10/2026: prepara na prévia o catálogo público de autoridades de assuntos, com liberação individual, consulta aberta e exportações MARCXML e SKOS/JSON-LD; registros anteriores começam privados.
+
 - 29/10/2026: atualiza o pacote manual e o executor para reconhecer o instalador privado como ferramenta independente, com referência explícita no manifesto e bloqueio de arquivos não revisados.
 
 - 29/10/2026: corrige a retomada imediata da consulta automática após cancelamento e documenta a preparação conferida de banco e pacote privado para publicação.
