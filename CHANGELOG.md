@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 30/10/2026: destaca na página inicial a descoberta dos temas da Faculdade, com sugestões de busca e animação geométrica; aprimora a consulta pública de autoridades com filtros, operadores, ordenação e páginas internas renovadas na prévia.
+
 - 29/10/2026: prepara na prévia o catálogo público de autoridades de assuntos, com liberação individual, consulta aberta e exportações MARCXML e SKOS/JSON-LD; registros anteriores começam privados.
 
 - 29/10/2026: atualiza o pacote manual e o executor para reconhecer o instalador privado como ferramenta independente, com referência explícita no manifesto e bloqueio de arquivos não revisados.

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { parseAuthorityQuery } from "@/lib/authority-search-query";
 
 export type PublicAuthority = {
   id: string; label: string; label_en: string | null; source: string; source_identifier: string | null;
@@ -22,6 +23,18 @@ export async function listPublicAuthorities(query = "", page = 0): Promise<Publi
   });
   if (error) throw error;
   return Array.isArray(data) ? data as PublicAuthority[] : [];
+}
+
+export type AuthoritySearchOptions = { query: string; source: string; heading: string; sort: string; page: number };
+
+export async function searchPublicAuthorities(options: AuthoritySearchOptions): Promise<{ items: PublicAuthority[]; total: number }> {
+  const { data, error } = await (await createClient()).rpc("search_public_subject_authorities", {
+    query_groups: parseAuthorityQuery(options.query), source_filter: options.source,
+    heading_filter: options.heading, sort_value: options.sort, page_value: options.page,
+    exact_query: options.query.slice(0, 200),
+  });
+  if (error) throw error;
+  return { items: Array.isArray(data?.items) ? data.items as PublicAuthority[] : [], total: Number(data?.total ?? 0) };
 }
 
 export async function getPublicAuthority(id: string): Promise<PublicAuthority | null> {

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { HeroGeometry } from "@/components/hero-geometry";
+import { AuthorityDiscoveryGeometry } from "@/components/authority-discovery-geometry";
+import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
 import { HeroClassificationPhrase } from "@/components/hero-cdu-word";
 import { HomeJourney } from "@/components/home-journey";
 import { Notice } from "@/components/notice";
@@ -15,6 +17,7 @@ import { homeCopy } from "@/lib/home-copy";
 import { homeJourneyCopy } from "@/lib/home-journey-copy";
 import { benefitIcons, homeBenefitsCopy } from "@/lib/home-benefits-copy";
 import { uiText } from "@/lib/ui-text";
+import { authorityDiscoveryCopy } from "@/lib/authority-discovery-copy";
 
 const catalogPhrases = {
   pt: "Fichas catalográficas",
@@ -40,6 +43,7 @@ export default async function HomePage() {
   const catalogPhrase = catalogPhrases[language];
   const catalogPosition = t.lead.indexOf(catalogPhrase);
   const benefits = homeBenefitsCopy[language];
+  const discovery = authorityDiscoveryCopy[language];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const faqs = (await getPublishedKnowledge()).filter((entry) => entry.kind === "faq").map((entry) => {
@@ -80,6 +84,11 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="authority-discovery" aria-labelledby="authority-discovery-title">
+          <AuthorityDiscoveryGeometry />
+          <div className="container authority-discovery__inner"><div className="authority-discovery__heading"><p className="eyebrow">{discovery.eyebrow}</p><h2 id="authority-discovery-title">{discovery.title}</h2><p>{discovery.intro}</p></div><AuthorityDiscoverySearch variant="home" /></div>
         </section>
 
         <section id="como-funciona" className="section section--muted">
