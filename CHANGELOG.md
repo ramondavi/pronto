@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 30/10/2026: deixa a busca pública inicial compacta até a aproximação do mouse ou foco no campo, expandindo a seção para mostrar exemplos e informações completas e recolhendo-a ao sair.
+
 - 30/10/2026: amplia a busca pública para toda a largura da seção inicial, anima o fundo e o placeholder, retira o botão redundante e renova o catálogo e a exploração por áreas com modos de cartões e árvore; reúne recursos técnicos em áreas para bibliotecários.
 - 30/10/2026: prepara um resumo público dos temas mais usados em fichas homologadas, exibido apenas após cinco usos e liberação individual do registro, sem divulgar referências a atendimentos.
 
