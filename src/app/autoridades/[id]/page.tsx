@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
-import { authoritySources, getPublicAuthority } from "@/lib/public-subject-authority";
+import { authoritySources, confirmedPublicAuthorityRelation, getPublicAuthority, searchPublicAuthorities } from "@/lib/public-subject-authority";
 import { publicAuthorityCopy } from "@/lib/public-authority-copy";
+import { authorityDiscoveryExtras } from "@/lib/authority-discovery-extras";
+import { foldAuthorityText } from "@/lib/authority-fuzzy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -15,13 +17,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PublicAuthorityPage({ params }: { params: Promise<{ id: string }> }) {
   const record = await getPublicAuthority((await params).id);
-  const copy = publicAuthorityCopy[await getInterfaceLanguage()];
+  const language = await getInterfaceLanguage();
+  const copy = publicAuthorityCopy[language];
+  const extra = authorityDiscoveryExtras[language];
   if (!record) notFound();
   const sourceUrl = record.source_url?.startsWith("https://") ? record.source_url : null;
+  const relationLinks = await Promise.all(record.relations.slice(0, 12).map(async (relation) => {
+    const results = await searchPublicAuthorities({ query: `"${relation.value.replaceAll('"', "")}"`, source: "all", heading: "all", sort: "relevance", page: 0 });
+    const published = results.items.find((item) => foldAuthorityText(item.label) === foldAuthorityText(relation.value) && confirmedPublicAuthorityRelation(relation.identifier, item, record.source));
+    return { ...relation, published };
+  }));
   return <><SiteHeader /><main className="container public-authorities public-authority-detail">
     <nav className="public-authority-detail__breadcrumb" aria-label={copy.back}><Link href="/autoridades">← {copy.back}</Link></nav>
     <header className="public-authority-detail__hero"><div><p className="eyebrow">{copy.published}</p><h1>{record.label}</h1>{record.label_en && <p>{copy.equivalent}: <strong>{record.label_en}</strong></p>}</div><span aria-hidden="true" className="public-authority-detail__mark">A<span>·</span></span></header>
     <section className="public-authorities__search-panel" aria-label={copy.search}><AuthorityDiscoverySearch variant="catalog" /></section>
+    {!!relationLinks.length && <section className="card authority-map"><div><p className="eyebrow">{extra.related}</p><h2>{extra.related}</h2></div><div className="authority-map__center">{record.label}</div><div className="authority-map__links">{relationLinks.map((relation, index) => <div key={index} className="authority-map__node"><small>{relation.kind || extra.related}</small>{relation.published ? <Link href={`/autoridades/${relation.published.id}`}>{relation.value} ↗</Link> : <span>{relation.value}</span>}</div>)}</div></section>}
     <div className="public-authority-detail__grid"><div className="public-authority-detail__content">
       {!!record.components.length && <section className="card"><p className="eyebrow">01 / {copy.heading}</p><h2>{copy.heading}</h2><ol className="public-authority-detail__components">{record.components.map((part, index) => <li key={index}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{part.kind}</strong><p>{part.value}</p></div></li>)}</ol></section>}
       {!!record.variants.length && <section className="card"><p className="eyebrow">02 / {copy.variants}</p><h2>{copy.variants}</h2><ul className="public-authority-detail__tags">{record.variants.map((part, index) => <li key={index}>{part.value}</li>)}</ul></section>}

@@ -17,6 +17,13 @@ export const authoritySources: Record<string, string> = {
   pergamum: "Rede Pergamum", loc: "Library of Congress", pronto: "Pronto!",
 };
 
+export function confirmedPublicAuthorityRelation(identifier: string | undefined, target: PublicAuthority, source: string): boolean {
+  const value = identifier?.trim();
+  if (!value) return false;
+  if (value === target.id || value === target.source_url || (source === target.source && value === target.source_identifier)) return true;
+  return false;
+}
+
 export async function listPublicAuthorities(query = "", page = 0): Promise<PublicAuthority[]> {
   const { data, error } = await (await createClient()).rpc("list_public_subject_authorities", {
     search_value: query.slice(0, 100), page_value: page, target_id: null,
@@ -25,13 +32,14 @@ export async function listPublicAuthorities(query = "", page = 0): Promise<Publi
   return Array.isArray(data) ? data as PublicAuthority[] : [];
 }
 
-export type AuthoritySearchOptions = { query: string; source: string; heading: string; sort: string; page: number };
+export type AuthoritySearchOptions = { query: string; source: string; heading: string; sort: string; page: number; variantLanguage?: string; relation?: string };
 
 export async function searchPublicAuthorities(options: AuthoritySearchOptions): Promise<{ items: PublicAuthority[]; total: number }> {
-  const { data, error } = await (await createClient()).rpc("search_public_subject_authorities", {
+  const { data, error } = await (await createClient()).rpc("search_public_subject_authorities_filtered", {
     query_groups: parseAuthorityQuery(options.query), source_filter: options.source,
     heading_filter: options.heading, sort_value: options.sort, page_value: options.page,
     exact_query: options.query.slice(0, 200),
+    language_filter: options.variantLanguage ?? "all", relation_filter: options.relation ?? "all",
   });
   if (error) throw error;
   return { items: Array.isArray(data?.items) ? data.items as PublicAuthority[] : [], total: Number(data?.total ?? 0) };
