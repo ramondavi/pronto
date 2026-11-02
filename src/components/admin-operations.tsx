@@ -8,6 +8,7 @@ import { KnowledgeBaseAdmin, type KnowledgeEntry } from "./knowledge-base-admin"
 import { BackupAdmin } from "./backup-admin";
 import { CduCatalogAdmin } from "./cdu-catalog-admin";
 import { ControlledTermsAdmin } from "./controlled-terms-admin";
+import { AuthorityAreasAdmin } from "./authority-areas-admin";
 import { AppIcon, type AppIconName } from "./app-icon";
 import { ModalCloseButton } from "./modal-close-button";
 import { formatLibraryHour, isLibraryClosureAnnouncement, serviceDayKey } from "@/lib/service-announcements";
@@ -706,7 +707,7 @@ export function AdminOperations(props: {
     const next = adminTabs[index + direction];
     if (next) navigateAdminTab(next.id);
   };
-  const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage" };
+  const managePermission: Record<string, string> = { users: "admin.accounts.manage", permissions: "admin.permissions.manage", programs: "admin.programs.manage", library: "library.calendar.manage", service: "admin.service.manage", retention: "admin.retention.manage", faq: "admin.knowledge.manage", cdu: "admin.cdu.manage", subjects: "admin.subjects.manage", areas: "admin.subjects.manage" };
   const readOnly = activeTab !== "users" && Boolean(managePermission[activeTab] && !props.grantedPermissions.includes(managePermission[activeTab]) && !(activeTab === "faq" && props.grantedPermissions.includes("admin.faq.manage")));
   useEffect(() => {
     const section = [...document.querySelectorAll<HTMLElement>(`.admin-operations[data-active-tab="${activeTab}"] > .admin-section`)]
@@ -1171,6 +1172,7 @@ export function AdminOperations(props: {
       </section>
       <CduCatalogAdmin entries={props.cduEntries} />
       <ControlledTermsAdmin />
+      {activeTab === "areas" && <AuthorityAreasAdmin />}
       {activeTab === "backups" && props.grantedPermissions.includes("admin.backups.view") && <BackupAdmin />}
       {props.depositFollowup && <section className="panel admin-section deposit-followup-admin">{props.depositFollowup}</section>}
     </div>

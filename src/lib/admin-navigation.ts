@@ -9,6 +9,7 @@ export const adminSections = [
     { id: "service", label: "Modelos de resposta", icon: "inbox", description: "Configure mensagens padrão para pendências e orientações do atendimento." },
     { id: "faq", label: "Ajuda e FAQ", icon: "help", description: "Edite respostas e artigos da central de ajuda." },
     { id: "subjects", label: "Assuntos", icon: "tag", description: "Mantenha os termos usados para classificar os trabalhos." },
+    { id: "areas", label: "Temas por área", icon: "hierarchy", description: "Organize os percursos editoriais dos cartões e da árvore do catálogo público." },
     { id: "cdu", label: "Catálogo CDU", icon: "book", description: "Consulte e revise descrições dos códigos de classificação." },
   ] },
   { area: "controle", label: "Controle", icon: "shield", summary: "Acompanhe indicadores, retenção de arquivos e registros de auditoria.", tabs: [
@@ -31,6 +32,7 @@ export const adminTabPermissions: Record<AdminTab, readonly string[]> = {
   service: ["admin.service.view", "admin.service.manage"],
   faq: ["admin.faq.view", "admin.faq.manage", "admin.knowledge.view", "admin.knowledge.manage"],
   subjects: ["admin.subjects.view", "admin.subjects.manage"],
+  areas: ["admin.subjects.manage"],
   cdu: ["admin.cdu.view", "admin.cdu.manage"],
   stats: ["admin.stats.view"],
   deposits: ["admin.deposits.view"],

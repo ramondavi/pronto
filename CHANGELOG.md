@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: separa Temas por área da aba Assuntos e cria uma aba própria em Administração → Conteúdo, com acesso e navegação consistentes.
+
 - 01/11/2026: acrescenta uma navegação visível na aba Assuntos para alternar entre o catálogo e os temas por área sem percorrer uma lista longa.
 
 - 01/11/2026: organiza o controle de acessos por área, tela e aba do painel, identifica o acesso fixo de consulta ao backup e facilita localizar cada ação pela busca.
