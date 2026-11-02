@@ -24,6 +24,7 @@ import { RelativeDateTime } from "@/components/relative-date-time";
 import { ServiceStatusBanner } from "@/components/service-status-banner";
 import { userHasPermission } from "@/lib/staff-permissions";
 import { StaffGlobalSearch } from "@/components/staff-global-search";
+import { StaffBackupStatus } from "@/components/staff-backup-status";
 import { StudentOverviewAction } from "@/components/student-overview-action";
 
 export default async function StudentDashboardPage() {
@@ -133,14 +134,15 @@ async function StaffOverview({ role, userId, firstName }: { role: "cataloger" | 
     <StaffGlobalSearch prominent firstName={firstName} greetingVariant={Math.floor(Math.random() * 6)} />
     <h1 className="sr-only">Visão geral</h1>
     <div className={`staff-overview-main${administrator ? " staff-overview-main--admin" : " staff-overview-main--cataloger"}`}>
-      <StaffActivityFeed initialEvents={(activityFeed.data ?? []) as StaffActivityEvent[]} userId={userId} initialLoadError={Boolean(activityFeed.error)} />
-      <div className="staff-overview-main__side"><section className="overview-stats" aria-label="Indicadores rápidos">
+      <div className="staff-overview-main__activity"><div className="staff-overview-main__section-heading"><div><p className="eyebrow">Acompanhar</p><h2>Atividade recente</h2></div><Link href="/painel/fila">Abrir fila <AppIcon name="arrowRight" /></Link></div><StaffActivityFeed initialEvents={(activityFeed.data ?? []) as StaffActivityEvent[]} userId={userId} initialLoadError={Boolean(activityFeed.error)} /></div>
+      <div className="staff-overview-main__side"><div className="staff-overview-main__section-heading"><div><p className="eyebrow">Agir</p><h2>{role === "administrator" ? "Mesa da administração" : "Sua mesa de trabalho"}</h2></div></div><section className="overview-stats" aria-label="Indicadores rápidos">
       <article><AppIcon className="overview-stats__icon" name="queue" /><strong>{unassigned}</strong><span>na fila sem responsável</span><Link href="/painel/fila">Abrir fila</Link></article>
       <article><AppIcon className="overview-stats__icon" name="work" /><strong>{mine}</strong><span>{administrator ? "atendimentos em andamento" : "meus atendimentos em andamento"}</span><Link href="/painel/fila?responsavel=me">Ver atendimentos</Link></article>
       <article><AppIcon className="overview-stats__icon" name="edit" /><strong>{changes}</strong><span>solicitações aguardando correção</span><Link href="/painel/fila?status=changes_requested">Ver pendências</Link></article>
       <article><AppIcon className="overview-stats__icon" name={administrator ? "admin" : "check"} /><strong>{administrator ? candidates.length : approved}</strong><span>{administrator ? "contas aguardando provisionamento" : "solicitações aprovadas"}</span><Link href={administrator ? "/painel/admin" : "/painel/fila?status=approved"}>{administrator ? "Administrar contas" : "Ver aprovações"}</Link></article>
       </section>
       <section className="overview-context">{administrator && (candidates?.length ?? 0) > 0 && <article className="panel"><p className="eyebrow">Equipe ativa</p><h2>{activeStaffCount ?? 0} pessoas com acesso operacional</h2><p>Use a administração para ajustar perfis, situações e permissões.</p><Link className="button button--secondary button--small" href="/painel/admin">Abrir administração</Link></article>}<article className="panel overview-priorities"><p className="eyebrow overview-priorities__heading"><AppIcon name="star" /><span>Prioridade da fila</span></p><h2>{priorities.length ? `${priorities.length} ${priorities.length === 1 ? "protocolo prioritário" : "protocolos prioritários"} em aberto` : "Nenhum protocolo prioritário em aberto"}</h2>{priorities.length ? <ol>{priorities.map((item) => <li key={item.id}><div><strong>{item.protocol}</strong><span>{item.title}</span><small>Prioritário desde {new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(item.markedAt))}</small></div><Link className="button button--secondary button--small" href={`/painel/atendimento/${item.id}`} aria-label={`Abrir protocolo ${item.protocol}`}>Abrir <AppIcon name="arrowRight" /></Link></li>)}</ol> : <p>Os protocolos marcados como prioritários aparecerão aqui até a finalização.</p>}</article></section>
+      {role === "administrator" && <StaffBackupStatus />}
       <StaffAnnouncementsCalendar announcements={announcements ?? []} />
       </div>
     </div>

@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: encaixa a busca pública na borda inferior do hero e organiza a Visão geral da equipe como mesa de trabalho, com o estado atualizado do backup de produção para administradores.
+
 - 01/11/2026: separa Temas por área da aba Assuntos e cria uma aba própria em Administração → Conteúdo, com acesso e navegação consistentes.
 
 - 01/11/2026: acrescenta uma navegação visível na aba Assuntos para alternar entre o catálogo e os temas por área sem percorrer uma lista longa.
