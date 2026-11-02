@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: faz avatar e tipo de vínculo abrirem Minha conta, aproxima o catálogo público dos breadcrumbs, prepara a edição dos percursos por área na Administração e reforça a importação de autoridades com data legível, sugestões de termos, pendências específicas, bloqueio de homônimas da mesma fonte e motivo obrigatório para edições.
+
 - 01/11/2026: mostra “Entrando...” durante o login com senha de estudantes e equipe e impede envios repetidos por clique ou Enter enquanto a autenticação responde.
 
 - 01/11/2026: acrescenta breadcrumbs traduzidos nos seis idiomas às páginas públicas de temas, exploração por área e detalhes de cada autoridade.

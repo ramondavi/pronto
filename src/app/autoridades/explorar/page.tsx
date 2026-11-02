@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { AuthorityAreaExplorer } from "@/components/authority-area-explorer";
-import { authorityAreas } from "@/lib/authority-areas";
+import { getAuthorityAreas } from "@/lib/authority-areas";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { searchPublicAuthorities } from "@/lib/public-subject-authority";
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ExploreAuthoritiesPage() {
   const language = await getInterfaceLanguage();
   const t = authorityPublicCopy[language];
-  const areas = await Promise.all(authorityAreas.map(async (area) => {
+  const areas = await Promise.all((await getAuthorityAreas()).map(async (area) => {
     const result = await searchPublicAuthorities({ query: area.query, source: "all", heading: "all", sort: "relevance", page: 0 });
     return { key: area.key, query: area.query, name: area.names[language], detail: area.detail[language],
       count: result.total, items: result.items.slice(0, 5).map(({ id, label }) => ({ id, label })) };

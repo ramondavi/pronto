@@ -3,6 +3,7 @@ export function canOfferAuthorityImport(value: string, matches: SubjectCatalogue
  return searchState === "ready" && value.trim().length >= 2 && matches.length === 0;
 }
 export function authorityImportError(code: string): string {
+ if (/authority_same_source_heading_conflict/.test(code)) return "Já existe uma autoridade desta fonte com o mesmo cabeçalho, mesmo que o identificador seja diferente. Abra o cadastro existente e confira a fonte antes de importar outra versão.";
  if (/authority_label_conflict/.test(code)) return "Já existe um assunto com esse texto. Confira o cadastro e confirme o vínculo antes de importar.";
  if (/authority_version_conflict/.test(code)) return "Este identificador já tem outra versão guardada. A importação foi interrompida para preservar o cadastro existente.";
  if (/active_merge_target_required/.test(code)) return "O assunto está desativado ou mesclado. Confira o destino na Administração.";
