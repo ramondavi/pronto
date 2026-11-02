@@ -6,6 +6,9 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: organiza o controle de acessos por área, tela e aba do painel, identifica o acesso fixo de consulta ao backup e facilita localizar cada ação pela busca.
+- 01/11/2026: recoloca o catálogo de assuntos no início da aba e ajusta cartões, ordem, ações e edição dos percursos por área ao padrão da Administração.
+
 - 01/11/2026: faz avatar e tipo de vínculo abrirem Minha conta, aproxima o catálogo público dos breadcrumbs, prepara a edição dos percursos por área na Administração e reforça a importação de autoridades com data legível, sugestões de termos, pendências específicas, bloqueio de homônimas da mesma fonte e motivo obrigatório para edições.
 
 - 01/11/2026: mostra “Entrando...” durante o login com senha de estudantes e equipe e impede envios repetidos por clique ou Enter enquanto a autenticação responde.
