@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: acrescenta uma navegação visível na aba Assuntos para alternar entre o catálogo e os temas por área sem percorrer uma lista longa.
+
 - 01/11/2026: organiza o controle de acessos por área, tela e aba do painel, identifica o acesso fixo de consulta ao backup e facilita localizar cada ação pela busca.
 - 01/11/2026: recoloca o catálogo de assuntos no início da aba e ajusta cartões, ordem, ações e edição dos percursos por área ao padrão da Administração.
 
