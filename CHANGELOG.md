@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: acrescenta breadcrumbs traduzidos nos seis idiomas às páginas públicas de temas, exploração por área e detalhes de cada autoridade.
+
 - 30/10/2026: reduz a altura da busca pública quando expandida, aproxima título e apresentação e elimina espaços vazios, mantendo sugestões e atalhos.
 
 - 30/10/2026: deixa a busca pública inicial compacta até a aproximação do mouse ou foco no campo, expandindo a seção para mostrar exemplos e informações completas e recolhendo-a ao sair.

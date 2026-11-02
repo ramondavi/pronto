@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useInterfaceLanguage } from "./interface-language";
 import { breadcrumbCopy, dashboardTrail } from "@/lib/breadcrumb-copy";
+import { authorityPublicCopy } from "@/lib/authority-public-copy";
 import { AppIcon } from "./app-icon";
 
 type Crumb = { label: string; href?: string };
@@ -46,10 +47,13 @@ function Trail({ items, variant }: { items: Crumb[]; variant: "public" | "dashbo
   return <nav ref={navRef} className={`breadcrumb breadcrumb--${variant}`} aria-label={breadcrumbCopy[language][0]}><ol ref={listRef}>{items.map((item, index) => <li key={`${item.label}-${index}`}>{item.href && index < items.length - 1 ? <Link href={item.href}>{index === 0 && <AppIcon name="home" />}{item.label}</Link> : <span aria-current={index === items.length - 1 ? "page" : undefined}>{item.label}</span>}{index < items.length - 1 && <AppIcon className="breadcrumb__separator" name="arrowRight" />}</li>)}</ol></nav>;
 }
 
-export function PublicBreadcrumbs({ articleTitle }: { articleTitle?: string }) {
+export function PublicBreadcrumbs({ articleTitle, authorityTitle }: { articleTitle?: string; authorityTitle?: string }) {
   const pathname = usePathname();
   const { language } = useInterfaceLanguage(); const t = breadcrumbCopy[language];
   if (pathname.startsWith("/ajuda/artigos/") && articleTitle) return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: t[2], href: "/ajuda" }, { label: articleTitle }]} />;
+  if (pathname === "/autoridades") return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title }]} />;
+  if (pathname === "/autoridades/explorar") return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title, href: "/autoridades" }, { label: authorityPublicCopy[language].browse }]} />;
+  if (pathname.startsWith("/autoridades/") && authorityTitle) return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title, href: "/autoridades" }, { label: authorityTitle }]} />;
   const labels: Record<string, string> = { "/ajuda": t[2], "/perguntas-frequentes": t[2], "/politica-de-privacidade": t[3], "/acessibilidade": t[4] };
   const label = labels[pathname];
   return label ? <Trail variant="public" items={[{ label: t[1], href: "/" }, { label }]} /> : null;

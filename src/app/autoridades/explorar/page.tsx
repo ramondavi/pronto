@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { AuthorityAreaExplorer } from "@/components/authority-area-explorer";
@@ -20,5 +19,5 @@ export default async function ExploreAuthoritiesPage() {
     return { key: area.key, query: area.query, name: area.names[language], detail: area.detail[language],
       count: result.total, items: result.items.slice(0, 5).map(({ id, label }) => ({ id, label })) };
   }));
-  return <><SiteHeader /><main className="container public-authorities authority-areas"><nav className="public-authority-detail__breadcrumb"><Link href="/autoridades">← {t.back}</Link></nav><header className="authority-areas__hero"><p className="eyebrow">Pronto! / BIB FA</p><h1>{t.browse}</h1><p>{t.areaIntro}</p></header><AuthorityAreaExplorer areas={areas} /></main></>;
+  return <><SiteHeader /><main className="container public-authorities authority-areas"><header className="authority-areas__hero"><p className="eyebrow">Pronto! / BIB FA</p><h1>{t.browse}</h1><p>{t.areaIntro}</p></header><AuthorityAreaExplorer areas={areas} /></main></>;
 }
