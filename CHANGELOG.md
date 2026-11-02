@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: mostra “Entrando...” durante o login com senha de estudantes e equipe e impede envios repetidos por clique ou Enter enquanto a autenticação responde.
+
 - 01/11/2026: acrescenta breadcrumbs traduzidos nos seis idiomas às páginas públicas de temas, exploração por área e detalhes de cada autoridade.
 
 - 30/10/2026: reduz a altura da busca pública quando expandida, aproxima título e apresentação e elimina espaços vazios, mantendo sugestões e atalhos.
