@@ -8048,18 +8048,22 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-areas-admin__subhead .eyebrow { margin-bottom: 4px; }
 .authority-areas-admin__list { display: grid; gap: 10px; margin: 16px 0 0; padding: 0; list-style: none; }
 .authority-areas-admin__list li { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 16px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.authority-areas-admin__list li.is-editing { border-color: color-mix(in srgb,var(--institutional) 42%,var(--line)); box-shadow: var(--shadow-card); }
 .authority-areas-admin__number { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); font-size: .8rem; font-weight: 850; }
 .authority-areas-admin__content { min-width: 0; }
 .authority-areas-admin__content > strong { font-size: .96rem; }
-.authority-areas-admin__list li p { margin: 4px 0 8px; color: var(--text-muted); font-size: .84rem; line-height: 1.45; }
-.authority-areas-admin__list li small { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; color: var(--institutional); overflow-wrap: anywhere; }
-.authority-areas-admin__list li small svg { flex: 0 0 14px; width: 14px; height: 14px; }
+.authority-areas-admin__content p { margin: 4px 0 8px; color: var(--text-muted); font-size: .84rem; line-height: 1.45; }
+.authority-areas-admin__content small { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; color: var(--institutional); overflow-wrap: anywhere; }
+.authority-areas-admin__content small svg { flex: 0 0 14px; width: 14px; height: 14px; }
 .authority-areas-admin__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .authority-areas-admin__order { display: flex; gap: 4px; padding-right: 8px; border-right: 1px solid var(--line); }
 .authority-areas-admin__order .button { min-width: 34px; padding-inline: 8px; }
 .authority-areas-admin__order svg { width: 16px; height: 16px; }
 .authority-areas-admin__up { transform: rotate(180deg); }
 .authority-areas-admin__editor { display: grid; gap: 14px; margin-top: 20px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.authority-areas-admin__list .authority-areas-admin__editor { grid-column: 1 / -1; width: 100%; margin-top: 2px; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+.authority-areas-admin__editor { overflow: hidden; scroll-margin-top: 110px; animation: authority-area-editor-open .4s ease-out; }
+@keyframes authority-area-editor-open { from { max-height: 0; opacity: 0; padding-block: 0; } to { max-height: 3000px; opacity: 1; } }
 .authority-areas-admin__editor .admin-section__subhead { margin: 0; }
 .authority-areas-admin__editor h3,.authority-areas-admin__editor h4 { margin: 0; }
 .authority-areas-admin__editor h4 { padding-top: 4px; font-size: .9rem; }
@@ -8073,6 +8077,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 @media(max-width:960px) { .authority-areas-admin__list li { grid-template-columns: 42px minmax(0,1fr); } .authority-areas-admin__actions { grid-column: 2; justify-content: flex-start; } }
 @media(max-width:800px) { .authority-areas-admin__translations { grid-template-columns: 1fr; } }
 @media(max-width:620px) { .authority-areas-admin__list li { grid-template-columns: 1fr; } .authority-areas-admin__actions { grid-column: 1; } .authority-areas-admin__editor { padding: 16px; } }
+@media(prefers-reduced-motion:reduce) { .authority-areas-admin__editor { animation: none; } }
 .public-authorities__intro { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; max-width: none !important; padding: clamp(28px,4vw,52px); border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(circle at 88% 10%,color-mix(in srgb,var(--institutional) 16%,transparent),transparent 34%),linear-gradient(125deg,var(--surface-raised),var(--institutional-soft)); overflow: hidden; }
 .public-authorities__intro::after { position: absolute; top: -100px; right: -55px; width: 320px; height: 320px; border: 1px solid color-mix(in srgb,var(--institutional) 25%,transparent); border-radius: 45% 45% 8% 8%; rotate: 25deg; pointer-events: none; content: ""; }
 .public-authorities__intro > div,.public-authorities__intro > a { position: relative; z-index: 1; }
