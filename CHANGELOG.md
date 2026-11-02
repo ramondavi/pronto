@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 01/11/2026: simplifica “Antes de começar”, alinha sua largura ao aviso, ajusta a busca do hero para tons neutros por tema e mostra integralmente a descrição no estado compacto.
+
 - 01/11/2026: abre a edição dos temas por área dentro do cartão selecionado e leva suavemente a tela aos campos, respeitando movimento reduzido.
 
 - 01/11/2026: encaixa a busca pública na borda inferior do hero e organiza a Visão geral da equipe como mesa de trabalho, com o estado atualizado do backup de produção para administradores.
