@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: mostra o prazo médio em caixa destacada à direita do aviso da hero, tanto no funcionamento aberto quanto no fechado.
+
 - 03/11/2026: estende o fundo animado da hero por toda a busca, remove a animação concorrente e leva o degradê até “Como funciona”.
 
 - 03/11/2026: alinha o horário previsto de fechamento logo abaixo do estado no aviso da página inicial.
