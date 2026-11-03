@@ -8142,6 +8142,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery[data-expanded="false"] .authority-discovery__heading .eyebrow { margin-bottom: 3px; font-size: .7rem; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading h2 { max-width: none; margin: 4px 0 6px; font-size: clamp(1.5rem,2.5vw,2.2rem); line-height: 1.15; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy p { max-width: 85ch; overflow: visible; white-space: normal; text-overflow: clip; font-size: .9rem; line-height: 1.4; }
+.authority-discovery[data-expanded="false"] .authority-discovery__heading-copy .authority-discovery__detail { display: none; }
 .authority-discovery[data-expanded="false"] .authority-discovery__area-link { max-height: 0; margin-top: 0; opacity: 0; visibility: hidden; pointer-events: none; }
 .authority-discovery[data-expanded="false"] .authority-discovery-search--home { padding: 0; border-color: transparent; background: transparent; box-shadow: none; backdrop-filter: none; }
 .authority-discovery[data-expanded="false"] .authority-discovery-search--home form { gap: 0; }

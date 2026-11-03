@@ -8,6 +8,7 @@ type Status = { published: boolean; rights_statement: string | null; marc_mappin
 type RecordInfo = { heading_type?: string; fields?: { tag: string; indicators?: string }[]; relations?: { value: string }[] };
 export function SubjectAuthorityPublication({ authorityId, eligible, record }: { authorityId: string; eligible: boolean; record: RecordInfo }) {
   const [status, setStatus] = useState<Status | null>(null);
+  const [hasWork, setHasWork] = useState(false);
   const [rights, setRights] = useState("");
   const [variants, setVariants] = useState<{ label: string }[]>([]);
   const headingTag = ({ topic: "150", geographic: "151", personal: "100", corporate: "110", title: "130" } as Record<string, string>)[record.heading_type ?? ""]
@@ -21,10 +22,12 @@ export function SubjectAuthorityPublication({ authorityId, eligible, record }: {
     const client = createClient();
     Promise.all([
       client.rpc("admin_subject_publication_status", { target_authority_id: authorityId }),
+      client.rpc("admin_subject_authority_work_status", { target_authority_id: authorityId }),
       client.from("subject_authority_variants").select("label").eq("authority_id", authorityId).order("label").order("id"),
-    ]).then(([{ data, error: loadError }, variantResult]) => {
+    ]).then(([{ data, error: loadError }, workResult, variantResult]) => {
       if (!active) return;
-      if (loadError || variantResult.error) { setError("Não foi possível consultar a publicação."); return; }
+      if (loadError || workResult.error || variantResult.error) { setError("Não foi possível consultar a publicação."); return; }
+      setHasWork(workResult.data === true);
       const value = (data?.[0] ?? null) as Status | null;
       setStatus(value); setRights(value?.rights_statement ?? "");
       const loadedVariants = (variantResult.data ?? []) as { label: string }[];
@@ -41,7 +44,7 @@ export function SubjectAuthorityPublication({ authorityId, eligible, record }: {
     setBusy(true); setError("");
     const { error: saveError } = await createClient().rpc("admin_set_subject_publication", { target_authority_id: authorityId, publish_value: publish, rights_value: publish ? rights.trim() : null, mapping_value: publish ? mapping : null });
     setBusy(false);
-    if (saveError) { setError("Não foi possível alterar a publicação. Confira a situação do assunto e as condições de redistribuição."); return; }
+    if (saveError) { setError(saveError.message.includes("authority_work_link_required") ? "Este assunto precisa estar vinculado a pelo menos um trabalho com ficha homologada ou atendimento concluído." : "Não foi possível alterar a publicação. Confira a situação do assunto e as condições de redistribuição."); return; }
     setStatus({ published: publish, rights_statement: publish ? rights.trim() : null, marc_mapping: publish ? mapping : null });
   }
   function setArrayIndicator(key: "variant_ind1" | "relation_ind1", index: number, value: string) {
@@ -66,8 +69,9 @@ export function SubjectAuthorityPublication({ authorityId, eligible, record }: {
       </div>}
       <div className="public-authorities__exports">{status.published
         ? <button type="button" className="button button--secondary button--small" disabled={busy} onClick={() => void save(false)}>Retirar da consulta pública</button>
-        : <button type="button" className="button button--primary button--small" disabled={busy || !eligible || rights.trim().length < 10 || !mappingComplete} onClick={() => void save(true)}>Revisar e publicar autoridade</button>}</div>
+        : <button type="button" className="button button--primary button--small" disabled={busy || !eligible || !hasWork || rights.trim().length < 10 || !mappingComplete} onClick={() => void save(true)}>Revisar e publicar autoridade</button>}</div>
       {!eligible && <p>Ative e valide o assunto antes de publicá-lo.</p>}
+      {!hasWork && <p>Para publicar, vincule o assunto a um trabalho com ficha homologada ou atendimento concluído.</p>}
     </>}
     {error && <p role="alert" className="notice notice--error">{error}</p>}
   </section>;

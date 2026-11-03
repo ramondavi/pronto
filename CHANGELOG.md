@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: limita o catálogo público a temas vinculados a pelo menos um trabalho com ficha homologada ou atendimento concluído e esclarece essa origem na busca inicial; a equipe vê o requisito antes de publicar.
+
 - 03/11/2026: aproxima o texto da busca pública e encurta o degradê antes de “Como funciona”, preservando a expansão por mouse e teclado.
 
 - 03/11/2026: reduz o espaçamento entre estado e fechamento previsto e o preenchimento interno do prazo médio no aviso da hero.
