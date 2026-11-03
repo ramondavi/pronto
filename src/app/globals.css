@@ -8232,13 +8232,33 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery__popular a:is(:hover,:focus-visible) { background: var(--institutional-soft); }
 #como-funciona { border-top: 1px solid var(--line); }
 
-/* Keep the discovery copy next to the search and give the final 80px to the fade. */
-.authority-discovery__inner,.authority-discovery[data-expanded="false"] .authority-discovery__inner { gap: 12px; padding-bottom: 80px; }
-.authority-discovery__heading { grid-template-columns: minmax(0,1fr); align-items: start; gap: 3px; padding-top: 0; }
-.authority-discovery__heading .eyebrow,.authority-discovery__heading h2,.authority-discovery__heading-copy { grid-column: 1; grid-row: auto; }
-.authority-discovery__heading h2 { max-width: none; margin: 2px 0 0; font-size: clamp(1.9rem,2.8vw,2.8rem); line-height: 1.12; }
-.authority-discovery__heading-copy { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 20px; padding: 0; }
-.authority-discovery__area-link { margin-top: 0; }
+/* The compact search closes the first screen; expanded content grows past it. */
+@media(min-width:901px) {
+  .home-hero-landscape { display: flex; flex-direction: column; min-height: calc(100svh - 220px); }
+  .home-hero-landscape > .hero { display: flex; flex: 1 1 auto; }
+  .home-hero-landscape .hero__grid { flex: 1 1 auto; min-height: 0; padding-block: clamp(28px,4vh,52px); }
+}
+.authority-discovery__inner,.authority-discovery[data-expanded="false"] .authority-discovery__inner { gap: 18px; padding-bottom: 80px; }
+.authority-discovery[data-expanded="false"] .authority-discovery__inner { padding-top: 12px; }
+.authority-discovery__heading { grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); align-items: center; gap: 4px clamp(24px,5vw,72px); padding-top: 0; }
+.authority-discovery__heading .eyebrow { grid-column: 1; grid-row: 1; }
+.authority-discovery__heading h2 { grid-column: 1; grid-row: 2; max-width: 16ch; margin: 2px 0 0; font-size: clamp(1.9rem,2.8vw,2.8rem); line-height: 1.12; }
+.authority-discovery__heading-copy { display: grid; grid-column: 2; grid-row: 1 / span 2; align-content: center; justify-items: start; gap: 9px; padding: 0; }
+.authority-discovery__heading-copy p { max-width: 62ch; }
+.authority-discovery__heading-copy .authority-discovery__detail { color: var(--text); }
+.authority-discovery__area-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 5px; padding: 9px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); font-size: .82rem; text-decoration: none; }
+.authority-discovery__area-link:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
+.authority-discovery__area-link span { font-size: 1rem; }
+.authority-discovery[data-expanded="false"] .authority-discovery__heading { grid-template-columns: minmax(0,1fr); }
+.authority-discovery[data-expanded="false"] .authority-discovery__heading .eyebrow,.authority-discovery[data-expanded="false"] .authority-discovery__heading h2,.authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { grid-column: 1; grid-row: auto; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { display: block; }
-.authority-discovery[data-expanded="false"] .authority-discovery__heading h2 { margin: 2px 0 0; font-size: clamp(1.5rem,2.3vw,2rem); }
-@media(max-width:760px) { .authority-discovery__heading h2 { font-size: clamp(1.75rem,6vw,2.35rem); } }
+.authority-discovery[data-expanded="false"] .authority-discovery__heading h2 { max-width: none; margin: 2px 0 0; font-size: clamp(1.5rem,2.3vw,2rem); }
+.authority-discovery[data-expanded="false"] .authority-discovery-search--home { padding: 12px; }
+.authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__control { min-height: 70px; }
+.authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__control input { height: 50px; }
+@media(max-width:760px) {
+  .authority-discovery__heading { grid-template-columns: minmax(0,1fr); }
+  .authority-discovery__heading .eyebrow,.authority-discovery__heading h2,.authority-discovery__heading-copy { grid-column: 1; grid-row: auto; }
+  .authority-discovery__heading h2 { max-width: none; font-size: clamp(1.75rem,6vw,2.35rem); }
+  .authority-discovery__heading-copy { align-content: start; }
+}
