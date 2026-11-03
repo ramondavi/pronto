@@ -8210,3 +8210,54 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .hero__aside .requirements ul { margin-top: 10px; }
 .hero__aside .requirements li { padding-block: 7px; border-top-color: var(--line); color: var(--text-muted); font-size: .82rem; line-height: 1.4; }
 @media(max-width:720px) { .authority-discovery-search--home { margin-top: -34px; } .authority-discovery__heading { padding-top: 0; } }
+
+/* Home hero: status and guidance are quiet text; discovery is the sole raised panel. */
+.hero__aside { display: grid; gap: 12px; align-content: center; }
+.hero__aside > .notice.notice--status { display: grid; gap: 8px; padding: 0 0 12px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+.hero__aside .notice-status__meta { gap: 4px 12px; padding: 0; border: 0; }
+.hero__aside .notice-status__body { grid-template-columns: 24px minmax(0,1fr); gap: 8px; padding: 0; }
+.hero__aside .notice-status__icon { width: 24px; height: 24px; background: transparent; }
+.hero__aside .notice-status__icon svg { width: 18px; height: 18px; }
+.hero__aside .notice-status__heading { justify-content: flex-start; gap: 2px 12px; }
+.hero__aside .notice-status__closing { flex-basis: auto; }
+.hero__aside .notice.notice--status > .notice-status__message { grid-column: 1; margin: 0 0 0 32px; padding: 0; overflow: visible; border: 0; white-space: normal; text-overflow: clip; }
+.hero__aside .requirements { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--text); }
+.hero__aside .requirements summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0; list-style: none; cursor: pointer; }
+.hero__aside .requirements summary::-webkit-details-marker { display: none; }
+.hero__aside .requirements summary > span { display: grid; gap: 2px; }
+.hero__aside .requirements summary .eyebrow { margin: 0; color: var(--text-muted); font-size: .68rem; }
+.hero__aside .requirements summary strong { color: var(--institutional); font-size: .9rem; line-height: 1.35; }
+.hero__aside .requirements summary > svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); transform: rotate(90deg); transition: transform .18s ease; }
+.hero__aside .requirements[open] summary > svg { transform: rotate(-90deg); }
+.hero__aside .requirements summary:is(:hover,:focus-visible) strong { text-decoration: underline; text-underline-offset: 3px; }
+.hero__aside .requirements ul { margin: 8px 0 0; padding: 0 0 0 12px; border-left: 2px solid var(--institutional); }
+.hero__aside .requirements li { padding: 7px 0; border: 0; color: var(--text-muted); }
+
+.authority-discovery, :root[data-theme="dark"] .authority-discovery { background: var(--surface); color: var(--text); }
+.authority-discovery::before { background-image: linear-gradient(90deg,color-mix(in srgb,var(--institutional) 9%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--institutional) 9%,transparent) 1px,transparent 1px); }
+.authority-discovery__geometry > .geometry { stroke: var(--institutional); opacity: .1; }
+.authority-discovery__geometry .geometry--accent { stroke: var(--institutional); }
+.authority-discovery__geometry > span,.authority-discovery__plan::before,.authority-discovery__plan::after { border-color: color-mix(in srgb,var(--institutional) 15%,transparent); }
+.authority-discovery__arch { border-color: color-mix(in srgb,var(--institutional) 10%,transparent); }
+.authority-discovery__tower { background: repeating-linear-gradient(to bottom,transparent 0 36px,color-mix(in srgb,var(--institutional) 9%,transparent) 37px,color-mix(in srgb,var(--institutional) 9%,transparent) 38px,transparent 39px 50px); }
+.authority-discovery__steps { background: repeating-linear-gradient(135deg,transparent 0 23px,color-mix(in srgb,var(--institutional) 9%,transparent) 24px,color-mix(in srgb,var(--institutional) 9%,transparent) 25px,transparent 26px 42px); }
+.authority-discovery__axis { background: color-mix(in srgb,var(--institutional) 9%,transparent); }
+.authority-discovery__heading .eyebrow,.authority-discovery__area-link,.authority-discovery__popular .eyebrow { color: var(--institutional); }
+.authority-discovery__heading-copy p,.authority-discovery__popular p:last-child { color: var(--text-muted); }
+.authority-discovery__area-link:hover { color: var(--text); }
+.authority-discovery-search--home,:root[data-theme="dark"] .authority-discovery-search--home,
+.authority-discovery[data-expanded="false"] .authority-discovery-search--home,:root[data-theme="dark"] .authority-discovery[data-expanded="false"] .authority-discovery-search--home { border-color: var(--line); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-card); backdrop-filter: none; }
+.authority-discovery-search--home form > label,:root[data-theme="dark"] .authority-discovery-search--home form > label { color: var(--text); }
+.authority-discovery-search--home .authority-discovery-search__control,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__control { border-color: var(--line); background: var(--field); color: var(--text); box-shadow: none; }
+.authority-discovery-search--home .authority-discovery-search__control:focus-within { border-color: var(--institutional); box-shadow: 0 0 0 3px color-mix(in srgb,var(--institutional) 18%,transparent); }
+.authority-discovery-search--home .authority-discovery-search__control input,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__control input { color: var(--text); }
+.authority-discovery-search--home .authority-discovery-search__control input::placeholder,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__control input::placeholder { color: var(--text-muted); }
+.authority-discovery-search--home .authority-discovery-search__control > svg,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__control > svg { color: var(--institutional); }
+.authority-discovery-search--home .authority-discovery-search__examples span,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__examples span { color: var(--text-muted); }
+.authority-discovery-search--home .authority-discovery-search__examples button,:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__examples button { border-color: var(--line); background: var(--surface); color: var(--institutional); }
+.authority-discovery-search--home .authority-discovery-search__examples button:is(:hover,:focus-visible),:root[data-theme="dark"] .authority-discovery-search--home .authority-discovery-search__examples button:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+.authority-discovery__popular { border-top-color: var(--line); }
+.authority-discovery__popular a { border-color: var(--line); background: var(--surface-raised); color: var(--text); }
+.authority-discovery__popular a span { color: var(--institutional); }
+.authority-discovery__popular a:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+@media (prefers-reduced-motion: reduce) { .hero__aside .requirements summary > svg { transition: none; } }
