@@ -8,8 +8,8 @@ export function HeroGeometry() {
 
   useEffect(() => {
     const layer = layerRef.current;
-    const hero = layer?.closest<HTMLElement>(".hero");
-    if (!layer || !hero) return;
+    const landscape = layer?.closest<HTMLElement>(".home-hero-landscape");
+    if (!layer || !landscape) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let cursorX = 0;
@@ -26,7 +26,7 @@ export function HeroGeometry() {
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(paint); };
     const onScroll = () => {
-      scrollY = Math.max(-72, Math.min(72, -hero.getBoundingClientRect().top * 0.12));
+      scrollY = Math.max(-72, Math.min(72, -landscape.getBoundingClientRect().top * 0.12));
       schedule();
     };
     const onPointerMove = (event: PointerEvent) => {
@@ -41,8 +41,8 @@ export function HeroGeometry() {
     const syncMotion = () => {
       if (reducedMotion.matches) {
         if (listening) {
-          hero.removeEventListener("pointermove", onPointerMove);
-          hero.removeEventListener("pointerleave", onPointerLeave);
+          landscape.removeEventListener("pointermove", onPointerMove);
+          landscape.removeEventListener("pointerleave", onPointerLeave);
           window.removeEventListener("scroll", onScroll);
           window.removeEventListener("resize", onScroll);
           listening = false;
@@ -51,8 +51,8 @@ export function HeroGeometry() {
         cursorX = 0; cursorY = 0; scrollY = 0;
         schedule();
       } else if (!listening) {
-        hero.addEventListener("pointermove", onPointerMove);
-        hero.addEventListener("pointerleave", onPointerLeave);
+        landscape.addEventListener("pointermove", onPointerMove);
+        landscape.addEventListener("pointerleave", onPointerLeave);
         window.addEventListener("scroll", onScroll, { passive: true });
         window.addEventListener("resize", onScroll);
         listening = true;
@@ -64,8 +64,8 @@ export function HeroGeometry() {
     syncMotion();
     return () => {
       reducedMotion.removeEventListener("change", syncMotion);
-      hero.removeEventListener("pointermove", onPointerMove);
-      hero.removeEventListener("pointerleave", onPointerLeave);
+      landscape.removeEventListener("pointermove", onPointerMove);
+      landscape.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);

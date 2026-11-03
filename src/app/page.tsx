@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { HeroGeometry } from "@/components/hero-geometry";
-import { AuthorityDiscoveryGeometry } from "@/components/authority-discovery-geometry";
 import { AuthorityDiscoveryPanel } from "@/components/authority-discovery-panel";
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
 import { HeroClassificationPhrase } from "@/components/hero-cdu-word";
@@ -73,8 +72,9 @@ export default async function HomePage() {
     <>
       <SiteHeader showServiceStatus={false} closingTimeOverride={closingTime} />
       <main>
+        <div className="home-hero-landscape">
+        <HeroGeometry />
         <section className="hero">
-          <HeroGeometry />
           <div className="container hero__grid">
             <div className="hero__content">
               <p className="eyebrow">Biblioteca da Faculdade de Arquitetura · UFBA</p>
@@ -94,9 +94,9 @@ export default async function HomePage() {
         </section>
 
         <AuthorityDiscoveryPanel>
-          <AuthorityDiscoveryGeometry />
           <div className="container authority-discovery__inner"><AuthorityDiscoverySearch variant="home" /><div className="authority-discovery__heading"><p className="eyebrow">{discovery.eyebrow}</p><h2 id="authority-discovery-title">{discovery.title}</h2><div className="authority-discovery__heading-copy"><p>{discovery.intro}</p><Link className="authority-discovery__area-link" href="/autoridades/explorar">{publicThemeCopy.browse} ↗</Link></div></div>{mostUsed.length > 0 && <div className="authority-discovery__popular"><div><p className="eyebrow">{usageCopy.title}</p><p>{usageCopy.intro}</p></div><ol>{mostUsed.map((item) => <li key={item.id}><Link href={`/autoridades/${item.id}`}>{item.label}<span>{item.count} {usageCopy.count} ↗</span></Link></li>)}</ol></div>}</div>
         </AuthorityDiscoveryPanel>
+        </div>
 
         <section id="como-funciona" className="section section--muted">
           <div className="container">

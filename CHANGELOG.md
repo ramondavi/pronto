@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: estende o fundo animado da hero por toda a busca, remove a animação concorrente e leva o degradê até “Como funciona”.
+
 - 03/11/2026: alinha o horário previsto de fechamento logo abaixo do estado no aviso da página inicial.
 
 - 03/11/2026: mantém o fundo da hero em toda a área da busca e reserva o degradê para a passagem à seção “Como funciona”.
