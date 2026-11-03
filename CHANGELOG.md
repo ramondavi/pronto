@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: remove os rótulos acima dos módulos da Visão geral da equipe e uniformiza a altura das atualizações do feed, sem alongar os primeiros cartões.
+
 - 01/11/2026: simplifica “Antes de começar”, alinha sua largura ao aviso, ajusta a busca do hero para tons neutros por tema e mostra integralmente a descrição no estado compacto.
 
 - 01/11/2026: abre a edição dos temas por área dentro do cartão selecionado e leva suavemente a tela aos campos, respeitando movimento reduzido.

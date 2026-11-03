@@ -134,8 +134,8 @@ async function StaffOverview({ role, userId, firstName }: { role: "cataloger" | 
     <StaffGlobalSearch prominent firstName={firstName} greetingVariant={Math.floor(Math.random() * 6)} />
     <h1 className="sr-only">Visão geral</h1>
     <div className={`staff-overview-main${administrator ? " staff-overview-main--admin" : " staff-overview-main--cataloger"}`}>
-      <div className="staff-overview-main__activity"><div className="staff-overview-main__section-heading"><div><p className="eyebrow">Acompanhar</p><h2>Atividade recente</h2></div><Link href="/painel/fila">Abrir fila <AppIcon name="arrowRight" /></Link></div><StaffActivityFeed initialEvents={(activityFeed.data ?? []) as StaffActivityEvent[]} userId={userId} initialLoadError={Boolean(activityFeed.error)} /></div>
-      <div className="staff-overview-main__side"><div className="staff-overview-main__section-heading"><div><p className="eyebrow">Agir</p><h2>{role === "administrator" ? "Mesa da administração" : "Sua mesa de trabalho"}</h2></div></div><section className="overview-stats" aria-label="Indicadores rápidos">
+      <StaffActivityFeed initialEvents={(activityFeed.data ?? []) as StaffActivityEvent[]} userId={userId} initialLoadError={Boolean(activityFeed.error)} />
+      <div className="staff-overview-main__side"><section className="overview-stats" aria-label="Indicadores rápidos">
       <article><AppIcon className="overview-stats__icon" name="queue" /><strong>{unassigned}</strong><span>na fila sem responsável</span><Link href="/painel/fila">Abrir fila</Link></article>
       <article><AppIcon className="overview-stats__icon" name="work" /><strong>{mine}</strong><span>{administrator ? "atendimentos em andamento" : "meus atendimentos em andamento"}</span><Link href="/painel/fila?responsavel=me">Ver atendimentos</Link></article>
       <article><AppIcon className="overview-stats__icon" name="edit" /><strong>{changes}</strong><span>solicitações aguardando correção</span><Link href="/painel/fila?status=changes_requested">Ver pendências</Link></article>
