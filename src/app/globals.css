@@ -8195,10 +8195,10 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .hero__aside .notice-status__body { grid-template-columns: 32px minmax(0,1fr) minmax(118px,35%); align-items: stretch; gap: 10px; padding-top: 0; }
 .hero__aside .notice-status__icon { align-self: center; width: 32px; height: 32px; background: color-mix(in srgb,var(--service-tone) 17%,var(--surface-raised)); color: var(--service-tone); }
 .hero__aside .notice-status__icon svg { width: 21px; height: 21px; }
-.hero__aside .notice-status__heading { justify-content: flex-start; gap: 3px 12px; }
+.hero__aside .notice-status__heading { display: grid; align-content: center; justify-items: start; gap: 4px; }
 .hero__aside .notice-status__heading strong { color: var(--service-tone); font-size: .95rem; }
-.hero__aside .notice-status__closing { flex-basis: 100%; margin-top: 2px; font-size: .72rem; line-height: 1.4; }
-.hero__aside .notice-status__average { display: grid; grid-column: 3; grid-row: 1; align-content: center; gap: 5px; min-height: 74px; padding: 10px 12px; border: 1px solid color-mix(in srgb,var(--service-tone) 38%,var(--line)); border-left: 3px solid var(--service-tone); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.hero__aside .notice-status__closing { margin: 0; font-size: .72rem; line-height: 1.4; }
+.hero__aside .notice-status__average { display: grid; grid-column: 3; grid-row: 1; align-content: center; gap: 5px; min-height: 74px; padding: 10px 12px; border: 1px solid color-mix(in srgb,var(--service-tone) 38%,var(--line)); border-left: 3px solid var(--service-tone); border-radius: var(--radius-sm); background: transparent; }
 .hero__aside .notice-status__average span { color: var(--text-muted); font-size: .72rem; line-height: 1.3; }
 .hero__aside .notice-status__average strong { color: var(--service-tone); font-size: .95rem; line-height: 1.2; }
 .hero__aside .notice.notice--status > .notice-status__message { grid-column: 1; margin: 0 0 0 42px; padding: 0; overflow: visible; border: 0; font-size: .78rem; white-space: normal; text-overflow: clip; }
@@ -8229,3 +8229,4 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery__popular a { border-color: var(--line); background: var(--surface-raised); color: var(--text); }
 .authority-discovery__popular a span { color: var(--institutional); }
 .authority-discovery__popular a:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+#como-funciona { border-top: 1px solid var(--line); }
