@@ -84,10 +84,11 @@ export default async function HomePage() {
             </div>
             <div className="hero__aside">
               <Notice announcement={currentAnnouncement} closed={closed} date={{ value: serviceDayKey(now), label: formatServiceDate(now, language) }} now={now} clockLabel={uiText(language, "Horário atual da biblioteca")} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} mobileHoursLabel={!dailyHours && language === "pt" ? "Padrão: seg. a sex., 8h às 21h" : undefined} closingLabel={uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} copy={t.notice} />
-              <details className="requirements">
-                <summary><span><span className="eyebrow">{t.before}</span><strong>{t.requirementTitle}</strong></span><AppIcon name="arrowRight" /></summary>
+              <div className="requirements">
+                <p className="eyebrow">{t.before}</p>
+                <h2>{t.requirementTitle}</h2>
                 <ul>{t.requirements.map((requirement) => <li key={requirement}>{requirement}</li>)}</ul>
-              </details>
+              </div>
             </div>
           </div>
         </section>
