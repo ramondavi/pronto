@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: alinha o horário previsto de fechamento logo abaixo do estado no aviso da página inicial.
+
 - 03/11/2026: mantém o fundo da hero em toda a área da busca e reserva o degradê para a passagem à seção “Como funciona”.
 
 - 03/11/2026: destaca o funcionamento em verde ou vermelho, mantém “Antes de começar” aberto e cria uma transição contínua entre a hero e a busca pública.

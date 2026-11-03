@@ -8222,7 +8222,7 @@ main > .hero { border-bottom: 0; background: var(--bg); }
 .hero__aside .notice-status__icon svg { width: 21px; height: 21px; }
 .hero__aside .notice-status__heading { justify-content: flex-start; gap: 3px 12px; }
 .hero__aside .notice-status__heading strong { color: var(--service-tone); font-size: .95rem; }
-.hero__aside .notice-status__closing { flex-basis: auto; }
+.hero__aside .notice-status__closing { flex-basis: 100%; margin-top: 2px; font-size: .72rem; line-height: 1.4; }
 .hero__aside .notice.notice--status > .notice-status__message { grid-column: 1; margin: 0 0 0 42px; padding: 0; overflow: visible; border: 0; font-size: .78rem; white-space: normal; text-overflow: clip; }
 .hero__aside .requirements { margin: 0; padding: 4px 0 2px 16px; border: 0; border-left: 3px solid var(--institutional); border-radius: 0; background: transparent; color: var(--text); box-shadow: none; }
 .hero__aside .requirements .eyebrow { margin: 0 0 4px; color: var(--institutional); font-size: .68rem; }
