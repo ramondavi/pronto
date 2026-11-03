@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: reduz o espaçamento entre estado e fechamento previsto e o preenchimento interno do prazo médio no aviso da hero.
+
 - 03/11/2026: aproxima estado e horário no aviso da hero, deixa a caixa do prazo transparente e separa “Como funciona” por uma linha de largura total.
 
 - 03/11/2026: mostra o prazo médio em caixa destacada à direita do aviso da hero, tanto no funcionamento aberto quanto no fechado.
