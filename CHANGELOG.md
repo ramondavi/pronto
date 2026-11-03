@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 03/11/2026: estabiliza a expansão da busca inicial ao passar o mouse, eliminando a oscilação da barra.
+
 - 03/11/2026: restaura o alinhamento lateral original da hero, leva a busca compacta até o fim da primeira tela e apresenta a exploração por área como link simples.
 
 - 03/11/2026: amplia a busca compacta na página inicial e leva a transição para “Como funciona” ao fim da primeira tela no desktop; organiza a explicação dos temas e o acesso por área quando a busca expande.

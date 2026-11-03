@@ -8235,7 +8235,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 /* The compact search closes the first screen; expanded content grows past it. */
 @media(min-width:901px) {
   .home-hero-landscape { display: flex; flex-direction: column; min-height: 100svh; }
-  .home-hero-landscape > .hero { display: flex; flex: 1 1 auto; }
+  .home-hero-landscape > .hero { display: flex; flex: none; min-height: calc(100svh - var(--authority-compact-height,248px)); }
   .home-hero-landscape .hero__grid { flex: none; align-self: stretch; width: min(1120px,calc(100% - 48px)); min-height: 0; padding-top: clamp(145px,16vh,200px); padding-bottom: clamp(42px,6vh,72px); }
 }
 .authority-discovery__inner,.authority-discovery[data-expanded="false"] .authority-discovery__inner { gap: 18px; padding-bottom: 80px; }
