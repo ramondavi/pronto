@@ -59,8 +59,9 @@ export default async function HomePage() {
     const translated = language === "pt" || legacyIndex < 0 ? null : fallbackHomeFaqs[language][legacyIndex];
     return { id: entry.id, question: translated?.[0] ?? entry.title, answer: translated?.[1] ?? entry.summary, featured_position: entry.featured_position };
   });
-  const featuredFaqs = faqs.filter((faq) => faq.featured_position !== null).sort((a, b) => (a.featured_position ?? 0) - (b.featured_position ?? 0));
-  const homeFaqs = [...featuredFaqs, ...faqs.filter((faq) => faq.featured_position === null)].slice(0, 6);
+  const featuredFaqs = new Map(faqs.filter((faq) => faq.featured_position !== null).map((faq) => [faq.featured_position, faq]));
+  const otherFaqs = faqs.filter((faq) => faq.featured_position === null);
+  const homeFaqs = Array.from({ length: 6 }, (_, index) => featuredFaqs.get(index + 1) ?? otherFaqs.shift()).filter((faq): faq is (typeof faqs)[number] => Boolean(faq));
   if (homeFaqs.length === 0) homeFaqs.push(...fallbackHomeFaqs[language].map(([question, answer], index) => ({ id: `fallback-home-${index}`, question, answer, featured_position: index + 1 })));
   const now = new Date().toISOString();
   const [{ data: announcements }, { data: dailyHours }] = await Promise.all([
