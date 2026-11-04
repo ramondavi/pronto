@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useInterfaceLanguage } from "@/components/interface-language";
 import type { InterfaceLanguage } from "@/lib/interface-language";
 
-const sectionIds = ["inicio", "como-funciona", "vantagens", "duvidas-frequentes", "creditos"] as const;
-const sectionCopy: Record<InterfaceLanguage, { navigation: string; labels: readonly [string, string, string, string, string] }> = {
-  pt: { navigation: "Seções da página inicial", labels: ["Início", "Como funciona", "Vantagens", "Dúvidas frequentes", "Créditos"] },
-  en: { navigation: "Home page sections", labels: ["Home", "How it works", "Benefits", "Frequently asked questions", "Credits"] },
-  es: { navigation: "Secciones de la página inicial", labels: ["Inicio", "Cómo funciona", "Ventajas", "Preguntas frecuentes", "Créditos"] },
-  de: { navigation: "Abschnitte der Startseite", labels: ["Start", "So funktioniert es", "Vorteile", "Häufige Fragen", "Impressum"] },
-  fr: { navigation: "Sections de la page d’accueil", labels: ["Accueil", "Comment ça marche", "Avantages", "Questions fréquentes", "Crédits"] },
-  it: { navigation: "Sezioni della pagina iniziale", labels: ["Inizio", "Come funziona", "Vantaggi", "Domande frequenti", "Crediti"] },
+const sectionIds = ["inicio", "como-funciona", "vantagens", "duvidas-frequentes"] as const;
+const sectionCopy: Record<InterfaceLanguage, { navigation: string; labels: readonly [string, string, string, string] }> = {
+  pt: { navigation: "Seções da página inicial", labels: ["Início", "Como funciona", "Vantagens", "Dúvidas frequentes"] },
+  en: { navigation: "Home page sections", labels: ["Home", "How it works", "Benefits", "Frequently asked questions"] },
+  es: { navigation: "Secciones de la página inicial", labels: ["Inicio", "Cómo funciona", "Ventajas", "Preguntas frecuentes"] },
+  de: { navigation: "Abschnitte der Startseite", labels: ["Start", "So funktioniert es", "Vorteile", "Häufige Fragen"] },
+  fr: { navigation: "Sections de la page d’accueil", labels: ["Accueil", "Comment ça marche", "Avantages", "Questions fréquentes"] },
+  it: { navigation: "Sezioni della pagina iniziale", labels: ["Inizio", "Come funziona", "Vantaggi", "Domande frequenti"] },
 };
 
 export function HomeSectionNavigation() {

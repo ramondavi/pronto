@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: estabiliza a expansão da busca inicial e o movimento da hero, alinha o título ao ícone, mostra seis dúvidas frequentes editáveis e devolve ao rodapé a rolagem natural após as perguntas.
+
 - 04/11/2026: organiza a página inicial em seções de tela cheia no desktop, com rolagem suave e navegação lateral por pontos, e retira a linha antes de “Como funciona”; estabiliza a busca e alinha seu ícone à barra.
 
 - 04/11/2026: acrescenta um ícone de arco arquitetônico ao lado da apresentação dos temas abaixo da busca inicial.

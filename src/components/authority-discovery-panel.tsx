@@ -9,6 +9,13 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   const expanded = pointerInside || focusInside;
 
   useEffect(() => {
+    const landscape = sectionRef.current?.parentElement;
+    if (!landscape) return;
+    landscape.dataset.discoveryExpanded = String(expanded);
+    return () => { delete landscape.dataset.discoveryExpanded; };
+  }, [expanded]);
+
+  useEffect(() => {
     const section = sectionRef.current;
     const landscape = section?.parentElement;
     if (!section || !landscape) return;
@@ -32,11 +39,15 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
     if (!pointerInside) return;
     const closeWhenOutside = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
-      const bounds = sectionRef.current?.getBoundingClientRect();
-      if (!bounds) return;
-      const margin = 12;
-      if (event.clientX < bounds.left - margin || event.clientX > bounds.right + margin
-        || event.clientY < bounds.top - margin || event.clientY > bounds.bottom + margin) {
+      const section = sectionRef.current;
+      if (!section) return;
+      const bounds = section.getBoundingClientRect();
+      const search = section.querySelector(".authority-discovery-search--home")?.getBoundingClientRect();
+      const margin = 16;
+      if (event.clientX < Math.min(bounds.left, search?.left ?? bounds.left) - margin
+        || event.clientX > Math.max(bounds.right, search?.right ?? bounds.right) + margin
+        || event.clientY < Math.min(bounds.top, search?.top ?? bounds.top) - margin
+        || event.clientY > Math.max(bounds.bottom, search?.bottom ?? bounds.bottom) + margin) {
         setPointerInside(false);
       }
     };
@@ -52,7 +63,7 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} aria-labelledby="authority-discovery-title"
     onPointerOver={(event) => {
       if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return;
-      if (event.target.closest(".authority-discovery-search--home, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
+      if (event.target.closest(".authority-discovery-search__control, .authority-discovery-search--home label, .authority-discovery-search--home button, .authority-discovery-search--home a, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
     }}
     onFocusCapture={() => setFocusInside(true)}
     onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusInside(false); }}>
