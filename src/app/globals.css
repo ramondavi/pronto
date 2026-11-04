@@ -8287,7 +8287,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 
 /* Geographic discovery uses the same published, individually reviewed points in both maps. */
 @media(min-width:821px) {
-  .authority-discovery__inner { grid-template-columns: minmax(0,73%) minmax(0,27%); column-gap: 0; align-items: start; }
+  .authority-discovery__inner { grid-template-columns: minmax(0,78%) minmax(0,22%); column-gap: 0; align-items: start; }
   .authority-discovery[data-expanded="false"] .authority-discovery__inner { grid-template-columns: minmax(0,70%) minmax(0,30%); }
   .authority-discovery__inner > .authority-discovery-search--home { position: relative; z-index: 2; grid-column: 1; grid-row: 1; }
   .authority-discovery__inner > .authority-map-preview { grid-column: 2; grid-row: 1; }
