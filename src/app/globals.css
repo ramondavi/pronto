@@ -8309,12 +8309,12 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
   .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__control input { height: 42px; }
   .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__examples { margin-top: 6px; }
   .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__examples button { padding: 5px 10px; }
-  .authority-discovery[data-expanded="true"] .authority-discovery__heading { margin-top: -80px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery__heading { margin-top: -15px; }
   .authority-discovery__heading-copy .authority-discovery__detail { font-size: .82rem; line-height: 1.4; }
 }
 .authority-map-preview { position: relative; z-index: 0; align-self: stretch; min-height: 220px; margin-top: -42px; pointer-events: none; }
-.authority-map-preview__canvas { position: absolute; top: -35px; right: 0; width: min(44vw,490px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); pointer-events: auto; }
-.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -18px; width: min(30vw,320px); }
+.authority-map-preview__canvas { position: absolute; top: -35px; right: 24px; width: min(44vw,490px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); pointer-events: auto; }
+.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -18px; right: 16px; width: min(30vw,320px); }
 .authority-map-preview__brazil { position: absolute; inset: 0; background: var(--institutional); opacity: .31; mask: url('/maps/brazil.svg') center / contain no-repeat; }
 .authority-map-preview__point { position: absolute; z-index: 1; display: flex; align-items: center; gap: 4px; max-width: 110px; color: var(--text); font-size: .7rem; font-weight: 750; line-height: 1.05; text-decoration: none; opacity: 0; animation: map-point-glow 10s infinite; transform: translate(-25%,-50%); }
 .authority-map-preview__point i { flex: none; width: 11px; height: 11px; border: 2px solid var(--surface-raised); border-radius: 50%; background: var(--institutional); box-shadow: 0 0 0 4px color-mix(in srgb,var(--institutional) 25%,transparent); }
