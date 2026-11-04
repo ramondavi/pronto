@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: limita a expansão da busca inicial aos seus conteúdos, estabiliza a borda sob o cursor e retira o sublinhado da seta do link por área.
+
 - 04/11/2026: desloca suavemente o conteúdo da hero para cima quando a busca expande, preservando os espaços entre seus elementos.
 
 - 04/11/2026: faz a busca inicial expandir para cima dentro da primeira tela e apresenta a origem dos temas em linguagem simples nos seis idiomas.

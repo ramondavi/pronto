@@ -28,9 +28,32 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!pointerInside) return;
+    const closeWhenOutside = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      const bounds = sectionRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+      const margin = 12;
+      if (event.clientX < bounds.left - margin || event.clientX > bounds.right + margin
+        || event.clientY < bounds.top - margin || event.clientY > bounds.bottom + margin) {
+        setPointerInside(false);
+      }
+    };
+    const closeOnWindowBlur = () => setPointerInside(false);
+    window.addEventListener("pointermove", closeWhenOutside);
+    window.addEventListener("blur", closeOnWindowBlur);
+    return () => {
+      window.removeEventListener("pointermove", closeWhenOutside);
+      window.removeEventListener("blur", closeOnWindowBlur);
+    };
+  }, [pointerInside]);
+
   return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} aria-labelledby="authority-discovery-title"
-    onPointerEnter={(event) => { if (event.pointerType === "mouse") setPointerInside(true); }}
-    onPointerLeave={(event) => { if (event.pointerType === "mouse") setPointerInside(false); }}
+    onPointerOver={(event) => {
+      if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return;
+      if (event.target.closest(".authority-discovery-search--home, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
+    }}
     onFocusCapture={() => setFocusInside(true)}
     onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusInside(false); }}>
     {children}

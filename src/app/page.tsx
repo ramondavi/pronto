@@ -102,7 +102,7 @@ export default async function HomePage() {
               <div className="authority-discovery__heading-copy">
                 <p>{discovery.intro}</p>
                 <p className="authority-discovery__detail">{discovery.workExplanation}</p>
-                <Link className="authority-discovery__area-link" href="/autoridades/explorar">{publicThemeCopy.browse} <span aria-hidden="true">↗</span></Link>
+                <Link className="authority-discovery__area-link" href="/autoridades/explorar"><span>{publicThemeCopy.browse}</span><span aria-hidden="true">↗</span></Link>
               </div>
             </div>
             {mostUsed.length > 0 && <div className="authority-discovery__popular"><div><p className="eyebrow">{usageCopy.title}</p><p>{usageCopy.intro}</p></div><ol>{mostUsed.map((item) => <li key={item.id}><Link href={`/autoridades/${item.id}`}>{item.label}<span>{item.count} {usageCopy.count} ↗</span></Link></li>)}</ol></div>}

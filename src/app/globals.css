@@ -8249,9 +8249,10 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery__heading-copy { display: grid; grid-column: 2; grid-row: 1 / span 2; align-content: center; justify-items: start; gap: 9px; padding: 0; }
 .authority-discovery__heading-copy p { max-width: 62ch; }
 .authority-discovery__heading-copy .authority-discovery__detail { color: var(--text); }
-.authority-discovery__area-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; padding: 0; border: 0; background: transparent; font-size: .84rem; text-decoration: underline; text-underline-offset: 4px; }
+.authority-discovery__area-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; padding: 0; border: 0; background: transparent; font-size: .84rem; text-decoration: none; }
 .authority-discovery__area-link:is(:hover,:focus-visible) { color: var(--text); }
-.authority-discovery__area-link span { font-size: 1rem; }
+.authority-discovery__area-link span:first-child { text-decoration: underline; text-underline-offset: 4px; }
+.authority-discovery__area-link span:last-child { font-size: 1rem; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading { grid-template-columns: minmax(0,1fr); }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading .eyebrow,.authority-discovery[data-expanded="false"] .authority-discovery__heading h2,.authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { grid-column: 1; grid-row: auto; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { display: block; }
