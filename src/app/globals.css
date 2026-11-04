@@ -8236,9 +8236,11 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 @media(min-width:901px) {
   .home-hero-landscape { display: flex; flex-direction: column; min-height: 100svh; }
   .home-hero-landscape > .hero { display: flex; flex: none; min-height: calc(100svh - var(--authority-compact-height,248px)); }
-  .home-hero-landscape .hero__grid { flex: none; align-self: stretch; width: min(1120px,calc(100% - 48px)); min-height: 0; padding-top: clamp(145px,16vh,200px); padding-bottom: clamp(42px,6vh,72px); }
+  .home-hero-landscape .hero__grid { flex: none; align-self: stretch; width: min(1120px,calc(100% - 48px)); min-height: 0; padding-top: clamp(145px,16vh,200px); padding-bottom: clamp(42px,6vh,72px); transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+  .home-hero-landscape:has(> .authority-discovery[data-expanded="true"]) .hero__grid { transform: translateY(-clamp(20px,3vh,38px)); }
   .home-hero-landscape > .authority-discovery[data-expanded="true"] { position: absolute; right: 0; bottom: 0; left: 0; width: 100%; }
 }
+@media(prefers-reduced-motion:reduce) { .home-hero-landscape .hero__grid { transition: none; } }
 .authority-discovery__inner,.authority-discovery[data-expanded="false"] .authority-discovery__inner { gap: 18px; padding-bottom: 80px; }
 .authority-discovery[data-expanded="false"] .authority-discovery__inner { padding-top: 12px; }
 .authority-discovery__heading { grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); align-items: center; gap: 4px clamp(24px,5vw,72px); padding-top: 0; }
