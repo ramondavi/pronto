@@ -5,6 +5,7 @@ import { AuthorityDiscoveryPanel } from "@/components/authority-discovery-panel"
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
 import { HeroClassificationPhrase } from "@/components/hero-cdu-word";
 import { HomeJourney } from "@/components/home-journey";
+import { HomeSectionNavigation } from "@/components/home-section-navigation";
 import { Notice } from "@/components/notice";
 import { ClarityHeading } from "@/components/clarity-heading";
 import { AnimatedSectionTitle } from "@/components/animated-section-title";
@@ -73,7 +74,8 @@ export default async function HomePage() {
     <>
       <SiteHeader showServiceStatus={false} closingTimeOverride={closingTime} />
       <main>
-        <div className="home-hero-landscape">
+        <HomeSectionNavigation />
+        <div id="inicio" className="home-hero-landscape">
         <HeroGeometry />
         <section className="hero">
           <div className="container hero__grid">
@@ -112,7 +114,7 @@ export default async function HomePage() {
         </AuthorityDiscoveryPanel>
         </div>
 
-        <section id="como-funciona" className="section section--muted">
+        <section id="como-funciona" className="section section--muted home-viewport-section">
           <div className="container">
             <p className="eyebrow">{t.how}</p>
             <ClarityHeading less={t.less} clearer={t.clearer} />
@@ -120,7 +122,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section id="vantagens" className="section home-benefits" aria-labelledby="home-benefits-title">
+        <section id="vantagens" className="section home-benefits home-viewport-section" aria-labelledby="home-benefits-title">
           <div className="container">
             <header className="home-benefits__header">
               <div><p className="eyebrow">{benefits.eyebrow}</p><AnimatedSectionTitle title={benefits.title} id="home-benefits-title" theme="benefits" /></div>
@@ -135,7 +137,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section id="duvidas-frequentes" className="section home-faq">
+        <section id="duvidas-frequentes" className="section home-faq home-viewport-section">
           <div className="container">
             <p className="eyebrow">{t.faq}</p>
             <AnimatedSectionTitle title={t.faqTitle} theme="faq" />

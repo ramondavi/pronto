@@ -15,9 +15,7 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
     let active = true;
     const measureCompactHeight = () => {
       if (active && section.dataset.expanded === "false") {
-        landscape.style.removeProperty("--authority-landscape-height");
         landscape.style.setProperty("--authority-compact-height", `${Math.ceil(section.getBoundingClientRect().height)}px`);
-        landscape.style.setProperty("--authority-landscape-height", `${Math.ceil(landscape.getBoundingClientRect().height)}px`);
       }
     };
     measureCompactHeight();
@@ -27,7 +25,6 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
       active = false;
       window.removeEventListener("resize", measureCompactHeight);
       landscape.style.removeProperty("--authority-compact-height");
-      landscape.style.removeProperty("--authority-landscape-height");
     };
   }, []);
 
