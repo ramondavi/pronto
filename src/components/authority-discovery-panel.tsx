@@ -43,11 +43,12 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
       if (!section) return;
       const bounds = section.getBoundingClientRect();
       const search = section.querySelector(".authority-discovery-search--home")?.getBoundingClientRect();
+      const map = section.querySelector(".authority-map-preview__canvas")?.getBoundingClientRect();
       const margin = 16;
-      if (event.clientX < Math.min(bounds.left, search?.left ?? bounds.left) - margin
-        || event.clientX > Math.max(bounds.right, search?.right ?? bounds.right) + margin
-        || event.clientY < Math.min(bounds.top, search?.top ?? bounds.top) - margin
-        || event.clientY > Math.max(bounds.bottom, search?.bottom ?? bounds.bottom) + margin) {
+      if (event.clientX < Math.min(bounds.left, search?.left ?? bounds.left, map?.left ?? bounds.left) - margin
+        || event.clientX > Math.max(bounds.right, search?.right ?? bounds.right, map?.right ?? bounds.right) + margin
+        || event.clientY < Math.min(bounds.top, search?.top ?? bounds.top, map?.top ?? bounds.top) - margin
+        || event.clientY > Math.max(bounds.bottom, search?.bottom ?? bounds.bottom, map?.bottom ?? bounds.bottom) + margin) {
         setPointerInside(false);
       }
     };
@@ -63,7 +64,7 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} aria-labelledby="authority-discovery-title"
     onPointerOver={(event) => {
       if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return;
-      if (event.target.closest(".authority-discovery-search__control, .authority-discovery-search--home label, .authority-discovery-search--home button, .authority-discovery-search--home a, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
+      if (event.target.closest(".authority-discovery-search__control, .authority-discovery-search--home label, .authority-discovery-search--home button, .authority-discovery-search--home a, .authority-map-preview__canvas, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
     }}
     onFocusCapture={() => setFocusInside(true)}
     onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusInside(false); }}>
