@@ -24,14 +24,15 @@ import { authorityDiscoveryCopy } from "@/lib/authority-discovery-copy";
 import { authorityUsageCopy } from "@/lib/authority-usage-copy";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
 import { getPublicAuthorityMapPoints } from "@/lib/authority-map";
+import { authorityMapCopy } from "@/lib/authority-map-copy";
 
 const catalogPhrases = {
   pt: "Fichas catalográficas",
-  en: "Catalog Record",
-  es: "fichas catalográficas",
+  en: "Catalog Records",
+  es: "Fichas catalográficas",
   de: "Katalogeinträge",
-  fr: "notices de catalogage",
-  it: "schede catalografiche",
+  fr: "Notices de catalogage",
+  it: "Schede catalografiche",
 } as const;
 
 const fallbackHomeFaqs = {
@@ -47,7 +48,7 @@ export default async function HomePage() {
   const language = await getInterfaceLanguage();
   const t = homeCopy[language];
   const catalogPhrase = catalogPhrases[language];
-  const catalogPosition = t.lead.indexOf(catalogPhrase);
+  const catalogPosition = t.lead.toLocaleLowerCase(language).indexOf(catalogPhrase.toLocaleLowerCase(language));
   const benefits = homeBenefitsCopy[language];
   const discovery = authorityDiscoveryCopy[language];
   const usageCopy = authorityUsageCopy[language];
@@ -112,7 +113,7 @@ export default async function HomePage() {
               <div className="authority-discovery__heading-copy">
                 <p>{discovery.intro}</p>
                 <p className="authority-discovery__detail">{discovery.workExplanation}</p>
-                <Link className="authority-discovery__area-link" href="/autoridades/explorar"><span>{publicThemeCopy.browse}</span><span aria-hidden="true">↗</span></Link>
+                <div className="authority-discovery__explore-links"><Link className="authority-discovery__area-link" href="/autoridades/explorar"><span>{publicThemeCopy.browse}</span><span aria-hidden="true">↗</span></Link><Link className="authority-discovery__area-link" href="/autoridades/mapa"><span>{authorityMapCopy[language].open}</span><span aria-hidden="true">↗</span></Link></div>
               </div>
             </div>
             {mostUsed.length > 0 && <div className="authority-discovery__popular"><div><p className="eyebrow">{usageCopy.title}</p><p>{usageCopy.intro}</p></div><ol>{mostUsed.map((item) => <li key={item.id}><Link href={`/autoridades/${item.id}`}>{item.label}<span>{item.count} {usageCopy.count} ↗</span></Link></li>)}</ol></div>}
