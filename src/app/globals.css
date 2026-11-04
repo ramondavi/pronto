@@ -8188,7 +8188,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 @media(max-width:720px) { .authority-discovery-search--home { margin-top: -34px; } .authority-discovery__heading { padding-top: 0; } }
 
 /* The hero artwork continues behind the search; only the lower discovery edge fades to the next section. */
-.home-hero-landscape { position: relative; isolation: isolate; overflow: visible; background: var(--bg); }
+.home-hero-landscape { position: relative; isolation: isolate; overflow-x: clip; overflow-y: visible; background: var(--bg); }
 .home-hero-landscape > .hero { z-index: 1; overflow: visible; border-bottom: 0; background: transparent; }
 .home-hero-landscape > .hero__geometry-motion { z-index: 0; }
 .home-hero-landscape > .authority-discovery { z-index: 1; background: transparent; }
@@ -8287,8 +8287,8 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 
 /* Geographic discovery uses the same published, individually reviewed points in both maps. */
 @media(min-width:821px) {
-  .authority-discovery__inner { grid-template-columns: minmax(0,60%) minmax(0,40%); column-gap: 0; align-items: start; }
-  .authority-discovery[data-expanded="false"] .authority-discovery__inner { grid-template-columns: minmax(0,67%) minmax(0,33%); }
+  .authority-discovery__inner { grid-template-columns: minmax(0,73%) minmax(0,27%); column-gap: 0; align-items: start; }
+  .authority-discovery[data-expanded="false"] .authority-discovery__inner { grid-template-columns: minmax(0,70%) minmax(0,30%); }
   .authority-discovery__inner > .authority-discovery-search--home { position: relative; z-index: 2; grid-column: 1; grid-row: 1; }
   .authority-discovery__inner > .authority-map-preview { grid-column: 2; grid-row: 1; }
   .authority-discovery__inner > .authority-discovery__heading { position: relative; z-index: 2; grid-column: 1 / -1; grid-row: 2; }
@@ -8299,10 +8299,21 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
   .authority-discovery[data-expanded="true"] .authority-discovery__mark { width: 64px; height: 64px; }
   .authority-discovery[data-expanded="true"] .authority-discovery__mark svg { width: 58px; height: 58px; }
   .authority-discovery[data-expanded="true"] .authority-discovery__heading h2 { max-width: none; font-size: clamp(2.3rem,3vw,3rem); white-space: nowrap; }
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading { transform: translateY(-70px); }
+  .authority-discovery[data-expanded="false"] .authority-map-preview { min-height: 150px; }
+  .authority-discovery[data-expanded="false"] .authority-discovery-search--home { padding: 6px; }
+  .authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__control { min-height: 54px; }
+  .authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__control input { height: 42px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery-search--home { padding: 12px 16px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__control { min-height: 58px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__control input { height: 42px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__examples { margin-top: 6px; }
+  .authority-discovery[data-expanded="true"] .authority-discovery-search--home .authority-discovery-search__examples button { padding: 5px 10px; }
+  .authority-discovery__heading-copy .authority-discovery__detail { font-size: .82rem; line-height: 1.4; }
 }
 .authority-map-preview { position: relative; z-index: 0; align-self: stretch; min-height: 220px; margin-top: -42px; pointer-events: none; }
-.authority-map-preview__canvas { position: absolute; top: 0; right: 42px; width: min(40vw,430px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); }
-.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -38px; width: min(40vw,420px); }
+.authority-map-preview__canvas { position: absolute; top: 0; right: 42px; width: min(44vw,490px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); }
+.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -18px; width: min(30vw,320px); }
 .authority-map-preview__brazil { position: absolute; inset: 0; background: var(--institutional); opacity: .31; mask: url('/maps/brazil.svg') center / contain no-repeat; }
 .authority-map-preview__point { position: absolute; z-index: 1; display: flex; align-items: center; gap: 4px; max-width: 110px; color: var(--text); font-size: .7rem; font-weight: 750; line-height: 1.05; text-decoration: none; opacity: 0; animation: map-point-glow 10s infinite; transform: translate(-25%,-50%); }
 .authority-map-preview__point i { flex: none; width: 11px; height: 11px; border: 2px solid var(--surface-raised); border-radius: 50%; background: var(--institutional); box-shadow: 0 0 0 4px color-mix(in srgb,var(--institutional) 25%,transparent); }
@@ -8320,7 +8331,7 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 :root[data-theme="dark"] .authority-discovery[data-expanded="true"] .authority-discovery-search--home { background: rgb(24 24 27 / 42%); border-color: rgb(255 255 255 / 25%); box-shadow: 0 18px 42px rgb(0 0 0 / 25%),inset 0 1px rgb(255 255 255 / 12%); }
 .authority-discovery[data-expanded="true"] .authority-discovery-search--home { backdrop-filter: blur(14px) saturate(1.2); }
 @media(max-width:820px) { .authority-map-preview__canvas,.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: 0; right: 0; width: min(100%,320px); height: auto; } }
-@media(min-width:821px) and (max-height:900px) { .home-hero-landscape[data-discovery-expanded="true"] { min-height: calc(100svh - var(--home-start-offset,52px) + 300px); } }
+@media(min-width:821px) and (max-height:900px) { .home-hero-landscape { min-height: calc(100svh - var(--home-start-offset,52px) + 200px); } .home-hero-landscape[data-discovery-expanded="true"] { min-height: calc(100svh - var(--home-start-offset,52px) + 330px); } }
 
 .authority-map-page { position: relative; }
 .authority-map-page .site-header { position: absolute; z-index: 15; top: 0; left: 0; width: 100%; background: var(--surface-raised); box-shadow: 0 5px 20px rgb(0 0 0 / 10%); }
