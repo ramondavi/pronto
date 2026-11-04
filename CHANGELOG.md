@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: corrige a animação de subida da hero ao expandir a busca e centraliza o ícone arquitetônico na linha do título.
+
 - 04/11/2026: restaura a navegação suave por telas na página inicial, mantém a barra Brasil visível e deixa o rodapé seguir as dúvidas naturalmente; amplia o movimento da hero, alinha o ícone dos temas e explica a organização dos ramos da árvore na Administração.
 
 - 04/11/2026: estabiliza a expansão da busca inicial e o movimento da hero, alinha o título ao ícone, mostra seis dúvidas frequentes editáveis e devolve ao rodapé a rolagem natural após as perguntas.
