@@ -8262,7 +8262,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery__area-link span:last-child { font-size: 1rem; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading { grid-template-columns: 40px minmax(0,1fr); column-gap: 12px; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading .eyebrow { grid-column: 1 / -1; grid-row: 1; }
-.authority-discovery[data-expanded="false"] .authority-discovery__mark { grid-column: 1; grid-row: 2; align-self: start; width: 40px; height: 40px; }
+.authority-discovery[data-expanded="false"] .authority-discovery__mark { grid-column: 1; grid-row: 2; align-self: start; width: 40px; height: 40px; transform: translateY(5px); }
 .authority-discovery[data-expanded="false"] .authority-discovery__mark svg { width: 36px; height: 36px; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading h2 { grid-column: 2; grid-row: 2; }
 .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { display: block; grid-column: 2; grid-row: 3; padding: 0; }
