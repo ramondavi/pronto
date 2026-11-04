@@ -16,7 +16,7 @@ export function AuthorityMapPreview({ points, language }: { points: AuthorityMap
     { place_label: "São Paulo", latitude: -23.55, longitude: -46.63 },
   ];
   const markers = places.length ? places.map((point) => ({ ...point, real: true as const })) : examples.map((point) => ({ ...point, real: false as const }));
-  return <div className="authority-map-preview" aria-label={places.length ? t.preview : `${t.preview}. ${t.illustrative}`} role="group">
+  return <div className="authority-map-preview" aria-label={t.preview} role="group">
     <div className="authority-map-preview__canvas">
       <div className="authority-map-preview__brazil" />
       {markers.map((point, index) => {
@@ -27,6 +27,5 @@ export function AuthorityMapPreview({ points, language }: { points: AuthorityMap
           : <span className="authority-map-preview__point authority-map-preview__point--example" key={point.place_label} style={style} aria-hidden="true">{content}</span>;
       })}
     </div>
-    <small className="authority-map-preview__caption">{places.length ? t.preview : t.illustrative}</small>
   </div>;
 }
