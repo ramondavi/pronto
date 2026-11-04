@@ -53,6 +53,7 @@ export function PublicBreadcrumbs({ articleTitle, authorityTitle }: { articleTit
   if (pathname.startsWith("/ajuda/artigos/") && articleTitle) return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: t[2], href: "/ajuda" }, { label: articleTitle }]} />;
   if (pathname === "/autoridades") return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title }]} />;
   if (pathname === "/autoridades/explorar") return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title, href: "/autoridades" }, { label: authorityPublicCopy[language].browse }]} />;
+  if (pathname === "/autoridades/mapa") return null;
   if (pathname.startsWith("/autoridades/") && authorityTitle) return <Trail variant="public" items={[{ label: t[1], href: "/" }, { label: authorityPublicCopy[language].title, href: "/autoridades" }, { label: authorityTitle }]} />;
   const labels: Record<string, string> = { "/ajuda": t[2], "/perguntas-frequentes": t[2], "/politica-de-privacidade": t[3], "/acessibilidade": t[4] };
   const label = labels[pathname];

@@ -3,6 +3,7 @@ import { IconBuildingArch } from "@tabler/icons-react";
 import { HeroGeometry } from "@/components/hero-geometry";
 import { AuthorityDiscoveryPanel } from "@/components/authority-discovery-panel";
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
+import { AuthorityMapPreview } from "@/components/authority-map-preview";
 import { HeroClassificationPhrase } from "@/components/hero-cdu-word";
 import { HomeJourney } from "@/components/home-journey";
 import { HomeSectionNavigation } from "@/components/home-section-navigation";
@@ -22,6 +23,7 @@ import { uiText } from "@/lib/ui-text";
 import { authorityDiscoveryCopy } from "@/lib/authority-discovery-copy";
 import { authorityUsageCopy } from "@/lib/authority-usage-copy";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
+import { getPublicAuthorityMapPoints } from "@/lib/authority-map";
 
 const catalogPhrases = {
   pt: "Fichas catalográficas",
@@ -53,6 +55,7 @@ export default async function HomePage() {
   const supabase = await createClient();
   const { data: usageData } = await supabase.rpc("list_public_authority_usage_summary");
   const mostUsed = Array.isArray(usageData) ? usageData as { id: string; label: string; count: number }[] : [];
+  const mapPoints = await getPublicAuthorityMapPoints();
   const { data: { user } } = await supabase.auth.getUser();
   const faqs = (await getPublishedKnowledge()).filter((entry) => entry.kind === "faq").map((entry) => {
     const legacyIndex = fallbackHomeFaqs.pt.findIndex(([question]) => question === entry.title);
@@ -101,6 +104,7 @@ export default async function HomePage() {
         <AuthorityDiscoveryPanel>
           <div className="container authority-discovery__inner">
             <AuthorityDiscoverySearch variant="home" />
+            <AuthorityMapPreview points={mapPoints} language={language} />
             <div className="authority-discovery__heading">
               <span className="authority-discovery__mark" aria-hidden="true"><IconBuildingArch stroke={1.5} /></span>
               <p className="eyebrow">{discovery.eyebrow}</p>
