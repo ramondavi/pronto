@@ -27,6 +27,6 @@ export function AuthorityMapPreview({ points, language }: { points: AuthorityMap
           : <span className="authority-map-preview__point authority-map-preview__point--example" key={point.place_label} style={style} aria-hidden="true">{content}</span>;
       })}
     </div>
-    {!places.length && <small className="authority-map-preview__caption">{t.illustrative}</small>}
+    <small className="authority-map-preview__caption">{places.length ? t.preview : t.illustrative}</small>
   </div>;
 }
