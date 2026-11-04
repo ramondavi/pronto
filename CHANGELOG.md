@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: mantém “Como funciona” imóvel durante a expansão da busca e amplia o deslocamento suave do conteúdo da hero.
+
 - 04/11/2026: limita a expansão da busca inicial aos seus conteúdos, estabiliza a borda sob o cursor e retira o sublinhado da seta do link por área.
 
 - 04/11/2026: desloca suavemente o conteúdo da hero para cima quando a busca expande, preservando os espaços entre seus elementos.
