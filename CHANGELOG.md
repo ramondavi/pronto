@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: torna todo o conteúdo da busca inicial expandida acessível por rolagem, aplica vidro translúcido sobre o mapa e mostra pontos ilustrativos alternados até haver localidades revisadas; a busca passa a reconhecer nomes de lugares e pares de coordenadas das autoridades públicas.
+
 - 04/11/2026: aplica a animação do título da hero nos seis idiomas, integra um mapa maior do Brasil ao fundo da busca inicial, ajusta o espaço da expansão, aproxima os links de exploração por área temática e por local e remove o rótulo redundante dos cabeçalhos públicos de autoridades.
 
 - 04/11/2026: apresenta um recorte do Brasil na busca inicial e um mapa público de lugares associados a temas, com pontos revistos pela biblioteca, consulta por lugar e tema e visualização mundial na área de conteúdo; a equipe pode conferir coordenadas e fonte em cada autoridade.

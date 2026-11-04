@@ -16,12 +16,12 @@ const sourceNames: Record<string, string> = { bn: "Biblioteca Nacional", aat: "G
 const headingNames: Record<string, string> = { topic: "Temático", geographic: "Geográfico", personal: "Pessoa", corporate: "Entidade", title: "Título" };
 const examples = ["habitação", "patrimônio", "paisagem", "urbanismo"];
 const typingTerms = {
-  pt: ["habitação social", "patrimônio cultural", "paisagem urbana", "urbanismo"],
-  en: ["social housing", "cultural heritage", "urban landscape", "urban planning"],
-  es: ["vivienda social", "patrimonio cultural", "paisaje urbano", "urbanismo"],
-  de: ["sozialer Wohnungsbau", "Kulturerbe", "Stadtlandschaft", "Stadtplanung"],
-  fr: ["logement social", "patrimoine culturel", "paysage urbain", "urbanisme"],
-  it: ["edilizia sociale", "patrimonio culturale", "paesaggio urbano", "urbanistica"],
+  pt: ["habitação social", "patrimônio cultural", "Salvador", "paisagem urbana", "Brasília", "-12.9711, -38.5108"],
+  en: ["social housing", "cultural heritage", "Salvador", "urban landscape", "Brasília", "-12.9711, -38.5108"],
+  es: ["vivienda social", "patrimonio cultural", "Salvador", "paisaje urbano", "Brasília", "-12.9711, -38.5108"],
+  de: ["sozialer Wohnungsbau", "Kulturerbe", "Salvador", "Stadtlandschaft", "Brasília", "-12.9711, -38.5108"],
+  fr: ["logement social", "patrimoine culturel", "Salvador", "paysage urbain", "Brasília", "-12.9711, -38.5108"],
+  it: ["edilizia sociale", "patrimonio culturale", "Salvador", "paesaggio urbano", "Brasília", "-12.9711, -38.5108"],
 } as const;
 
 export function AuthorityDiscoverySearch({ variant, initialQuery = "", initialSource = "all", initialHeading = "all", initialSort = "relevance", initialLanguage = "all", initialRelation = "all" }: Props) {
