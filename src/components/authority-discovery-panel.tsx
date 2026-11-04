@@ -55,7 +55,7 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} aria-labelledby="authority-discovery-title"
     onPointerOver={(event) => {
       if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return;
-      if (event.target.closest(".authority-discovery-search--home, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
+      if (event.target.closest(".authority-discovery-search--home, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__area-link, .authority-discovery__popular a")) setPointerInside(true);
     }}
     onFocusCapture={() => setFocusInside(true)}
     onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusInside(false); }}>

@@ -8243,7 +8243,11 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 @media(prefers-reduced-motion:reduce) { .home-hero-landscape .hero__grid { transition: none; } }
 .authority-discovery__inner,.authority-discovery[data-expanded="false"] .authority-discovery__inner { gap: 18px; padding-bottom: 80px; }
 .authority-discovery[data-expanded="false"] .authority-discovery__inner { padding-top: 12px; }
-.authority-discovery__heading { grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); align-items: center; gap: 4px clamp(24px,5vw,72px); padding-top: 0; }
+.authority-discovery__heading { position: relative; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); align-items: center; gap: 4px clamp(24px,5vw,72px); padding-top: 0; }
+.authority-discovery__mark { position: absolute; top: 50%; left: -72px; display: grid; place-items: center; width: 52px; height: 52px; color: var(--institutional); transform: translateY(-50%); }
+.authority-discovery__mark svg { width: 48px; height: 48px; }
+@media(max-width:1250px) { .authority-discovery__heading { padding-left: 60px; } .authority-discovery__mark { left: 0; } }
+@media(max-width:550px) { .authority-discovery__heading { padding-left: 48px; } .authority-discovery__mark { width: 40px; height: 40px; } .authority-discovery__mark svg { width: 38px; height: 38px; } }
 .authority-discovery__heading .eyebrow { grid-column: 1; grid-row: 1; }
 .authority-discovery__heading h2 { grid-column: 1; grid-row: 2; max-width: 16ch; margin: 2px 0 0; font-size: clamp(1.9rem,2.8vw,2.8rem); line-height: 1.12; }
 .authority-discovery__heading-copy { display: grid; grid-column: 2; grid-row: 1 / span 2; align-content: center; justify-items: start; gap: 9px; padding: 0; }

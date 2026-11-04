@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconBuildingArch } from "@tabler/icons-react";
 import { HeroGeometry } from "@/components/hero-geometry";
 import { AuthorityDiscoveryPanel } from "@/components/authority-discovery-panel";
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
@@ -97,6 +98,7 @@ export default async function HomePage() {
           <div className="container authority-discovery__inner">
             <AuthorityDiscoverySearch variant="home" />
             <div className="authority-discovery__heading">
+              <span className="authority-discovery__mark" aria-hidden="true"><IconBuildingArch stroke={1.5} /></span>
               <p className="eyebrow">{discovery.eyebrow}</p>
               <h2 id="authority-discovery-title">{discovery.title}</h2>
               <div className="authority-discovery__heading-copy">
