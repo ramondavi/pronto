@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: reúne dois temas e dois lugares sugeridos em uma linha, compacta a apresentação abaixo da busca e reduz o mapa expandido para preservar a hero.
+
 - 04/11/2026: alinha o contorno do mapa à margem direita, mantém livres os botões de acesso ao expandir a busca e acrescenta exemplos de lugares de Salvador; passar o mouse sobre o mapa também abre a busca.
 
 - 04/11/2026: elimina a rolagem lateral na página inicial, alinha e redimensiona o mapa nos dois estados e torna a busca contraída mais compacta e a expandida mais larga sobre o mapa.
