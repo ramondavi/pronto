@@ -10,14 +10,17 @@ import { authorityMapCopy, authorityMapUiCopy } from "@/lib/authority-map-copy";
 
 type Language = keyof typeof authorityMapCopy;
 type Scale = "world" | "southAmerica" | "brazil" | "northeast" | "bahia" | "salvador";
-const scales: { key: Scale; center: [number, number]; zoom: number }[] = [
+const scales: { key: Scale; center: [number, number]; zoom: number; bounds?: [[number, number], [number, number]] }[] = [
   { key: "world", center: [12, 0], zoom: 3 },
-  { key: "southAmerica", center: [-19, -60], zoom: 4 },
-  { key: "brazil", center: [-14, -52], zoom: 5 },
-  { key: "northeast", center: [-9.3, -40.3], zoom: 6 },
-  { key: "bahia", center: [-12.5, -41.5], zoom: 7 },
-  { key: "salvador", center: [-12.97, -38.51], zoom: 12 },
+  { key: "southAmerica", center: [-19, -60], zoom: 4, bounds: [[-82, -56], [-34, 13.5]] },
+  { key: "brazil", center: [-14, -52], zoom: 5, bounds: [[-74, -34], [-34, 6]] },
+  { key: "northeast", center: [-9.3, -40.3], zoom: 6, bounds: [[-48.8, -18.4], [-34.7, -1]] },
+  { key: "bahia", center: [-12.5, -41.5], zoom: 7, bounds: [[-46.7, -18.4], [-37.1, -8.4]] },
+  { key: "salvador", center: [-12.97, -38.51], zoom: 12, bounds: [[-38.7, -13.15], [-38.25, -12.7]] },
 ];
+function outline(bounds?: [[number, number], [number, number]]) {
+  return { type: "FeatureCollection" as const, features: bounds ? [{ type: "Feature" as const, properties: {}, geometry: { type: "LineString" as const, coordinates: [[bounds[0][0], bounds[0][1]], [bounds[1][0], bounds[0][1]], [bounds[1][0], bounds[1][1]], [bounds[0][0], bounds[1][1]], [bounds[0][0], bounds[0][1]]] } }] : [] };
+}
 function inScale(point: AuthorityMapPoint, scale: Scale) {
   if (scale === "world") return true;
   if (scale === "southAmerica") return point.latitude >= -56 && point.latitude <= 13.5 && point.longitude >= -82 && point.longitude <= -34;
@@ -45,9 +48,12 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   const rasterNode = useRef<HTMLDivElement>(null);
   const rasterRef = useRef<Leaflet.Map | null>(null);
   const rasterMarkersRef = useRef<Leaflet.LayerGroup | null>(null);
+  const rasterOutlineRef = useRef<Leaflet.Rectangle | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const [rasterReady, setRasterReady] = useState(false);
   const scale = scales[scaleIndex];
+  const scaleRef = useRef(scale);
+  useEffect(() => { scaleRef.current = scale; }, [scale]);
   useEffect(() => {
     const page = document.querySelector<HTMLElement>(".authority-map-page");
     const governmentBar = document.getElementById("barra-brasil");
@@ -106,10 +112,21 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
         mapRef.current = map;
         map.on("style.load", () => {
           if (!map) return;
+          const dark = document.documentElement.dataset.theme === "dark";
           const label = ["coalesce", ["get", `name:${language}`], ["get", `name_${language}`], ["get", "name:latin"], ["get", "name_en"], ["get", "name"]];
           for (const layer of map.getStyle().layers) {
-            if (layer.type === "symbol" && layer.layout?.["text-field"] && /name|label|poi|airport/i.test(layer.id)) map.setLayoutProperty(layer.id, "text-field", label);
+            if (layer.type === "fill") {
+              if (/water|ocean|sea/i.test(layer.id)) map.setPaintProperty(layer.id, "fill-color", dark ? "#24425a" : "#bed2e4");
+              else if (/park|forest|wood|grass|landcover/i.test(layer.id)) map.setPaintProperty(layer.id, "fill-color", dark ? "#35483f" : "#dce8d7");
+            }
+            if (layer.type === "symbol" && layer.layout?.["text-field"] && /name|label|poi|airport/i.test(layer.id)) {
+              map.setLayoutProperty(layer.id, "text-field", label);
+              map.setPaintProperty(layer.id, "text-halo-color", dark ? "#182531" : "#f8f8f4");
+              map.setPaintProperty(layer.id, "text-halo-width", 1.25);
+            }
           }
+          map.addSource("authority-scale-outline", { type: "geojson", data: outline(scaleRef.current.bounds) });
+          map.addLayer({ id: "authority-scale-outline", type: "line", source: "authority-scale-outline", paint: { "line-color": dark ? "#d5e8ff" : "#1a3b70", "line-width": 2, "line-opacity": .82, "line-dasharray": [3, 2] } });
         });
         map.on("load", () => {
           if (disposed || !map) return;
@@ -139,7 +156,7 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
       rasterMarkersRef.current = L.layerGroup().addTo(map);
       setRasterReady(true);
     }).catch(() => {});
-    return () => { disposed = true; map?.remove(); rasterRef.current = null; rasterMarkersRef.current = null; leafletRef.current = null; };
+    return () => { disposed = true; map?.remove(); rasterRef.current = null; rasterMarkersRef.current = null; rasterOutlineRef.current = null; leafletRef.current = null; };
   }, [mapError]);
   useEffect(() => {
     const map = mapRef.current;
@@ -150,7 +167,19 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
       map.setLayoutProperty(layer.id, "text-field", label);
     }
   }, [ready, language]);
-  useEffect(() => { if (rasterReady) rasterRef.current?.flyTo(scale.center, scale.zoom, { duration: .8 }); else if (ready) mapRef.current?.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, duration: 800 }); }, [ready, rasterReady, scale]);
+  useEffect(() => {
+    const vectorSource = mapRef.current?.getSource("authority-scale-outline") as MapLibre.GeoJSONSource | undefined;
+    vectorSource?.setData(outline(scale.bounds));
+    if (rasterReady && rasterRef.current) {
+      rasterOutlineRef.current?.remove();
+      rasterOutlineRef.current = scale.bounds && leafletRef.current ? leafletRef.current.rectangle([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { color: "#1a3b70", weight: 2, dashArray: "6 5", fill: false, interactive: false }).addTo(rasterRef.current) : null;
+      if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64], duration: .8 });
+      else rasterRef.current.flyTo(scale.center, scale.zoom, { duration: .8 });
+    } else if (ready && mapRef.current) {
+      if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64, duration: 800 });
+      else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, duration: 800 });
+    }
+  }, [ready, rasterReady, scale]);
   useEffect(() => {
     const M = maplibreRef.current;
     const map = mapRef.current;
@@ -188,9 +217,9 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
     {(places.length === 0 || (mapError && !rasterReady)) && <div className="authority-world__empty">{mapError && !rasterReady ? ui.mapUnavailable : points.length ? t.noResults : t.empty}</div>}
-    <div className="authority-world__controls"><button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-label={headerPinned ? ui.unpinHeader : ui.pinHeader} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</button><div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => rasterReady ? rasterRef.current?.flyTo(scale.center, scale.zoom) : mapRef.current?.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom })} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div></div>
+    <div className="authority-world__controls"><button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-label={headerPinned ? ui.unpinHeader : ui.pinHeader} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</button><div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => { if (rasterReady && rasterRef.current) { if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64] }); else rasterRef.current.flyTo(scale.center, scale.zoom); } else if (mapRef.current) { if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64 }); else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom }); } }} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div></div>
     <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
-    <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title} style={{ height: panelOpen ? "min(640px, calc(100% - 48px))" : "56px" }}>
+    <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title} style={{ height: panelOpen ? "min(520px, calc(100% - 48px))" : "56px" }}>
       <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen}>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
         <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); }} placeholder={t.search} /></div></label>

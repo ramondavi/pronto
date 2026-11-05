@@ -3,8 +3,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { AppIcon } from "@/components/app-icon";
+import { IconBuildingArch } from "@tabler/icons-react";
 
-type Labels = { trigger: string; how: string; benefits: string; questions: string };
+type Labels = { trigger: string; how: string; benefits: string; questions: string; themes: string };
 
 export function HeaderExploreMenu({ labels }: { labels: Labels }) {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ export function HeaderExploreMenu({ labels }: { labels: Labels }) {
   >
     <button type="button" aria-label={labels.trigger} aria-expanded={open} aria-controls={menuId} onClick={() => setOpen((current) => !current)}><AppIcon name="compass" /><span>{labels.trigger}</span></button>
     <div className="site-header__explore-menu" id={menuId} aria-hidden={!open}>
+      <Link href="/autoridades" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><IconBuildingArch stroke={1.5} />{labels.themes}</Link>
       <Link href="/#como-funciona" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="review" />{labels.how}</Link>
       <Link href="/#vantagens" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="sparkles" />{labels.benefits}</Link>
       <Link href="/#duvidas-frequentes" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="help" />{labels.questions}</Link>

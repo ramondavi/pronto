@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: mantém a geometria animada dentro da primeira seção, acrescenta Temas da Faculdade ao menu Explorar, alinha os acessos das páginas públicas e simplifica a busca. O mapa ganha cores da paleta, painel mais compacto, enquadramento por abrangência e contorno tracejado do recorte.
+
 - 05/11/2026: melhora o contraste do mapa, simplifica o cabeçalho sem breadcrumbs e separa o controle de fixação; o painel recolhe e abre a partir da base sem cortar o botão.
 
 - 05/11/2026: compacta o cabeçalho do mapa com o símbolo do Pronto!, ajusta o painel e a régua de escalas, acompanha o tema claro ou escuro e esclarece os créditos cartográficos nos seis idiomas.

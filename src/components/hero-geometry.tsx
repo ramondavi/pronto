@@ -72,5 +72,5 @@ export function HeroGeometry() {
     };
   }, []);
 
-  return <div className="hero__geometry-motion" ref={layerRef} aria-hidden="true"><Geometry repeat /><Geometry repeat accent /></div>;
+  return <div className="hero__geometry-clip" aria-hidden="true"><div className="hero__geometry-motion" ref={layerRef}><Geometry repeat /><Geometry repeat accent /></div></div>;
 }

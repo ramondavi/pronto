@@ -8190,7 +8190,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 /* The hero artwork continues behind the search; only the lower discovery edge fades to the next section. */
 .home-hero-landscape { position: relative; isolation: isolate; overflow-x: clip; overflow-y: visible; background: var(--bg); }
 .home-hero-landscape > .hero { z-index: 1; overflow: visible; border-bottom: 0; background: transparent; }
-.home-hero-landscape > .hero__geometry-motion { z-index: 0; }
+.home-hero-landscape > .hero__geometry-clip { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .home-hero-landscape > .authority-discovery { z-index: 1; background: transparent; }
 .home-hero-landscape > .authority-discovery::before { z-index: 0; background: linear-gradient(to bottom,transparent 0%,transparent calc(100% - 80px),var(--surface) 100%); background-size: auto; background-repeat: no-repeat; mask-image: none; }
 .hero__aside { display: grid; gap: 16px; align-content: center; }
@@ -8474,6 +8474,7 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-map-page__chrome .site-header__map-brand { position: relative; display: grid; place-items: center; width: 36px; height: 52px; color: var(--text); }
 .authority-map-page__chrome .site-header__map-brand .brand-pixels--symbol { position: static; width: 29px; height: 46px; color: inherit; }
 .authority-map-page__chrome .site-header__map-brand:is(:hover,:focus-visible) { color: var(--institutional); }
+.authority-map-page__chrome .site-header__map-brand:is(:hover,:focus-visible) .brand-pixels rect { animation: brand-bit 3.06s steps(1,end) infinite; }
 .authority-map-page__chrome .site-header__service-peek { flex-basis: 240px; flex-shrink: 0; }
 .authority-map-page .breadcrumb--public { display: block; width: auto; max-width: 100%; margin: 0; padding: 6px 22px 12px; }
 .authority-map-page .breadcrumb--public ol { font-size: .75rem; }
@@ -8548,6 +8549,15 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-world { height: calc(100dvh - var(--map-government-bar-height,42px)); min-height: 0; }
 @media(hover:none) { .authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%); } }
 @media(prefers-reduced-motion:reduce) { .authority-map-page__chrome,.authority-world__panel,.authority-world__zoom { transition: none; } }
+@media(prefers-reduced-motion:reduce) { .authority-map-page__chrome .site-header__map-brand:is(:hover,:focus-visible) .brand-pixels rect { animation: none; } }
+.public-authorities__intro .authority-public-links { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; flex: 0 0 auto; max-width: none; margin-left: auto; }
+.authority-areas__hero { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 24px; }
+.authority-areas__hero > div { min-width: 0; }
+.authority-areas__hero > div > p { max-width: 58ch; margin: 0; color: #e7e9f4; font-size: 1.05rem; line-height: 1.65; }
+.authority-areas__hero > .button { justify-self: end; align-self: end; margin: 0; border-color: #fff; background: #fff; color: #1a3b70; }
+.authority-areas__hero > .button:is(:hover,:focus-visible) { border-color: #e8e8e5; background: #e8e8e5; color: #1a3b70; }
+@media(max-width:850px) { .authority-areas__hero { grid-template-columns: 1fr; } .authority-areas__hero > .button { justify-self: start; } }
+@media(max-width:550px) { .public-authorities__intro .authority-public-links { align-items: stretch; width: 100%; margin-left: 0; } }
 .authority-map-review { margin-top: 22px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-muted); }
 .authority-map-review h4 { margin: 0 0 7px; }
 .authority-map-review > p { margin: 0 0 14px; color: var(--muted); font-size: .86rem; }
