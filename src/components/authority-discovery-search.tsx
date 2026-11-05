@@ -17,7 +17,7 @@ import { clearVisitorSearches, readVisitorSearches, rememberVisitorSearch, type 
 type Suggestion = { id: string; label: string; label_en: string | null; source: string; heading_type: string | null };
 type SearchResponse = { results: Suggestion[]; related: Suggestion[]; correction: Suggestion | null };
 type Props = { variant: "home" | "catalog"; initialQuery?: string; initialSource?: string; initialHeading?: string; initialSort?: string; initialLanguage?: string; initialRelation?: string; onCatalogQueryChange?: (query: string) => void };
-const sourceNames: Record<string, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress", pronto: "Pronto!" };
+const sourceNames: Record<string, string> = { pronto: "Pronto!", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", bn: "Biblioteca Nacional", loc: "Library of Congress", aat: "Getty AAT" };
 const examples = ["habitação", "patrimônio"];
 const placeExamples = ["Salvador (BA) - Liberdade", "Salvador (BA) - Dique do Tororó"];
 const catalogSubmit = { pt: "Buscar tema", en: "Search themes", es: "Buscar temas", de: "Themen suchen", fr: "Rechercher", it: "Cerca temi" } as const;
