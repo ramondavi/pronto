@@ -7895,7 +7895,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .public-authorities__search-panel { padding: clamp(18px,3vw,32px); border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(125deg,var(--surface-raised),color-mix(in srgb,var(--institutional) 6%,var(--surface-raised))); box-shadow: var(--shadow); }
 .authority-discovery-search--catalog form > label { color: var(--text); }
 .authority-discovery-search__advanced { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
-.authority-discovery-search__advanced-title { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--institutional); font-size: .9rem; font-weight: 800; }
+.authority-discovery-search__advanced-title { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--institutional); font-size: .9rem; font-weight: 600; }
 .authority-discovery-search__advanced-title svg { width: 18px; height: 18px; }
 .authority-discovery-search__advanced-title button { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; }
 .authority-discovery-search__advanced-title button svg:last-child { margin-left: 8px; transition: transform .2s ease; }
@@ -7907,10 +7907,10 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery-search__filters select { box-sizing: border-box; display: block; width: 100%; height: 46px; min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: .84rem; font-weight: 500; line-height: normal; text-align: left; }
 @supports (appearance: base-select) { .authority-discovery-search__filters select { display: flex; align-items: center; justify-content: space-between; gap: 10px; } }
 @supports (appearance: base-select) {
-  .authority-discovery-search__filters select::picker(select) { padding: 8px 10px 8px 6px; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)) var(--surface-raised); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 8px; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { margin-block: 8px; border: 2px solid var(--surface-raised); border-radius: 9px; background: var(--surface-raised); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb { border: 2px solid var(--surface-raised); border-radius: 9px; background: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)); }
+  .authority-discovery-search__filters select::picker(select) { padding: 6px; scrollbar-gutter: auto; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)) var(--surface-raised); }
+  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 12px; }
+  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { margin-block: 8px; border-inline: 3px solid var(--surface-raised); border-radius: 9px; background: var(--surface-raised); }
+  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb { border-inline: 3px solid var(--surface-raised); border-radius: 9px; background: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)); }
   .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb:hover { background: var(--institutional); }
 }
 .authority-discovery-search__operators { margin: 14px 0 0; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
@@ -8597,8 +8597,8 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 /* A identificação cresce com os equivalentes; a ação acompanha a última linha do conteúdo. */
 .public-authority-detail__hero { min-height: 0; padding: clamp(24px,3vw,36px); }
 .public-authority-detail__identity-top { margin-bottom: 18px; }
-.public-authority-detail__main { display: block; }
-.public-authority-detail__summary { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-top: 16px; }
+.public-authority-detail__main { display: block; width: 100%; }
+.public-authority-detail__summary { display: flex; align-items: end; justify-content: space-between; gap: 24px; width: 100%; margin-top: 16px; }
 .public-authority-detail__summary-copy { min-width: 0; max-width: 68ch; }
 .public-authority-detail__hero .public-authority-detail__intro { margin: 0; }
 .public-authority-detail__equivalents { display: block; margin-top: 18px; }
@@ -8607,7 +8607,7 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .public-authority-detail__equivalents dl > div { display: grid; grid-template-columns: minmax(75px,auto) minmax(0,1fr); align-items: baseline; gap: 12px; padding-left: 10px; border-left: 2px solid var(--institutional); }
 .public-authority-detail__equivalents dt { color: var(--institutional); font-size: .82rem; font-weight: 600; }
 .public-authority-detail__equivalents dd { min-width: 0; margin: 0; font-size: .82rem; font-weight: 400; overflow-wrap: anywhere; }
-.public-authority-detail__hero .public-authority-detail__map-link { position: relative; right: auto; bottom: auto; align-self: end; flex: none; margin: 0; white-space: nowrap; }
+.public-authority-detail__hero .public-authority-detail__map-link { position: relative; right: auto; bottom: auto; align-self: end; flex: none; margin: 0 0 0 auto; white-space: nowrap; }
 @media(max-width:720px) { .public-authority-detail__summary { display: block; } .public-authority-detail__hero .public-authority-detail__map-link { position: static; display: inline-flex; margin-top: 18px; } }
 @media(max-width:700px) { .authority-world__panel { top: 105px; bottom: 16px; max-height: min(480px,calc(100% - 122px)); } .authority-world__panel-content { padding: 20px 17px; } .authority-world__zoom { left: 12px; bottom: 52px; } }
 @media(hover:none) { .authority-map-page:has(.authority-map-header-visibility[data-hidden="true"]) .site-header { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } .authority-map-header-visibility__reveal { display: none; } }
