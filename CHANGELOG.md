@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: oferece visualização em cartões ou lista e simplifica a contagem para “Exibindo X de Y resultados”. As ações de seleção ficam fora do menu de exportação, que passa a explicar os formatos disponíveis.
+
 - 05/11/2026: corrige o contraste da lixeira de buscas recentes ao passar o cursor ou focá-la no tema claro da página inicial.
 
 - 05/11/2026: arredonda os exemplos e buscas recentes da página inicial e troca a limpeza do histórico por uma lixeira. Limpar os filtros do catálogo atualiza os resultados sem recarregar a página. Os cartões passam a oferecer seleção individual, da página ou de até 500 resultados encontrados; a comparação sai da lista e a exportação aparece somente com seleção, incluindo cópia textual de MARC21 para um registro.
