@@ -7,6 +7,7 @@ import type * as MapLibre from "maplibre-gl";
 import type * as Leaflet from "leaflet";
 import type { AuthorityMapPoint } from "@/lib/authority-map";
 import { authorityMapCopy, authorityMapUiCopy } from "@/lib/authority-map-copy";
+import scaleOutlines from "../../public/maps/authority-scale-outlines.json";
 
 type Language = keyof typeof authorityMapCopy;
 type Scale = "world" | "southAmerica" | "brazil" | "northeast" | "bahia" | "salvador";
@@ -18,8 +19,11 @@ const scales: { key: Scale; center: [number, number]; zoom: number; bounds?: [[n
   { key: "bahia", center: [-12.5, -41.5], zoom: 7, bounds: [[-46.7, -18.4], [-37.1, -8.4]] },
   { key: "salvador", center: [-12.97, -38.51], zoom: 12, bounds: [[-38.7, -13.15], [-38.25, -12.7]] },
 ];
-function outline(bounds?: [[number, number], [number, number]]) {
-  return { type: "FeatureCollection" as const, features: bounds ? [{ type: "Feature" as const, properties: {}, geometry: { type: "LineString" as const, coordinates: [[bounds[0][0], bounds[0][1]], [bounds[1][0], bounds[0][1]], [bounds[1][0], bounds[1][1]], [bounds[0][0], bounds[1][1]], [bounds[0][0], bounds[0][1]]] } }] : [] };
+function outline(scale: Scale) {
+  const names: Partial<Record<Scale, keyof typeof scaleOutlines>> = { southAmerica: "south-america", brazil: "brazil", northeast: "northeast", bahia: "bahia", salvador: "salvador" };
+  const name = names[scale];
+  const rings = name ? scaleOutlines[name] : [];
+  return { type: "FeatureCollection" as const, features: rings.length ? [{ type: "Feature" as const, properties: {}, geometry: { type: "MultiLineString" as const, coordinates: rings } }] : [] };
 }
 function inScale(point: AuthorityMapPoint, scale: Scale) {
   if (scale === "world") return true;
@@ -48,7 +52,7 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   const rasterNode = useRef<HTMLDivElement>(null);
   const rasterRef = useRef<Leaflet.Map | null>(null);
   const rasterMarkersRef = useRef<Leaflet.LayerGroup | null>(null);
-  const rasterOutlineRef = useRef<Leaflet.Rectangle | null>(null);
+  const rasterOutlineRef = useRef<Leaflet.LayerGroup | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const [rasterReady, setRasterReady] = useState(false);
   const scale = scales[scaleIndex];
@@ -125,7 +129,7 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
               map.setPaintProperty(layer.id, "text-halo-width", 1.25);
             }
           }
-          map.addSource("authority-scale-outline", { type: "geojson", data: outline(scaleRef.current.bounds) });
+          map.addSource("authority-scale-outline", { type: "geojson", data: outline(scaleRef.current.key) });
           map.addLayer({ id: "authority-scale-outline", type: "line", source: "authority-scale-outline", paint: { "line-color": dark ? "#d5e8ff" : "#1a3b70", "line-width": 2, "line-opacity": .82, "line-dasharray": [3, 2] } });
         });
         map.on("load", () => {
@@ -169,10 +173,10 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   }, [ready, language]);
   useEffect(() => {
     const vectorSource = mapRef.current?.getSource("authority-scale-outline") as MapLibre.GeoJSONSource | undefined;
-    vectorSource?.setData(outline(scale.bounds));
+    vectorSource?.setData(outline(scale.key));
     if (rasterReady && rasterRef.current) {
       rasterOutlineRef.current?.remove();
-      rasterOutlineRef.current = scale.bounds && leafletRef.current ? leafletRef.current.rectangle([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { color: "#1a3b70", weight: 2, dashArray: "6 5", fill: false, interactive: false }).addTo(rasterRef.current) : null;
+      rasterOutlineRef.current = leafletRef.current ? leafletRef.current.layerGroup((outline(scale.key).features[0]?.geometry.coordinates ?? []).map((ring) => leafletRef.current!.polyline(ring.map(([longitude, latitude]) => [latitude, longitude] as [number, number]), { color: "#1a3b70", weight: 2, dashArray: "6 5", interactive: false }))).addTo(rasterRef.current) : null;
       if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64], duration: .8 });
       else rasterRef.current.flyTo(scale.center, scale.zoom, { duration: .8 });
     } else if (ready && mapRef.current) {

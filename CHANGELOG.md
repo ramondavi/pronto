@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: substitui os quadrados tracejados no mapa completo pelo contorno das regiões selecionadas, mantendo o enquadramento e a busca por abrangência.
+
 - 05/11/2026: aproxima os conteúdos da hero e da descoberta do cabeçalho público, preservando o espaço entre hero, busca e mapa na primeira tela.
 
 - 05/11/2026: coloca Temas da Faculdade no fim do menu Explorar das páginas públicas, com separador discreto e mais espaço entre os grupos.
