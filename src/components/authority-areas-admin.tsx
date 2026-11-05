@@ -89,7 +89,22 @@ export function AuthorityAreasAdmin() {
     setRemoving(null); setRevision(value => value + 1); return true;
   }
 
-  const editor = editing && <div className="authority-areas-admin__editor" id="authority-area-editor" ref={editorRef}><div className="admin-section__subhead"><div><p className="eyebrow">Percurso editorial</p><h3>{editing === "new" ? "Adicionar percurso" : "Editar percurso"}</h3></div></div>{error && <p className="notice notice--error" role="alert">{error}</p>}<label><span className="catalogue-field-label"><AppIcon name="search" />Termos de busca</span><input value={draft.search_query} maxLength={250} onChange={event => setDraft(current => ({ ...current, search_query: event.target.value }))} placeholder="habitação OR moradia OR housing" /></label><p className="field-help">A busca reúne apenas autoridades publicadas; não classifica formalmente os registros.</p><h4>Textos dos cartões</h4><div className="authority-areas-admin__translations">{languages.map(({ code, label }) => <fieldset key={code}><legend>{label}</legend><label>Nome do cartão<input value={draft.names[code]} maxLength={100} onChange={event => setDraft(current => ({ ...current, names: { ...current.names, [code]: event.target.value } }))} /></label><label>Descrição<input value={draft.details[code]} maxLength={240} onChange={event => setDraft(current => ({ ...current, details: { ...current.details, [code]: event.target.value } }))} /></label></fieldset>)}</div><div className="authority-areas-admin__actions"><button className="button button--primary button--small" type="button" disabled={busy} onClick={() => void save()}><AppIcon name="check" />{busy ? "Salvando…" : "Salvar percurso"}</button><button className="button button--secondary button--small" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancelar</button></div></div>;
+  const editor = editing && <div className="authority-areas-admin__editor catalogue-workflow" id="authority-area-editor" ref={editorRef}>
+    <div className="admin-section__subhead"><div><p className="eyebrow">Percurso editorial</p><h3>{editing === "new" ? "Adicionar percurso" : "Editar percurso"}</h3></div></div>
+    {error && <p className="notice notice--error" role="alert">{error}</p>}
+    <label className="authority-areas-admin__search-field">
+      <span className="catalogue-field-label"><AppIcon name="search" />Termos de busca</span>
+      <input value={draft.search_query} maxLength={250} onChange={event => setDraft(current => ({ ...current, search_query: event.target.value }))} placeholder="habitação OR moradia OR housing" />
+      <span className="field-help">A busca reúne apenas autoridades publicadas; não classifica formalmente os registros.</span>
+    </label>
+    <div className="authority-areas-admin__translation-heading"><AppIcon name="globe" /><div><h4>Textos dos cartões</h4><p>Nome e descrição nos seis idiomas do Pronto.</p></div></div>
+    <div className="authority-areas-admin__translations">{languages.map(({ code, label }) => <fieldset key={code} className="catalogue-workflow__section">
+      <legend>{label}</legend>
+      <label><span className="catalogue-field-label"><AppIcon name="tag" />Nome do cartão</span><input value={draft.names[code]} maxLength={100} onChange={event => setDraft(current => ({ ...current, names: { ...current.names, [code]: event.target.value } }))} /></label>
+      <label><span className="catalogue-field-label"><AppIcon name="document" />Descrição</span><input value={draft.details[code]} maxLength={240} onChange={event => setDraft(current => ({ ...current, details: { ...current.details, [code]: event.target.value } }))} /></label>
+    </fieldset>)}</div>
+    <div className="authority-areas-admin__actions catalogue-workflow__actions"><button className="button button--primary button--small" type="button" disabled={busy} onClick={() => void save()}><AppIcon name="check" />{busy ? "Salvando…" : "Salvar percurso"}</button><button className="button button--secondary button--small" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancelar</button></div>
+  </div>;
 
   return <section className="panel admin-section authority-areas-admin" id="percursos-editoriais" aria-labelledby="authority-areas-admin-title">
     <header className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="hierarchy" aria-hidden="true" /></span><div><p className="eyebrow">Descoberta pública</p><h2 id="authority-areas-admin-title">Percursos por área</h2><p>Organize os ramos da árvore pública. Cada percurso usa uma busca para reunir temas publicados.</p></div></header>

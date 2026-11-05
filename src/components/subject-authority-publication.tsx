@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AppIcon } from "@/components/app-icon";
+import { authorityHeadingTag } from "@/lib/authority-heading-types";
 
 type Mapping = { heading_ind1: string; variant_ind1: string[]; relation_ind1: string[] };
 type Status = { published: boolean; rights_statement: string | null; marc_mapping: Mapping | null };
@@ -12,9 +13,8 @@ export function SubjectAuthorityPublication({ authorityId, eligible, record }: {
   const [hasWork, setHasWork] = useState(false);
   const [rights, setRights] = useState("");
   const [variants, setVariants] = useState<{ label: string }[]>([]);
-  const headingTag = ({ topic: "150", geographic: "151", personal: "100", corporate: "110", title: "130" } as Record<string, string>)[record.heading_type ?? ""]
-    ?? record.fields?.find((field) => ["100", "110", "130", "150", "151"].includes(field.tag))?.tag ?? "";
-  const choices = headingTag === "100" ? ["0", "1", "3"] : headingTag === "110" ? ["0", "1", "2"] : headingTag === "130" ? ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] : [" "];
+  const headingTag = authorityHeadingTag(record) ?? "";
+  const choices = headingTag === "100" ? ["0", "1", "3"] : ["110", "111"].includes(headingTag) ? ["0", "1", "2"] : headingTag === "130" ? ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] : [" "];
   const [mapping, setMapping] = useState<Mapping>({ heading_ind1: "", variant_ind1: [], relation_ind1: [] });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

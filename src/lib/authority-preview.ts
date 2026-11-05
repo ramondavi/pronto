@@ -1,17 +1,17 @@
 /** Conferência local de arquivos de autoridades. Não consulta serviços nem grava no catálogo. */
 export type AuthoritySource = "bn" | "aat" | "ufba" | "pergamum" | "loc";
 export const authoritySources: Record<AuthoritySource, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress" };
-export type AuthorityValue = { value: string; kind: string; language?: string; identifier?: string };
+export type AuthorityValue = { value: string; kind: string; marcCode?: string; language?: string; identifier?: string };
 export type MarcField = { tag: string; value?: string; indicators?: string; subfields?: { code: string; value: string }[] };
-export type AuthorityPreview = { identifier: string | null; title: string; format: string; source: AuthoritySource; components: AuthorityValue[]; labels: AuthorityValue[]; variants: AuthorityValue[]; relations: AuthorityValue[]; mappings: AuthorityValue[]; notes: AuthorityValue[]; citations: AuthorityValue[]; warnings: string[]; original: string; modified: string | null; geography: string | null; fields?: MarcField[] };
+export type AuthorityPreview = { identifier: string | null; title: string; format: string; source: AuthoritySource; components: AuthorityValue[]; labels: AuthorityValue[]; variants: AuthorityValue[]; relations: AuthorityValue[]; mappings: AuthorityValue[]; notes: AuthorityValue[]; citations: AuthorityValue[]; warnings: string[]; original: string; modified: string | null; geography: string | null; fields?: MarcField[]; heading_type?: string };
 export const authorityInputLimit = 2_000_000;
 const maxRecords = 100;
-const parts: Record<string, string> = { a: "Assunto-base", x: "Subdivisão temática", y: "Subdivisão cronológica", z: "Subdivisão geográfica", v: "Subdivisão de forma" };
+const parts: Record<string, string> = { a: "Assunto-base", b: "Complemento do nome", c: "Qualificação", d: "Datas", f: "Data da obra", g: "Informação adicional", k: "Forma", l: "Idioma", m: "Meio", n: "Número", p: "Parte", q: "Forma completa", r: "Tonalidade", s: "Versão", t: "Título", x: "Subdivisão temática", y: "Subdivisão cronológica", z: "Subdivisão geográfica", v: "Subdivisão de forma" };
 const list = <T>(value: T | T[] | undefined | null): T[] => value == null ? [] : Array.isArray(value) ? value : [value];
 const empty = (source: AuthoritySource, format: string, original: string): AuthorityPreview => ({ source, format, original, identifier: null, title: "", components: [], labels: [], variants: [], relations: [], mappings: [], notes: [], citations: [], warnings: [], modified: null, geography: null });
 const warn = (r: AuthorityPreview, text: string) => { if (!r.warnings.includes(text)) r.warnings.push(text); };
 const sub = (f: MarcField, code: string) => f.subfields?.filter(s => s.code === code).map(s => s.value) ?? [];
-const components = (f: MarcField): AuthorityValue[] => f.subfields?.filter(s => parts[s.code]).map(s => ({ value: s.value, kind: parts[s.code] })) ?? [];
+const components = (f: MarcField): AuthorityValue[] => f.subfields?.filter(s => parts[s.code]).map(s => ({ value: s.value, kind: parts[s.code], marcCode: s.code })) ?? [];
 const display = (values: AuthorityValue[]) => values.map(v => v.value).join(" - ");
 
 export function formatAuthorityModified(value: string | null): string | null {
@@ -49,7 +49,7 @@ export function previewMarc(fields: MarcField[], source: AuthoritySource, format
  if (r.modified && formatAuthorityModified(r.modified) === r.modified) warn(r, `Campo 005 “${r.modified}”: data ou hora fora do padrão MARC 21; confira no registro original.`);
  const headings = fields.filter(f => /^1\d\d$/.test(f.tag));
  if (headings.length !== 1) throw new Error("É necessário exatamente um cabeçalho 1XX por autoridade.");
- if (!["150", "151", "155", "180", "181", "182", "185"].includes(headings[0].tag)) throw new Error("Este ensaio trata assuntos, lugares, gênero/forma e subdivisões. Autoridades de pessoas e entidades ficam fora desta etapa.");
+ if (!["100", "110", "111", "130", "147", "148", "150", "151", "155", "162", "180", "181", "182", "185"].includes(headings[0].tag)) throw new Error("O registro não usa um dos campos de entrada 1XX de autoridade MARC21 aceitos pelo Pronto!.");
  r.components = components(headings[0]); r.title = display(r.components);
  if (!r.title) throw new Error("Cabeçalho sem componente reconhecido.");
  r.labels.push({ value: r.title, kind: "Cabeçalho da fonte", language: "Não informada" });

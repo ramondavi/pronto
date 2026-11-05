@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: identifica e filtra os tipos de autoridades MARC21 e a publicação na gestão de assuntos; permite revisar o tipo e associar lugares a cabeçalhos geográficos, subdivisões e instituições, reunindo registros do mesmo lugar no mapa. Uniformiza os campos de Temas por área com os formulários administrativos.
+
 - 05/11/2026: esclarece por que autoridades sem lugar não oferecem coordenadas e uniformiza os campos de publicação e localização no painel administrativo.
 
 - 05/11/2026: substitui os quadrados tracejados no mapa completo pelo contorno das regiões selecionadas, mantendo o enquadramento e a busca por abrangência.

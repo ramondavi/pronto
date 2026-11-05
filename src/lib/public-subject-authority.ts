@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseAuthorityQuery } from "@/lib/authority-search-query";
+import { headingTagByKind } from "@/lib/authority-heading-types";
 
 export type PublicAuthority = {
   id: string; label: string; label_en: string | null; source: string; source_identifier: string | null;
   source_url: string | null; origin: string; heading_type: string | null;
-  components: { kind: string; value: string }[];
+  components: { kind: string; value: string; marcCode?: string }[];
   variants: { value: string; language?: string }[];
   notes: { kind?: string; value: string }[];
   relations: { kind?: string; value: string; identifier?: string }[];
@@ -54,7 +55,6 @@ export async function getPublicAuthority(id: string): Promise<PublicAuthority | 
 
 const safeText = (value: unknown) => String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim();
 const xml = (value: unknown) => safeText(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const marcHeading: Record<string, string> = { topic: "150", geographic: "151", personal: "100", corporate: "110", title: "130" };
 const marcParts: Record<string, string> = {
   a: "a", x: "x", y: "y", z: "z", v: "v", main: "a", topical: "x", chronological: "y", geographic: "z", form: "v",
   "Assunto-base": "a", "Subdivisão temática": "x", "Subdivisão cronológica": "y", "Subdivisão geográfica": "z", "Subdivisão de forma": "v",
@@ -66,16 +66,17 @@ function marcField(tag: string, values: { code: string; value: string }[], ind1 
 
 /** MARCXML is a MARC 21 authority interchange encoding; only mapped fields are emitted. */
 export function authorityAsMarcXml(record: PublicAuthority): string {
-  const tag = marcHeading[record.heading_type ?? ""] ?? "150";
+  const tag = headingTagByKind[record.heading_type ?? ""] ?? "150";
+  const firstCode = ({ "180": "x", "181": "z", "182": "y", "185": "v" } as Record<string, string>)[tag] ?? "a";
   const heading = record.components.length
-    ? record.components.map((part, index) => ({ code: index === 0 ? "a" : (marcParts[part.kind] ?? "x"), value: part.value }))
-    : [{ code: "a", value: record.label }];
+    ? record.components.map((part, index) => ({ code: part.marcCode ?? (index === 0 ? firstCode : (marcParts[part.kind] ?? "x")), value: part.value }))
+    : [{ code: firstCode, value: record.label }];
   const variants = record.variants.map((entry, index) => safeText(entry.value)
-    ? marcField(String(Number(tag) + 300), [{ code: "a", value: entry.value }], record.marc_mapping.variant_ind1[index]) : "");
+    ? marcField(String(Number(tag) + 300), [{ code: firstCode, value: entry.value }], record.marc_mapping.variant_ind1[index]) : "");
   const relations = record.relations.map((entry, index) => safeText(entry.value) && /^(Mais amplo|Mais específico|Associativa)/.test(entry.kind ?? "")
     ? marcField(String(Number(tag) + 400), [
       ...((entry.kind ?? "").startsWith("Mais amplo") ? [{ code: "w", value: "g" }] : (entry.kind ?? "").startsWith("Mais específico") ? [{ code: "w", value: "h" }] : []),
-      { code: "a", value: entry.value },
+      { code: firstCode, value: entry.value },
     ], record.marc_mapping.relation_ind1[index]) : "");
   const notes = record.notes.filter((entry) => safeText(entry.value)).map((entry) => marcField(entry.kind?.includes("680") ? "680" : "667", [{ code: "a", value: entry.value }]));
   const date = new Date(record.published_at);
