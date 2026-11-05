@@ -8329,6 +8329,8 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-map-preview__canvas { position: absolute; top: -35px; right: 21px; width: min(40vw,430px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); pointer-events: auto; }
 .authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -18px; right: 16px; width: min(30vw,320px); }
 .authority-map-preview__brazil { position: absolute; inset: 0; background: var(--institutional); opacity: .31; mask: url('/maps/brazil.svg') center / contain no-repeat; }
+.authority-map-preview__open { position: absolute; z-index: 0; inset: 0; cursor: pointer; }
+.authority-map-preview__open:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .authority-map-preview__point { position: absolute; z-index: 1; display: flex; align-items: center; gap: 4px; max-width: 110px; color: var(--text); font-size: .7rem; font-weight: 750; line-height: 1.05; text-decoration: none; opacity: 0; animation: map-point-glow 12s infinite; transform: translate(-25%,-50%); }
 .authority-map-preview__point i { flex: none; width: 11px; height: 11px; border: 2px solid var(--surface-raised); border-radius: 50%; background: var(--institutional); box-shadow: 0 0 0 4px color-mix(in srgb,var(--institutional) 25%,transparent); }
 .authority-map-preview__point span { display: block; padding: 4px 6px; border-radius: 4px; background: var(--surface-raised); box-shadow: var(--shadow-card); transform: rotate(-9deg); }
@@ -8464,9 +8466,8 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 @media(hover:none) { .authority-map-page:has(.authority-map-header-visibility[data-hidden="true"]) .site-header { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } .authority-map-header-visibility__reveal { display: none; } }
 @media(prefers-reduced-motion:reduce) { .authority-map-page .site-header,.authority-world__panel { transition: none; } }
 /* The map chrome starts visible and remains pinned until the visitor unpins it. */
-.authority-map-page__chrome { position: absolute; z-index: 700; top: 0; right: 0; left: 0; border-bottom: 1px solid color-mix(in srgb,var(--line) 72%,transparent); background: color-mix(in srgb,var(--surface-raised) 77%,transparent); backdrop-filter: blur(18px) saturate(1.18); -webkit-backdrop-filter: blur(18px) saturate(1.18); box-shadow: 0 8px 26px rgb(0 0 0 / 9%); opacity: 1; visibility: visible; transition: opacity .45s ease,transform .45s ease,visibility .45s; }
-.authority-map-page__chrome::after { position: absolute; top: 100%; right: 0; left: 0; height: 42px; background: linear-gradient(to bottom,color-mix(in srgb,var(--surface-raised) 58%,transparent),transparent); content: ""; pointer-events: none; }
-.authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-10px); }
+.authority-map-page__chrome { position: absolute; z-index: 700; top: 0; right: 0; left: 0; border-bottom: 1px solid var(--line); background: var(--surface-raised); box-shadow: var(--shadow); opacity: 1; visibility: visible; transition: opacity .45s ease,visibility .45s; }
+.authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 0; visibility: hidden; pointer-events: none; }
 .authority-map-page__chrome .site-header { position: relative; z-index: auto; top: auto; left: auto; width: 100%; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; transform: none; opacity: 1; visibility: visible; pointer-events: auto; }
 .authority-map-page .breadcrumb--public { display: block; width: min(1120px,calc(100% - 48px)); margin: 0 auto; padding: 9px 0 13px; }
 .authority-map-page .breadcrumb--public ol { font-size: .75rem; }

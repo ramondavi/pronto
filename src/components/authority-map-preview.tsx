@@ -19,6 +19,7 @@ export function AuthorityMapPreview({ points, language }: { points: AuthorityMap
   return <div className="authority-map-preview" aria-label={t.preview} role="group">
     <div className="authority-map-preview__canvas">
       <div className="authority-map-preview__brazil" />
+      <Link className="authority-map-preview__open" href="/autoridades/mapa" aria-label={t.open} />
       {markers.map((point, index) => {
         const style = { left: `${8 + (point.longitude + 73.9833) / 39.1806 * 84}%`, top: `${2 + (5.2718 - point.latitude) / 39.0156 * 96}%`, animationDelay: `${index * 2.4}s` };
         const content = <><i /><span>{point.place_label}</span></>;
