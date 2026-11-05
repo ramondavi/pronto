@@ -8329,15 +8329,55 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-map-preview__canvas { position: absolute; top: -35px; right: 21px; width: min(40vw,430px); height: auto; aspect-ratio: 1; transform: rotate(9deg) scale(.96); pointer-events: auto; }
 .authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: -18px; right: 16px; width: min(30vw,320px); }
 .authority-map-preview__brazil { position: absolute; inset: 0; background: var(--institutional); opacity: .31; mask: url('/maps/brazil.svg') center / contain no-repeat; }
-.authority-map-preview__point { position: absolute; z-index: 1; display: flex; align-items: center; gap: 4px; max-width: 110px; color: var(--text); font-size: .7rem; font-weight: 750; line-height: 1.05; text-decoration: none; opacity: 0; animation: map-point-glow 10s infinite; transform: translate(-25%,-50%); }
+.authority-map-preview__point { position: absolute; z-index: 1; display: flex; align-items: center; gap: 4px; max-width: 110px; color: var(--text); font-size: .7rem; font-weight: 750; line-height: 1.05; text-decoration: none; opacity: 0; animation: map-point-glow 12s infinite; transform: translate(-25%,-50%); }
 .authority-map-preview__point i { flex: none; width: 11px; height: 11px; border: 2px solid var(--surface-raised); border-radius: 50%; background: var(--institutional); box-shadow: 0 0 0 4px color-mix(in srgb,var(--institutional) 25%,transparent); }
-.authority-map-preview__point span { display: none; padding: 4px 6px; border-radius: 4px; background: var(--surface-raised); box-shadow: var(--shadow-card); transform: rotate(-9deg); }
+.authority-map-preview__point span { display: block; padding: 4px 6px; border-radius: 4px; background: var(--surface-raised); box-shadow: var(--shadow-card); transform: rotate(-9deg); }
 .authority-discovery[data-expanded="true"] .authority-map-preview__point span { display: block; }
+.authority-discovery[data-expanded="false"] .authority-map-preview__point { max-width: 82px; font-size: .58rem; }
+.authority-discovery[data-expanded="false"] .authority-map-preview__point i { width: 9px; height: 9px; box-shadow: 0 0 0 3px color-mix(in srgb,var(--institutional) 25%,transparent); }
+.authority-discovery[data-expanded="false"] .authority-map-preview__point span { padding: 3px 4px; }
 .authority-map-preview__point--real { pointer-events: auto; }
 .authority-map-preview__point--real:is(:hover,:focus-visible) { z-index: 4; animation-play-state: paused; opacity: 1; }
-@keyframes map-point-glow { 0%,10%,35%,100% { opacity: 0; } 15%,30% { opacity: 1; } }
+@keyframes map-point-glow { 0%,8%,66%,100% { opacity: 0; } 13%,60% { opacity: 1; } }
 @media(max-width:820px) { .authority-map-preview { min-height: 215px; margin: -10px 0 0; } .authority-discovery__inner > .authority-map-preview { order: 3; } }
 @media(prefers-reduced-motion:reduce) { .authority-map-preview__point { animation: none; opacity: 1; } }
+
+/* Both discovery states share one text layout. On close, the search contracts
+   first; its grid space is then released so the copy moves upward afterward. */
+@media(min-width:821px) {
+  .authority-discovery__heading,
+  .authority-discovery[data-expanded="true"] .authority-discovery__heading,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading {
+    grid-template-columns: 40px minmax(0,1fr);
+    column-gap: 12px;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1),margin-top .35s ease;
+  }
+  .authority-discovery__mark,
+  .authority-discovery[data-expanded="true"] .authority-discovery__mark,
+  .authority-discovery[data-expanded="false"] .authority-discovery__mark { grid-column: 1; grid-row: 2; align-self: start; width: 40px; height: 40px; transform: translateY(5px); }
+  .authority-discovery__mark svg,
+  .authority-discovery[data-expanded="true"] .authority-discovery__mark svg,
+  .authority-discovery[data-expanded="false"] .authority-discovery__mark svg { width: 36px; height: 36px; }
+  .authority-discovery__heading .eyebrow,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading .eyebrow { grid-column: 1 / -1; grid-row: 1; margin: 0; font-size: .7rem; }
+  .authority-discovery__heading h2,
+  .authority-discovery[data-expanded="true"] .authority-discovery__heading h2,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading h2 { grid-column: 2; grid-row: 2; max-width: none; margin: 2px 0 0; font-size: clamp(1.5rem,2.3vw,2rem); line-height: 1.15; white-space: normal; }
+  .authority-discovery__heading-copy,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy { display: grid; grid-column: 2; grid-row: 3; gap: 9px; padding: 0; }
+  .authority-discovery__heading-copy p,
+  .authority-discovery[data-expanded="true"] .authority-discovery__heading-copy p,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy p { margin: 0; font-size: .9rem; line-height: 1.4; }
+  .authority-discovery__heading-copy .authority-discovery__detail,
+  .authority-discovery[data-expanded="true"] .authority-discovery__heading-copy .authority-discovery__detail,
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy .authority-discovery__detail { display: block; font-size: .82rem; line-height: 1.4; }
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading { margin-top: 0; }
+  .authority-discovery[data-closing="true"] .authority-discovery__heading { margin-top: -15px; transform: translateY(0); }
+  .authority-discovery__inner > .authority-discovery-search--home { min-height: 0; transition: min-height .35s cubic-bezier(.2,.8,.2,1),padding .45s ease,background .45s ease,border-color .45s ease,box-shadow .45s ease; }
+  .authority-discovery[data-closing="true"] .authority-discovery-search--home { min-height: var(--authority-expanded-search-height,0px); }
+  .authority-discovery[data-expanded="false"] .authority-discovery__popular { max-height: 600px; padding: 16px 0 0; border-color: var(--line); opacity: 1; visibility: visible; }
+}
+@media(prefers-reduced-motion:reduce) { .authority-discovery__heading,.authority-discovery__inner > .authority-discovery-search--home { transition: none; } }
 
 /* Keep every line of the expanded discovery reachable on shorter screens. */
 html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-type: none !important; }

@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: reorganiza o aviso fechado da página inicial, mantém os textos da descoberta iguais nos dois estados, melhora a sequência da contração, mostra nomes simultâneos no mapa compacto e reforça a rolagem por seções.
+
 - 04/11/2026: amplia o mapa público de lugares para toda a área de conteúdo, com cabeçalho e painel translúcidos, régua de escalas mundo–Salvador e acesso ao mapa nas páginas de autoridades.
 
 - 04/11/2026: desce a busca e o mapa aproveitando o espaço livre, mantém explicação e links visíveis na seção contraída e elimina o corte das sugestões ao passar o cursor.

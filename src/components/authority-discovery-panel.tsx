@@ -5,8 +5,23 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   const [pointerInside, setPointerInside] = useState(false);
   const [focusInside, setFocusInside] = useState(false);
+  const [closing, setClosing] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const expanded = pointerInside || focusInside;
+
+  const beginClosing = () => {
+    const section = sectionRef.current;
+    const search = section?.querySelector<HTMLElement>(".authority-discovery-search--home");
+    if (section && search) section.style.setProperty("--authority-expanded-search-height", `${Math.ceil(search.getBoundingClientRect().height)}px`);
+    setClosing(true);
+  };
+
+  useEffect(() => {
+    if (expanded) { setClosing(false); return; }
+    if (!closing) return;
+    const timer = window.setTimeout(() => setClosing(false), 480);
+    return () => window.clearTimeout(timer);
+  }, [expanded, closing]);
 
   useEffect(() => {
     const landscape = sectionRef.current?.parentElement;
@@ -49,10 +64,11 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
         || event.clientX > Math.max(bounds.right, search?.right ?? bounds.right, map?.right ?? bounds.right) + margin
         || event.clientY < Math.min(bounds.top, search?.top ?? bounds.top, map?.top ?? bounds.top) - margin
         || event.clientY > Math.max(bounds.bottom, search?.bottom ?? bounds.bottom, map?.bottom ?? bounds.bottom) + margin) {
+        beginClosing();
         setPointerInside(false);
       }
     };
-    const closeOnWindowBlur = () => setPointerInside(false);
+    const closeOnWindowBlur = () => { beginClosing(); setPointerInside(false); };
     window.addEventListener("pointermove", closeWhenOutside);
     window.addEventListener("blur", closeOnWindowBlur);
     return () => {
@@ -61,13 +77,13 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
     };
   }, [pointerInside]);
 
-  return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} aria-labelledby="authority-discovery-title"
+  return <section ref={sectionRef} className="authority-discovery" data-expanded={expanded} data-closing={closing && !expanded} aria-labelledby="authority-discovery-title"
     onPointerOver={(event) => {
       if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return;
       if (event.target.closest(".authority-discovery-search__control, .authority-discovery-search--home label, .authority-discovery-search--home button, .authority-discovery-search--home a, .authority-map-preview__canvas, .authority-discovery__mark, .authority-discovery__heading .eyebrow, .authority-discovery__heading h2, .authority-discovery__heading-copy p, .authority-discovery__popular a")) setPointerInside(true);
     }}
     onFocusCapture={() => setFocusInside(true)}
-    onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusInside(false); }}>
+    onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) { if (!pointerInside) beginClosing(); setFocusInside(false); } }}>
     {children}
   </section>;
 }

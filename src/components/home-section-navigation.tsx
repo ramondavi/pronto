@@ -64,6 +64,45 @@ export function HomeSectionNavigation() {
     };
   }, []);
 
+  useEffect(() => {
+    let lockedUntil = 0;
+    let wheelDistance = 0;
+    const onWheel = (event: WheelEvent) => {
+      if (window.innerWidth <= 820 || event.ctrlKey || event.metaKey || event.altKey
+        || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        || document.documentElement.dataset.reduceMotion === "true") return;
+      const target = event.target;
+      if (target instanceof Element && target.closest(".authority-discovery-search__suggestions")) return;
+      const sections = sectionIds.map((id) => document.getElementById(id));
+      if (sections.some((section) => !section)) return;
+      const tops = sections.map((section) => section!.getBoundingClientRect().top + window.scrollY);
+      const direction = Math.sign(event.deltaY);
+      if (!direction) return;
+      let current = 0;
+      for (let index = 1; index < tops.length; index++) if (window.scrollY >= tops[index] - 80) current = index;
+      const section = sections[current]!;
+      const sectionBottom = tops[current] + section.getBoundingClientRect().height;
+      if ((current === 0 && direction < 0) || (current === sectionIds.length - 1 && direction > 0)
+        || (current === sectionIds.length - 1 && window.scrollY > tops[current] + 36)
+        || (current === 0 && section.dataset.discoveryExpanded === "true" && section.getBoundingClientRect().height > window.innerHeight + 48
+          && direction > 0 && window.scrollY + window.innerHeight < sectionBottom - 36)
+        || (current > 0 && section.getBoundingClientRect().height > window.innerHeight + 48
+          && ((direction > 0 && window.scrollY + window.innerHeight < sectionBottom - 36)
+            || (direction < 0 && window.scrollY > tops[current] + 36)))) return;
+      event.preventDefault();
+      if (Date.now() < lockedUntil) return;
+      wheelDistance += event.deltaY;
+      if (Math.abs(wheelDistance) < 28) return;
+      const next = Math.max(0, Math.min(sectionIds.length - 1, current + direction));
+      wheelDistance = 0;
+      if (next === current) return;
+      lockedUntil = Date.now() + 850;
+      window.scrollTo({ top: tops[next], behavior: "smooth" });
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, []);
+
   const copy = sectionCopy[language];
   return <nav className="home-section-nav" aria-label={copy.navigation}>
     <ol>{sectionIds.map((id, index) => <li key={id}>
