@@ -12,5 +12,5 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AuthorityMapPage() {
   const [language, points] = await Promise.all([getInterfaceLanguage(), getPublicAuthorityMapPoints()]);
-  return <div className="authority-map-page"><div className="authority-map-page__chrome"><SiteHeader mapCompact /></div><AuthorityWorldMap points={points} language={language} /></div>;
+  return <div className="authority-map-page"><div className="authority-map-page__chrome"><SiteHeader mapCompact showBreadcrumbs={false} /></div><AuthorityWorldMap points={points} language={language} /></div>;
 }

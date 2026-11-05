@@ -26,7 +26,7 @@ const copy = {
   it: ["La mia area", "Ciao", "Panoramica", "La mia richiesta", "Autodeposito", "Il mio account", "Richieste", "I miei casi", "Amministrazione", "Navigazione principale", "Come funziona", "Centro assistenza", "Esci", "Accedi", "Esplora", "Vantaggi"],
 };
 
-export async function SiteHeader({ articleTitle, authorityTitle, showServiceStatus = true, closingTimeOverride, mapCompact = false }: { articleTitle?: string; authorityTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string; mapCompact?: boolean } = {}) {
+export async function SiteHeader({ articleTitle, authorityTitle, showServiceStatus = true, closingTimeOverride, mapCompact = false, showBreadcrumbs = true }: { articleTitle?: string; authorityTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string; mapCompact?: boolean; showBreadcrumbs?: boolean } = {}) {
   const language = await getInterfaceLanguage();
   const t = copy[language];
   const supabase = await createClient();
@@ -71,7 +71,7 @@ export async function SiteHeader({ articleTitle, authorityTitle, showServiceStat
         </nav>
         </div>
       </header>
-      <PublicBreadcrumbs articleTitle={articleTitle} authorityTitle={authorityTitle} />
+      {showBreadcrumbs && <PublicBreadcrumbs articleTitle={articleTitle} authorityTitle={authorityTitle} />}
     </>
   );
 }
