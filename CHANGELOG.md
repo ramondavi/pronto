@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: coloca Temas da Faculdade no fim do menu Explorar das páginas públicas, com separador discreto e mais espaço entre os grupos.
+
 - 05/11/2026: elimina o salto da busca e do mapa ao contrair a descoberta da página inicial, animando largura, altura e posição sem compensação temporária; iguala a largura do aviso no cabeçalho flutuante à das demais páginas públicas.
 
 - 05/11/2026: mantém a geometria animada dentro da primeira seção, acrescenta Temas da Faculdade ao menu Explorar, alinha os acessos das páginas públicas e simplifica a busca. O mapa ganha cores da paleta, painel mais compacto, enquadramento por abrangência e contorno tracejado do recorte.

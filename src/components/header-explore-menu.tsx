@@ -37,10 +37,11 @@ export function HeaderExploreMenu({ labels }: { labels: Labels }) {
   >
     <button type="button" aria-label={labels.trigger} aria-expanded={open} aria-controls={menuId} onClick={() => setOpen((current) => !current)}><AppIcon name="compass" /><span>{labels.trigger}</span></button>
     <div className="site-header__explore-menu" id={menuId} aria-hidden={!open}>
-      <Link href="/autoridades" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><IconBuildingArch stroke={1.5} />{labels.themes}</Link>
       <Link href="/#como-funciona" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="review" />{labels.how}</Link>
       <Link href="/#vantagens" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="sparkles" />{labels.benefits}</Link>
       <Link href="/#duvidas-frequentes" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="help" />{labels.questions}</Link>
+      <div className="site-header__explore-divider" aria-hidden="true" />
+      <Link href="/autoridades" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><IconBuildingArch stroke={1.5} />{labels.themes}</Link>
     </div>
   </div>;
 }

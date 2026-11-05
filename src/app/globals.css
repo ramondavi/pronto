@@ -572,6 +572,7 @@ body:has(.dashboard-shell) :is(#barra-brasil .conteudo-barra-brasil, .accessibil
 .site-header__explore-menu a { display: flex; align-items: center; gap: 10px; padding: 11px 10px; border-radius: var(--radius-sm); color: var(--text); font-size: .82rem; text-decoration: none; }
 .site-header__explore-menu a svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
 .site-header__explore-menu a:hover, .site-header__explore-menu a:focus-visible { background: var(--institutional-soft); color: var(--institutional); }
+.site-header__explore-divider { height: 1px; margin: 11px 10px 9px; background: var(--line); }
 .site-header__nav > a { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
 .site-header__nav > a svg,.site-header__access svg,.site-header__logout svg { flex: 0 0 auto; width: 15px; height: 15px; }
 .site-header__nav > a:hover { color: var(--gold); }
