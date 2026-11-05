@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: esclarece na busca pública que maiúsculas, minúsculas e acentos não mudam os resultados.
+
 - 05/11/2026: a ajuda da busca pública abre com as duas seções recolhidas, permite expandir uma por vez e apresenta orientações diretas para combinar busca rápida com filtros ou construir uma busca avançada.
 
 - 05/11/2026: reorganiza a ajuda da busca pública no padrão dos modais do Pronto, com filtros e operadores em seções recolhíveis e exemplos separados; alinha e retira o negrito dos valores nos seletores de filtros.
