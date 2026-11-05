@@ -8,7 +8,7 @@ import {
   IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconLink,
   IconList, IconListNumbers, IconLock, IconMessage, IconPencil, IconPhoto, IconPilcrow, IconPrinter,
   IconQuote, IconRowInsertBottom, IconRowInsertTop, IconRowRemove, IconSearch, IconSeparator, IconSettings, IconShare, IconShieldCheck, IconSparkles,
-  IconStar, IconStrikethrough, IconTable, IconTableColumn, IconTableOff, IconTableRow, IconTag, IconTextColor, IconUnderline, IconUpload, IconUser, IconUserPlus, IconWorld, IconX,
+  IconStar, IconStrikethrough, IconTable, IconTableColumn, IconTableOff, IconTableRow, IconTag, IconTextColor, IconTrash, IconUnderline, IconUpload, IconUser, IconUserPlus, IconWorld, IconX,
 } from "@tabler/icons-react";
 
 const icons = {
@@ -88,6 +88,7 @@ const icons = {
   tableHeaderColumn: IconTableColumn,
   tag: IconTag,
   textColor: IconTextColor,
+  trash: IconTrash,
   underline: IconUnderline,
   upload: IconUpload,
   work: IconBriefcase,
