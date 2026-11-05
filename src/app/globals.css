@@ -7899,7 +7899,8 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery-search__advanced-title svg { width: 18px; height: 18px; }
 .authority-discovery-search__filters { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 18px; }
 .authority-discovery-search__filters label { display: grid; gap: 6px; min-width: 0; font-size: .84rem; font-weight: 800; }
-.authority-discovery-search__filters select { width: 100%; min-height: 46px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; }
+.authority-discovery-search__filters select { box-sizing: border-box; display: block; width: 100%; height: 46px; min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: .84rem; font-weight: 500; line-height: normal; text-align: left; }
+@supports (appearance: base-select) { .authority-discovery-search__filters select { display: flex; align-items: center; justify-content: space-between; gap: 10px; } }
 .authority-discovery-search__operators { margin: 14px 0 0; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
 .authority-discovery-search__operators code { display: inline-block; padding: 2px 5px; border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); white-space: normal; }
 .authority-search-help { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 14px; color: var(--text-muted); font-size: .85rem; }
@@ -7908,18 +7909,32 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-search-help > button svg { width: 18px; height: 18px; }
 .authority-search-help > button:is(:hover,:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
 .authority-search-help > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-dialog.pronto-modal.authority-search-help__dialog { box-sizing: border-box; width: min(760px,calc(100vw - 28px)); max-height: calc(100dvh - 32px); margin: auto; padding: 28px; overflow-y: auto; border-top: 4px solid var(--institutional); }
-.authority-search-help__dialog header { padding-right: 42px; }
-.authority-search-help__dialog header h2 { margin: 4px 0 8px; font-size: clamp(1.4rem,2.5vw,2rem); }
-.authority-search-help__dialog header > p:last-child { margin: 0; color: var(--text-muted); line-height: 1.5; }
-.authority-search-help__dialog section { margin-top: 26px; }
-.authority-search-help__dialog h3 { margin: 0 0 12px; color: var(--institutional); font-size: 1.05rem; }
-.authority-search-help__examples { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-.authority-search-help__examples article { display: grid; align-content: start; gap: 5px; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
-.authority-search-help__examples h4 { margin: 0; font-size: .88rem; }
+dialog.pronto-modal.authority-search-help__dialog { box-sizing: border-box; width: min(760px,calc(100vw - 28px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border-radius: var(--radius-lg); background: var(--surface); }
+dialog.pronto-modal.authority-search-help__dialog[open] { display: flex; flex-direction: column; }
+.authority-search-help__dialog > .catalogue-modal__header { position: relative; flex: 0 0 auto; }
+.authority-search-help__dialog .catalogue-modal__header h2 { display: flex; align-items: center; gap: 10px; }
+.authority-search-help__dialog .catalogue-modal__header h2 svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--institutional); }
+.authority-search-help__body { display: grid; gap: 12px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 24px 26px; }
+.authority-search-help__intro { margin: 0 0 4px; color: var(--text-muted); line-height: 1.5; }
+.authority-search-help__section { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
+.authority-search-help__section > summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; color: var(--text); cursor: pointer; font-weight: 800; list-style: none; }
+.authority-search-help__section > summary::-webkit-details-marker { display: none; }
+.authority-search-help__section > summary > svg:first-child { flex: 0 0 19px; width: 19px; height: 19px; color: var(--institutional); }
+.authority-search-help__section > summary > svg:last-child { flex: 0 0 18px; width: 18px; height: 18px; margin-left: auto; color: var(--institutional); transition: transform .2s ease; }
+.authority-search-help__section[open] > summary > svg:last-child { transform: rotate(180deg); }
+.authority-search-help__section > summary:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+.authority-search-help__section > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.authority-search-help__examples { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; padding: 0 16px 16px; }
+.authority-search-help__examples article { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-search-help__examples h3 { display: flex; align-items: center; gap: 7px; margin: 0; font-size: .87rem; }
+.authority-search-help__examples h3 svg { flex: 0 0 16px; width: 16px; height: 16px; color: var(--institutional); }
 .authority-search-help__examples code { justify-self: start; max-width: 100%; overflow-wrap: anywhere; padding: 4px 6px; border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .8rem; }
 .authority-search-help__examples p { margin: 0; color: var(--text-muted); font-size: .82rem; line-height: 1.45; }
-@media(max-width:620px) { dialog.pronto-modal.authority-search-help__dialog { padding: 22px 18px; } .authority-search-help__examples { grid-template-columns: minmax(0,1fr); } }
+.authority-search-help__filter-example { display: flex; flex-wrap: wrap; gap: 8px; }
+.authority-search-help__filter-example > span { display: grid; gap: 4px; flex: 1 1 130px; padding: 9px; border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text-muted); font-size: .73rem; }
+.authority-search-help__filter-example strong { color: var(--text); font-size: .82rem; font-weight: 650; }
+.authority-search-help__filter-example code { justify-self: start; font-size: .78rem; }
+@media(max-width:620px) { .authority-search-help__body { padding: 16px; } .authority-search-help__examples { grid-template-columns: minmax(0,1fr); padding: 0 12px 12px; } }
 .public-authorities__results { display: grid; gap: 22px; }
 .public-authorities__results-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
 .public-authorities__results-heading h2 { margin: 5px 0 0; font-size: clamp(1.5rem,3vw,2.3rem); }

@@ -38,18 +38,31 @@ const copy = {
   ] },
 } as const;
 
+const filterInstructions = {
+  pt: { selected: "Selecione no filtro", searched: "Digite na busca" },
+  en: { selected: "Choose in the filter", searched: "Type in search" },
+  es: { selected: "Selecciona en el filtro", searched: "Escribe en la búsqueda" },
+  de: { selected: "Im Filter wählen", searched: "In die Suche eingeben" },
+  fr: { selected: "Choisir dans le filtre", searched: "Saisir dans la recherche" },
+  it: { selected: "Seleziona nel filtro", searched: "Scrivi nella ricerca" },
+} as const;
+const filterIcons = ["document", "tag", "globe", "hierarchy", "search"] as const;
+const expressionIcons = ["search", "document", "hierarchy", "hierarchy", "hierarchy", "tag", "tag", "globe"] as const;
+
 export function AuthoritySearchHelp() {
   const { language } = useInterfaceLanguage();
   const t = copy[language];
+  const instructions = filterInstructions[language];
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   return <div className="authority-search-help">
     <p>{t.prompt}</p><button type="button" onClick={() => dialog.current?.showModal()} aria-haspopup="dialog"><AppIcon name="help" />{t.open}</button>
     <dialog ref={dialog} className="pronto-modal authority-search-help__dialog" aria-labelledby={titleId} onClick={(event) => { if (event.target === dialog.current) dialog.current?.close(); }}>
-      <ModalCloseButton label={t.close} onClick={() => dialog.current?.close()} />
-      <header><p className="eyebrow">{t.open}</p><h2 id={titleId}>{t.title}</h2><p>{t.intro}</p></header>
-      <section><h3>{t.expressions}</h3><div className="authority-search-help__examples">{t.rows.map(([label, example, description]) => <article key={label}><h4>{label}</h4><code>{example}</code><p>{description}</p></article>)}</div></section>
-      <section><h3>{t.filters}</h3><div className="authority-search-help__examples">{t.filterRows.map(([label, example, description]) => <article key={label}><h4>{label}</h4><code>{example}</code><p>{description}</p></article>)}</div></section>
+      <header className="catalogue-modal__header"><div><p className="eyebrow">{t.open}</p><h2 id={titleId}><AppIcon name="help" />{t.title}</h2></div><ModalCloseButton label={t.close} onClick={() => dialog.current?.close()} /></header>
+      <div className="authority-search-help__body"><p className="authority-search-help__intro">{t.intro}</p>
+        <details className="authority-search-help__section" open><summary><AppIcon name="settings" /><span>{t.filters}</span><AppIcon name="chevronDown" /></summary><div className="authority-search-help__examples authority-search-help__examples--filters">{t.filterRows.map(([label, example, description], index) => { const [selected, searched] = example.split(" + "); return <article key={label}><h3><AppIcon name={filterIcons[index] ?? "tag"} />{label}</h3><div className="authority-search-help__filter-example"><span>{instructions.selected}<strong>{selected}</strong></span><span>{instructions.searched}<code>{searched}</code></span></div><p>{description}</p></article>; })}</div></details>
+        <details className="authority-search-help__section"><summary><AppIcon name="search" /><span>{t.expressions}</span><AppIcon name="chevronDown" /></summary><div className="authority-search-help__examples">{t.rows.map(([label, example, description], index) => <article key={label}><h3><AppIcon name={expressionIcons[index] ?? "search"} />{label}</h3><code>{example}</code><p>{description}</p></article>)}</div></details>
+      </div>
     </dialog>
   </div>;
 }

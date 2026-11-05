@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: reorganiza a ajuda da busca pública no padrão dos modais do Pronto, com filtros e operadores em seções recolhíveis e exemplos separados; alinha e retira o negrito dos valores nos seletores de filtros.
+
 - 05/11/2026: mantém os filtros da busca pública sempre visíveis, sem controle de expansão.
 
 - 05/11/2026: reúne os exemplos de operadores, truncagem e filtros da busca pública numa ajuda acessível por botão; simplifica a orientação na página, retira “Para bibliotecários” dos controles e oferece exploração por local quando a busca não encontra temas.
