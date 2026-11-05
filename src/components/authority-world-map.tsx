@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { IconPin, IconPinnedOff } from "@tabler/icons-react";
+import { AppIcon } from "@/components/app-icon";
 import type * as Leaflet from "leaflet";
 import type { AuthorityMapPoint } from "@/lib/authority-map";
 import { authorityMapCopy, authorityMapUiCopy } from "@/lib/authority-map-copy";
@@ -20,26 +22,6 @@ function inScale(point: AuthorityMapPoint, scale: Scale) {
   return point.latitude >= -13.15 && point.latitude <= -12.7 && point.longitude >= -38.7 && point.longitude <= -38.25;
 }
 
-export function MapHeaderVisibility({ language }: { language: Language }) {
-  const [hidden, setHidden] = useState(false);
-  const ui = authorityMapUiCopy[language];
-  useEffect(() => {
-    const header = document.querySelector<HTMLElement>(".authority-map-page .site-header");
-    if (!header) return;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const clear = () => { if (timer) clearTimeout(timer); };
-    const reveal = () => { clear(); setHidden(false); };
-    const schedule = () => { clear(); timer = setTimeout(() => { if (!header.matches(":hover") && !header.contains(document.activeElement)) setHidden(true); }, 8000); };
-    header.addEventListener("pointerenter", reveal);
-    header.addEventListener("pointerleave", schedule);
-    header.addEventListener("focusin", reveal);
-    header.addEventListener("focusout", schedule);
-    schedule();
-    return () => { clear(); header.removeEventListener("pointerenter", reveal); header.removeEventListener("pointerleave", schedule); header.removeEventListener("focusin", reveal); header.removeEventListener("focusout", schedule); };
-  }, []);
-  return <div className="authority-map-header-visibility" data-hidden={hidden}><button type="button" className="authority-map-header-visibility__reveal" onPointerEnter={() => setHidden(false)} onFocus={() => setHidden(false)} onClick={() => setHidden(false)} aria-label={ui.showHeader}>{ui.showHeader} ↓</button></div>;
-}
-
 export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPoint[]; language: Language }) {
   const t = authorityMapCopy[language];
   const ui = authorityMapUiCopy[language];
@@ -47,12 +29,35 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   const [scaleIndex, setScaleIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [headerPinned, setHeaderPinned] = useState(true);
+  const [headerVisible, setHeaderVisible] = useState(true);
   const [ready, setReady] = useState(false);
   const mapNode = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
   const markersRef = useRef<Leaflet.LayerGroup | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const scale = scales[scaleIndex];
+  useEffect(() => {
+    const page = document.querySelector<HTMLElement>(".authority-map-page");
+    if (page) { page.dataset.headerPinned = String(headerPinned); page.dataset.headerVisible = String(headerVisible); }
+  }, [headerPinned, headerVisible]);
+  useEffect(() => {
+    if (headerPinned) return;
+    const chrome = document.querySelector<HTMLElement>(".authority-map-page__chrome");
+    if (!chrome) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const clear = () => { if (timer) clearTimeout(timer); };
+    const reveal = () => { clear(); setHeaderVisible(true); };
+    const schedule = () => { clear(); timer = setTimeout(() => { if (!chrome.matches(":hover") && !chrome.contains(document.activeElement)) setHeaderVisible(false); }, 8000); };
+    const revealAtTop = (event: PointerEvent) => { if (event.clientY < 64) reveal(); };
+    chrome.addEventListener("pointerenter", reveal);
+    chrome.addEventListener("pointerleave", schedule);
+    chrome.addEventListener("focusin", reveal);
+    chrome.addEventListener("focusout", schedule);
+    document.addEventListener("pointermove", revealAtTop);
+    schedule();
+    return () => { clear(); chrome.removeEventListener("pointerenter", reveal); chrome.removeEventListener("pointerleave", schedule); chrome.removeEventListener("focusin", reveal); chrome.removeEventListener("focusout", schedule); document.removeEventListener("pointermove", revealAtTop); };
+  }, [headerPinned]);
   const filtered = useMemo(() => points.filter((point) => inScale(point, scale.key) && `${point.place_label} ${point.term_label}`.toLocaleLowerCase(language).includes(query.toLocaleLowerCase(language))), [points, scale.key, query, language]);
   const places = useMemo(() => Array.from(filtered.reduce((map, point) => {
     const key = `${point.place_label.toLocaleLowerCase("pt-BR")}:${point.latitude}:${point.longitude}`;
@@ -70,10 +75,10 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
     import("leaflet").then((L) => {
       if (disposed || !mapNode.current) return;
       leafletRef.current = L;
-      map = L.map(mapNode.current, { zoomControl: false, attributionControl: false, scrollWheelZoom: true, minZoom: 2, maxZoom: 18, worldCopyJump: true }).setView(scales[0].center, scales[0].zoom);
+      map = L.map(mapNode.current, { zoomControl: false, attributionControl: false, scrollWheelZoom: true, minZoom: 3, maxZoom: 18, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1, worldCopyJump: true }).setView(scales[0].center, scales[0].zoom);
       mapRef.current = map;
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
-      L.control.attribution({ position: "bottomleft", prefix: false }).addTo(map);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, keepBuffer: 5, updateWhenIdle: false, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+      L.control.attribution({ position: "bottomright", prefix: false }).addTo(map);
       markersRef.current = L.layerGroup().addTo(map);
       observer = new ResizeObserver(() => map?.invalidateSize());
       observer.observe(mapNode.current);
@@ -98,15 +103,15 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   return <main className="authority-world" id="mapa-autoridades">
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {places.length === 0 && <div className="authority-world__empty">{points.length ? t.noResults : t.empty}</div>}
-    <div className="authority-world__zoom"><button type="button" onClick={() => mapRef.current?.zoomIn()} aria-label={t.zoomIn}>+</button><button type="button" onClick={() => mapRef.current?.zoomOut()} aria-label={t.zoomOut}>−</button><button type="button" onClick={() => mapRef.current?.flyTo(scale.center, scale.zoom)} aria-label={t.reset}>⌖</button></div>
+    <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => mapRef.current?.flyTo(scale.center, scale.zoom)} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div>
     <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title}>
-      <button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}>{panelOpen ? "→" : "←"}</button>
       <div className="authority-world__panel-content" hidden={!panelOpen}>
-        <h1>{t.title}</h1><p>{t.intro}</p>
-        <label className="authority-world__search"><span className="sr-only">{t.search}</span><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); }} placeholder={t.search} /></label>
-        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><input id="authority-map-scale" type="range" min="0" max="3" step="1" value={scaleIndex} onChange={(event) => { setScaleIndex(Number(event.target.value)); setSelected(null); }} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => { setScaleIndex(index); setSelected(null); }}>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</button>)}</div></div>
-        {active ? <div className="authority-world__selection"><button type="button" className="authority-world__back" onClick={() => setSelected(null)}>← {t.all}</button><h2>{active.name}</h2><ul>{active.points.map((point) => <li key={point.authority_id}><Link href={`/autoridades/${point.authority_id}`}>{point.term_label} <span aria-hidden="true">↗</span></Link></li>)}</ul></div> : <div className="authority-world__places"><h2>{t.all}</h2>{places.length > 0 ? <ul>{places.map((place) => <li key={place.key}><button type="button" onClick={() => choosePlace(place)}>{place.name}<span>{place.points.length} {t.themes} →</span></button></li>)}</ul> : <p>{points.length ? t.noResults : t.empty}</p>}</div>}
+        <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
+        <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); }} placeholder={t.search} /></div></label>
+        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><input id="authority-map-scale" type="range" min="0" max="3" step="1" value={scaleIndex} onChange={(event) => { setScaleIndex(Number(event.target.value)); setSelected(null); }} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => { setScaleIndex(index); setSelected(null); }}>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</button>)}</div></div>
+        {active ? <div className="authority-world__selection"><button type="button" className="authority-world__back" onClick={() => setSelected(null)}>← {t.all}</button><h2>{active.name}</h2><ul>{active.points.map((point) => <li key={point.authority_id}><Link href={`/autoridades/${point.authority_id}`}>{point.term_label} <span aria-hidden="true">↗</span></Link></li>)}</ul></div> : <div className="authority-world__places"><h2>{t.all} <span>{places.length}</span></h2>{places.length > 0 ? <ul>{places.map((place) => <li key={place.key}><button type="button" onClick={() => choosePlace(place)}>{place.name}<span>{place.points.length} {t.themes} →</span></button></li>)}</ul> : <p>{points.length ? t.noResults : t.empty}</p>}</div>}
       </div>
+      <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button>{panelOpen && <button type="button" className="authority-world__pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPin size={17} /> : <IconPinnedOff size={17} />}<span>{headerPinned ? ui.unpinHeader : ui.pinHeader}</span></button>}</div>
     </aside>
   </main>;
 }

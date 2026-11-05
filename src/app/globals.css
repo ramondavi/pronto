@@ -8458,6 +8458,50 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 @media(max-width:700px) { .authority-world__panel { top: 105px; bottom: 16px; max-height: min(480px,calc(100% - 122px)); } .authority-world__panel-content { padding: 20px 17px; } .authority-world__zoom { left: 12px; bottom: 52px; } }
 @media(hover:none) { .authority-map-page:has(.authority-map-header-visibility[data-hidden="true"]) .site-header { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } .authority-map-header-visibility__reveal { display: none; } }
 @media(prefers-reduced-motion:reduce) { .authority-map-page .site-header,.authority-world__panel { transition: none; } }
+/* The map chrome starts visible and remains pinned until the visitor unpins it. */
+.authority-map-page__chrome { position: absolute; z-index: 700; top: 0; right: 0; left: 0; border-bottom: 1px solid color-mix(in srgb,var(--line) 72%,transparent); background: color-mix(in srgb,var(--surface-raised) 77%,transparent); backdrop-filter: blur(18px) saturate(1.18); -webkit-backdrop-filter: blur(18px) saturate(1.18); box-shadow: 0 8px 26px rgb(0 0 0 / 9%); opacity: 1; visibility: visible; transition: opacity .45s ease,transform .45s ease,visibility .45s; }
+.authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-10px); }
+.authority-map-page__chrome .site-header { position: relative; z-index: auto; top: auto; left: auto; width: 100%; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; transform: none; opacity: 1; visibility: visible; pointer-events: auto; }
+.authority-map-page .breadcrumb--public { display: block; width: min(1120px,calc(100% - 48px)); margin: 0 auto; padding: 9px 0 13px; }
+.authority-map-page .breadcrumb--public ol { font-size: .75rem; }
+.authority-world__panel { top: auto; right: auto; bottom: 24px; left: 24px; width: min(380px,calc(100% - 48px)); height: min(520px,max(230px,calc(100% - 210px))); max-height: calc(100% - 48px); border: 1px solid color-mix(in srgb,var(--line) 85%,transparent); border-radius: var(--radius); background: color-mix(in srgb,var(--surface-raised) 82%,transparent); box-shadow: 0 18px 50px rgb(0 0 0 / 17%); transition: height .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1); }
+.authority-world__panel[data-open="false"] { top: auto; right: auto; bottom: 24px; width: min(208px,calc(100% - 48px)); height: 56px; }
+.authority-world__panel-content { flex: 1 1 auto; min-height: 0; padding: 20px 20px 14px; }
+.authority-world__panel-heading { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.authority-world__panel-heading .eyebrow { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; color: var(--institutional); font-size: .68rem; }
+.authority-world__panel-heading .eyebrow svg { width: 15px; height: 15px; }
+.authority-world__panel h1 { max-width: none; margin: 0 0 5px; font-size: clamp(1.45rem,2vw,1.8rem); line-height: 1.08; }
+.authority-world__panel-heading > p:last-child { margin: 0; color: var(--text-muted); font-size: .8rem; line-height: 1.42; }
+.authority-world__search { display: grid; gap: 6px; margin: 15px 0 14px; color: var(--text); font-size: .78rem; font-weight: 800; }
+.authority-world__search > div { display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 78%,transparent); }
+.authority-world__search > div svg { width: 18px; height: 18px; color: var(--institutional); }
+.authority-world__search input { min-height: 41px; padding: 8px 0; border: 0; background: transparent; font-size: .84rem; }
+.authority-world__search input:focus-visible { outline: none; }
+.authority-world__search > div:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.authority-world__scale { margin: 0 0 17px; padding: 12px 13px 9px; }
+.authority-world__scale > label { margin: 0 0 3px; }
+.authority-world__scale > p { margin: 0 0 9px; color: var(--text-muted); font-size: .72rem; line-height: 1.35; }
+.authority-world__scale-stops button { font-size: .7rem; }
+.authority-world__places h2,.authority-world__selection h2 { display: flex; align-items: center; justify-content: space-between; margin: 0 0 6px; font-size: .94rem; }
+.authority-world__places h2 span { min-width: 23px; padding: 3px 6px; border-radius: 999px; background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; text-align: center; }
+.authority-world__places > p { margin: 8px 0 0; color: var(--text-muted); font-size: .8rem; line-height: 1.45; }
+.authority-world__panel-footer { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 8px; min-height: 56px; padding: 8px 12px; border-top: 1px solid var(--line); background: color-mix(in srgb,var(--surface-raised) 84%,transparent); }
+.authority-world__panel-toggle,.authority-world__pin { position: static; display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: auto; height: 38px; padding: 0 9px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--institutional); font: inherit; font-size: .78rem; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.authority-world__panel-toggle svg,.authority-world__pin svg { width: 17px; height: 17px; flex: none; }
+.authority-world__panel-toggle:is(:hover,:focus-visible),.authority-world__pin:is(:hover,:focus-visible) { border-color: var(--line); background: var(--institutional-soft); }
+.authority-world__panel-toggle:focus-visible,.authority-world__pin:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.authority-world__panel[data-open="false"] .authority-world__panel-footer { width: 100%; border-top: 0; }
+.authority-world__zoom { z-index: 650; display: flex; left: calc(24px + 380px + 12px); right: auto; bottom: 24px; border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 85%,transparent); backdrop-filter: blur(14px); transition: left .35s cubic-bezier(.2,.8,.2,1); }
+.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__zoom { left: calc(24px + 208px + 12px); }
+.authority-world__zoom button { display: grid; place-items: center; width: 38px; height: 38px; border-right: 1px solid var(--line); border-bottom: 0; color: var(--institutional); }
+.authority-world__zoom button:last-child { border-right: 0; }
+.authority-world__zoom button:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+.authority-world__zoom button svg { width: 18px; height: 18px; }
+.authority-map-page .leaflet-control-attribution { margin: 0 16px 16px 0; padding: 5px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 86%,transparent); color: var(--text-muted); font: inherit; font-size: .69rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px); }
+.authority-map-page .leaflet-control-attribution a { color: var(--institutional); font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
+@media(max-width:700px) { .authority-map-page .breadcrumb--public { width: min(100% - 28px,680px); } .authority-world__panel { left: 12px; bottom: 12px; width: min(330px,calc(100% - 24px)); height: min(430px,max(220px,calc(100% - 185px))); } .authority-world__panel[data-open="false"] { bottom: 12px; width: 195px; } .authority-world__zoom,.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__zoom { left: 12px; bottom: 78px; } .authority-world__panel-content { padding: 16px 16px 10px; } .authority-map-page .leaflet-control-attribution { margin: 0 8px 8px 0; } }
+@media(hover:none) { .authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } }
+@media(prefers-reduced-motion:reduce) { .authority-map-page__chrome,.authority-world__panel,.authority-world__zoom { transition: none; } }
 .authority-map-review { margin-top: 22px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-muted); }
 .authority-map-review h4 { margin: 0 0 7px; }
 .authority-map-review > p { margin: 0 0 14px; color: var(--muted); font-size: .86rem; }
