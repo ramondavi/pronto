@@ -7,7 +7,7 @@ import {
   IconHierarchy, IconHome, IconId, IconInbox, IconItalic, IconKeyboard,
   IconLayoutGrid, IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconLink,
   IconList, IconListNumbers, IconLock, IconMessage, IconPencil, IconPhoto, IconPilcrow, IconPrinter, IconRefresh,
-  IconQuote, IconRowInsertBottom, IconRowInsertTop, IconRowRemove, IconSearch, IconSeparator, IconSettings, IconShare, IconShieldCheck, IconSparkles,
+  IconQuote, IconRowInsertBottom, IconRowInsertTop, IconRowRemove, IconSearch, IconSelectAll, IconSeparator, IconSettings, IconShare, IconShieldCheck, IconSparkles, IconSquareCheck, IconSquareX,
   IconStar, IconStrikethrough, IconTable, IconTableColumn, IconTableOff, IconTableRow, IconTag, IconTextColor, IconTrash, IconUnderline, IconUpload, IconUser, IconUserPlus, IconWorld, IconX,
 } from "@tabler/icons-react";
 
@@ -77,6 +77,9 @@ const icons = {
   request: IconFileText,
   review: IconCircleCheck,
   search: IconSearch,
+  selectAll: IconSelectAll,
+  selectPage: IconSquareCheck,
+  cancelSelection: IconSquareX,
   separator: IconSeparator,
   settings: IconSettings,
   share: IconShare,

@@ -8852,7 +8852,8 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .public-authorities__results-heading { justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .public-authorities__selection-actions,.public-authorities__results-tools,.public-authorities__view-toggle { display: flex; align-items: center; gap: 6px; }
 .public-authorities__selection-actions { flex-wrap: wrap; }
-.public-authorities__selection-actions > button,.public-authorities__view-toggle button { display: inline-grid; min-height: 36px; padding: 0 9px; place-items: center; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); cursor: pointer; font: inherit; font-size: .76rem; font-weight: 650; }
+.public-authorities__selection-actions > button,.public-authorities__view-toggle button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); cursor: pointer; font: inherit; font-size: .76rem; font-weight: 650; }
+.public-authorities__selection-actions > button svg { flex: none; width: 17px; height: 17px; stroke-width: 1.8; }
 .public-authorities__selection-actions > button:is(:hover,:focus-visible),.public-authorities__view-toggle button:is(:hover,:focus-visible) { background: var(--institutional-soft); border-color: var(--institutional); }
 .public-authorities__selection-actions > button:disabled { opacity: .5; cursor: not-allowed; }
 .public-authorities__results-tools { margin-left: auto; }
