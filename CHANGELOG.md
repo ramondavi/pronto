@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: acrescenta América do Sul e silhuetas à régua do mapa, alinha o cursor às extremidades e transforma cabeçalho e breadcrumbs em bloco flutuante.
+
 - 04/11/2026: corrige a inicialização do mapa vetorial e restaura automaticamente o mapa anterior se os vetores não carregarem.
 
 - 04/11/2026: troca o mapa completo por cartografia vetorial com nomes conforme o idioma selecionado e corrige o controle de fixação do cabeçalho.
