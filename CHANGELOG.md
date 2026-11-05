@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: adota “Tipo de tema” nos filtros públicos, preserva “Assunto” como categoria específica e substitui usos genéricos de “assunto” por “tema” nas páginas, na ajuda e nas traduções do catálogo.
+
 - 05/11/2026: limita a barra de rolagem dos filtros públicos ao contorno arredondado dos menus e remove suas setas nativas para preservar os cantos.
 
 - 05/11/2026: remove a faixa lateral vazia dos filtros públicos, afasta a barra de rolagem dos rótulos, suaviza o título da busca avançada e alinha o acesso ao mapa à margem direita da identificação.
