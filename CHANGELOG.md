@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: limita a barra de rolagem dos filtros públicos ao contorno arredondado dos menus e remove suas setas nativas para preservar os cantos.
+
 - 05/11/2026: remove a faixa lateral vazia dos filtros públicos, afasta a barra de rolagem dos rótulos, suaviza o título da busca avançada e alinha o acesso ao mapa à margem direita da identificação.
 
 - 05/11/2026: reduz e suaviza os logos nos resultados públicos; alinha o acesso ao mapa ao último equivalente e apresenta a busca após os detalhes da autoridade, com filtros inicialmente recolhidos nessa página.
