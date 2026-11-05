@@ -8831,6 +8831,7 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .authority-discovery-search--home .authority-suggestion-badges b { border-radius: var(--radius-sm); }
 .authority-discovery-search--home .authority-discovery-search__recent-list .authority-discovery-search__recent-clear { display: inline-grid; width: 30px; height: 30px; padding: 0; place-items: center; border-radius: var(--radius-sm); color: var(--danger); }
 .authority-discovery-search--home .authority-discovery-search__recent-list .authority-discovery-search__recent-clear svg { width: 16px; height: 16px; }
+.authority-discovery-search--home .authority-discovery-search__recent-list .authority-discovery-search__recent-clear:is(:hover,:focus-visible) { border-color: var(--danger); background: color-mix(in srgb,var(--danger) 12%,var(--surface-raised)); color: var(--danger); }
 .public-authorities__results-heading { align-items: center; }
 .public-authorities__count { box-sizing: border-box; min-height: 36px; }
 .public-authorities__select { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
