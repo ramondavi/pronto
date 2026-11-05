@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: reúne os exemplos de operadores, truncagem e filtros da busca pública numa ajuda acessível por botão; simplifica a orientação na página, retira “Para bibliotecários” dos controles e oferece exploração por local quando a busca não encontra temas.
+
 - 05/11/2026: amplia o filtro público para os tipos MARC de autoridade, mostra resultados enquanto se digita e permite aplicar filtros, operadores booleanos e truncagem pelo botão de busca. A conferência da importação exibe o tipo detectado. Iguala o respiro da busca inicial entre os estados compacto e expandido e agrupa as etiquetas de situação e tipo na gestão de assuntos.
 
 - 05/11/2026: identifica e filtra os tipos de autoridades MARC21 e a publicação na gestão de assuntos; permite revisar o tipo e associar lugares a cabeçalhos geográficos, subdivisões e instituições, reunindo registros do mesmo lugar no mapa. Uniformiza os campos de Temas por área com os formulários administrativos.

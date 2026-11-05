@@ -7902,6 +7902,24 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery-search__filters select { width: 100%; min-height: 46px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; }
 .authority-discovery-search__operators { margin: 14px 0 0; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
 .authority-discovery-search__operators code { display: inline-block; padding: 2px 5px; border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); white-space: normal; }
+.authority-search-help { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 14px; color: var(--text-muted); font-size: .85rem; }
+.authority-search-help > p { margin: 0; }
+.authority-search-help > button { display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px; border: 0; background: transparent; color: var(--institutional); cursor: pointer; font: inherit; font-weight: 800; }
+.authority-search-help > button svg { width: 18px; height: 18px; }
+.authority-search-help > button:is(:hover,:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+.authority-search-help > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+dialog.pronto-modal.authority-search-help__dialog { box-sizing: border-box; width: min(760px,calc(100vw - 28px)); max-height: calc(100dvh - 32px); margin: auto; padding: 28px; overflow-y: auto; border-top: 4px solid var(--institutional); }
+.authority-search-help__dialog header { padding-right: 42px; }
+.authority-search-help__dialog header h2 { margin: 4px 0 8px; font-size: clamp(1.4rem,2.5vw,2rem); }
+.authority-search-help__dialog header > p:last-child { margin: 0; color: var(--text-muted); line-height: 1.5; }
+.authority-search-help__dialog section { margin-top: 26px; }
+.authority-search-help__dialog h3 { margin: 0 0 12px; color: var(--institutional); font-size: 1.05rem; }
+.authority-search-help__examples { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.authority-search-help__examples article { display: grid; align-content: start; gap: 5px; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-search-help__examples h4 { margin: 0; font-size: .88rem; }
+.authority-search-help__examples code { justify-self: start; max-width: 100%; overflow-wrap: anywhere; padding: 4px 6px; border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .8rem; }
+.authority-search-help__examples p { margin: 0; color: var(--text-muted); font-size: .82rem; line-height: 1.45; }
+@media(max-width:620px) { dialog.pronto-modal.authority-search-help__dialog { padding: 22px 18px; } .authority-search-help__examples { grid-template-columns: minmax(0,1fr); } }
 .public-authorities__results { display: grid; gap: 22px; }
 .public-authorities__results-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
 .public-authorities__results-heading h2 { margin: 5px 0 0; font-size: clamp(1.5rem,3vw,2.3rem); }
@@ -7917,6 +7935,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .public-authorities__open { align-self: flex-start; margin-top: auto; padding-top: 22px; color: var(--institutional); font-weight: 800; text-decoration: none; }
 .public-authorities__empty { display: grid; gap: 8px; padding: 30px; }
 .public-authorities__empty p { margin: 0; color: var(--text-muted); }
+.public-authorities__empty-links { display: flex; flex-wrap: wrap; gap: 8px; }
 .public-authorities__pages { justify-content: center; gap: 25px; padding-top: 10px; font-weight: 750; }
 
 .public-authority-detail__breadcrumb a { color: var(--institutional); font-weight: 800; }

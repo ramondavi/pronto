@@ -27,7 +27,7 @@ export function AuthorityResultGrid({ items, page, query, variantsLabel, openLab
   const terms = parseAuthorityQuery(query).flatMap((group) => group.include).flatMap((term) => term.split(/[*?]/).filter((part) => part.length > 1));
   const compared = selected.map((id) => items.find((item) => item.id === id)).filter((item): item is PublicAuthority => !!item);
   return <>
-    <details className="authority-professional authority-professional--compare" onToggle={(event) => setProfessionalOpen(event.currentTarget.open)}><summary><span>{publicCopy.professional}</span><small>{publicCopy.compare}</small></summary><div className="authority-professional__body"><p>{t.compareHint}</p><button type="button" className="button button--secondary button--small" disabled={selected.length !== 2} onClick={() => setComparing(true)}>{t.compare}</button></div></details>
+    <details className="authority-professional authority-professional--compare" onToggle={(event) => setProfessionalOpen(event.currentTarget.open)}><summary><span>{publicCopy.compare}</span></summary><div className="authority-professional__body"><p>{t.compareHint}</p><button type="button" className="button button--secondary button--small" disabled={selected.length !== 2} onClick={() => setComparing(true)}>{t.compare}</button></div></details>
     <div className="public-authorities__list">{items.map((item, index) => {
       const matchedVariant = item.variants.find((variant) => terms.some((term) => foldAuthorityText(variant.value).includes(foldAuthorityText(term))));
       const matched = terms.length && !terms.some((term) => foldAuthorityText(item.label).includes(foldAuthorityText(term))) && matchedVariant;
