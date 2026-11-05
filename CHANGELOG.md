@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: esclarece por que autoridades sem lugar não oferecem coordenadas e uniformiza os campos de publicação e localização no painel administrativo.
+
 - 05/11/2026: substitui os quadrados tracejados no mapa completo pelo contorno das regiões selecionadas, mantendo o enquadramento e a busca por abrangência.
 
 - 05/11/2026: aproxima os conteúdos da hero e da descoberta do cabeçalho público, preservando o espaço entre hero, busca e mapa na primeira tela.

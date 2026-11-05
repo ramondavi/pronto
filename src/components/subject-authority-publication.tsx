@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { AppIcon } from "@/components/app-icon";
 
 type Mapping = { heading_ind1: string; variant_ind1: string[]; relation_ind1: string[] };
 type Status = { published: boolean; rights_statement: string | null; marc_mapping: Mapping | null };
@@ -53,23 +54,23 @@ export function SubjectAuthorityPublication({ authorityId, eligible, record }: {
   const mappingComplete = !!headingTag && choices.includes(mapping.heading_ind1)
     && mapping.variant_ind1.length === variants.length && mapping.variant_ind1.every((value) => choices.includes(value))
     && mapping.relation_ind1.length === (record.relations?.length ?? 0) && mapping.relation_ind1.every((value) => choices.includes(value));
-  const indicatorSelect = (value: string, onChange: (value: string) => void, label: string) => <label>{label}<select value={value} onChange={(event) => onChange(event.target.value)} disabled={busy || status?.published}>
+  const indicatorSelect = (value: string, onChange: (value: string) => void, label: string) => <label><span className="catalogue-field-label"><AppIcon name="tag" />{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} disabled={busy || status?.published}>
     {choices.length > 1 && <option value="">Escolha o indicador</option>}
     {choices.map((choice) => <option key={choice} value={choice}>{choice === " " ? "Em branco" : choice}</option>)}
   </select></label>;
-  return <section className="authority-publication"><h4>Catálogo público</h4>
+  return <section className="authority-publication"><h4><AppIcon name="globe" />Catálogo público</h4>
     {!status && !error && <p>Conferindo publicação…</p>}
-    {status && <><p>{status.published ? "Publicado para consulta e exportação." : "Não publicado."}</p>
+    {status && <><p className={`authority-publication__status ${status.published ? "is-published" : ""}`}><AppIcon name={status.published ? "check" : "eyeOff"} />{status.published ? "Publicado para consulta e exportação." : "Não publicado."}</p>
       {status.published && <Link href={`/autoridades/${authorityId}`} target="_blank">Abrir página pública</Link>}
-      <label><span>Condições de publicação e redistribuição verificadas</span><textarea value={rights} onChange={(event) => setRights(event.target.value)} minLength={10} maxLength={1000} rows={3} disabled={busy || status.published} placeholder="Registre a base para publicar e redistribuir este registro." /></label>
-      {!status.published && <div className="authority-publication__mapping"><strong>Conferência dos indicadores MARC21</strong><p>Confira a forma de entrada do cabeçalho e de cada referência. O sistema não escolhe indicadores de nomes, entidades ou títulos.</p>
+      <label><span className="catalogue-field-label"><AppIcon name="document" />Condições de publicação e redistribuição verificadas</span><textarea value={rights} onChange={(event) => setRights(event.target.value)} minLength={10} maxLength={1000} rows={3} disabled={busy || status.published} placeholder="Registre a base para publicar e redistribuir este registro." /></label>
+      {!status.published && <div className="authority-publication__mapping"><strong><AppIcon name="hierarchy" />Conferência dos indicadores MARC21</strong><p>Confira a forma de entrada do cabeçalho e de cada referência. O sistema não escolhe indicadores de nomes, entidades ou títulos.</p>
         {indicatorSelect(mapping.heading_ind1, (value) => setMapping((current) => ({ ...current, heading_ind1: value })), `Cabeçalho ${headingTag || "sem tipo reconhecido"}`)}
         {variants.map((variant, index) => <div key={`${variant.label}-${index}`}>{indicatorSelect(mapping.variant_ind1[index] ?? "", (value) => setArrayIndicator("variant_ind1", index, value), `Variante: ${variant.label}`)}</div>)}
         {(record.relations ?? []).map((relation, index) => <div key={`${relation.value}-${index}`}>{indicatorSelect(mapping.relation_ind1[index] ?? "", (value) => setArrayIndicator("relation_ind1", index, value), `Relação: ${relation.value}`)}</div>)}
       </div>}
       <div className="public-authorities__exports">{status.published
         ? <button type="button" className="button button--secondary button--small" disabled={busy} onClick={() => void save(false)}>Retirar da consulta pública</button>
-        : <button type="button" className="button button--primary button--small" disabled={busy || !eligible || !hasWork || rights.trim().length < 10 || !mappingComplete} onClick={() => void save(true)}>Revisar e publicar autoridade</button>}</div>
+        : <button type="button" className="button button--primary button--small" disabled={busy || !eligible || !hasWork || rights.trim().length < 10 || !mappingComplete} onClick={() => void save(true)}><AppIcon name="check" />Revisar e publicar autoridade</button>}</div>
       {!eligible && <p>Ative e valide o assunto antes de publicá-lo.</p>}
       {!hasWork && <p>Para publicar, vincule o assunto a um trabalho com ficha homologada ou atendimento concluído.</p>}
     </>}

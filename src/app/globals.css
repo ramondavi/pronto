@@ -7832,10 +7832,22 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .public-authority-detail dt { font-weight: 700; }
 .public-authority-detail dd { margin: 0; overflow-wrap: anywhere; }
 .public-authority-detail li { margin: 6px 0; }
-.authority-publication { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.authority-publication { display: grid; gap: 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .authority-publication h4, .authority-publication p { margin: 0; }
-.authority-publication label { display: grid; gap: 6px; font-weight: 700; }
-.authority-publication textarea { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; }
+.authority-publication h4, .authority-publication__mapping > strong { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: .9rem; }
+.authority-publication :is(h4, .authority-publication__mapping > strong) svg { width: 18px; height: 18px; color: var(--institutional); }
+.authority-publication label { display: grid; gap: 7px; min-width: 0; color: var(--text); font-size: .8rem; font-weight: 700; }
+.authority-publication :is(textarea, select) { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; }
+.authority-publication textarea { min-height: 96px; resize: vertical; }
+.authority-publication :is(textarea, select):focus-visible { outline: 2px solid var(--institutional); outline-offset: 2px; }
+.authority-publication__status { display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 7px 10px; border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text-muted); font-size: .8rem; }
+.authority-publication__status.is-published { color: var(--success); }
+.authority-publication__status svg { width: 16px; height: 16px; }
+.authority-publication__mapping { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+.authority-publication__mapping > p { color: var(--text-muted); font-size: .8rem; line-height: 1.5; }
+.authority-publication__mapping :is(label, select) { font-size: .8rem; }
+.authority-publication .public-authorities__exports { margin-top: 2px; }
+.authority-publication > p:not(.authority-publication__status) { color: var(--text-muted); font-size: .8rem; line-height: 1.5; }
 
 /* Public discovery: an architectural drawing behind a legible search surface. */
 .authority-discovery { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(126deg,#1e293b 0%,#292c52 54%,#3c3873 100%); color: #fff; }
@@ -8568,20 +8580,25 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
   .home-hero-landscape .authority-discovery__inner { padding-bottom: 60px; }
   .home-hero-landscape .authority-discovery[data-expanded="false"] .authority-discovery__inner { padding-bottom: 55px; }
 }
-.authority-map-review { margin-top: 22px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-muted); }
-.authority-map-review h4 { margin: 0 0 7px; }
-.authority-map-review > p { margin: 0 0 14px; color: var(--muted); font-size: .86rem; }
+.authority-map-review { margin-top: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.authority-map-review h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+.authority-map-review h4 svg { width: 18px; height: 18px; color: var(--institutional); }
+.authority-map-review > p { margin: 0 0 14px; color: var(--text-muted); font-size: .8rem; line-height: 1.5; }
+.authority-map-review--empty > p { margin-bottom: 0; }
 .authority-map-review ul { margin: 0; padding: 0; list-style: none; }
 .authority-map-review li { padding: 12px 0; border-top: 1px solid var(--line); }
 .authority-map-review__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .authority-map-review__row div { display: grid; gap: 4px; }
-.authority-map-review__row small { color: var(--muted); }
+.authority-map-review__row small { color: var(--text-muted); font-size: .76rem; }
 .authority-map-review__form { display: grid; gap: 12px; margin-top: 14px; }
 .authority-map-review__coordinates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-.authority-map-review__form label { display: grid; gap: 5px; font-size: .8rem; font-weight: 700; }
-.authority-map-review__form input:not([type="checkbox"]) { width: 100%; min-height: 40px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); }
+.authority-map-review__form label { display: grid; gap: 6px; min-width: 0; font-size: .8rem; font-weight: 700; }
+.authority-map-review__form input:not([type="checkbox"]) { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; }
+.authority-map-review__form input:focus-visible { outline: 2px solid var(--institutional); outline-offset: 2px; }
 .authority-map-review__form .authority-map-review__check { display: flex; align-items: center; gap: 7px; }
 .authority-map-review__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.authority-map-review__message { margin: 12px 0 0 !important; }
+@media(max-width:600px) { .authority-publication, .authority-map-review { padding: 16px; } .authority-map-review__coordinates { grid-template-columns: 1fr; } .authority-map-review__row { align-items: flex-start; flex-direction: column; } }
 
 /* The home page advances by full sections on desktop; taller content remains scrollable. */
 @media(min-width:821px) {
