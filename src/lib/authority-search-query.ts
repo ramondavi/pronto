@@ -25,7 +25,7 @@ export function parseAuthorityQuery(input: string): AuthorityQueryGroup[] {
 }
 
 export const authoritySources = ["all", "bn", "aat", "ufba", "pergamum", "loc", "pronto"] as const;
-export const authorityHeadingTypes = ["all", "topic", "geographic", "personal", "corporate", "title"] as const;
+export const authorityHeadingTypes = ["all", "personal", "corporate", "meeting", "title", "named_event", "chronological", "topic", "geographic", "genre_form", "medium", "topical_subdivision", "geographic_subdivision", "chronological_subdivision", "form_subdivision"] as const;
 export const authoritySorts = ["relevance", "az", "za", "recent", "source"] as const;
 export const authorityLanguages = ["all", "pt", "en", "es", "de", "fr", "it"] as const;
 export const authorityRelations = ["all", "broader", "narrower", "related"] as const;

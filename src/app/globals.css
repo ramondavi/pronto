@@ -7673,6 +7673,7 @@ dialog.pronto-modal.request-audit-dialog[open] { display: flex; flex-direction: 
 .controlled-terms-admin__title { align-items: flex-start; justify-content: space-between; gap: 10px 16px; }
 .controlled-terms-admin__title > strong { display: flex; align-items: flex-start; gap: 8px; min-width: 0; font-size: .95rem; line-height: 1.5; }
 .controlled-terms-admin__title > strong svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--institutional); }
+.controlled-terms-admin__badges { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; margin-left: auto; }
 .controlled-terms-admin__state { flex-shrink: 0; }
 .controlled-terms-admin__side { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
 .controlled-terms-admin__usage { align-items: center; gap: 6px; }
@@ -8326,7 +8327,7 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
   .authority-discovery[data-expanded="true"] .authority-discovery__heading h2 { max-width: none; margin: 2px 0 0; font-size: clamp(1.5rem,2.3vw,2rem); white-space: nowrap; }
   .authority-discovery[data-expanded="true"] .authority-discovery__heading-copy p { font-size: .9rem; line-height: 1.4; }
   .authority-discovery[data-expanded="true"] .authority-discovery__heading-copy .authority-discovery__detail { font-size: .82rem; }
-  .authority-discovery[data-expanded="false"] .authority-discovery__heading { transform: translateY(-70px); }
+  .authority-discovery[data-expanded="false"] .authority-discovery__heading { transform: translateY(-32px); }
   .authority-discovery[data-expanded="false"] .authority-map-preview { min-height: 150px; }
   .authority-discovery[data-expanded="false"] .authority-discovery-search--home { padding: 6px; }
   .authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__control { min-height: 54px; }

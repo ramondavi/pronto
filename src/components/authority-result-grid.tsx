@@ -24,7 +24,7 @@ export function AuthorityResultGrid({ items, page, query, variantsLabel, openLab
   const [selected, setSelected] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
   const [professionalOpen, setProfessionalOpen] = useState(false);
-  const terms = parseAuthorityQuery(query).flatMap((group) => group.include);
+  const terms = parseAuthorityQuery(query).flatMap((group) => group.include).flatMap((term) => term.split(/[*?]/).filter((part) => part.length > 1));
   const compared = selected.map((id) => items.find((item) => item.id === id)).filter((item): item is PublicAuthority => !!item);
   return <>
     <details className="authority-professional authority-professional--compare" onToggle={(event) => setProfessionalOpen(event.currentTarget.open)}><summary><span>{publicCopy.professional}</span><small>{publicCopy.compare}</small></summary><div className="authority-professional__body"><p>{t.compareHint}</p><button type="button" className="button button--secondary button--small" disabled={selected.length !== 2} onClick={() => setComparing(true)}>{t.compare}</button></div></details>
