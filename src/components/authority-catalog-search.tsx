@@ -5,13 +5,19 @@ import { AuthorityDiscoverySearch } from "./authority-discovery-search";
 import { AuthorityResultGrid } from "./authority-result-grid";
 import Link from "next/link";
 import type { PublicAuthority } from "@/lib/public-subject-authority";
+import { useInterfaceLanguage } from "./interface-language";
 
 type Options = { query: string; source: string; heading: string; sort: string; variantLanguage: string; relation: string };
 
-export function AuthorityCatalogSearch({ options, initialItems, initialTotal, page, labels }: { options: Options; initialItems: PublicAuthority[]; initialTotal: number; page: number; labels: { found: string; results: string; clear: string; variants: string; open: string; empty: string; emptyHint: string; browse: string; browsePlaces: string; professional: string; export: string; professionalIntro: string; exportResults: string; exportLimit: string; catalogue: string; previous: string; next: string; pending: string } }) {
+export function AuthorityCatalogSearch({ options, initialItems, initialTotal, page, labels }: { options: Options; initialItems: PublicAuthority[]; initialTotal: number; page: number; labels: { found: string; results: string; clear: string; variants: string; open: string; empty: string; emptyHint: string; browse: string; browsePlaces: string; professional: string; export: string; professionalIntro: string; exportResults: string; exportLimit: string; catalogue: string; previous: string; next: string; pending: string; failed: string } }) {
+  const { language } = useInterfaceLanguage();
   const [draft, setDraft] = useState(options.query);
   const [live, setLive] = useState<{ items: PublicAuthority[]; total: number; query: string } | null>(null);
   const [pending, setPending] = useState(false);
+  const [currentPage, setCurrentPage] = useState(page);
+  const [pageData, setPageData] = useState<{ items: PublicAuthority[]; total: number } | null>(null);
+  const [pagePending, setPagePending] = useState(false);
+  const [pageError, setPageError] = useState(false);
   useEffect(() => {
     if (!options.query && options.source === "all" && options.heading === "all" && options.variantLanguage === "all" && options.relation === "all") return;
     const frame = window.requestAnimationFrame(() => document.getElementById("catalogue-search")?.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -44,19 +50,32 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [draft, options.query, options.source, options.heading, options.sort, options.variantLanguage, options.relation]);
 
-  const items = live?.items ?? initialItems;
-  const total = live?.total ?? initialTotal;
+  const items = live?.items ?? pageData?.items ?? initialItems;
+  const total = live?.total ?? pageData?.total ?? initialTotal;
   const query = live?.query ?? options.query;
   const preview = !!live;
   const hrefForPage = (nextPage: number) => `/autoridades?${new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, pagina: String(nextPage) })}`;
+  const loadPage = async (nextPage: number) => {
+    setPagePending(true); setPageError(false);
+    try {
+      const response = await fetch(`/api/autoridades/resultados?${new URL(hrefForPage(nextPage), window.location.origin).searchParams}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("page_failed");
+      const result = await response.json() as { items: PublicAuthority[]; total: number };
+      setPageData(result); setCurrentPage(nextPage);
+      document.getElementById("authority-results-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch { setPageError(true); }
+    finally { setPagePending(false); }
+  };
+  const countMessages = { pt: `${items.length} resultados exibidos abaixo de ${total} encontrados`, en: `${items.length} results shown below out of ${total} found`, es: `${items.length} resultados mostrados abajo de ${total} encontrados`, de: `${items.length} von ${total} gefundenen Ergebnissen unten angezeigt`, fr: `${items.length} résultats affichés ci-dessous sur ${total} trouvés`, it: `${items.length} risultati mostrati qui sotto su ${total} trovati` };
   const exportParams = (format: string) => new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, formato: format });
   return <>
     <section id="catalogue-search" className="public-authorities__search-panel"><AuthorityDiscoverySearch variant="catalog" initialQuery={options.query} initialSource={options.source} initialHeading={options.heading} initialSort={options.sort} initialLanguage={options.variantLanguage} initialRelation={options.relation} onCatalogQueryChange={setDraft} /></section>
-    <section className="public-authorities__results" aria-labelledby="authority-results-title" aria-busy={pending}>
-      <div className="public-authorities__results-heading"><div><p className="eyebrow">{pending ? labels.pending : `${String(total).padStart(2, "0")} / ${labels.found}`}</p><h2 id="authority-results-title">{labels.results}</h2></div>{!preview && (options.query || options.source !== "all" || options.heading !== "all" || options.variantLanguage !== "all" || options.relation !== "all") && <Link href="/autoridades" className="button button--secondary button--small">{labels.clear}</Link>}</div>
-      {items.length ? <AuthorityResultGrid key={`${preview}-${query}`} items={items} page={preview ? 0 : page} query={query} variantsLabel={labels.variants} openLabel={labels.open} /> : <div className="card public-authorities__empty"><span aria-hidden="true" className="public-authorities__empty-mark">⌕</span><strong>{labels.empty}</strong><p>{labels.emptyHint}</p><div className="public-authorities__empty-links"><Link className="button button--secondary button--small" href="/autoridades/explorar">{labels.browse} ↗</Link><Link className="button button--secondary button--small" href="/autoridades/mapa">{labels.browsePlaces} ↗</Link></div></div>}
+    <section className="public-authorities__results" aria-labelledby="authority-results-title" aria-busy={pending || pagePending}>
+      <div className="public-authorities__results-heading"><div><h2 id="authority-results-title">{labels.results}</h2><p className="public-authorities__count" role="status">{pending || pagePending ? labels.pending : countMessages[language]}</p></div></div>
+      {pageError && <p role="alert">{labels.failed}</p>}
+      {items.length ? <AuthorityResultGrid key={`${preview}-${query}-${currentPage}`} items={items} page={preview ? 0 : currentPage} query={query} variantsLabel={labels.variants} openLabel={labels.open} /> : <div className="card public-authorities__empty"><span aria-hidden="true" className="public-authorities__empty-mark">⌕</span><strong>{labels.empty}</strong><p>{labels.emptyHint}</p><div className="public-authorities__empty-links"><Link className="button button--secondary button--small" href="/autoridades/explorar">{labels.browse} ↗</Link><Link className="button button--secondary button--small" href="/autoridades/mapa">{labels.browsePlaces} ↗</Link></div></div>}
       {!preview && total > 0 && <details className="authority-professional"><summary><span>{labels.export}</span></summary><div className="authority-professional__body"><p>{labels.professionalIntro}</p><div className="public-authorities__bulk"><strong>{labels.exportResults}</strong><div><a className="button button--secondary button--small" href={`/autoridades/exportar?${exportParams("skos")}`}>SKOS/JSON-LD</a><a className="button button--secondary button--small" href={`/autoridades/exportar?${exportParams("marc")}`}>MARCXML</a></div><p>{labels.exportLimit}</p></div></div></details>}
-      {!preview && total > 24 && <nav aria-label={labels.catalogue} className="public-authorities__pages">{page > 0 && <Link href={hrefForPage(page - 1)}>{labels.previous}</Link>}<span>{page + 1} / {Math.ceil(total / 24)}</span>{(page + 1) * 24 < total && <Link href={hrefForPage(page + 1)}>{labels.next}</Link>}</nav>}
+      {!preview && total > 20 && <nav aria-label={labels.catalogue} className="public-authorities__pages">{currentPage > 0 && <button type="button" disabled={pagePending} onClick={() => void loadPage(currentPage - 1)}>{labels.previous}</button>}<span>{currentPage + 1} / {Math.ceil(total / 20)}</span>{(currentPage + 1) * 20 < total && <button type="button" disabled={pagePending} onClick={() => void loadPage(currentPage + 1)}>{labels.next}</button>}</nav>}
     </section>
   </>;
 }

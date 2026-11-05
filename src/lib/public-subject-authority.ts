@@ -46,6 +46,19 @@ export async function searchPublicAuthorities(options: AuthoritySearchOptions): 
   return { items: Array.isArray(data?.items) ? data.items as PublicAuthority[] : [], total: Number(data?.total ?? 0) };
 }
 
+/** Present 20 records while retaining the existing 24-record database RPC. */
+export async function searchPublicAuthoritiesPage(options: AuthoritySearchOptions): Promise<{ items: PublicAuthority[]; total: number }> {
+  const start = options.page * 20;
+  const firstPage = Math.floor(start / 24);
+  const offset = start % 24;
+  const first = await searchPublicAuthorities({ ...options, page: firstPage });
+  if (offset + 20 <= 24 || start + first.items.length - offset >= first.total) {
+    return { items: first.items.slice(offset, offset + 20), total: first.total };
+  }
+  const second = await searchPublicAuthorities({ ...options, page: firstPage + 1 });
+  return { items: [...first.items.slice(offset), ...second.items].slice(0, 20), total: first.total };
+}
+
 export async function getPublicAuthority(id: string): Promise<PublicAuthority | null> {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
   const { data, error } = await (await createClient()).rpc("get_public_subject_authority", { target_authority_id: id });

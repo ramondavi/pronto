@@ -7897,8 +7897,17 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery-search__advanced { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
 .authority-discovery-search__advanced-title { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--institutional); font-size: .9rem; font-weight: 600; }
 .authority-discovery-search__advanced-title svg { width: 18px; height: 18px; }
-.authority-discovery-search__advanced-title button { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; }
-.authority-discovery-search__advanced-title button svg:last-child { margin-left: 8px; transition: transform .2s ease; }
+.authority-discovery-search__advanced-title button { display: inline-flex; align-items: center; gap: 8px; min-height: 24px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; line-height: 1.2; }
+.authority-discovery-search__advanced-title button svg:last-child { display: block; flex: none; width: 16px; height: 16px; margin-left: 2px; transition: transform .2s ease; }
+.authority-discovery-search__catalog-history { display: grid; gap: 9px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.authority-discovery-search__catalog-history-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.authority-discovery-search__catalog-history-list a { display: grid; gap: 2px; max-width: min(100%, 360px); padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); font-size: .82rem; font-weight: 500; text-decoration: none; }
+.authority-discovery-search__catalog-history-list a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.authority-discovery-search__catalog-history-list a small { overflow: hidden; color: var(--text-muted); font-size: .72rem; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.authority-discovery-search__catalog-history-list a:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
+.authority-discovery-search__catalog-history-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.authority-discovery-search__catalog-history-actions :is(a,button) { padding: 0; border: 0; background: transparent; color: var(--institutional); cursor: pointer; font: inherit; font-size: .78rem; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.public-authorities__count { margin: 7px 0 0; color: var(--text-muted); font-size: .88rem; }
 .authority-discovery-search__advanced-title button[aria-expanded="true"] svg:last-child { transform: rotate(180deg); }
 .authority-discovery-search__advanced-title button:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
 .authority-discovery-search__filters[hidden] { display: none; }
@@ -7978,6 +7987,9 @@ dialog.pronto-modal.authority-search-help__dialog[open] { display: flex; flex-di
 .public-authorities__empty p { margin: 0; color: var(--text-muted); }
 .public-authorities__empty-links { display: flex; flex-wrap: wrap; gap: 8px; }
 .public-authorities__pages { justify-content: center; gap: 25px; padding-top: 10px; font-weight: 750; }
+.public-authorities__pages button { padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); cursor: pointer; font: inherit; }
+.public-authorities__pages button:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
+.public-authorities__pages button:disabled { cursor: wait; opacity: .55; }
 
 .public-authority-detail__breadcrumb a { color: var(--institutional); font-weight: 800; }
 .public-authority-detail__hero { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 30px; min-height: 250px; padding: clamp(26px,4vw,48px); border-radius: var(--radius); background: linear-gradient(115deg,var(--surface-raised),var(--institutional-soft)); overflow: hidden; }

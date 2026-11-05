@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: alinha a seta dos filtros avançados, mantém visíveis as buscas recentes do catálogo com expressão e filtros reaplicáveis, reúne as ações de limpar filtros e histórico e simplifica o resumo dos resultados. A lista exibe 20 cartões por página e muda de página sem recarregar o restante do catálogo.
+
 - 05/11/2026: restaura o contorno arredondado direito dos menus de filtros públicos sem deixar a barra de rolagem cobrir os cantos.
 
 - 05/11/2026: adota “Tipo de tema” nos filtros públicos, preserva “Assunto” como categoria específica e substitui usos genéricos de “assunto” por “tema” nas páginas, na ajuda e nas traduções do catálogo.

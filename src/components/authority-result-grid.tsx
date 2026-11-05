@@ -35,7 +35,7 @@ export function AuthorityResultGrid({ items, page, query, variantsLabel, openLab
       const matchedVariant = item.variants.find((variant) => terms.some((term) => foldAuthorityText(variant.value).includes(foldAuthorityText(term))));
       const matched = terms.length && !terms.some((term) => foldAuthorityText(item.label).includes(foldAuthorityText(term))) && matchedVariant;
       return <article className="card public-authorities__result" key={item.id}>
-        <div className="public-authorities__result-top"><span>{String(page * 24 + index + 1).padStart(2, "0")}</span><span className="public-authorities__source">{item.source in authoritySources ? <SourceMark source={item.source as AuthoritySource | "pronto"} /> : (authoritySources[item.source] ?? item.source)}</span></div>
+        <div className="public-authorities__result-top"><span>{String(page * 20 + index + 1).padStart(2, "0")}</span><span className="public-authorities__source">{item.source in authoritySources ? <SourceMark source={item.source as AuthoritySource | "pronto"} /> : (authoritySources[item.source] ?? item.source)}</span></div>
         {item.heading_type && <div className="authority-result-badges"><span>{publicAuthorityType(language, item.heading_type)}</span></div>}
         <h3><Link href={`/autoridades/${item.id}`}><Highlight value={item.label} terms={terms} /></Link></h3>
         {item.label_en && <p className="public-authorities__english"><Highlight value={item.label_en} terms={terms} /></p>}

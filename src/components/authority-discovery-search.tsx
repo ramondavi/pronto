@@ -12,7 +12,7 @@ import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { authorityLanguageName } from "@/lib/authority-language-names";
 import { AuthoritySearchHelp } from "./authority-search-help";
 import { CatalogueSelect } from "./catalogue-select";
-import { clearVisitorSearches, readVisitorSearches, rememberVisitorSearch, type VisitorSearch } from "@/lib/authority-visitor-search";
+import { clearVisitorSearches, readVisitorSearches, rememberVisitorSearch, type VisitorSearch, type VisitorSearchFilters } from "@/lib/authority-visitor-search";
 
 type Suggestion = { id: string; label: string; label_en: string | null; source: string; heading_type: string | null };
 type SearchResponse = { results: Suggestion[]; related: Suggestion[]; correction: Suggestion | null };
@@ -88,9 +88,19 @@ export function AuthorityDiscoverySearch({ variant, collapsibleFilters = false, 
     timer = window.setTimeout(tick, 350);
     return () => window.clearTimeout(timer);
   }, [language, t.placeholder, variant]);
-  const remember = (value: string) => setHistory(rememberVisitorSearch(value));
+  const currentFilters: VisitorSearchFilters = { source, heading, sort, language: variantLanguage, relation };
+  const remember = (value: string) => setHistory(rememberVisitorSearch(value, variant === "catalog" ? currentFilters : undefined));
   const choose = (value: string) => { setQuery(value); setOpen(true); inputRef.current?.focus(); };
-  const recent = [...history].sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 5);
+  const recent = [...history].sort((a, b) => b.lastUsed - a.lastUsed).slice(0, variant === "home" ? 5 : 20);
+  const historyUrl = (item: VisitorSearch) => `/autoridades?${new URLSearchParams({ busca: item.query, fonte: item.filters?.source ?? "all", tipo: item.filters?.heading ?? "all", ordem: item.filters?.sort ?? "relevance", idioma: item.filters?.language ?? "all", relacao: item.filters?.relation ?? "all" })}`;
+  const filterSummary = (item: VisitorSearch) => {
+    const filters = item.filters;
+    if (!filters) return [];
+    const sortLabel = ({ az: t.az, za: t.za, recent: t.recent, source: t.sourceSort } as Record<string, string>)[filters.sort];
+    const relationLabel = ({ broader: extra.broader, narrower: extra.narrower, related: extra.associated } as Record<string, string>)[filters.relation];
+    return [filters.source !== "all" ? sourceNames[filters.source] ?? filters.source : "", filters.heading !== "all" ? publicAuthorityType(language, filters.heading) : "", filters.language !== "all" ? authorityLanguageName(language, filters.language as "pt" | "en" | "es" | "de" | "fr" | "it") : "", filters.relation !== "all" ? relationLabel ?? filters.relation : "", filters.sort !== "relevance" ? sortLabel ?? filters.sort : ""].filter(Boolean);
+  };
+  const hasFilters = source !== "all" || heading !== "all" || sort !== "relevance" || variantLanguage !== "all" || relation !== "all";
 
   useEffect(() => {
     if (variant !== "home" || !open || query.trim().length < 2) { setSuggestions([]); setRelated([]); setCorrection(null); setResolved(""); return; }
@@ -125,6 +135,7 @@ export function AuthorityDiscoverySearch({ variant, collapsibleFilters = false, 
       {variant === "catalog" && <section className="authority-discovery-search__advanced" aria-label={publicCopy.advanced}><h2 className="authority-discovery-search__advanced-title">{collapsibleFilters ? <button type="button" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(value => !value)}><AppIcon name="settings" aria-hidden="true" />{publicCopy.advanced}<AppIcon name="chevronDown" aria-hidden="true" /></button> : <><AppIcon name="settings" aria-hidden="true" />{publicCopy.advanced}</>}</h2><div className="authority-discovery-search__filters" key={language} hidden={collapsibleFilters && !filtersOpen}><label>{t.source}<CatalogueSelect name="fonte" value={source} onChange={(event) => setSource(event.target.value)}><option value="all">{t.allSources}</option>{Object.entries(sourceNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</CatalogueSelect></label><label>{t.type}<CatalogueSelect name="tipo" value={heading} onChange={(event) => setHeading(event.target.value)}><option value="all">{t.allTypes}</option>{authorityHeadingTypes.map((item) => <option key={item.tag} value={item.kind}>{publicAuthorityType(language, item.kind)}</option>)}</CatalogueSelect></label><label>{extra.language}<CatalogueSelect name="idioma" value={variantLanguage} onChange={(event) => setVariantLanguage(event.target.value)}><option value="all">{extra.allLanguages}</option>{(["pt","en","es","de","fr","it"] as const).map(value => <option key={value} value={value}>{authorityLanguageName(language, value)}</option>)}</CatalogueSelect></label><label>{extra.relation}<CatalogueSelect name="relacao" value={relation} onChange={(event) => setRelation(event.target.value)}><option value="all">{extra.allRelations}</option><option value="broader">{extra.broader}</option><option value="narrower">{extra.narrower}</option><option value="related">{extra.associated}</option></CatalogueSelect></label><label>{t.sort}<CatalogueSelect name="ordem" value={sort} onChange={(event) => setSort(event.target.value)}><option value="relevance">{t.relevance}</option><option value="az">{t.az}</option><option value="za">{t.za}</option><option value="recent">{t.recent}</option><option value="source">{t.sourceSort}</option></CatalogueSelect></label></div></section>}
     </form>
     {variant === "catalog" && <AuthoritySearchHelp />}
+    {variant === "catalog" && (!!recent.length || hasFilters) && <div className="authority-discovery-search__catalog-history">{!!recent.length && <><span className="authority-discovery-search__recent-label">{extra.recent}</span><div className="authority-discovery-search__catalog-history-list">{recent.map((item) => <Link key={`${item.query}-${JSON.stringify(item.filters)}`} href={historyUrl(item)}><span>{item.query || filterSummary(item).join(" · ")}</span>{!!item.query && filterSummary(item).length > 0 && <small>{filterSummary(item).join(" · ")}</small>}</Link>)}</div></>}<div className="authority-discovery-search__catalog-history-actions"><Link href="/autoridades">{t.clear}</Link>{!!recent.length && <button type="button" onClick={() => { clearVisitorSearches(); setHistory([]); }}>{extra.clearHistory}</button>}</div></div>}
     {variant === "home" && <div className="authority-discovery-search__extras"><div className="authority-discovery-search__extras-inner"><div className="authority-discovery-search__examples"><span>{t.examples}</span>{[...examples, ...placeExamples].map((example) => <button key={example} type="button" onClick={() => choose(example)}>{example}</button>)}</div>{!!recent.length && <div className="authority-discovery-search__recent"><span className="authority-discovery-search__recent-label">{extra.recent}</span><div className="authority-discovery-search__recent-list">{recent.map(item => <button key={item.query} type="button" onClick={() => choose(item.query)}>{item.query}</button>)}<button className="authority-discovery-search__recent-clear" type="button" onClick={() => { clearVisitorSearches(); setHistory([]); }}>{extra.clearHistory}</button></div></div>}</div></div>}
   </div>;
 }
