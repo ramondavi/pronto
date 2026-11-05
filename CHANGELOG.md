@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: afasta a barra de rolagem da borda dos seletores públicos e atualiza seus rótulos imediatamente ao trocar o idioma.
+
 - 05/11/2026: aplica a barra de rolagem visual do Pronto às listas dos filtros de busca do catálogo público de autoridades.
 
 - 05/11/2026: exibe automaticamente as cinco buscas recentes em estilo discreto e alinha os logos das fontes à margem interna dos cartões de resultados.

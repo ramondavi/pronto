@@ -7902,9 +7902,9 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 .authority-discovery-search__filters select { box-sizing: border-box; display: block; width: 100%; height: 46px; min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: .84rem; font-weight: 500; line-height: normal; text-align: left; }
 @supports (appearance: base-select) { .authority-discovery-search__filters select { display: flex; align-items: center; justify-content: space-between; gap: 10px; } }
 @supports (appearance: base-select) {
-  .authority-discovery-search__filters select::picker(select) { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)) var(--surface-raised); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 9px; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { border-radius: 9px; background: var(--surface-raised); }
+  .authority-discovery-search__filters select::picker(select) { padding: 8px 10px 8px 6px; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)) var(--surface-raised); }
+  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 8px; }
+  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { margin-block: 8px; border: 2px solid var(--surface-raised); border-radius: 9px; background: var(--surface-raised); }
   .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb { border: 2px solid var(--surface-raised); border-radius: 9px; background: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)); }
   .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb:hover { background: var(--institutional); }
 }
