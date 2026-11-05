@@ -8563,6 +8563,11 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-areas__hero > .button:is(:hover,:focus-visible) { border-color: #e8e8e5; background: #e8e8e5; color: #1a3b70; }
 @media(max-width:850px) { .authority-areas__hero { grid-template-columns: 1fr; } .authority-areas__hero > .button { justify-self: start; } }
 @media(max-width:550px) { .public-authorities__intro .authority-public-links { align-items: stretch; width: 100%; margin-left: 0; } }
+@media(min-width:821px) {
+  .home-hero-landscape .hero__grid { padding-top: clamp(125px,14svh,180px); }
+  .home-hero-landscape .authority-discovery__inner { padding-bottom: 60px; }
+  .home-hero-landscape .authority-discovery[data-expanded="false"] .authority-discovery__inner { padding-bottom: 55px; }
+}
 .authority-map-review { margin-top: 22px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-muted); }
 .authority-map-review h4 { margin: 0 0 7px; }
 .authority-map-review > p { margin: 0 0 14px; color: var(--muted); font-size: .86rem; }
