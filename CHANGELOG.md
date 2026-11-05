@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: compacta o cabeçalho do mapa com o símbolo do Pronto!, ajusta o painel e a régua de escalas, acompanha o tema claro ou escuro e esclarece os créditos cartográficos nos seis idiomas.
+
 - 04/11/2026: acrescenta América do Sul e silhuetas à régua do mapa, alinha o cursor às extremidades e transforma cabeçalho e breadcrumbs em bloco flutuante.
 
 - 04/11/2026: corrige a inicialização do mapa vetorial e restaura automaticamente o mapa anterior se os vetores não carregarem.

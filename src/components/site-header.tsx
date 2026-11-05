@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./brand";
+import { BrandPixels } from "./brand-pixels";
 import { LibrarySocialLinks } from "./library-social-links";
 import { createClient } from "@/lib/supabase/server";
 import { PublicBreadcrumbs } from "./breadcrumbs";
@@ -25,7 +26,7 @@ const copy = {
   it: ["La mia area", "Ciao", "Panoramica", "La mia richiesta", "Autodeposito", "Il mio account", "Richieste", "I miei casi", "Amministrazione", "Navigazione principale", "Come funziona", "Centro assistenza", "Esci", "Accedi", "Esplora", "Vantaggi"],
 };
 
-export async function SiteHeader({ articleTitle, authorityTitle, showServiceStatus = true, closingTimeOverride }: { articleTitle?: string; authorityTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string } = {}) {
+export async function SiteHeader({ articleTitle, authorityTitle, showServiceStatus = true, closingTimeOverride, mapCompact = false }: { articleTitle?: string; authorityTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string; mapCompact?: boolean } = {}) {
   const language = await getInterfaceLanguage();
   const t = copy[language];
   const supabase = await createClient();
@@ -60,7 +61,7 @@ export async function SiteHeader({ articleTitle, authorityTitle, showServiceStat
       <ServiceDayRefresh closingTime={closingTime} />
       <header className="site-header">
         <div className="container site-header__inner">
-        <div className="shell-brand"><Brand compact /></div>
+        <div className="shell-brand">{mapCompact ? <Link href="/" className="site-header__map-brand" aria-label="Pronto! — Página inicial"><BrandPixels symbol /></Link> : <Brand compact />}</div>
         {showServiceStatus && <ServiceStatusPeek className="site-header__service-peek" title={status} date={today} now={now} reason={closureAnnouncement?.title} message={closed ? uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.") : currentAnnouncement?.message} closed={closed} hint={closed ? uiText(language, "Passe o mouse para saber mais") : uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={uiText(language, "Detalhes do funcionamento da biblioteca")} />}
         <nav id="menu-principal" aria-label={t[9]} className="site-header__nav" tabIndex={-1}>
           <HeaderExploreMenu labels={{ trigger: t[14], how: t[10], benefits: t[15], questions: homeCopy[language].faq }} />

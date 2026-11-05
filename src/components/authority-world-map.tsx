@@ -93,28 +93,38 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
     let disposed = false;
     let map: MapLibre.Map | undefined;
     let observer: ResizeObserver | undefined;
+    let themeObserver: MutationObserver | undefined;
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
     let loaded = false;
     import("maplibre-gl").then((M) => {
       if (disposed || !mapNode.current) return;
       maplibreRef.current = M;
       try {
-        map = new M.Map({ container: mapNode.current, style: "https://tiles.openfreemap.org/styles/liberty", center: [scales[0].center[1], scales[0].center[0]], zoom: scales[0].zoom, minZoom: 2, maxZoom: 18, maxBounds: [[-179.9, -80], [179.9, 80]], renderWorldCopies: false, attributionControl: false });
+        const styleForTheme = () => `https://tiles.openfreemap.org/styles/${document.documentElement.dataset.theme === "dark" ? "dark" : "positron"}`;
+        let currentStyle = styleForTheme();
+        map = new M.Map({ container: mapNode.current, style: currentStyle, center: [scales[0].center[1], scales[0].center[0]], zoom: scales[0].zoom, minZoom: 2, maxZoom: 18, maxBounds: [[-179.9, -80], [179.9, 80]], renderWorldCopies: false, attributionControl: false });
         mapRef.current = map;
-        map.addControl(new M.AttributionControl({ compact: false }), "bottom-right");
+        map.on("style.load", () => {
+          if (!map) return;
+          const label = ["coalesce", ["get", `name:${language}`], ["get", `name_${language}`], ["get", "name:latin"], ["get", "name_en"], ["get", "name"]];
+          for (const layer of map.getStyle().layers) {
+            if (layer.type === "symbol" && layer.layout?.["text-field"] && /name|label|poi|airport/i.test(layer.id)) map.setLayoutProperty(layer.id, "text-field", label);
+          }
+        });
         map.on("load", () => {
           if (disposed || !map) return;
           loaded = true;
           if (loadTimer) clearTimeout(loadTimer);
-          map.getContainer().querySelectorAll<HTMLAnchorElement>(".maplibregl-ctrl-attrib a").forEach((anchor) => { anchor.target = "_blank"; anchor.rel = "noopener noreferrer"; });
           setReady(true);
         });
+        themeObserver = new MutationObserver(() => { const nextStyle = styleForTheme(); if (nextStyle !== currentStyle) { currentStyle = nextStyle; map?.setStyle(nextStyle); } });
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         loadTimer = setTimeout(() => { if (!disposed && !loaded) setMapError(true); }, 8000);
         observer = new ResizeObserver(() => map?.resize());
         observer.observe(mapNode.current);
       } catch { setMapError(true); }
     }).catch(() => { if (!disposed) setMapError(true); });
-    return () => { disposed = true; if (loadTimer) clearTimeout(loadTimer); observer?.disconnect(); markersRef.current.forEach((marker) => marker.remove()); markersRef.current = []; map?.remove(); mapRef.current = null; maplibreRef.current = null; };
+    return () => { disposed = true; if (loadTimer) clearTimeout(loadTimer); observer?.disconnect(); themeObserver?.disconnect(); markersRef.current.forEach((marker) => marker.remove()); markersRef.current = []; map?.remove(); mapRef.current = null; maplibreRef.current = null; };
   }, []);
   useEffect(() => {
     if (!mapError || !rasterNode.current) return;
@@ -126,7 +136,6 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
       map = L.map(rasterNode.current, { zoomControl: false, attributionControl: false, scrollWheelZoom: true, minZoom: 3, maxZoom: 18, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1, worldCopyJump: true }).setView(scales[0].center, scales[0].zoom);
       rasterRef.current = map;
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' }).addTo(map);
-      L.control.attribution({ position: "bottomright", prefix: false }).addTo(map);
       rasterMarkersRef.current = L.layerGroup().addTo(map);
       setRasterReady(true);
     }).catch(() => {});
@@ -180,6 +189,7 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
     {(places.length === 0 || (mapError && !rasterReady)) && <div className="authority-world__empty">{mapError && !rasterReady ? ui.mapUnavailable : points.length ? t.noResults : t.empty}</div>}
     <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => rasterReady ? rasterRef.current?.flyTo(scale.center, scale.zoom) : mapRef.current?.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom })} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div>
+    <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
     <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title}>
       <div className="authority-world__panel-content" hidden={!panelOpen}>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
