@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: exibe automaticamente as cinco buscas recentes em estilo discreto e alinha os logos das fontes à margem interna dos cartões de resultados.
+
 - 05/11/2026: apresenta os logos das fontes sem fundo nos cartões públicos, ajusta o botão do mapa e os equivalentes na autoridade individual e ordena as fontes nos filtros da busca.
 
 - 05/11/2026: compacta a identificação pública dos temas, organiza equivalentes por idioma, distingue o histórico de buscas das sugestões e identifica as fontes nos resultados pelos logos; completa a tradução dos filtros e da ajuda.

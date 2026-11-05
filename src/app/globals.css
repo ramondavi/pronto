@@ -7944,6 +7944,7 @@ dialog.pronto-modal.authority-search-help__dialog[open] { display: flex; flex-di
 .public-authorities__result-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; color: var(--text-muted); font-size: .74rem; font-weight: 850; }
 .public-authorities__source { display: inline-flex; align-items: center; justify-content: flex-end; min-width: 78px; min-height: 28px; padding: 0; color: var(--institutional); text-align: right; }
 .public-authorities__source .authority-source-mark { width: 112px; max-width: 112px; height: 28px; flex: none; }
+.public-authorities__source .authority-source-mark__art { mask-position: right center; -webkit-mask-position: right center; }
 .public-authorities__source .authority-source-mark--loc { width: 65px; }
 .public-authorities__source .authority-source-mark__badge { bottom: -6px; right: 0; background: var(--surface-raised); }
 .public-authorities__result-top { align-items: center; }
@@ -8467,14 +8468,13 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-suggestion-badges { display: flex; flex-wrap: wrap; gap: 5px; }
 .authority-discovery-search__suggestions a .authority-suggestion-badges b { padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-muted); color: var(--institutional); font-size: .68rem; font-weight: 700; text-transform: none; }
 .authority-discovery-search__recent { margin-top: 8px; }
-.authority-discovery-search__recent-toggle { padding: 3px 0; border: 0; background: transparent; color: var(--institutional); cursor: pointer; font: inherit; font-size: .8rem; font-weight: 800; }
-.authority-discovery-search__recent-toggle:is(:hover,:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+.authority-discovery-search__recent-label { color: var(--text-muted); font-size: .75rem; font-weight: 500; }
 .authority-discovery-search__recent-list { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 6px; }
 .authority-discovery-search__recent-list button { padding: 5px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--institutional); cursor: pointer; font: inherit; font-size: .8rem; }
 .authority-discovery-search__recent { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 8px; }
 .authority-discovery-search__recent-list { align-items: center; padding-top: 0; }
-.authority-discovery-search__recent-list button { border-color: var(--institutional); border-radius: 99px; background: var(--institutional-soft); color: var(--institutional); }
-.authority-discovery-search__recent-list button:last-child { border-color: var(--line); background: transparent; color: var(--text-muted); }
+.authority-discovery-search__recent-list button { padding: 4px 8px; border-color: color-mix(in srgb,var(--institutional) 45%,var(--line)); border-radius: 99px; background: var(--institutional-soft); color: var(--institutional); font-size: .75rem; font-weight: 400; }
+.authority-discovery-search__recent-list .authority-discovery-search__recent-clear { border-color: var(--line); background: transparent; color: var(--text-muted); font-weight: 400; }
 .authority-discovery-search__recent-list button:is(:hover,:focus-visible) { background: var(--institutional); color: var(--surface-raised); }
 .authority-discovery-search--home .authority-discovery-search__suggestions { max-height: min(240px,var(--authority-suggestion-room,240px)); overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface-raised); }
 .authority-result-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
