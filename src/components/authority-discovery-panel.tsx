@@ -12,7 +12,7 @@ export function AuthorityDiscoveryPanel({ children }: { children: ReactNode }) {
   const beginClosing = () => {
     const section = sectionRef.current;
     const search = section?.querySelector<HTMLElement>(".authority-discovery-search--home");
-    if (section && search) section.style.setProperty("--authority-expanded-search-height", `${Math.ceil(search.getBoundingClientRect().height)}px`);
+    if (section && search) section.style.setProperty("--authority-close-gap", `${Math.max(0, Math.ceil(search.getBoundingClientRect().height) - 70)}px`);
     setClosing(true);
   };
 

@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: elimina o bloco branco que aparecia brevemente dentro da busca ao contrair a descoberta da página inicial.
+
 - 04/11/2026: mantém cabeçalho e breadcrumbs visíveis sobre o mapa, move e compacta o painel para a esquerda, esclarece a filtragem por escala e o controle de recenter e limita o arraste à área cartografada.
 
 - 04/11/2026: reorganiza o aviso fechado da página inicial, mantém os textos da descoberta iguais nos dois estados, melhora a sequência da contração, mostra nomes simultâneos no mapa compacto e reforça a rolagem por seções.
