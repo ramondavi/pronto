@@ -8373,9 +8373,16 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
   .authority-discovery[data-expanded="false"] .authority-discovery__heading-copy .authority-discovery__detail { display: block; font-size: .82rem; line-height: 1.4; }
   .authority-discovery[data-expanded="false"] .authority-discovery__heading { margin-top: 0; }
   .authority-discovery[data-closing="true"] .authority-discovery__heading { margin-top: calc(-15px + var(--authority-close-gap,0px)); transform: translateY(0); }
+  .authority-discovery[data-closing="true"] .authority-discovery-search--home form > label,
+  .authority-discovery[data-closing="true"] .authority-discovery-search--home .authority-discovery-search__extras { opacity: 1; visibility: visible; }
+  .authority-discovery[data-closing="true"] .authority-discovery-search--home .authority-discovery-search__examples--recent { display: none; }
   .authority-discovery[data-expanded="false"] .authority-discovery__popular { max-height: 600px; padding: 16px 0 0; border-color: var(--line); opacity: 1; visibility: visible; }
 }
 @media(prefers-reduced-motion:reduce) { .authority-discovery__heading,.authority-discovery__inner > .authority-discovery-search--home { transition: none; } }
+.authority-discovery-search--home .authority-discovery-search__extras { display: grid; grid-template-rows: 1fr; max-height: none; overflow: hidden; opacity: 1; visibility: visible; transition: grid-template-rows .45s cubic-bezier(.2,.8,.2,1); }
+.authority-discovery-search--home .authority-discovery-search__extras-inner { min-height: 0; overflow: hidden; }
+.authority-discovery[data-expanded="false"] .authority-discovery-search--home .authority-discovery-search__extras { grid-template-rows: 0fr; max-height: none; opacity: 1; visibility: visible; }
+@media(prefers-reduced-motion:reduce) { .authority-discovery-search--home .authority-discovery-search__extras { transition: none; } }
 
 /* Keep every line of the expanded discovery reachable on shorter screens. */
 html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-type: none !important; }

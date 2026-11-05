@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: sincroniza a saída das sugestões com o fechamento da busca inicial para eliminar o vazio transitório no cartão.
+
 - 04/11/2026: elimina o bloco branco que aparecia brevemente dentro da busca ao contrair a descoberta da página inicial.
 
 - 04/11/2026: mantém cabeçalho e breadcrumbs visíveis sobre o mapa, move e compacta o painel para a esquerda, esclarece a filtragem por escala e o controle de recenter e limita o arraste à área cartografada.
