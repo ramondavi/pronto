@@ -8,7 +8,7 @@ import { authorityPublicCopy } from "@/lib/authority-public-copy";
 import { parseAuthorityQuery } from "@/lib/authority-search-query";
 import type { PublicAuthority } from "@/lib/public-subject-authority";
 import { foldAuthorityText } from "@/lib/authority-fuzzy";
-import { headingTagByKind, headingTypeByTag } from "@/lib/authority-heading-types";
+import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 const authoritySources: Record<string, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress", pronto: "Pronto!" };
 
 function Highlight({ value, terms }: { value: string; terms: string[] }) {
@@ -34,7 +34,7 @@ export function AuthorityResultGrid({ items, page, query, variantsLabel, openLab
       const matched = terms.length && !terms.some((term) => foldAuthorityText(item.label).includes(foldAuthorityText(term))) && matchedVariant;
       return <article className="card public-authorities__result" key={item.id}>
         <div className="public-authorities__result-top"><span>{String(page * 24 + index + 1).padStart(2, "0")}</span><span className="public-authorities__source">{authoritySources[item.source] ?? item.source}</span></div>
-        <div className="authority-result-badges">{item.heading_type && <span>{headingTagByKind[item.heading_type]} · {headingTypeByTag[headingTagByKind[item.heading_type]]?.label}</span>}<span>{language === "pt" ? "Ativo" : "Active"}</span></div>
+        {item.heading_type && <div className="authority-result-badges"><span>{publicAuthorityType(language, item.heading_type)}</span></div>}
         <h3><Link href={`/autoridades/${item.id}`}><Highlight value={item.label} terms={terms} /></Link></h3>
         {item.label_en && <p className="public-authorities__english"><Highlight value={item.label_en} terms={terms} /></p>}
         {matched && <p className="public-authorities__match">{t.matched}: <Highlight value={matchedVariant.value} terms={terms} /></p>}

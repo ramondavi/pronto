@@ -8458,6 +8458,11 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-discovery__inner:has(.authority-discovery-search__suggestions) > .authority-map-preview { z-index: 0; }
 .authority-suggestion-badges { display: flex; flex-wrap: wrap; gap: 5px; }
 .authority-discovery-search__suggestions a .authority-suggestion-badges b { padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-muted); color: var(--institutional); font-size: .68rem; font-weight: 700; text-transform: none; }
+.authority-discovery-search__recent { margin-top: 8px; }
+.authority-discovery-search__recent-toggle { padding: 3px 0; border: 0; background: transparent; color: var(--institutional); cursor: pointer; font: inherit; font-size: .8rem; font-weight: 800; }
+.authority-discovery-search__recent-toggle:is(:hover,:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+.authority-discovery-search__recent-list { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 6px; }
+.authority-discovery-search__recent-list button { padding: 5px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--institutional); cursor: pointer; font: inherit; font-size: .8rem; }
 .authority-discovery-search--home .authority-discovery-search__suggestions { max-height: min(240px,var(--authority-suggestion-room,240px)); overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface-raised); }
 .authority-result-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .authority-result-badges span { padding: 3px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; font-weight: 700; }
@@ -8550,6 +8555,16 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-public-links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .authority-areas__hero .button { margin-top: 16px; }
 .public-authority-detail__hero .button { margin-top: 12px; }
+.public-authority-detail__hero { min-height: 330px; padding-bottom: clamp(90px,8vw,112px); }
+.public-authority-detail__identity-top { margin-bottom: clamp(22px,3vw,36px); }
+.public-authority-detail__main { display: grid; justify-items: start; gap: 0; }
+.public-authority-detail__hero .public-authority-detail__intro { max-width: 64ch; margin-top: 20px; }
+.public-authority-detail__equivalents { margin-top: 22px; }
+.public-authority-detail__mark { top: auto; right: clamp(-130px,-7vw,-55px); bottom: clamp(-190px,-10vw,-100px); opacity: .16; transform: rotate(-22deg); }
+.public-authority-detail__mark svg { width: clamp(26rem,38vw,44rem); height: clamp(26rem,38vw,44rem); stroke-width: .8; }
+.public-authority-detail__hero .public-authority-detail__map-link { position: absolute; z-index: 2; right: clamp(26px,4vw,48px); bottom: clamp(24px,3vw,38px); margin: 0; border-color: var(--institutional); background: var(--surface-raised); color: var(--institutional); box-shadow: var(--shadow-card); }
+.public-authority-detail__hero .public-authority-detail__map-link:is(:hover,:focus-visible) { background: var(--institutional); color: var(--surface-raised); }
+@media(max-width:720px) { .public-authority-detail__hero { padding-bottom: 28px; } .public-authority-detail__hero .public-authority-detail__map-link { position: static; margin-top: 24px; } }
 @media(max-width:700px) { .authority-world__panel { top: 105px; bottom: 16px; max-height: min(480px,calc(100% - 122px)); } .authority-world__panel-content { padding: 20px 17px; } .authority-world__zoom { left: 12px; bottom: 52px; } }
 @media(hover:none) { .authority-map-page:has(.authority-map-header-visibility[data-hidden="true"]) .site-header { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } .authority-map-header-visibility__reveal { display: none; } }
 @media(prefers-reduced-motion:reduce) { .authority-map-page .site-header,.authority-world__panel { transition: none; } }
