@@ -34,12 +34,15 @@ function inScale(point: AuthorityMapPoint, scale: Scale) {
   return point.latitude >= -13.15 && point.latitude <= -12.7 && point.longitude >= -38.7 && point.longitude <= -38.25;
 }
 
-export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPoint[]; language: Language }) {
+export function AuthorityWorldMap({ points, language, initialAuthorityId }: { points: AuthorityMapPoint[]; language: Language; initialAuthorityId?: string }) {
   const t = authorityMapCopy[language];
   const ui = authorityMapUiCopy[language];
   const [query, setQuery] = useState("");
   const [scaleIndex, setScaleIndex] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(() => {
+    const point = points.find((item) => item.authority_id === initialAuthorityId);
+    return point ? `${point.place_label.toLocaleLowerCase("pt-BR")}:${point.latitude}:${point.longitude}` : null;
+  });
   const [panelOpen, setPanelOpen] = useState(true);
   const [headerPinned, setHeaderPinned] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -217,6 +220,16 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
     if (rasterReady) { const map = rasterRef.current; map?.flyTo([place.latitude, place.longitude], Math.max(map.getZoom(), 12), { duration: .7 }); }
     else { const map = mapRef.current; if (map) map.flyTo({ center: [place.longitude, place.latitude], zoom: Math.max(map.getZoom(), 12), duration: 700 }); }
   };
+  useEffect(() => {
+    if (!initialAuthorityId || (!ready && !rasterReady)) return;
+    const point = points.find((item) => item.authority_id === initialAuthorityId);
+    if (!point) return;
+    const timer = window.setTimeout(() => {
+      if (rasterReady) rasterRef.current?.flyTo([point.latitude, point.longitude], Math.max(rasterRef.current?.getZoom() ?? 0, 11), { duration: .7 });
+      else mapRef.current?.flyTo({ center: [point.longitude, point.latitude], zoom: Math.max(mapRef.current?.getZoom() ?? 0, 11), duration: 700 });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [initialAuthorityId, points, ready, rasterReady]);
   return <main className="authority-world" id="mapa-autoridades">
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}

@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: melhora as buscas públicas e da análise com etiquetas, ajusta a navegação pelo mapa e reformula a apresentação da autoridade em foco.
+
 - 05/11/2026: esclarece na busca pública que maiúsculas, minúsculas e acentos não mudam os resultados.
 
 - 05/11/2026: a ajuda da busca pública abre com as duas seções recolhidas, permite expandir uma por vez e apresenta orientações diretas para combinar busca rápida com filtros ou construir uma busca avançada.

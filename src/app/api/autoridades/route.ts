@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const variantLanguage = authoritySearchOption(params.get("idioma") ?? undefined, ["all", "pt", "en", "es", "de", "fr", "it"] as const, "all");
   const relation = authoritySearchOption(params.get("relacao") ?? undefined, ["all", "broader", "narrower", "related"] as const, "all");
   const { items } = await searchPublicAuthorities({ query, source, heading, sort, page: 0, variantLanguage, relation });
-  const compact = ({ id, label, label_en, source: itemSource }: typeof items[number]) => ({ id, label, label_en, source: itemSource });
+  const compact = ({ id, label, label_en, source: itemSource, heading_type }: typeof items[number]) => ({ id, label, label_en, source: itemSource, heading_type });
   const related = [] as ReturnType<typeof compact>[];
   if (query && items.length && foldAuthorityText(items[0].label) === foldAuthorityText(query)) {
     for (const entry of items[0].relations.slice(0, 5)) {

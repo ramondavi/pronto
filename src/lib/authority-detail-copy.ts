@@ -1,0 +1,8 @@
+export const authorityDetailCopy = {
+  pt: { intro: "A biblioteca usa este nome para reunir trabalhos relacionados ao mesmo tema, pessoa, instituição ou lugar. Abaixo, você encontra outras formas de busca e conexões com assuntos próximos.", preferred: "Termo preferido · português", equivalent: "Equivalente", unknown: "Tipo de autoridade" },
+  en: { intro: "The library uses this term to identify the subject in Faculty work. See other ways to find it and related themes below.", preferred: "Preferred term · Portuguese", equivalent: "Equivalent", unknown: "Authority type" },
+  es: { intro: "La biblioteca usa este término para identificar el tema en los trabajos de la Facultad. Consulta abajo otras formas de encontrarlo y temas relacionados.", preferred: "Término preferido · portugués", equivalent: "Equivalente", unknown: "Tipo de autoridad" },
+  de: { intro: "Die Bibliothek verwendet diesen Begriff, um das Thema in Arbeiten der Fakultät zu kennzeichnen. Unten finden Sie weitere Suchformen und verwandte Themen.", preferred: "Bevorzugter Begriff · Portugiesisch", equivalent: "Entsprechung", unknown: "Normdatentyp" },
+  fr: { intro: "La bibliothèque utilise ce terme pour désigner le sujet dans les travaux de la Faculté. Découvrez ci-dessous d’autres façons de le trouver et des thèmes liés.", preferred: "Terme privilégié · portugais", equivalent: "Équivalent", unknown: "Type d’autorité" },
+  it: { intro: "La biblioteca usa questo termine per identificare il tema nei lavori della Facoltà. Qui sotto trovi altri modi per cercarlo e i temi collegati.", preferred: "Termine preferito · portoghese", equivalent: "Equivalente", unknown: "Tipo di autorità" },
+} as const;

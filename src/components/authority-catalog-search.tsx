@@ -12,6 +12,17 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
   const [draft, setDraft] = useState(options.query);
   const [live, setLive] = useState<{ items: PublicAuthority[]; total: number; query: string } | null>(null);
   const [pending, setPending] = useState(false);
+  useEffect(() => {
+    if (!options.query && options.source === "all" && options.heading === "all" && options.variantLanguage === "all" && options.relation === "all") return;
+    const frame = window.requestAnimationFrame(() => document.getElementById("catalogue-search")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [options.query, options.source, options.heading, options.variantLanguage, options.relation]);
+
+  useEffect(() => {
+    if (!draft || draft === options.query) return;
+    const timer = window.setTimeout(() => document.getElementById("catalogue-search")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+    return () => window.clearTimeout(timer);
+  }, [draft, options.query]);
 
   useEffect(() => {
     if (draft === options.query) { setLive(null); setPending(false); return; }
@@ -40,7 +51,7 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
   const hrefForPage = (nextPage: number) => `/autoridades?${new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, pagina: String(nextPage) })}`;
   const exportParams = (format: string) => new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, formato: format });
   return <>
-    <section className="public-authorities__search-panel"><AuthorityDiscoverySearch variant="catalog" initialQuery={options.query} initialSource={options.source} initialHeading={options.heading} initialSort={options.sort} initialLanguage={options.variantLanguage} initialRelation={options.relation} onCatalogQueryChange={setDraft} /></section>
+    <section id="catalogue-search" className="public-authorities__search-panel"><AuthorityDiscoverySearch variant="catalog" initialQuery={options.query} initialSource={options.source} initialHeading={options.heading} initialSort={options.sort} initialLanguage={options.variantLanguage} initialRelation={options.relation} onCatalogQueryChange={setDraft} /></section>
     <section className="public-authorities__results" aria-labelledby="authority-results-title" aria-busy={pending}>
       <div className="public-authorities__results-heading"><div><p className="eyebrow">{pending ? labels.pending : `${String(total).padStart(2, "0")} / ${labels.found}`}</p><h2 id="authority-results-title">{labels.results}</h2></div>{!preview && (options.query || options.source !== "all" || options.heading !== "all" || options.variantLanguage !== "all" || options.relation !== "all") && <Link href="/autoridades" className="button button--secondary button--small">{labels.clear}</Link>}</div>
       {items.length ? <AuthorityResultGrid key={`${preview}-${query}`} items={items} page={preview ? 0 : page} query={query} variantsLabel={labels.variants} openLabel={labels.open} /> : <div className="card public-authorities__empty"><span aria-hidden="true" className="public-authorities__empty-mark">⌕</span><strong>{labels.empty}</strong><p>{labels.emptyHint}</p><div className="public-authorities__empty-links"><Link className="button button--secondary button--small" href="/autoridades/explorar">{labels.browse} ↗</Link><Link className="button button--secondary button--small" href="/autoridades/mapa">{labels.browsePlaces} ↗</Link></div></div>}

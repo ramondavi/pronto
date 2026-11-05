@@ -8451,6 +8451,35 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 @media(max-width:820px) { .authority-map-preview__canvas,.authority-discovery[data-expanded="false"] .authority-map-preview__canvas { top: 0; right: 0; width: min(100%,320px); height: auto; } }
 @media(min-width:821px) and (max-height:900px) { .home-hero-landscape { min-height: calc(100svh - var(--home-start-offset,52px) + 200px); } .home-hero-landscape[data-discovery-expanded="true"] { min-height: calc(100svh - var(--home-start-offset,52px) + 330px); } }
 
+/* Search results float over the discovery copy and the Brazil preview. */
+.authority-discovery:has(.authority-discovery-search__suggestions) { z-index: 10; }
+.authority-discovery__inner:has(.authority-discovery-search__suggestions) > .authority-discovery-search--home { z-index: 12; }
+.authority-discovery__inner:has(.authority-discovery-search__suggestions) > .authority-discovery__heading,
+.authority-discovery__inner:has(.authority-discovery-search__suggestions) > .authority-map-preview { z-index: 0; }
+.authority-suggestion-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.authority-discovery-search__suggestions a .authority-suggestion-badges b { padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-muted); color: var(--institutional); font-size: .68rem; font-weight: 700; text-transform: none; }
+.authority-result-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.authority-result-badges span { padding: 3px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; font-weight: 700; }
+.cataloging-authority-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.cataloging-autocomplete button .cataloging-authority-badges small { display: inline-block; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; }
+.public-authorities__search-panel { scroll-margin-top: 20px; }
+
+.public-authority-detail__hero { display: block; }
+.public-authority-detail__identity { width: 100%; min-width: 0; }
+.public-authority-detail__identity-top { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.public-authority-detail__identity-top .eyebrow { margin: 0 0 8px; }
+.public-authority-detail__mark { display: grid; flex: none; place-items: center; width: 68px; height: 68px; border: 1px solid color-mix(in srgb,var(--institutional) 25%,var(--line)); border-radius: var(--radius); background: color-mix(in srgb,var(--institutional) 9%,var(--surface-raised)); color: var(--institutional); transform: none; }
+.public-authority-detail__mark svg { width: 42px; height: 42px; stroke-width: 1.5; }
+.public-authority-detail__type { display: inline-block; padding: 5px 9px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); font-size: .82rem; font-weight: 750; }
+.public-authority-detail__preferred { margin: 0 0 5px; color: var(--institutional); font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.public-authority-detail__hero h1 { max-width: none; margin: 0; white-space: nowrap; overflow-x: auto; overflow-wrap: normal; scrollbar-width: thin; }
+.public-authority-detail__hero .public-authority-detail__intro { max-width: 80ch; margin: 16px 0 0; color: var(--text-muted); line-height: 1.5; }
+.public-authority-detail__equivalents { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-top: 18px; }
+.public-authority-detail__equivalents > span { color: var(--text-muted); font-size: .82rem; font-weight: 700; }
+.public-authority-detail__equivalents > strong { font-size: 1rem; font-weight: 700; }
+.public-authority-detail__hero .public-authority-detail__map-link { margin-top: 20px; }
+@media(max-width:720px) { .public-authority-detail__mark { display: grid; width: 52px; height: 52px; } .public-authority-detail__mark svg { width: 32px; height: 32px; } .public-authority-detail__identity-top { gap: 12px; margin-bottom: 18px; } }
+
 .authority-map-page { position: relative; }
 .authority-map-page .site-header { position: absolute; z-index: 15; top: 0; left: 0; width: 100%; background: var(--surface-raised); box-shadow: 0 5px 20px rgb(0 0 0 / 10%); }
 .authority-map-page .breadcrumb { display: none; }

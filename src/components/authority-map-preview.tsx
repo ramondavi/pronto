@@ -24,7 +24,7 @@ export function AuthorityMapPreview({ points, language }: { points: AuthorityMap
         const style = { left: `${8 + (point.longitude + 73.9833) / 39.1806 * 84}%`, top: `${2 + (5.2718 - point.latitude) / 39.0156 * 96}%`, animationDelay: `${index * 2.4}s` };
         const content = <><i /><span>{point.place_label}</span></>;
         return point.real
-          ? <Link className="authority-map-preview__point authority-map-preview__point--real" href={`/autoridades/${point.authority_id}`} key={`${point.authority_id}-${point.place_label}`} style={style} aria-label={`${point.place_label}: ${point.term_label}`}>{content}</Link>
+          ? <Link className="authority-map-preview__point authority-map-preview__point--real" href={`/autoridades/mapa?autoridade=${encodeURIComponent(point.authority_id)}`} key={`${point.authority_id}-${point.place_label}`} style={style} aria-label={`${point.place_label}: ${point.term_label}`}>{content}</Link>
           : <span className="authority-map-preview__point authority-map-preview__point--example" key={point.place_label} style={style} aria-hidden="true">{content}</span>;
       })}
     </div>
