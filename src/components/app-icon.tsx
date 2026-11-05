@@ -6,7 +6,7 @@ import {
   IconExternalLink, IconEye, IconEyeOff, IconFileText, IconH1, IconH2, IconH3, IconH4, IconH5, IconH6, IconHelp, IconHighlight,
   IconHierarchy, IconHome, IconId, IconInbox, IconItalic, IconKeyboard,
   IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconLink,
-  IconList, IconListNumbers, IconLock, IconMessage, IconPencil, IconPhoto, IconPilcrow, IconPrinter,
+  IconList, IconListNumbers, IconLock, IconMessage, IconPencil, IconPhoto, IconPilcrow, IconPrinter, IconRefresh,
   IconQuote, IconRowInsertBottom, IconRowInsertTop, IconRowRemove, IconSearch, IconSeparator, IconSettings, IconShare, IconShieldCheck, IconSparkles,
   IconStar, IconStrikethrough, IconTable, IconTableColumn, IconTableOff, IconTableRow, IconTag, IconTextColor, IconTrash, IconUnderline, IconUpload, IconUser, IconUserPlus, IconWorld, IconX,
 } from "@tabler/icons-react";
@@ -68,6 +68,7 @@ const icons = {
   person: IconUser,
   print: IconPrinter,
   quote: IconQuote,
+  refresh: IconRefresh,
   queue: IconList,
   rowAbove: IconRowInsertTop,
   rowBelow: IconRowInsertBottom,

@@ -8814,3 +8814,14 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 }
 @media(max-width:900px) { .authority-discovery-search__filters { grid-template-columns: repeat(2,minmax(0,1fr)) auto; } }
 @media(max-width:620px) { .authority-discovery-search__filters { grid-template-columns: minmax(0,1fr) auto; } .authority-discovery-search__filters label { grid-column: 1 / -1; } .authority-discovery-search__clear-filters { grid-column: 2; } }
+
+.authority-discovery-search--catalog .authority-discovery-search__catalog-history { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 9px; width: 100%; }
+.authority-discovery-search--catalog .authority-discovery-search__recent-label { margin-right: 3px; color: var(--text-muted); font-size: .75rem; font-weight: 600; }
+.authority-discovery-search--catalog .authority-discovery-search__catalog-history-list { display: contents; }
+.authority-discovery-search--catalog .authority-discovery-search__catalog-history-list a { max-width: min(100%,280px); padding: 4px 7px; font-size: .73rem; font-weight: 500; }
+.authority-discovery-search--catalog .authority-discovery-search__catalog-history-list a small { font-size: .66rem; }
+.authority-discovery-search__clear-history { width: 30px; height: 30px; border-color: var(--line); background: var(--surface-raised); color: var(--text-muted); }
+.authority-discovery-search__clear-history svg { width: 15px; height: 15px; }
+.authority-discovery-search__clear-history:is(:hover,:focus-visible) { border-color: var(--danger); color: var(--danger); }
+.authority-discovery-search__clear-filters { box-sizing: border-box; align-self: end; width: 46px; height: 46px; margin: 0; border-color: var(--line); background: var(--surface); color: var(--institutional); }
+.authority-discovery-search__clear-filters:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }

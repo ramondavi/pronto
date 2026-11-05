@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: diferencia a limpeza dos filtros com ícone de recarregar e alinha o controle à altura dos seletores. As buscas recentes e sua ação de limpeza passam a compartilhar a mesma linha, com rótulos mais discretos.
+
 - 05/11/2026: aproxima os cartões da busca pública, destaca a contagem exibida/encontrada e torna o aviso vazio mais leve. Mudanças nos filtros atualizam os resultados sem envio; histórico e ações de limpeza ganham posições próprias, e os menus recuperam o contorno arredondado.
 
 - 05/11/2026: alinha a seta dos filtros avançados, mantém visíveis as buscas recentes do catálogo com expressão e filtros reaplicáveis, reúne as ações de limpar filtros e histórico e simplifica o resumo dos resultados. A lista exibe 20 cartões por página e muda de página sem recarregar o restante do catálogo.
