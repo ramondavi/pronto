@@ -11,9 +11,10 @@ const presentation: Record<AuthoritySource, { href: string; logo: string; badge?
  pergamum: { href: "https://pergamum.pucpr.br/redepergamum/", logo: "/authority-sources/pergamum.svg", badge: "REDE" },
  loc: { href: "https://id.loc.gov/authorities/subjects.html", logo: "/authority-sources/loc.png" },
 };
-function SourceMark({ source }: { source: AuthoritySource }) {
- const item = presentation[source];
+export function SourceMark({ source }: { source: AuthoritySource | "pronto" }) {
  const knockoutId = useId();
+ if (source === "pronto") return <span className="authority-source-mark authority-source-mark--pronto" role="img" aria-label="Pronto!"><svg viewBox="0 0 1570 368" aria-hidden="true" focusable="false"><image className="authority-source-mark__pronto-light" href="/logo-pronto-v9-complete-light.png" width="1570" height="368" /><image className="authority-source-mark__pronto-dark" href="/logo-pronto-v9-complete-dark.png" width="1570" height="368" /></svg></span>;
+ const item = presentation[source];
  return <span className={`authority-source-mark authority-source-mark--${source}`} role="img" aria-label={authoritySources[source]}>
   {source === "bn" ? <svg className="authority-source-mark__bn" viewBox="0 0 423 87" aria-hidden="true"><defs><filter id={knockoutId} colorInterpolationFilters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  .7 .7 .7 0 -.7" result="lettering" /><feFlood floodColor="currentColor" /><feComposite in2="lettering" operator="in" /></filter></defs><image href={item.logo} width="423" height="87" filter={`url(#${knockoutId})`} /></svg> : <span className="authority-source-mark__art" style={{ maskImage: `url(${item.logo})`, WebkitMaskImage: `url(${item.logo})` }} aria-hidden="true" />}
   {item.badge && <span className="authority-source-mark__badge" aria-hidden="true">{item.badge}</span>}

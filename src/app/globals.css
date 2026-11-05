@@ -7943,6 +7943,14 @@ dialog.pronto-modal.authority-search-help__dialog[open] { display: flex; flex-di
 .public-authorities__result:is(:hover,:focus-within) { transform: translateY(-4px); box-shadow: 0 18px 35px color-mix(in srgb,var(--text) 13%,transparent); }
 .public-authorities__result-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; color: var(--text-muted); font-size: .74rem; font-weight: 850; }
 .public-authorities__source { padding: 5px 8px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); text-align: right; }
+.public-authorities__source { display: inline-flex; align-items: center; justify-content: center; min-width: 78px; min-height: 34px; }
+.public-authorities__source .authority-source-mark { width: 112px; max-width: 112px; height: 32px; flex: none; }
+.public-authorities__source .authority-source-mark--loc { width: 65px; }
+.public-authorities__source .authority-source-mark__badge { bottom: -3px; right: -4px; }
+.authority-source-mark--pronto svg { width: 100%; height: 100%; }
+.authority-source-mark__pronto-dark { opacity: 0; }
+:root[data-theme="dark"] .authority-source-mark__pronto-light { opacity: 0; }
+:root[data-theme="dark"] .authority-source-mark__pronto-dark { opacity: 1; }
 .public-authorities__result h3 { margin: 0 0 8px; font-size: clamp(1.15rem,2vw,1.48rem); line-height: 1.22; }
 .public-authorities__result h3 a { color: var(--text); text-decoration: none; }
 .public-authorities__result h3 a:is(:hover,:focus-visible),.public-authorities__open:is(:hover,:focus-visible) { color: var(--institutional); text-decoration: underline; }
@@ -8463,6 +8471,11 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-discovery-search__recent-toggle:is(:hover,:focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
 .authority-discovery-search__recent-list { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 6px; }
 .authority-discovery-search__recent-list button { padding: 5px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--institutional); cursor: pointer; font: inherit; font-size: .8rem; }
+.authority-discovery-search__recent { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 8px; }
+.authority-discovery-search__recent-list { align-items: center; padding-top: 0; }
+.authority-discovery-search__recent-list button { border-color: var(--institutional); border-radius: 99px; background: var(--institutional-soft); color: var(--institutional); }
+.authority-discovery-search__recent-list button:last-child { border-color: var(--line); background: transparent; color: var(--text-muted); }
+.authority-discovery-search__recent-list button:is(:hover,:focus-visible) { background: var(--institutional); color: var(--surface-raised); }
 .authority-discovery-search--home .authority-discovery-search__suggestions { max-height: min(240px,var(--authority-suggestion-room,240px)); overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface-raised); }
 .authority-result-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .authority-result-badges span { padding: 3px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; font-weight: 700; }
@@ -8565,6 +8578,21 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .public-authority-detail__hero .public-authority-detail__map-link { position: absolute; z-index: 2; right: clamp(26px,4vw,48px); bottom: clamp(24px,3vw,38px); margin: 0; border-color: var(--institutional); background: var(--surface-raised); color: var(--institutional); box-shadow: var(--shadow-card); }
 .public-authority-detail__hero .public-authority-detail__map-link:is(:hover,:focus-visible) { background: var(--institutional); color: var(--surface-raised); }
 @media(max-width:720px) { .public-authority-detail__hero { padding-bottom: 28px; } .public-authority-detail__hero .public-authority-detail__map-link { position: static; margin-top: 24px; } }
+/* A identificação cresce com os equivalentes; a ação acompanha a última linha do conteúdo. */
+.public-authority-detail__hero { min-height: 0; padding: clamp(24px,3vw,36px); }
+.public-authority-detail__identity-top { margin-bottom: 18px; }
+.public-authority-detail__main { display: block; }
+.public-authority-detail__summary { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-top: 16px; }
+.public-authority-detail__summary-copy { min-width: 0; max-width: 68ch; }
+.public-authority-detail__hero .public-authority-detail__intro { margin: 0; }
+.public-authority-detail__equivalents { display: block; margin-top: 18px; }
+.public-authority-detail__equivalents h2 { margin: 0 0 7px; color: var(--text-muted); font-size: .75rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.public-authority-detail__equivalents dl { display: grid; gap: 6px; margin: 0; }
+.public-authority-detail__equivalents dl > div { display: grid; grid-template-columns: minmax(75px,auto) minmax(0,1fr); align-items: baseline; gap: 16px; padding: 8px 10px; border-left: 2px solid var(--institutional); background: color-mix(in srgb,var(--surface-raised) 75%,transparent); }
+.public-authority-detail__equivalents dt { color: var(--institutional); font-size: .82rem; font-weight: 700; }
+.public-authority-detail__equivalents dd { min-width: 0; margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+.public-authority-detail__hero .public-authority-detail__map-link { position: relative; right: auto; bottom: auto; flex: none; align-self: end; margin: 0; white-space: nowrap; }
+@media(max-width:720px) { .public-authority-detail__summary { display: block; } .public-authority-detail__hero .public-authority-detail__map-link { display: inline-flex; margin-top: 18px; } }
 @media(max-width:700px) { .authority-world__panel { top: 105px; bottom: 16px; max-height: min(480px,calc(100% - 122px)); } .authority-world__panel-content { padding: 20px 17px; } .authority-world__zoom { left: 12px; bottom: 52px; } }
 @media(hover:none) { .authority-map-page:has(.authority-map-header-visibility[data-hidden="true"]) .site-header { opacity: 1; visibility: visible; pointer-events: auto; transform: none; } .authority-map-header-visibility__reveal { display: none; } }
 @media(prefers-reduced-motion:reduce) { .authority-map-page .site-header,.authority-world__panel { transition: none; } }
