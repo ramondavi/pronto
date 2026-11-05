@@ -1,8 +1,10 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { AuthorityAreaExplorer } from "@/components/authority-area-explorer";
 import { getAuthorityAreas } from "@/lib/authority-areas";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
+import { authorityMapCopy } from "@/lib/authority-map-copy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { searchPublicAuthorities } from "@/lib/public-subject-authority";
 
@@ -19,5 +21,5 @@ export default async function ExploreAuthoritiesPage() {
     return { key: area.key, query: area.query, name: area.names[language], detail: area.detail[language],
       count: result.total, items: result.items.slice(0, 5).map(({ id, label }) => ({ id, label })) };
   }));
-  return <><SiteHeader /><main className="container public-authorities authority-areas"><header className="authority-areas__hero"><h1>{t.browse}</h1><p>{t.areaIntro}</p></header><AuthorityAreaExplorer areas={areas} /></main></>;
+  return <><SiteHeader /><main className="container public-authorities authority-areas"><header className="authority-areas__hero"><h1>{t.browse}</h1><p>{t.areaIntro}</p><Link className="button button--secondary" href="/autoridades/mapa">{authorityMapCopy[language].open} ↗</Link></header><AuthorityAreaExplorer areas={areas} /></main></>;
 }

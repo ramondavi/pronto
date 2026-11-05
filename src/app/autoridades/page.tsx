@@ -9,6 +9,7 @@ import { publicAuthorityCopy } from "@/lib/public-authority-copy";
 import { authorityDiscoveryCopy } from "@/lib/authority-discovery-copy";
 import { authorityDiscoveryExtras } from "@/lib/authority-discovery-extras";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
+import { authorityMapCopy } from "@/lib/authority-map-copy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,7 +39,7 @@ export default async function PublicAuthoritiesPage({ searchParams }: { searchPa
     return `/autoridades?${values}`;
   };
   return <><SiteHeader /><main className="container public-authorities">
-    <header className="public-authorities__intro"><div><p className="eyebrow">{discovery.eyebrow}</p><h1>{publicCopy.title}</h1><p>{publicCopy.intro}</p></div><Link className="button button--secondary" href="/autoridades/explorar">{publicCopy.browse} ↗</Link></header>
+    <header className="public-authorities__intro"><div><p className="eyebrow">{discovery.eyebrow}</p><h1>{publicCopy.title}</h1><p>{publicCopy.intro}</p></div><div className="authority-public-links"><Link className="button button--secondary" href="/autoridades/explorar">{publicCopy.browse} ↗</Link><Link className="button button--secondary" href="/autoridades/mapa">{authorityMapCopy[language].open} ↗</Link></div></header>
     <section className="public-authorities__search-panel" aria-label={discovery.advanced}><AuthorityDiscoverySearch variant="catalog" initialQuery={query} initialSource={source} initialHeading={heading} initialSort={sort} initialLanguage={variantLanguage} initialRelation={relation} /></section>
     <section className="public-authorities__results" aria-labelledby="authority-results-title">
       <div className="public-authorities__results-heading"><div><p className="eyebrow">{String(total).padStart(2, "0")} / {discovery.results}</p><h2 id="authority-results-title">{publicCopy.results}</h2></div>{(query || source !== "all" || heading !== "all" || variantLanguage !== "all" || relation !== "all") && <Link href="/autoridades" className="button button--secondary button--small">{discovery.clear}</Link>}</div>

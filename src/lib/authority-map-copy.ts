@@ -6,3 +6,12 @@ export const authorityMapCopy = {
   fr: { preview: "Lieux dans les travaux", illustrative: "Lieux illustratifs", open: "Explorer par lieu", title: "Thèmes dans le monde", intro: "Découvrez les lieux présents dans les thèmes des travaux de la Faculté. Chaque point a été vérifié par la bibliothèque.", empty: "Les premiers lieux apparaîtront ici après vérification par la bibliothèque.", search: "Chercher un lieu ou un thème", all: "Tous les lieux", brazil: "Brésil", world: "Monde", zoomIn: "Zoom avant", zoomOut: "Zoom arrière", reset: "Réinitialiser la carte", themes: "thèmes", place: "Ouvrir le thème", noResults: "Aucun lieu ne correspond à la recherche." },
   it: { preview: "Luoghi nei lavori", illustrative: "Luoghi illustrativi", open: "Esplora per luogo", title: "Temi nel mondo", intro: "Scopri i luoghi presenti nei temi dei lavori della Facoltà. Ogni punto è stato verificato dalla biblioteca.", empty: "I primi luoghi appariranno qui dopo la verifica della biblioteca.", search: "Cerca luogo o tema", all: "Tutti i luoghi", brazil: "Brasile", world: "Mondo", zoomIn: "Ingrandisci", zoomOut: "Riduci", reset: "Reimposta mappa", themes: "temi", place: "Apri il tema", noResults: "Nessun luogo corrisponde alla ricerca." },
 } as const;
+
+export const authorityMapUiCopy = {
+  pt: { bahia: "Bahia", salvador: "Salvador", scale: "Escala do mapa", mapLabel: "Mapa de lugares", collapsePanel: "Recolher painel", expandPanel: "Expandir painel", showHeader: "Mostrar cabeçalho" },
+  en: { bahia: "Bahia", salvador: "Salvador", scale: "Map scale", mapLabel: "Places map", collapsePanel: "Collapse panel", expandPanel: "Expand panel", showHeader: "Show header" },
+  es: { bahia: "Bahía", salvador: "Salvador", scale: "Escala del mapa", mapLabel: "Mapa de lugares", collapsePanel: "Contraer panel", expandPanel: "Expandir panel", showHeader: "Mostrar encabezado" },
+  de: { bahia: "Bahia", salvador: "Salvador", scale: "Kartenmaßstab", mapLabel: "Ortskarte", collapsePanel: "Seitenleiste schließen", expandPanel: "Seitenleiste öffnen", showHeader: "Kopfzeile anzeigen" },
+  fr: { bahia: "Bahia", salvador: "Salvador", scale: "Échelle de la carte", mapLabel: "Carte des lieux", collapsePanel: "Réduire le panneau", expandPanel: "Ouvrir le panneau", showHeader: "Afficher l’en-tête" },
+  it: { bahia: "Bahia", salvador: "Salvador", scale: "Scala della mappa", mapLabel: "Mappa dei luoghi", collapsePanel: "Riduci pannello", expandPanel: "Espandi pannello", showHeader: "Mostra intestazione" },
+} as const;

@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: amplia o mapa público de lugares para toda a área de conteúdo, com cabeçalho e painel translúcidos, régua de escalas mundo–Salvador e acesso ao mapa nas páginas de autoridades.
+
 - 04/11/2026: desce a busca e o mapa aproveitando o espaço livre, mantém explicação e links visíveis na seção contraída e elimina o corte das sugestões ao passar o cursor.
 
 - 04/11/2026: reúne dois temas e dois lugares sugeridos em uma linha, compacta a apresentação abaixo da busca e reduz o mapa expandido para preservar a hero.

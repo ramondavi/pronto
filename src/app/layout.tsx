@@ -1,6 +1,7 @@
 import { siteCopy } from "@/lib/site-copy";
 import type { Metadata } from "next";
 import Script from "next/script";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { ThemeScript } from "@/components/theme-script";
 import { AccessibilityControls } from "@/components/accessibility-controls";

@@ -7,6 +7,7 @@ import { authoritySources, confirmedPublicAuthorityRelation, getPublicAuthority,
 import { publicAuthorityCopy } from "@/lib/public-authority-copy";
 import { authorityDiscoveryExtras } from "@/lib/authority-discovery-extras";
 import { authorityPublicCopy } from "@/lib/authority-public-copy";
+import { authorityMapCopy } from "@/lib/authority-map-copy";
 import { foldAuthorityText } from "@/lib/authority-fuzzy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 
@@ -30,7 +31,7 @@ export default async function PublicAuthorityPage({ params }: { params: Promise<
     return { ...relation, published };
   }));
   return <><SiteHeader authorityTitle={record.label} /><main className="container public-authorities public-authority-detail">
-    <header className="public-authority-detail__hero"><div><p className="eyebrow">{publicCopy.detailEyebrow}</p><h1>{record.label}</h1><p>{publicCopy.detailIntro}</p>{record.label_en && <p><strong>{record.label_en}</strong></p>}</div><span aria-hidden="true" className="public-authority-detail__mark">A<span>·</span></span></header>
+    <header className="public-authority-detail__hero"><div><p className="eyebrow">{publicCopy.detailEyebrow}</p><h1>{record.label}</h1><p>{publicCopy.detailIntro}</p>{record.label_en && <p><strong>{record.label_en}</strong></p>}<Link className="button button--secondary button--small" href="/autoridades/mapa">{authorityMapCopy[language].open} ↗</Link></div><span aria-hidden="true" className="public-authority-detail__mark">A<span>·</span></span></header>
     <section className="public-authorities__search-panel" aria-label={copy.search}><AuthorityDiscoverySearch variant="catalog" /></section>
     {!!relationLinks.length && <section className="card authority-map"><div><p className="eyebrow">{extra.related}</p><h2>{extra.related}</h2></div><div className="authority-map__center">{record.label}</div><div className="authority-map__links">{relationLinks.map((relation, index) => <div key={index} className="authority-map__node"><small>{relation.kind || extra.related}</small>{relation.published ? <Link href={`/autoridades/${relation.published.id}`}>{relation.value} ↗</Link> : <span>{relation.value}</span>}</div>)}</div></section>}
     <div className="public-authority-detail__grid"><div className="public-authority-detail__content">
