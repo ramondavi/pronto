@@ -7,7 +7,7 @@ import { getInterfaceLanguage } from "@/lib/server-language";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = authorityMapCopy[await getInterfaceLanguage()];
-  return { title: `${t.title} | Pronto!`, description: t.intro, alternates: { canonical: "/autoridades/mapa" } };
+  return { title: t.title, description: t.intro, alternates: { canonical: "/autoridades/mapa" }, openGraph: { title: `${t.title} | Pronto!`, description: t.intro, url: "/autoridades/mapa" }, twitter: { title: `${t.title} | Pronto!`, description: t.intro } };
 }
 
 export default async function AuthorityMapPage() {

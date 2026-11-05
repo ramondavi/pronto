@@ -10,7 +10,7 @@ import { searchPublicAuthorities } from "@/lib/public-subject-authority";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = authorityPublicCopy[await getInterfaceLanguage()];
-  return { title: `${t.browse} | Pronto!`, alternates: { canonical: "/autoridades/explorar" } };
+  return { title: t.browse, description: t.areaIntro, alternates: { canonical: "/autoridades/explorar" }, openGraph: { title: `${t.browse} | Pronto!`, description: t.areaIntro, url: "/autoridades/explorar" }, twitter: { title: `${t.browse} | Pronto!`, description: t.areaIntro } };
 }
 
 export default async function ExploreAuthoritiesPage() {

@@ -14,7 +14,7 @@ import { getInterfaceLanguage } from "@/lib/server-language";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = authorityPublicCopy[await getInterfaceLanguage()];
-  return { title: copy.title, description: copy.intro, alternates: { canonical: "/autoridades" } };
+  return { title: copy.title, description: copy.intro, alternates: { canonical: "/autoridades" }, openGraph: { title: `${copy.title} | Pronto!`, description: copy.intro, url: "/autoridades" }, twitter: { title: `${copy.title} | Pronto!`, description: copy.intro } };
 }
 
 type SearchParams = { busca?: string; fonte?: string; tipo?: string; ordem?: string; idioma?: string; relacao?: string; pagina?: string };

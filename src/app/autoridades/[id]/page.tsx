@@ -14,7 +14,9 @@ import { getInterfaceLanguage } from "@/lib/server-language";
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const record = await getPublicAuthority((await params).id);
   const copy = authorityPublicCopy[await getInterfaceLanguage()];
-  return { title: record ? `${record.label} | ${copy.title}` : copy.title, robots: record ? undefined : { index: false } };
+  const title = record ? `${record.label} | ${copy.title}` : copy.title;
+  const description = record ? `${record.label}. ${copy.intro}` : copy.intro;
+  return { title, description, alternates: record ? { canonical: `/autoridades/${record.id}` } : undefined, openGraph: { title: `${title} | Pronto!`, description, url: record ? `/autoridades/${record.id}` : "/autoridades" }, twitter: { title: `${title} | Pronto!`, description }, robots: record ? undefined : { index: false } };
 }
 
 export default async function PublicAuthorityPage({ params }: { params: Promise<{ id: string }> }) {
