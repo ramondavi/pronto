@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 04/11/2026: troca o mapa completo por cartografia vetorial com nomes conforme o idioma selecionado e corrige o controle de fixação do cabeçalho.
+
 - 04/11/2026: devolve fundo sólido e sombra ao cabeçalho do mapa, corrige sua animação e permite abrir o mapa completo pelo recorte da página inicial.
 
 - 04/11/2026: compacta o painel do mapa, inclui a escala Nordeste, ajusta o cabeçalho e a altura do mapa e remove a repetição de Pronto! nos títulos públicos.

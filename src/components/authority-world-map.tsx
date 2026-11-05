@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconPin, IconPinnedOff } from "@tabler/icons-react";
 import { AppIcon } from "@/components/app-icon";
-import type * as Leaflet from "leaflet";
+import type * as MapLibre from "maplibre-gl";
 import type { AuthorityMapPoint } from "@/lib/authority-map";
 import { authorityMapCopy, authorityMapUiCopy } from "@/lib/authority-map-copy";
 
@@ -35,9 +35,10 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   const [headerVisible, setHeaderVisible] = useState(true);
   const [ready, setReady] = useState(false);
   const mapNode = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<Leaflet.Map | null>(null);
-  const markersRef = useRef<Leaflet.LayerGroup | null>(null);
-  const leafletRef = useRef<typeof Leaflet | null>(null);
+  const mapRef = useRef<MapLibre.Map | null>(null);
+  const markersRef = useRef<MapLibre.Marker[]>([]);
+  const maplibreRef = useRef<typeof MapLibre | null>(null);
+  const [mapError, setMapError] = useState(false);
   const scale = scales[scaleIndex];
   useEffect(() => {
     const page = document.querySelector<HTMLElement>(".authority-map-page");
@@ -82,40 +83,59 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
   useEffect(() => {
     if (!mapNode.current) return;
     let disposed = false;
-    let map: Leaflet.Map | undefined;
+    let map: MapLibre.Map | undefined;
     let observer: ResizeObserver | undefined;
-    import("leaflet").then((L) => {
+    import("maplibre-gl").then((M) => {
       if (disposed || !mapNode.current) return;
-      leafletRef.current = L;
-      map = L.map(mapNode.current, { zoomControl: false, attributionControl: false, scrollWheelZoom: true, minZoom: 3, maxZoom: 18, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1, worldCopyJump: true }).setView(scales[0].center, scales[0].zoom);
-      mapRef.current = map;
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, keepBuffer: 5, updateWhenIdle: false, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' }).addTo(map);
-      L.control.attribution({ position: "bottomright", prefix: false }).addTo(map);
-      markersRef.current = L.layerGroup().addTo(map);
-      observer = new ResizeObserver(() => map?.invalidateSize());
-      observer.observe(mapNode.current);
-      setReady(true);
-    });
-    return () => { disposed = true; observer?.disconnect(); map?.remove(); mapRef.current = null; markersRef.current = null; leafletRef.current = null; };
+      maplibreRef.current = M;
+      try {
+        map = new M.Map({ container: mapNode.current, style: "https://tiles.openfreemap.org/styles/liberty", center: [scales[0].center[1], scales[0].center[0]], zoom: scales[0].zoom, minZoom: 2, maxZoom: 18, maxBounds: [[-180, -85], [180, 85]], renderWorldCopies: false, attributionControl: false });
+        mapRef.current = map;
+        map.addControl(new M.AttributionControl({ compact: false }), "bottom-right");
+        map.on("load", () => {
+          if (disposed || !map) return;
+          map.getContainer().querySelectorAll<HTMLAnchorElement>(".maplibregl-ctrl-attrib a").forEach((anchor) => { anchor.target = "_blank"; anchor.rel = "noopener noreferrer"; });
+          setMapError(false);
+          setReady(true);
+        });
+        map.on("error", () => { if (!disposed && !map?.isStyleLoaded()) setMapError(true); });
+        observer = new ResizeObserver(() => map?.resize());
+        observer.observe(mapNode.current);
+      } catch { setMapError(true); }
+    }).catch(() => { if (!disposed) setMapError(true); });
+    return () => { disposed = true; observer?.disconnect(); markersRef.current.forEach((marker) => marker.remove()); markersRef.current = []; map?.remove(); mapRef.current = null; maplibreRef.current = null; };
   }, []);
-  useEffect(() => { if (ready) mapRef.current?.flyTo(scale.center, scale.zoom, { duration: .8 }); }, [ready, scale]);
   useEffect(() => {
-    const L = leafletRef.current;
-    const group = markersRef.current;
-    if (!ready || !L || !group) return;
-    group.clearLayers();
+    const map = mapRef.current;
+    if (!ready || !map?.isStyleLoaded()) return;
+    const label = ["coalesce", ["get", `name:${language}`], ["get", `name_${language}`], ["get", "name:latin"], ["get", "name_en"], ["get", "name"]];
+    for (const layer of map.getStyle().layers) {
+      if (layer.type !== "symbol" || !layer.layout?.["text-field"] || !layer.id.match(/name|label|poi|airport/i)) continue;
+      map.setLayoutProperty(layer.id, "text-field", label);
+    }
+  }, [ready, language]);
+  useEffect(() => { if (ready) mapRef.current?.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, duration: 800 }); }, [ready, scale]);
+  useEffect(() => {
+    const M = maplibreRef.current;
+    const map = mapRef.current;
+    if (!ready || !M || !map) return;
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
     places.forEach((place) => {
-      const marker = L.circleMarker([place.latitude, place.longitude], { radius: 8, weight: 2, color: "#fff", fillColor: "#173d7b", fillOpacity: 1, className: "authority-world__marker" });
-      marker.bindTooltip(place.name, { direction: "top" });
-      marker.on("click", () => { setSelected(place.key); setPanelOpen(true); });
-      group.addLayer(marker);
+      const element = document.createElement("button");
+      element.type = "button";
+      element.className = "authority-world__marker";
+      element.title = place.name;
+      element.setAttribute("aria-label", place.name);
+      element.addEventListener("click", () => { setSelected(place.key); setPanelOpen(true); });
+      markersRef.current.push(new M.Marker({ element, anchor: "center" }).setLngLat([place.longitude, place.latitude]).addTo(map));
     });
   }, [places, ready]);
-  const choosePlace = (place: (typeof places)[number]) => { setSelected(place.key); const map = mapRef.current; if (map) map.flyTo([place.latitude, place.longitude], Math.max(map.getZoom(), 12), { duration: .7 }); };
+  const choosePlace = (place: (typeof places)[number]) => { setSelected(place.key); const map = mapRef.current; if (map) map.flyTo({ center: [place.longitude, place.latitude], zoom: Math.max(map.getZoom(), 12), duration: 700 }); };
   return <main className="authority-world" id="mapa-autoridades">
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
-    {places.length === 0 && <div className="authority-world__empty">{points.length ? t.noResults : t.empty}</div>}
-    <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => mapRef.current?.flyTo(scale.center, scale.zoom)} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div>
+    {(mapError || places.length === 0) && <div className="authority-world__empty">{mapError ? ui.mapUnavailable : points.length ? t.noResults : t.empty}</div>}
+    <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}><button type="button" onClick={() => mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button><button type="button" onClick={() => mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button><button type="button" onClick={() => mapRef.current?.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom })} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button></div>
     <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title}>
       <div className="authority-world__panel-content" hidden={!panelOpen}>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
@@ -123,7 +143,7 @@ export function AuthorityWorldMap({ points, language }: { points: AuthorityMapPo
         <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><input id="authority-map-scale" type="range" min="0" max="4" step="1" value={scaleIndex} onChange={(event) => { setScaleIndex(Number(event.target.value)); setSelected(null); }} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => { setScaleIndex(index); setSelected(null); }}>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</button>)}</div></div>
         {active ? <div className="authority-world__selection"><button type="button" className="authority-world__back" onClick={() => setSelected(null)}>← {t.all}</button><h2>{active.name}</h2><ul>{active.points.map((point) => <li key={point.authority_id}><Link href={`/autoridades/${point.authority_id}`}>{point.term_label} <span aria-hidden="true">↗</span></Link></li>)}</ul></div> : <div className="authority-world__places"><h2>{t.all} <span>{places.length}</span></h2>{places.length > 0 ? <ul>{places.map((place) => <li key={place.key}><button type="button" onClick={() => choosePlace(place)}>{place.name}<span>{place.points.length} {t.themes} →</span></button></li>)}</ul> : <p>{points.length ? t.noResults : t.empty}</p>}</div>}
       </div>
-      <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button>{panelOpen && <button type="button" className="authority-world__pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPin size={17} /> : <IconPinnedOff size={17} />}<span>{headerPinned ? ui.unpinHeader : ui.pinHeader}</span></button>}</div>
+      <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button>{panelOpen && <button type="button" className="authority-world__pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPinnedOff size={17} /> : <IconPin size={17} />}<span>{headerPinned ? ui.unpinHeader : ui.pinHeader}</span></button>}</div>
     </aside>
   </main>;
 }
