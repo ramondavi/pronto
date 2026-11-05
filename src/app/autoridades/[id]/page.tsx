@@ -11,9 +11,9 @@ import { authorityMapCopy } from "@/lib/authority-map-copy";
 import { foldAuthorityText } from "@/lib/authority-fuzzy";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { getPublicAuthorityMapPoints } from "@/lib/authority-map";
-import { authorityHeadingTypes } from "@/lib/authority-heading-types";
 import { authorityDetailCopy } from "@/lib/authority-detail-copy";
 import { AppIcon, type AppIconName } from "@/components/app-icon";
+import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 
 const headingIcons: Record<string, AppIconName> = {
   personal: "person", corporate: "work", meeting: "account", title: "book", named_event: "calendar",
@@ -46,11 +46,10 @@ export default async function PublicAuthorityPage({ params }: { params: Promise<
     })),
   ]);
   const mapPoint = mapPoints.find((point) => point.authority_id === record.id);
-  const heading = authorityHeadingTypes.find((item) => item.kind === record.heading_type);
   const icon = headingIcons[record.heading_type ?? ""] ?? "tag";
   const sourceUrl = record.source_url?.startsWith("https://") ? record.source_url : null;
   return <><SiteHeader authorityTitle={record.label} /><main className="container public-authorities public-authority-detail">
-    <header className="public-authority-detail__hero"><div className="public-authority-detail__identity"><div className="public-authority-detail__identity-top"><span aria-hidden="true" className="public-authority-detail__mark"><AppIcon name={icon} /></span><div><p className="eyebrow">{publicCopy.detailEyebrow}</p><span className="public-authority-detail__type">{heading ? `${heading.tag} · ${heading.label}` : detailCopy.unknown}</span></div></div><p className="public-authority-detail__preferred">{detailCopy.preferred}</p><h1 style={{ fontSize: `clamp(1.1rem, ${Math.min(4.4, 100 / Math.max(record.label.length, 15))}vw, 4.4rem)` }}>{record.label}</h1><p className="public-authority-detail__intro">{detailCopy.intro}</p>{record.label_en && <div className="public-authority-detail__equivalents"><span>{detailCopy.equivalent} · English (EN)</span><strong lang="en">{record.label_en}</strong></div>}{mapPoint && <Link className="button button--secondary button--small public-authority-detail__map-link" href={`/autoridades/mapa?autoridade=${encodeURIComponent(record.id)}`}>{authorityMapCopy[language].open} ↗</Link>}</div></header>
+    <header className="public-authority-detail__hero"><div className="public-authority-detail__identity"><div className="public-authority-detail__identity-top"><p className="eyebrow">{publicCopy.detailEyebrow}</p><span className="public-authority-detail__type">{publicAuthorityType(language, record.heading_type)}</span></div><p className="public-authority-detail__preferred">{detailCopy.preferred}</p><h1 style={{ fontSize: `clamp(1.1rem, ${Math.min(4.4, 100 / Math.max(record.label.length, 15))}vw, 4.4rem)` }}>{record.label}</h1><p className="public-authority-detail__intro">{detailCopy.intro}</p>{record.label_en && <div className="public-authority-detail__equivalents"><span>{detailCopy.equivalent} · English (EN)</span><strong lang="en">{record.label_en}</strong></div>}{mapPoint && <Link className="button button--secondary button--small public-authority-detail__map-link" href={`/autoridades/mapa?autoridade=${encodeURIComponent(record.id)}`}>{authorityMapCopy[language].open} ↗</Link>}</div><span aria-hidden="true" className="public-authority-detail__mark"><AppIcon name={icon} /></span></header>
     <section className="public-authorities__search-panel" aria-label={copy.search}><AuthorityDiscoverySearch variant="catalog" /></section>
     {!!relationLinks.length && <section className="card authority-map"><div><p className="eyebrow">{extra.related}</p><h2>{extra.related}</h2></div><div className="authority-map__center">{record.label}</div><div className="authority-map__links">{relationLinks.map((relation, index) => <div key={index} className="authority-map__node"><small>{relation.kind || extra.related}</small>{relation.published ? <Link href={`/autoridades/${relation.published.id}`}>{relation.value} ↗</Link> : <span>{relation.value}</span>}</div>)}</div></section>}
     <div className="public-authority-detail__grid"><div className="public-authority-detail__content">
