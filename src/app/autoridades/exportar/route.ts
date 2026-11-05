@@ -1,4 +1,4 @@
-import { authorityAsMarcXml, authorityAsSkosJsonLd, searchPublicAuthorities, type PublicAuthority } from "@/lib/public-subject-authority";
+import { authorityAsMarcXml, authorityAsSkosJsonLd, getPublicAuthority, searchPublicAuthorities, type PublicAuthority } from "@/lib/public-subject-authority";
 import { authorityHeadingTypes, authorityLanguages, authorityRelations, authoritySearchOption, authoritySorts, authoritySources } from "@/lib/authority-search-query";
 
 export async function GET(request: Request) {
@@ -14,13 +14,23 @@ export async function GET(request: Request) {
     variantLanguage: authoritySearchOption(params.get("idioma") ?? undefined, authorityLanguages, "all"),
     relation: authoritySearchOption(params.get("relacao") ?? undefined, authorityRelations, "all"),
   };
-  const first = await searchPublicAuthorities({ ...options, page: 0 });
-  if (first.total > 500) return new Response("Mais de 500 registros. Refine a busca antes de exportar.", { status: 422 });
-  const items: PublicAuthority[] = [...first.items];
-  for (let page = 1; items.length < first.total; page++) {
-    const next = await searchPublicAuthorities({ ...options, page });
-    if (!next.items.length) break;
-    items.push(...next.items);
+  const ids = [...new Set(params.getAll("id"))];
+  if (ids.length > 500) return new Response("Selecione até 500 registros.", { status: 422 });
+  if (ids.some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return new Response("Identificador inválido.", { status: 400 });
+  let items: PublicAuthority[];
+  if (ids.length) {
+    const selected = await Promise.all(ids.map(getPublicAuthority));
+    if (selected.some((item) => !item)) return new Response("Registro indisponível para exportação.", { status: 404 });
+    items = selected as PublicAuthority[];
+  } else {
+    const first = await searchPublicAuthorities({ ...options, page: 0 });
+    if (first.total > 500) return new Response("Mais de 500 registros. Refine a busca antes de exportar.", { status: 422 });
+    items = [...first.items];
+    for (let page = 1; items.length < first.total; page++) {
+      const next = await searchPublicAuthorities({ ...options, page });
+      if (!next.items.length) break;
+      items.push(...next.items);
+    }
   }
   if (format === "skos") {
     const body = JSON.stringify({ "@context": { skos: "http://www.w3.org/2004/02/skos/core#" }, "@graph": items.map((item) => authorityAsSkosJsonLd(item, url.origin)) }, null, 2);

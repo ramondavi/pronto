@@ -1,23 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuthorityDiscoverySearch } from "./authority-discovery-search";
 import { AuthorityResultGrid } from "./authority-result-grid";
 import Link from "next/link";
 import type { PublicAuthority } from "@/lib/public-subject-authority";
 import { useInterfaceLanguage } from "./interface-language";
+import { AppIcon } from "./app-icon";
 
 type Options = { query: string; source: string; heading: string; sort: string; variantLanguage: string; relation: string };
 
 export function AuthorityCatalogSearch({ options, initialItems, initialTotal, page, labels }: { options: Options; initialItems: PublicAuthority[]; initialTotal: number; page: number; labels: { found: string; results: string; clear: string; variants: string; open: string; empty: string; emptyHint: string; browse: string; browsePlaces: string; professional: string; export: string; professionalIntro: string; exportResults: string; exportLimit: string; catalogue: string; previous: string; next: string; pending: string; failed: string } }) {
   const { language } = useInterfaceLanguage();
   const [draft, setDraft] = useState(options.query);
-  const [live, setLive] = useState<{ items: PublicAuthority[]; total: number; query: string } | null>(null);
+  const [live, setLive] = useState<{ items: PublicAuthority[]; total: number; query: string; isPreview?: boolean } | null>(null);
+  const [activeOptions, setActiveOptions] = useState(options);
+  const [appliedQuery, setAppliedQuery] = useState(options.query);
   const [pending, setPending] = useState(false);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageData, setPageData] = useState<{ items: PublicAuthority[]; total: number } | null>(null);
   const [pagePending, setPagePending] = useState(false);
   const [pageError, setPageError] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectAllFound, setSelectAllFound] = useState(false);
+  const [copyStatus, setCopyStatus] = useState("");
+  const requestVersion = useRef(0);
   useEffect(() => {
     if (!options.query && options.source === "all" && options.heading === "all" && options.variantLanguage === "all" && options.relation === "all") return;
     const frame = window.requestAnimationFrame(() => document.getElementById("catalogue-search")?.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -33,6 +40,7 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
   useEffect(() => {
     if (draft === options.query) { setLive(null); setPending(false); return; }
     const controller = new AbortController();
+    const version = ++requestVersion.current;
     setPending(true);
     const timer = window.setTimeout(async () => {
       // The preview searches words broadly. Boolean syntax, truncation and pending filters apply on submit.
@@ -43,39 +51,90 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
         const response = await fetch(`/api/autoridades/resultados?${params}`, { signal: controller.signal });
         if (!response.ok) throw new Error("search_failed");
         const result = await response.json() as { items: PublicAuthority[]; total: number };
-        if (!controller.signal.aborted) setLive({ ...result, query });
-      } catch { if (!controller.signal.aborted) setLive({ items: [], total: 0, query }); }
-      finally { if (!controller.signal.aborted) setPending(false); }
+        if (!controller.signal.aborted && version === requestVersion.current) { setLive({ ...result, query, isPreview: true }); setSelectedIds([]); setSelectAllFound(false); }
+      } catch { if (!controller.signal.aborted && version === requestVersion.current) setLive({ items: [], total: 0, query, isPreview: true }); }
+      finally { if (!controller.signal.aborted && version === requestVersion.current) setPending(false); }
     }, 220);
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [draft, options.query, options.source, options.heading, options.sort, options.variantLanguage, options.relation]);
 
   const items = live?.items ?? pageData?.items ?? initialItems;
   const total = live?.total ?? pageData?.total ?? initialTotal;
-  const query = live?.query ?? options.query;
-  const preview = !!live;
-  const hrefForPage = (nextPage: number) => `/autoridades?${new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, pagina: String(nextPage) })}`;
+  const query = live?.query ?? appliedQuery;
+  const preview = !!live?.isPreview;
+  const hrefForPage = (nextPage: number) => `/autoridades?${new URLSearchParams({ busca: appliedQuery, fonte: activeOptions.source, tipo: activeOptions.heading, ordem: activeOptions.sort, idioma: activeOptions.variantLanguage, relacao: activeOptions.relation, pagina: String(nextPage) })}`;
   const loadPage = async (nextPage: number) => {
     setPagePending(true); setPageError(false);
     try {
       const response = await fetch(`/api/autoridades/resultados?${new URL(hrefForPage(nextPage), window.location.origin).searchParams}`, { cache: "no-store" });
       if (!response.ok) throw new Error("page_failed");
       const result = await response.json() as { items: PublicAuthority[]; total: number };
-      setPageData(result); setCurrentPage(nextPage);
+      setLive(null); setPageData(result); setCurrentPage(nextPage);
       document.getElementById("authority-results-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch { setPageError(true); }
     finally { setPagePending(false); }
   };
   const countParts = { pt: ["resultados exibidos abaixo de", "encontrados"], en: ["results shown below out of", "found"], es: ["resultados mostrados abajo de", "encontrados"], de: ["von", "gefundenen Ergebnissen angezeigt"], fr: ["résultats affichés ci-dessous sur", "trouvés"], it: ["risultati mostrati qui sotto su", "trovati"] }[language];
   const emptyMessages = { pt: "Ops, esses temas ainda não deram as caras por aqui.", en: "Oops, these themes haven't shown up here yet.", es: "Vaya, estos temas aún no se han dejado ver por aquí.", de: "Hoppla, diese Themen sind hier noch nicht aufgetaucht.", fr: "Oups, ces thèmes ne se sont pas encore montrés ici.", it: "Ops, questi temi non si sono ancora fatti vedere qui." };
-  const exportParams = (format: string) => new URLSearchParams({ busca: options.query, fonte: options.source, tipo: options.heading, ordem: options.sort, idioma: options.variantLanguage, relacao: options.relation, formato: format });
+  const exportParams = (format: string) => new URLSearchParams({ busca: appliedQuery, fonte: activeOptions.source, tipo: activeOptions.heading, ordem: activeOptions.sort, idioma: activeOptions.variantLanguage, relacao: activeOptions.relation, formato: format });
+  const clearFilters = async (search: string) => {
+    requestVersion.current++;
+    const reset = { ...options, source: "all", heading: "all", sort: "relevance", variantLanguage: "all", relation: "all" };
+    setActiveOptions(reset); setAppliedQuery(search); setPagePending(true); setPageError(false); setCurrentPage(0); setPageData(null); setSelectedIds([]); setSelectAllFound(false);
+    try {
+      const params = new URLSearchParams({ busca: search, fonte: "all", tipo: "all", ordem: "relevance", idioma: "all", relacao: "all" });
+      const response = await fetch(`/api/autoridades/resultados?${params}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("search_failed");
+      const result = await response.json() as { items: PublicAuthority[]; total: number };
+      setLive({ ...result, query: search });
+    } catch { setPageError(true); }
+    finally {
+      setPagePending(false);
+      window.requestAnimationFrame(() => {
+        const searchPanel = document.getElementById("catalogue-search");
+        const results = document.querySelector<HTMLElement>(".public-authorities__results");
+        if (!searchPanel || !results) return;
+        const searchBox = searchPanel.getBoundingClientRect();
+        const resultsBox = results.getBoundingClientRect();
+        const visibleContent = resultsBox.top - searchBox.top + Math.min(resultsBox.height, 110);
+        const margin = Math.max(16, (window.innerHeight - visibleContent) / 2);
+        window.scrollTo({ top: Math.max(0, window.scrollY + searchBox.top - margin), behavior: "smooth" });
+      });
+    }
+  };
+  const selectedCount = selectAllFound ? total : selectedIds.length;
+  const exportUrl = (format: string) => {
+    const params = exportParams(format);
+    if (!selectAllFound) selectedIds.forEach((id) => params.append("id", id));
+    return `/autoridades/exportar?${params}`;
+  };
+  const selectionCopy = { pt: ["Selecionar página", "Selecionar todos os encontrados", "Cancelar seleção", "Copiar MARC21", "MARC21 copiado", "Não foi possível copiar"], en: ["Select page", "Select all found", "Clear selection", "Copy MARC21", "MARC21 copied", "Could not copy"], es: ["Seleccionar página", "Seleccionar todos los encontrados", "Cancelar selección", "Copiar MARC21", "MARC21 copiado", "No se pudo copiar"], de: ["Seite auswählen", "Alle gefundenen auswählen", "Auswahl aufheben", "MARC21 kopieren", "MARC21 kopiert", "Kopieren fehlgeschlagen"], fr: ["Sélectionner la page", "Sélectionner tous les résultats", "Effacer la sélection", "Copier MARC21", "MARC21 copié", "Copie impossible"], it: ["Seleziona la pagina", "Seleziona tutti i risultati", "Annulla selezione", "Copia MARC21", "MARC21 copiato", "Impossibile copiare"] }[language];
+  const copyMarc21 = async () => {
+    if (selectedIds.length !== 1 || selectAllFound) return;
+    try {
+      const response = await fetch(`/autoridades/${selectedIds[0]}/marc.xml`);
+      if (!response.ok) throw new Error("marc_unavailable");
+      const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
+      if (xml.getElementsByTagName("parsererror").length) throw new Error("marc_invalid");
+      const lines = [`=LDR  ${xml.getElementsByTagNameNS("*", "leader")[0]?.textContent ?? ""}`];
+      for (const field of Array.from(xml.getElementsByTagNameNS("*", "controlfield"))) lines.push(`=${field.getAttribute("tag")}  ${field.textContent ?? ""}`);
+      for (const field of Array.from(xml.getElementsByTagNameNS("*", "datafield"))) {
+        const values = Array.from(field.getElementsByTagNameNS("*", "subfield")).map((subfield) => `$${subfield.getAttribute("code")}${subfield.textContent ?? ""}`).join("");
+        lines.push(`=${field.getAttribute("tag")}  ${field.getAttribute("ind1") || " "}${field.getAttribute("ind2") || " "}${values}`);
+      }
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setCopyStatus(selectionCopy[4]);
+    } catch { setCopyStatus(selectionCopy[5]); }
+  };
   return <>
-    <section id="catalogue-search" className="public-authorities__search-panel"><AuthorityDiscoverySearch variant="catalog" initialQuery={options.query} initialSource={options.source} initialHeading={options.heading} initialSort={options.sort} initialLanguage={options.variantLanguage} initialRelation={options.relation} onCatalogQueryChange={setDraft} /></section>
+    <section id="catalogue-search" className="public-authorities__search-panel"><AuthorityDiscoverySearch variant="catalog" initialQuery={options.query} initialSource={options.source} initialHeading={options.heading} initialSort={options.sort} initialLanguage={options.variantLanguage} initialRelation={options.relation} onCatalogQueryChange={setDraft} onClearFilters={(search) => void clearFilters(search)} /></section>
     <section className="public-authorities__results" aria-label={labels.results} aria-busy={pending || pagePending}>
-      {(items.length > 0 || pending || pagePending) && <div id="authority-results-title" className="public-authorities__results-heading"><p className="public-authorities__count" role="status">{pending || pagePending ? labels.pending : <><strong>{items.length}</strong> {countParts[0]} <strong>{total}</strong> {countParts[1]}</>}</p></div>}
+      {(items.length > 0 || pending || pagePending) && <div id="authority-results-title" className="public-authorities__results-heading">
+        {selectedCount > 0 && <details className="public-authorities__export-menu"><summary><AppIcon name="download" />{labels.export} <strong>{selectedCount}</strong></summary><div className="public-authorities__export-options"><p>{labels.professionalIntro}</p><button type="button" onClick={() => { setSelectedIds(items.map((item) => item.id)); setSelectAllFound(false); }}>{selectionCopy[0]}</button><button type="button" disabled={preview || total > 500} onClick={() => { setSelectAllFound(true); setSelectedIds([]); }}>{selectionCopy[1]}{total > 500 ? ` · ${labels.exportLimit}` : ""}</button><button type="button" onClick={() => { setSelectedIds([]); setSelectAllFound(false); }}>{selectionCopy[2]}</button><div className="public-authorities__export-files"><a href={exportUrl("skos")}>SKOS/JSON-LD</a><a href={exportUrl("marc")}>MARCXML</a>{selectedCount === 1 && !selectAllFound && <button type="button" onClick={() => void copyMarc21()}>{selectionCopy[3]}</button>}</div>{copyStatus && <p role="status">{copyStatus}</p>}</div></details>}
+        <p className="public-authorities__count" role="status">{pending || pagePending ? labels.pending : <><strong>{items.length}</strong> {countParts[0]} <strong>{total}</strong> {countParts[1]}</>}</p>
+      </div>}
       {pageError && <p role="alert">{labels.failed}</p>}
-      {items.length ? <AuthorityResultGrid key={`${preview}-${query}-${currentPage}`} items={items} page={preview ? 0 : currentPage} query={query} variantsLabel={labels.variants} openLabel={labels.open} /> : <div className="card public-authorities__empty"><span aria-hidden="true" className="public-authorities__empty-mark">⌕</span><strong>{emptyMessages[language]}</strong><p>{labels.emptyHint}</p><div className="public-authorities__empty-links"><Link className="button button--secondary button--small" href="/autoridades/explorar">{labels.browse} ↗</Link><Link className="button button--secondary button--small" href="/autoridades/mapa">{labels.browsePlaces} ↗</Link></div></div>}
-      {!preview && total > 0 && <details className="authority-professional"><summary><span>{labels.export}</span></summary><div className="authority-professional__body"><p>{labels.professionalIntro}</p><div className="public-authorities__bulk"><strong>{labels.exportResults}</strong><div><a className="button button--secondary button--small" href={`/autoridades/exportar?${exportParams("skos")}`}>SKOS/JSON-LD</a><a className="button button--secondary button--small" href={`/autoridades/exportar?${exportParams("marc")}`}>MARCXML</a></div><p>{labels.exportLimit}</p></div></div></details>}
+      {items.length ? <AuthorityResultGrid key={`${preview}-${query}-${currentPage}`} items={items} page={preview ? 0 : currentPage} query={query} variantsLabel={labels.variants} openLabel={labels.open} selectedIds={selectedIds} allSelected={selectAllFound} onToggle={(id) => { if (selectAllFound) { setSelectedIds(items.map((item) => item.id).filter((value) => value !== id)); setSelectAllFound(false); } else { setSelectedIds((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]); } setCopyStatus(""); }} /> : <div className="card public-authorities__empty"><span aria-hidden="true" className="public-authorities__empty-mark">⌕</span><strong>{emptyMessages[language]}</strong><p>{labels.emptyHint}</p><div className="public-authorities__empty-links"><Link className="button button--secondary button--small" href="/autoridades/explorar">{labels.browse} ↗</Link><Link className="button button--secondary button--small" href="/autoridades/mapa">{labels.browsePlaces} ↗</Link></div></div>}
       {!preview && total > 20 && <nav aria-label={labels.catalogue} className="public-authorities__pages">{currentPage > 0 && <button type="button" disabled={pagePending} onClick={() => void loadPage(currentPage - 1)}>{labels.previous}</button>}<span>{currentPage + 1} / {Math.ceil(total / 20)}</span>{(currentPage + 1) * 20 < total && <button type="button" disabled={pagePending} onClick={() => void loadPage(currentPage + 1)}>{labels.next}</button>}</nav>}
     </section>
   </>;
