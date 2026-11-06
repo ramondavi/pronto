@@ -54,11 +54,19 @@ export default async function HomePage() {
   const usageCopy = authorityUsageCopy[language];
   const publicThemeCopy = authorityPublicCopy[language];
   const supabase = await createClient();
-  const { data: usageData } = await supabase.rpc("list_public_authority_usage_summary");
+  const now = new Date().toISOString();
+  const [usageResponse, mapPoints, userResponse, knowledge, announcementResponse, hoursResponse] = await Promise.all([
+    supabase.rpc("list_public_authority_usage_summary"),
+    getPublicAuthorityMapPoints(),
+    supabase.auth.getUser(),
+    getPublishedKnowledge(),
+    supabase.from("library_announcements").select("title,message,type,starts_at,ends_at").eq("active", true).neq("type", "normal").lte("starts_at", now).order("starts_at", { ascending: false }).limit(100),
+    supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle(),
+  ]);
+  const { data: usageData } = usageResponse;
   const mostUsed = Array.isArray(usageData) ? usageData as { id: string; label: string; count: number }[] : [];
-  const mapPoints = await getPublicAuthorityMapPoints();
-  const { data: { user } } = await supabase.auth.getUser();
-  const faqs = (await getPublishedKnowledge()).filter((entry) => entry.kind === "faq").map((entry) => {
+  const { data: { user } } = userResponse;
+  const faqs = knowledge.filter((entry) => entry.kind === "faq").map((entry) => {
     const legacyIndex = fallbackHomeFaqs.pt.findIndex(([question]) => question === entry.title);
     const translated = language === "pt" || legacyIndex < 0 ? null : fallbackHomeFaqs[language][legacyIndex];
     return { id: entry.id, question: translated?.[0] ?? entry.title, answer: translated?.[1] ?? entry.summary, featured_position: entry.featured_position };
@@ -67,11 +75,8 @@ export default async function HomePage() {
   const otherFaqs = faqs.filter((faq) => faq.featured_position === null);
   const homeFaqs = Array.from({ length: 6 }, (_, index) => featuredFaqs.get(index + 1) ?? otherFaqs.shift()).filter((faq): faq is (typeof faqs)[number] => Boolean(faq));
   if (homeFaqs.length === 0) homeFaqs.push(...fallbackHomeFaqs[language].map(([question, answer], index) => ({ id: `fallback-home-${index}`, question, answer, featured_position: index + 1 })));
-  const now = new Date().toISOString();
-  const [{ data: announcements }, { data: dailyHours }] = await Promise.all([
-    supabase.from("library_announcements").select("title,message,type,starts_at,ends_at").eq("active", true).neq("type", "normal").lte("starts_at", now).order("starts_at", { ascending: false }).limit(100),
-    supabase.from("library_daily_hours").select("closing_time").eq("service_date", serviceDayKey(now)).maybeSingle(),
-  ]);
+  const { data: announcements } = announcementResponse;
+  const { data: dailyHours } = hoursResponse;
   const closingTime = libraryClosingTime(dailyHours?.closing_time);
   const currentAnnouncement = announcements?.find((announcement) => isCurrentServiceAnnouncement(announcement, now));
   const closureAnnouncement = announcements?.find((announcement) => isCurrentServiceAnnouncement(announcement, now) && isLibraryClosureAnnouncement(announcement));

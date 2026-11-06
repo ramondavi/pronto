@@ -9217,6 +9217,27 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-world__record-loading { display: grid; align-content: center; justify-items: center; gap: 12px; min-height: 330px; padding: 24px; color: var(--institutional); font-size: .8rem; font-weight: 650; text-align: center; }
 .authority-world__record:has(.authority-world__record-loading) { min-height: 100%; align-content: center; }
 .authority-world__record-loading .book-loading-icon--compact { width: 68px; height: 68px; }
+
+dialog.pronto-modal.authority-map-guide { box-sizing: border-box; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; border-top: 4px solid var(--institutional); }
+dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: column; }
+.authority-map-guide__header { padding: 28px 62px 22px 30px; background: linear-gradient(125deg, var(--surface-raised), var(--institutional-soft)); border-bottom: 1px solid var(--line); }
+.authority-map-guide__eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--institutional); font-size: .75rem; font-weight: 800; letter-spacing: .1em; }
+.authority-map-guide__eyebrow svg { width: 19px; height: 19px; }
+.authority-map-guide__header h2 { margin: 12px 0 5px; font-size: clamp(1.55rem, 3vw, 2.1rem); line-height: 1.12; }
+.authority-map-guide__header p { max-width: 55ch; margin: 0; color: var(--text-muted); line-height: 1.5; }
+.authority-map-guide__body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 20px 30px 24px; scrollbar-color: var(--institutional) var(--surface); scrollbar-width: thin; }
+.authority-map-guide__device { margin: 0 0 14px; color: var(--institutional); font-size: .82rem; font-weight: 750; }
+.authority-map-guide__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.authority-map-guide__step { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 96px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-map-guide__drawing { display: grid; place-items: center; width: 74px; height: 66px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); }
+.authority-map-guide__drawing svg { display: block; width: 69px; height: 54px; }
+.authority-map-guide__step strong,.authority-map-guide__step small { display: block; }
+.authority-map-guide__step strong { font-size: .84rem; line-height: 1.3; }
+.authority-map-guide__step small { margin-top: 4px; color: var(--text-muted); font-size: .76rem; line-height: 1.4; }
+.authority-map-guide__hint { display: flex; align-items: flex-start; gap: 8px; margin: 18px 0 0; color: var(--text-muted); font-size: .8rem; line-height: 1.45; }
+.authority-map-guide__hint svg { flex: none; width: 17px; height: 17px; color: var(--institutional); }
+.authority-map-guide__footer { display: flex; justify-content: flex-end; padding: 16px 30px; border-top: 1px solid var(--line); background: var(--surface-raised); }
+@media(max-width: 620px) { .authority-map-guide__header { padding: 23px 55px 19px 20px; } .authority-map-guide__body { padding: 18px 20px; } .authority-map-guide__grid { grid-template-columns: 1fr; } .authority-map-guide__step { min-height: 78px; } .authority-map-guide__footer { padding: 14px 20px; } .authority-map-guide__footer .button { width: 100%; justify-content: center; } }
 .authority-world__record-section h3 { display: flex; align-items: center; gap: 7px; }
 .authority-world__record-section h3 svg { width: 16px; height: 16px; }
 .authority-world__record-section { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 88%,transparent); }
