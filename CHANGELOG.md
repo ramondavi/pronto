@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 06/11/2026: o mapa público passa a ajustar a altura do painel ao conteúdo, mostra sugestões de busca para lugares publicados, identifica o motivo de bloqueio da aba Tema e separa os controles de inclinação, rotação e zoom. Os pontos isolados têm dicas posicionadas conforme a tela; agrupamentos mostram apenas a contagem. As páginas públicas usam a mesma animação de carregamento do painel.
+
 - 06/11/2026: o mapa público ganha abas Explorar e Tema no topo, dica de busca completa, acesso identificado à autoridade, marcadores por tipo e controle de inclinação. A busca completa recebe o texto digitado no mapa e abre com o campo visível.
 
 - 06/11/2026: o cadastro de localidades passa a reutilizar caminhos geográficos revisados. O painel do mapa apresenta contagens por continente, país, região, estado e município conforme a área visível; pontos antigos aguardam classificação sem deixar de aparecer no mapa.
