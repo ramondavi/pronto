@@ -9052,7 +9052,7 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-professional-view__marc-heading .button { display: inline-flex; align-items: center; gap: 7px; flex: none; }
 .authority-professional-view__marc-heading .button svg { width: 16px; height: 16px; }
 .authority-professional-view__legend { margin: 18px 0 10px; }
-.authority-professional-view__code { max-height: 520px; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface); user-select: none; -webkit-user-select: none; }
+.authority-professional-view__code { max-height: 520px; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface); }
 .authority-professional-view__code code { display: block; width: max-content; min-width: 100%; font-size: .83rem; line-height: 1.8; white-space: pre; }
 .authority-professional-view__code-line { display: block; }
 .authority-professional-view__code-line strong { color: var(--institutional); font-weight: 800; }

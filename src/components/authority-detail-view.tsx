@@ -47,7 +47,7 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
         {tab === "details" ? <div id="authority-details-panel" role="tabpanel" aria-labelledby="authority-details-tab" className="authority-professional-view__details">{professionalContent}</div> : <div id="authority-marc-panel" role="tabpanel" aria-labelledby="authority-marc-tab" className="authority-professional-view__marc">
           <div className="authority-professional-view__marc-heading"><h3>{copy.marcTab}</h3><button type="button" className="button button--primary button--small" onClick={copyMarc}><AppIcon name="copy" />{copy.copyMarc}</button></div>
           <div className="authority-professional-view__guidance notice notice--alert"><span className="notice__symbol"><AppIcon name="help" /></span><div><p>{copy.marcViewHelp}</p><p>{copy.marcLegend}</p></div></div>
-          <div className="authority-professional-view__code" onCopy={(event) => event.preventDefault()}><code>{marcText.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div>
+          <div className="authority-professional-view__code"><code>{marcText.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div>
           <p className="authority-professional-view__copy-status" role="status">{copyMessage}</p>
         </div>}
       </section> : <div className="public-authority-detail__grid"><div className="public-authority-detail__content">{children}</div></div>}
