@@ -20,24 +20,32 @@ function Highlight({ value, terms }: { value: string; terms: string[] }) {
   return <>{value.split(pattern).map((part, index) => matched.some((term) => foldAuthorityText(term) === foldAuthorityText(part)) ? <mark key={index}>{part}</mark> : part)}</>;
 }
 
-function MarqueeTitle({ children }: { children: React.ReactNode }) {
-  const outer = useRef<HTMLSpanElement>(null);
-  const inner = useRef<HTMLSpanElement>(null);
+function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; terms: string[]; englishLabel: string }) {
+  const titleOuter = useRef<HTMLSpanElement>(null);
+  const titleInner = useRef<HTMLSpanElement>(null);
+  const equivalentOuter = useRef<HTMLSpanElement>(null);
+  const equivalentInner = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const measure = () => {
-      if (!outer.current || !inner.current) return;
-      const distance = Math.max(0, inner.current.scrollWidth - outer.current.clientWidth);
-      outer.current.classList.toggle("is-scrolling", distance > 2);
-      outer.current.style.setProperty("--heading-travel", `${-distance}px`);
-      outer.current.style.setProperty("--heading-duration", `${Math.min(9, Math.max(4, distance / 45 + 2))}s`);
+      const pairs = [[titleOuter.current, titleInner.current], [equivalentOuter.current, equivalentInner.current]] as const;
+      const distances = pairs.map(([outer, inner]) => outer && inner ? Math.max(0, inner.scrollWidth - outer.clientWidth) : 0);
+      const duration = `${Math.min(9, Math.max(4, Math.max(...distances) / 45 + 2))}s`;
+      pairs.forEach(([outer], index) => {
+        if (!outer) return;
+        outer.classList.toggle("is-scrolling", distances[index] > 2);
+        outer.style.setProperty("--heading-travel", `${-distances[index]}px`);
+        outer.style.setProperty("--heading-duration", duration);
+      });
     };
     const observer = new ResizeObserver(measure);
-    if (outer.current) observer.observe(outer.current);
-    if (inner.current) observer.observe(inner.current);
+    [titleOuter.current, titleInner.current, equivalentOuter.current, equivalentInner.current].forEach((element) => { if (element) observer.observe(element); });
     document.fonts.ready.then(measure);
     return () => observer.disconnect();
-  }, [children]);
-  return <span className="public-authorities__marquee" ref={outer}><span ref={inner}>{children}</span></span>;
+  }, [item.label, item.label_en, englishLabel]);
+  return <>
+    <h3><Link href={`/autoridades/${item.id}`} title={item.label}><span className="public-authorities__marquee" ref={titleOuter}><span ref={titleInner}><Highlight value={item.label} terms={terms} /></span></span></Link></h3>
+    <div className="public-authorities__equivalent">{item.label_en && <span className="public-authorities__marquee" ref={equivalentOuter}><span ref={equivalentInner}><span className="public-authorities__equivalent-language">{englishLabel}</span><span className="public-authorities__english"><Highlight value={item.label_en} terms={terms} /></span></span></span>}</div>
+  </>;
 }
 
 type SortColumn = "type" | "label" | "equivalent" | "source";
@@ -74,8 +82,7 @@ export function AuthorityResultGrid({ items, query, variantsLabel, openLabel, se
       return <article className="card public-authorities__result" key={item.id}>
         <div className="public-authorities__result-top"><label className="public-authorities__select"><input type="checkbox" checked={checked} onChange={() => onToggle(item.id)} aria-label={`${selectLabel} ${item.label}`} /></label><span className="public-authorities__source">{item.source in authoritySources ? <SourceMark source={item.source as AuthoritySource | "pronto"} /> : (authoritySources[item.source] ?? item.source)}</span></div>
         {item.heading_type && <div className="authority-result-badges"><span>{type}</span></div>}
-        <h3><Link href={`/autoridades/${item.id}`} title={item.label}><MarqueeTitle><Highlight value={item.label} terms={terms} /></MarqueeTitle></Link></h3>
-        <div className="public-authorities__equivalent">{item.label_en && <><span>{englishLabel}</span><p className="public-authorities__english"><Highlight value={item.label_en} terms={terms} /></p></>}</div>
+        <CardTitles item={item} terms={terms} englishLabel={englishLabel} />
         {matched && <p className="public-authorities__match">{t.matched}: <Highlight value={matchedVariant.value} terms={terms} /></p>}
         {!!item.variants.length && <p className="public-authorities__variants"><strong>{variantsLabel}:</strong> {item.variants.slice(0, 2).map((variant) => variant.value).join(" · ")}</p>}
         <div className="public-authorities__result-footer"><Link className="public-authorities__open" href={`/autoridades/${item.id}`}>{openLabel}<AppIcon name="arrowRight" /></Link></div>
