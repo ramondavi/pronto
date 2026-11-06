@@ -29,7 +29,7 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
     const measure = () => {
       const pairs = [[titleOuter.current, titleInner.current], [equivalentOuter.current, equivalentInner.current]] as const;
       const distances = pairs.map(([outer, inner]) => outer && inner ? Math.max(0, inner.scrollWidth - outer.clientWidth) : 0);
-      const duration = `${Math.min(9, Math.max(4, Math.max(...distances) / 45 + 2))}s`;
+      const duration = `${Math.min(22, Math.max(8, Math.max(...distances) / 22 + 5))}s`;
       pairs.forEach(([outer], index) => {
         if (!outer) return;
         outer.classList.toggle("is-scrolling", distances[index] > 2);

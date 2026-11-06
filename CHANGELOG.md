@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: desacelera os letreiros dos cartões, suaviza a retomada nas extremidades e aproxima a apresentação do equivalente da página individual, com filete lateral e pesos tipográficos equilibrados.
+
 - 05/11/2026: os cartões do catálogo destacam o termo preferido em negrito e animam automaticamente nomes longos; o idioma e o equivalente passam a ocupar a mesma linha e, quando necessário, deslizam sincronizados com o termo preferido.
 
 - 05/11/2026: identifica as colunas da lista pública e permite ordenar os resultados da página quando a busca está sem filtros; os cartões alinham os equivalentes, identificam seu idioma e deslizam nomes longos ao receber foco. Corrige um zero indevido no conteúdo dos cartões.
