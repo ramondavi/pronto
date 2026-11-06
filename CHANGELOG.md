@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: preserva a visualização em cartões ou lista ao mudar filtros, fazer outra busca ou avançar a página de resultados do catálogo público durante a sessão.
+
 - 05/11/2026: os letreiros dos cartões começam visíveis e parados, deslizam até mostrar o fim do texto, desaparecem suavemente e reiniciam de imediato na posição inicial.
 
 - 05/11/2026: desacelera os letreiros dos cartões, suaviza a retomada nas extremidades e aproxima a apresentação do equivalente da página individual, com filete lateral e pesos tipográficos equilibrados.
