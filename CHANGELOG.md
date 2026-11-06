@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: identifica as colunas da lista pública e permite ordenar os resultados da página quando a busca está sem filtros; os cartões alinham os equivalentes, identificam seu idioma e deslizam nomes longos ao receber foco. Corrige um zero indevido no conteúdo dos cartões.
+
 - 05/11/2026: torna contextuais os controles de seleção de autoridades, preserva exclusões individuais ao exportar todos os resultados e redesenha cartões e lista compacta sem numeração. A página inicial ganha uma vantagem sobre os termos revisados pela Biblioteca da FAUFBA.
 
 - 05/11/2026: acrescenta às páginas públicas de autoridades uma explicação, em seis idiomas, sobre o benefício da busca para o público e o trabalho de revisão dos bibliotecários da FAUFBA.

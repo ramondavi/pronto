@@ -8929,3 +8929,21 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .public-authorities__row-open:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--surface-raised); }
 @media(max-width:1000px) { .public-authorities__list--list .public-authorities__result--row { grid-template-columns: 18px minmax(75px,100px) minmax(0,1.8fr) minmax(0,1fr) 34px; } .public-authorities__row-source { display: none; } }
 @media(max-width:720px) { .public-authorities__list--list .public-authorities__result--row { grid-template-columns: 18px minmax(0,1fr) 34px; gap: 5px 10px; } .public-authorities__row-type { grid-column: 2; grid-row: 1; } .public-authorities__list--list .public-authorities__result--row h3 { grid-column: 2; grid-row: 2; } .public-authorities__row-secondary { grid-column: 2; grid-row: 3; } .public-authorities__row-open { grid-column: 3; grid-row: 1 / 4; } .public-authorities__row-source { display: none; } .public-authorities__list--list .public-authorities__select { grid-row: 1 / 4; } }
+
+.public-authorities__list-head { display: grid; grid-template-columns: 18px minmax(78px,110px) minmax(0,2fr) minmax(0,1.4fr) minmax(90px,135px) 34px; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--institutional-soft); }
+.public-authorities__sort { min-width: 0; padding: 0; border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: .72rem; font-weight: 700; text-align: left; }
+button.public-authorities__sort { cursor: pointer; }
+button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institutional); }
+.public-authorities__sort span { margin-left: 3px; color: var(--institutional); }
+.public-authorities__sort--source { text-align: right; }
+.public-authorities__list--cards .public-authorities__result h3 { min-width: 0; white-space: nowrap; }
+.public-authorities__list--cards .public-authorities__result h3 a:is(:hover,:focus-visible) { text-decoration: none; }
+.public-authorities__marquee { display: block; min-width: 0; overflow: hidden; }
+.public-authorities__marquee > span { display: inline-block; width: max-content; white-space: nowrap; }
+.public-authorities__marquee.is-scrolling:hover > span,.public-authorities__result h3:focus-within .public-authorities__marquee.is-scrolling > span { animation: panel-heading-pan var(--heading-duration,5s) linear infinite alternate; }
+.public-authorities__equivalent { min-height: 39px; margin-bottom: 4px; }
+.public-authorities__equivalent > span { display: block; color: var(--institutional); font-size: .7rem; font-weight: 700; }
+.public-authorities__equivalent .public-authorities__english { margin: 3px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media(max-width:1000px) { .public-authorities__list-head { grid-template-columns: 18px minmax(75px,100px) minmax(0,1.8fr) minmax(0,1fr) 34px; } .public-authorities__sort--source { display: none; } }
+@media(max-width:720px) { .public-authorities__list-head { grid-template-columns: 18px minmax(0,1fr) 34px; } .public-authorities__list-head .public-authorities__sort:not(.public-authorities__sort--label) { display: none; } .public-authorities__list-head .public-authorities__sort--label { grid-column: 2; } }
+@media(prefers-reduced-motion:reduce) { .public-authorities__marquee.is-scrolling:hover > span,.public-authorities__result h3:focus-within .public-authorities__marquee.is-scrolling > span { animation: none; } .public-authorities__marquee.is-scrolling { overflow-x: auto; } }
