@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: os letreiros dos cartões começam visíveis e parados, deslizam até mostrar o fim do texto, desaparecem suavemente e reiniciam de imediato na posição inicial.
+
 - 05/11/2026: desacelera os letreiros dos cartões, suaviza a retomada nas extremidades e aproxima a apresentação do equivalente da página individual, com filete lateral e pesos tipográficos equilibrados.
 
 - 05/11/2026: os cartões do catálogo destacam o termo preferido em negrito e animam automaticamente nomes longos; o idioma e o equivalente passam a ocupar a mesma linha e, quando necessário, deslizam sincronizados com o termo preferido.
