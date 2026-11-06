@@ -9268,5 +9268,21 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
 .authority-world__compass-readout { position: absolute; inset: 30px 23px; display: grid !important; align-content: center; gap: 0; border-radius: 50%; background: var(--surface-raised); color: var(--institutional); line-height: 1.1; transform: none !important; }
 .authority-world__compass-readout strong { font-size: .74rem; font-variant-numeric: tabular-nums; }
 .authority-world__compass-readout small { font-size: .56rem; }
+.authority-world__compass { overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.authority-world__compass button { border-radius: 50%; background: transparent; }
+.authority-world__compass button:is(:hover,:focus-visible) { background: transparent; outline: 2px solid var(--focus); outline-offset: 2px; }
+.authority-world__compass-art { display: block; width: 92px !important; height: 92px !important; overflow: visible; }
+.authority-world__compass-ring { fill: none; stroke: color-mix(in srgb,var(--institutional) 35%,transparent); stroke-width: .65; }
+.authority-world__compass-north { fill: var(--danger); stroke: color-mix(in srgb,var(--danger) 70%,var(--text)); stroke-width: .7; }
+.authority-world__compass-cardinal { fill: var(--institutional); stroke: var(--text); stroke-width: .5; }
+.authority-world__compass-intercardinal { fill: color-mix(in srgb,var(--text-muted) 68%,var(--surface-raised)); stroke: var(--text-muted); stroke-width: .5; }
+.authority-world__compass-label { fill: var(--text); font-family: inherit; font-size: 8px; font-weight: 750; }
+.authority-world__compass-label--north { fill: var(--danger); font-size: 10px; font-weight: 900; }
+.authority-world__compass-hub { fill: var(--surface-raised); stroke: var(--institutional); stroke-width: 1; }
+.authority-world__compass-degrees { fill: var(--institutional); font-family: inherit; font-size: 9px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.authority-world__compass-current { fill: var(--text-muted); font-family: inherit; font-size: 6px; font-weight: 700; }
+.site-header__explore-menu a[aria-current="page"] { background: var(--institutional-soft); color: var(--institutional); font-weight: 800; }
+.site-header__nav[data-current-section="explore"] .site-header__explore > button,.site-header__nav[data-current-section="help"] > .site-header__help-link { color: var(--institutional); text-decoration: underline; text-decoration-color: var(--institutional); text-underline-offset: 6px; }
+.site-header__nav[data-current-section="panel"] .site-header__access { outline: 2px solid var(--institutional); outline-offset: 3px; }
 @media(max-width:700px) { .authority-world__controls,.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__controls { width: 276px; } }
 .authority-world__marker--cluster { box-sizing: border-box; width: 34px; height: 34px; overflow: visible; border: 3px solid var(--surface-raised); box-shadow: inset 0 0 0 1px var(--marker-color); white-space: nowrap; line-height: 1; font-variant-numeric: tabular-nums; }
