@@ -19,9 +19,10 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
   const [tab, setTab] = useState<"details" | "marc">("details");
   const [copyMessage, setCopyMessage] = useState("");
   const detailRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!professional) return;
-    const frame = requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    const frame = requestAnimationFrame(() => heroRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" }));
     return () => cancelAnimationFrame(frame);
   }, [professional]);
 
@@ -35,7 +36,7 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
   }
 
   return <>
-    <div className="public-authority-detail__hero-wrap">
+    <div className="public-authority-detail__hero-wrap" ref={heroRef}>
       {hero}
       <button className="authority-professional-switch" type="button" aria-expanded={professional} aria-controls="authority-detail-content" onClick={() => { setProfessional((value) => !value); setTab("details"); }}>
         <span className="authority-professional__summary-icon"><AppIcon name="book" /></span>

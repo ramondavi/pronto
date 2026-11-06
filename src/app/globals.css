@@ -9233,4 +9233,18 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-world__compass button:disabled { opacity: .38; cursor: not-allowed; }
 .authority-world__compass button span { display: grid; place-items: center; transition: transform .3s ease; }
 .authority-world__compass svg { width: 25px; height: 25px; }
+.authority-world__controls { display: grid; grid-template-columns: 152px 116px; grid-template-rows: 38px 46px; align-items: stretch; width: 276px; column-gap: 8px; row-gap: 8px; }
+.authority-world__header-pin { grid-column: 1; grid-row: 1; }
+.authority-world__zoom { grid-column: 1; grid-row: 2; height: 46px; overflow: hidden; }
+.authority-world__zoom button { height: 44px; align-self: stretch; border-radius: 0; transform: none; }
+.authority-world__zoom button:is(:hover,:focus-visible) { border-bottom: 0; transform: none; }
+.authority-world__compass { grid-column: 2; grid-row: 1 / 3; width: 116px; height: 92px; border-radius: var(--radius-sm); }
+.authority-world__compass button { width: 100%; height: 100%; padding: 0; border-radius: var(--radius-sm); }
+.authority-world__compass-rose { position: relative; display: block !important; width: 88px; height: 88px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-raised); transform: none !important; transition: none !important; }
+.authority-world__compass-point { position: absolute; display: block !important; width: 19px; height: 16px; color: var(--text-muted); font-size: .57rem; font-weight: 700; line-height: 16px; transform: translate(-50%,-50%); transition: none !important; }
+.authority-world__compass-point--north { color: var(--danger); font-weight: 900; }
+.authority-world__compass-readout { position: absolute; inset: 30px 23px; display: grid !important; align-content: center; gap: 0; border-radius: 50%; background: var(--surface-raised); color: var(--institutional); line-height: 1.1; transform: none !important; }
+.authority-world__compass-readout strong { font-size: .74rem; font-variant-numeric: tabular-nums; }
+.authority-world__compass-readout small { font-size: .56rem; }
+@media(max-width:700px) { .authority-world__controls,.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__controls { width: 276px; } }
 .authority-world__marker--cluster { box-sizing: border-box; width: 34px; height: 34px; overflow: visible; border: 3px solid var(--surface-raised); box-shadow: inset 0 0 0 1px var(--marker-color); white-space: nowrap; line-height: 1; font-variant-numeric: tabular-nums; }
