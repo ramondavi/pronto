@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 06/11/2026: a leitura MARC21 alinha as linhas quebradas e permite copiar o registro original diretamente. O acesso técnico rola até a seção. No mapa público, pontos e resultados abrem os dados da autoridade no painel com abas, destaque do marcador, contagem de pontos próximos e acesso à página individual sem recarregar o mapa.
+
 - 05/11/2026: a visualização MARC21 quebra campos extensos dentro do quadro, sem barra de rolagem horizontal; a cópia pelo botão mantém as linhas originais do registro.
 
 - 05/11/2026: descrições da autoridade individual passam a aproveitar a largura interna disponível nos cartões e na identificação, evitando quebras de linha prematuras.

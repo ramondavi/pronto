@@ -1,7 +1,7 @@
 import { AppIcon } from "@/components/app-icon";
 import type { InterfaceLanguage } from "@/lib/interface-language";
 
-const copy: Record<InterfaceLanguage, { eyebrow: string; title: string; intro: string; publicTitle: string; publicText: string; librarianTitle: string; librarianText: string; closing: string }> = {
+export const authorityValueCopy: Record<InterfaceLanguage, { eyebrow: string; title: string; intro: string; publicTitle: string; publicText: string; librarianTitle: string; librarianText: string; closing: string }> = {
   pt: {
     eyebrow: "O valor de uma palavra bem escolhida", title: "Por que usar as autoridades do Pronto!?",
     intro: "Os trabalhos da Faculdade de Arquitetura não tratam de um único lugar ou de uma única ideia. Para que cada pesquisa possa ser encontrada e relacionada a outras, a Biblioteca da FAUFBA cuida das palavras que as descrevem.",
@@ -47,7 +47,7 @@ const copy: Record<InterfaceLanguage, { eyebrow: string; title: string; intro: s
 };
 
 export function AuthorityValueNote({ language }: { language: InterfaceLanguage }) {
-  const t = copy[language];
+  const t = authorityValueCopy[language];
   return <section className="authority-value-note" aria-labelledby="authority-value-note-title">
     <div className="authority-value-note__heading"><p className="eyebrow">{t.eyebrow}</p><h2 id="authority-value-note-title">{t.title}</h2><p>{t.intro}</p></div>
     <div className="authority-value-note__audiences"><div><AppIcon name="search" aria-hidden="true" /><h3>{t.publicTitle}</h3><p>{t.publicText}</p></div><div><AppIcon name="book" aria-hidden="true" /><h3>{t.librarianTitle}</h3><p>{t.librarianText}</p></div></div>

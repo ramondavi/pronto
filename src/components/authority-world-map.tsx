@@ -6,11 +6,22 @@ import { AppIcon } from "@/components/app-icon";
 import type * as MapLibre from "maplibre-gl";
 import type * as Leaflet from "leaflet";
 import type { AuthorityMapPoint } from "@/lib/authority-map";
+import type { PublicAuthority } from "@/lib/public-subject-authority";
+import { authorityValueCopy } from "@/components/authority-value-note";
+import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { authorityMapCopy, authorityMapUiCopy } from "@/lib/authority-map-copy";
 import scaleOutlines from "../../public/maps/authority-scale-outlines.json";
 
 type Language = keyof typeof authorityMapCopy;
 type Scale = "world" | "southAmerica" | "brazil" | "northeast" | "bahia" | "salvador";
+const panelCopy = {
+  pt: { explore: "Explorar", details: "Autoridade", openPage: "Abrir página da autoridade", loading: "Carregando autoridade…", unavailable: "Não foi possível carregar a autoridade.", preferred: "Termo preferido", equivalent: "Em outros idiomas", composition: "Como o termo é formado", variants: "Outras formas de busca", relations: "Termos relacionados", notes: "Sobre este tema", source: "Origem", publicUse: "Para quem pesquisa", librarianUse: "Para bibliotecários" },
+  en: { explore: "Explore", details: "Authority", openPage: "Open authority page", loading: "Loading authority…", unavailable: "Could not load the authority.", preferred: "Preferred term", equivalent: "In other languages", composition: "How the term is formed", variants: "Other search forms", relations: "Related terms", notes: "About this theme", source: "Source", publicUse: "For visitors", librarianUse: "For librarians" },
+  es: { explore: "Explorar", details: "Autoridad", openPage: "Abrir página de la autoridad", loading: "Cargando autoridad…", unavailable: "No se pudo cargar la autoridad.", preferred: "Término preferido", equivalent: "En otros idiomas", composition: "Cómo se forma el término", variants: "Otras formas de búsqueda", relations: "Términos relacionados", notes: "Sobre este tema", source: "Origen", publicUse: "Para visitantes", librarianUse: "Para bibliotecarios" },
+  de: { explore: "Erkunden", details: "Normdatensatz", openPage: "Normdatensatz öffnen", loading: "Datensatz wird geladen…", unavailable: "Datensatz konnte nicht geladen werden.", preferred: "Bevorzugter Begriff", equivalent: "In anderen Sprachen", composition: "Aufbau des Begriffs", variants: "Weitere Suchformen", relations: "Verwandte Begriffe", notes: "Über dieses Thema", source: "Quelle", publicUse: "Für Besuchende", librarianUse: "Für Bibliotheken" },
+  fr: { explore: "Explorer", details: "Autorité", openPage: "Ouvrir la notice", loading: "Chargement de la notice…", unavailable: "Impossible de charger la notice.", preferred: "Terme préféré", equivalent: "Dans d’autres langues", composition: "Composition du terme", variants: "Autres formes de recherche", relations: "Termes associés", notes: "À propos de ce thème", source: "Source", publicUse: "Pour les visiteurs", librarianUse: "Pour les bibliothécaires" },
+  it: { explore: "Esplora", details: "Autorità", openPage: "Apri pagina dell’autorità", loading: "Caricamento autorità…", unavailable: "Impossibile caricare l’autorità.", preferred: "Termine preferito", equivalent: "In altre lingue", composition: "Composizione del termine", variants: "Altre forme di ricerca", relations: "Termini correlati", notes: "Informazioni sul tema", source: "Fonte", publicUse: "Per i visitatori", librarianUse: "Per i bibliotecari" },
+} as const;
 const scales: { key: Scale; center: [number, number]; zoom: number; bounds?: [[number, number], [number, number]] }[] = [
   { key: "world", center: [12, 0], zoom: 3 },
   { key: "southAmerica", center: [-19, -60], zoom: 4, bounds: [[-82, -56], [-34, 13.5]] },
@@ -37,16 +48,18 @@ function inScale(point: AuthorityMapPoint, scale: Scale) {
 export function AuthorityWorldMap({ points, language, initialAuthorityId }: { points: AuthorityMapPoint[]; language: Language; initialAuthorityId?: string }) {
   const t = authorityMapCopy[language];
   const ui = authorityMapUiCopy[language];
+  const panelText = panelCopy[language];
   const [query, setQuery] = useState("");
   const [scaleIndex, setScaleIndex] = useState(0);
-  const [selected, setSelected] = useState<string | null>(() => {
-    const point = points.find((item) => item.authority_id === initialAuthorityId);
-    return point ? `${point.place_label.toLocaleLowerCase("pt-BR")}:${point.latitude}:${point.longitude}` : null;
-  });
   const [panelOpen, setPanelOpen] = useState(true);
+  const [panelTab, setPanelTab] = useState<"explore" | "details">(initialAuthorityId ? "details" : "explore");
+  const [selectedAuthorityId, setSelectedAuthorityId] = useState<string | null>(initialAuthorityId ?? null);
+  const [authorityRecord, setAuthorityRecord] = useState<(PublicAuthority & { marc_text: string }) | null>(null);
+  const [recordError, setRecordError] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [ready, setReady] = useState(false);
+  const [viewportRevision, setViewportRevision] = useState(0);
   const mapNode = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibre.Map | null>(null);
   const markersRef = useRef<MapLibre.Marker[]>([]);
@@ -100,7 +113,24 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     else map.set(key, { key, name: point.place_label, latitude: point.latitude, longitude: point.longitude, points: [point] });
     return map;
   }, new Map<string, { key: string; name: string; latitude: number; longitude: number; points: AuthorityMapPoint[] }>()).values()), [filtered]);
-  const active = places.find((place) => place.key === selected) ?? null;
+  useEffect(() => {
+    if (!selectedAuthorityId) { setAuthorityRecord(null); return; }
+    const controller = new AbortController();
+    setAuthorityRecord(null);
+    setRecordError(false);
+    fetch(`/autoridades/${encodeURIComponent(selectedAuthorityId)}/mapa.json`, { signal: controller.signal })
+      .then((response) => { if (!response.ok) throw new Error("authority_unavailable"); return response.json() as Promise<PublicAuthority & { marc_text: string }>; })
+      .then((record) => setAuthorityRecord(record))
+      .catch(() => { if (!controller.signal.aborted) setRecordError(true); });
+    return () => controller.abort();
+  }, [selectedAuthorityId]);
+  const openAuthority = (point: AuthorityMapPoint) => {
+    setSelectedAuthorityId(point.authority_id);
+    setPanelTab("details");
+    setPanelOpen(true);
+    if (rasterReady && rasterRef.current) rasterRef.current.flyTo([point.latitude, point.longitude], Math.max(rasterRef.current.getZoom(), 12), { duration: .7 });
+    else if (mapRef.current) mapRef.current.flyTo({ center: [point.longitude, point.latitude], zoom: Math.max(mapRef.current.getZoom(), 12), duration: 700 });
+  };
   useEffect(() => {
     if (!mapNode.current) return;
     let disposed = false;
@@ -141,6 +171,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
           if (loadTimer) clearTimeout(loadTimer);
           setReady(true);
         });
+        map.on("moveend", () => setViewportRevision((value) => value + 1));
         themeObserver = new MutationObserver(() => { const nextStyle = styleForTheme(); if (nextStyle !== currentStyle) { currentStyle = nextStyle; map?.setStyle(nextStyle); } });
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         loadTimer = setTimeout(() => { if (!disposed && !loaded) setMapError(true); }, 8000);
@@ -161,6 +192,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
       rasterRef.current = map;
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' }).addTo(map);
       rasterMarkersRef.current = L.layerGroup().addTo(map);
+      map.on("moveend", () => setViewportRevision((value) => value + 1));
       setRasterReady(true);
     }).catch(() => {});
     return () => { disposed = true; map?.remove(); rasterRef.current = null; rasterMarkersRef.current = null; rasterOutlineRef.current = null; leafletRef.current = null; };
@@ -193,32 +225,56 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     if (!ready || !M || !map) return;
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
-    places.forEach((place) => {
+    const clusters: (typeof places)[] = [];
+    for (const place of places) {
+      const position = map.project([place.longitude, place.latitude]);
+      const cluster = clusters.find((group) => { const anchor = map.project([group[0].longitude, group[0].latitude]); return Math.hypot(position.x - anchor.x, position.y - anchor.y) < 30; });
+      if (cluster) cluster.push(place); else clusters.push([place]);
+    }
+    clusters.forEach((group) => {
+      const place = group[0];
+      const total = group.reduce((sum, item) => sum + item.points.length, 0);
       const element = document.createElement("button");
       element.type = "button";
-      element.className = "authority-world__marker";
-      element.title = place.name;
-      element.setAttribute("aria-label", place.name);
-      element.addEventListener("click", () => { setSelected(place.key); setPanelOpen(true); });
+      element.className = `authority-world__marker${group.some((item) => item.points.some((point) => point.authority_id === selectedAuthorityId)) ? " authority-world__marker--selected" : ""}${total > 1 ? " authority-world__marker--cluster" : ""}`;
+      element.setAttribute("aria-label", total > 1 ? `${total} ${t.themes}` : place.name);
+      if (total > 1) element.textContent = String(total);
+      const tooltip = document.createElement("span");
+      tooltip.className = "authority-world__marker-tooltip";
+      tooltip.textContent = total > 1 ? `${total} ${t.themes}` : place.name;
+      element.append(tooltip);
+      element.addEventListener("click", () => {
+        if (total > 1 && group.length > 1) map.flyTo({ center: [place.longitude, place.latitude], zoom: Math.min(map.getZoom() + 2, 18), duration: 500 });
+        else openAuthority(place.points[0]);
+      });
       markersRef.current.push(new M.Marker({ element, anchor: "center" }).setLngLat([place.longitude, place.latitude]).addTo(map));
     });
-  }, [places, ready]);
+  }, [places, ready, selectedAuthorityId, viewportRevision]);
   useEffect(() => {
     const L = leafletRef.current;
-    const group = rasterMarkersRef.current;
-    if (!rasterReady || !L || !group) return;
-    group.clearLayers();
-    places.forEach((place) => {
-      const marker = L.circleMarker([place.latitude, place.longitude], { radius: 8, weight: 2, color: "#fff", fillColor: "#173d7b", fillOpacity: 1, className: "authority-world__marker" });
-      marker.bindTooltip(place.name, { direction: "top" });
-      marker.on("click", () => { setSelected(place.key); setPanelOpen(true); });
-      group.addLayer(marker);
+    const markerLayer = rasterMarkersRef.current;
+    if (!rasterReady || !L || !markerLayer) return;
+    markerLayer.clearLayers();
+    const map = rasterRef.current;
+    if (!map) return;
+    const clusters: (typeof places)[] = [];
+    for (const place of places) {
+      const position = map.latLngToContainerPoint([place.latitude, place.longitude]);
+      const cluster = clusters.find((group) => position.distanceTo(map.latLngToContainerPoint([group[0].latitude, group[0].longitude])) < 30);
+      if (cluster) cluster.push(place); else clusters.push([place]);
+    }
+    clusters.forEach((group) => {
+      const place = group[0];
+      const total = group.reduce((sum, item) => sum + item.points.length, 0);
+      const selectedMarker = group.some((item) => item.points.some((point) => point.authority_id === selectedAuthorityId));
+      const marker = L.marker([place.latitude, place.longitude], { icon: L.divIcon({ className: "authority-world__marker-shell", html: `<span class="authority-world__marker${selectedMarker ? " authority-world__marker--selected" : ""}${total > 1 ? " authority-world__marker--cluster" : ""}">${total > 1 ? total : ""}</span>`, iconSize: [total > 1 ? 30 : 16, total > 1 ? 30 : 16] }) });
+      marker.bindTooltip(total > 1 ? `${total} ${t.themes}` : place.name, { direction: "top", className: selectedMarker ? "authority-world__leaflet-tooltip authority-world__leaflet-tooltip--selected" : "authority-world__leaflet-tooltip" });
+      marker.on("click", () => { if (total > 1 && group.length > 1) map.flyTo([place.latitude, place.longitude], Math.min(map.getZoom() + 2, 18), { duration: .5 }); else openAuthority(place.points[0]); });
+      rasterMarkersRef.current?.addLayer(marker);
     });
-  }, [places, rasterReady]);
+  }, [places, rasterReady, selectedAuthorityId, viewportRevision]);
   const choosePlace = (place: (typeof places)[number]) => {
-    setSelected(place.key);
-    if (rasterReady) { const map = rasterRef.current; map?.flyTo([place.latitude, place.longitude], Math.max(map.getZoom(), 12), { duration: .7 }); }
-    else { const map = mapRef.current; if (map) map.flyTo({ center: [place.longitude, place.latitude], zoom: Math.max(map.getZoom(), 12), duration: 700 }); }
+    openAuthority(place.points[0]);
   };
   useEffect(() => {
     if (!initialAuthorityId || (!ready && !rasterReady)) return;
@@ -239,9 +295,28 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     <aside className="authority-world__panel" data-open={panelOpen} aria-label={t.title} style={{ height: panelOpen ? "min(520px, calc(100% - 48px))" : "56px" }}>
       <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen}>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
-        <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setSelected(null); }} placeholder={t.search} /></div></label>
-        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => { setScaleIndex(Number(event.target.value)); setSelected(null); }} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => { setScaleIndex(index); setSelected(null); }}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
-        {active ? <div className="authority-world__selection"><button type="button" className="authority-world__back" onClick={() => setSelected(null)}>← {t.all}</button><h2>{active.name}</h2><ul>{active.points.map((point) => <li key={point.authority_id}><Link href={`/autoridades/${point.authority_id}`}>{point.term_label} <span aria-hidden="true">↗</span></Link></li>)}</ul></div> : <div className="authority-world__places"><h2>{t.all} <span>{places.length}</span></h2>{places.length > 0 ? <ul>{places.map((place) => <li key={place.key}><button type="button" onClick={() => choosePlace(place)}>{place.name}<span>{place.points.length} {t.themes} →</span></button></li>)}</ul> : <p>{points.length ? t.noResults : t.empty}</p>}</div>}
+        <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPanelTab("explore"); }} placeholder={t.search} /></div></label>
+        <div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{panelText.details}</button></div>
+        {panelTab === "explore" ? <>
+        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => setScaleIndex(Number(event.target.value))} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => setScaleIndex(index)}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
+        <div className="authority-world__places"><h2>{t.all} <span>{places.length}</span></h2>{query ? <ul>{places.slice(0, 20).flatMap((place) => place.points.map((point) => <li key={`${place.key}:${point.authority_id}`}><button type="button" onClick={() => choosePlace({ ...place, points: [point] })}>{point.term_label}<span>{place.name} →</span></button></li>))}</ul> : <p>{points.length ? "" : t.empty}</p>}{query && places.length === 0 && <p>{t.noResults}</p>}</div>
+        </> : <div className="authority-world__record" role="tabpanel">
+          {recordError ? <p>{panelText.unavailable}</p> : !authorityRecord ? <p>{panelText.loading}</p> : <>
+            <div className="authority-world__record-heading"><span className="public-authority-detail__type">{publicAuthorityType(language, authorityRecord.heading_type)}</span><Link href={`/autoridades/${authorityRecord.id}`} aria-label={panelText.openPage} title={panelText.openPage}><AppIcon name="external" /></Link></div>
+            <p className="eyebrow">{panelText.preferred}</p><h2>{authorityRecord.label}</h2>
+            {places.find((place) => place.points.some((point) => point.authority_id === authorityRecord.id))?.points.filter((point) => point.authority_id !== authorityRecord.id).map((point) => <button type="button" className="authority-world__related-place" key={point.authority_id} onClick={() => openAuthority(point)}>{point.term_label} →</button>)}
+            {authorityRecord.notes[0]?.value && <p>{authorityRecord.notes[0].value}</p>}
+            {authorityRecord.label_en && <div className="authority-world__record-section"><h3>{panelText.equivalent}</h3><p><span lang="en">English (EN)</span> {authorityRecord.label_en}</p></div>}
+            {!!authorityRecord.components.length && <div className="authority-world__record-section"><h3>{panelText.composition}</h3><ol>{authorityRecord.components.map((part, index) => <li key={index}><strong>{part.kind}</strong> {part.value}</li>)}</ol></div>}
+            {!!authorityRecord.variants.length && <div className="authority-world__record-section"><h3>{panelText.variants}</h3><ul>{authorityRecord.variants.map((part, index) => <li key={index}>{part.value}</li>)}</ul></div>}
+            {!!authorityRecord.relations.length && <div className="authority-world__record-section"><h3>{panelText.relations}</h3><ul>{authorityRecord.relations.map((part, index) => <li key={index}>{part.kind && <strong>{part.kind}: </strong>}{part.value}</li>)}</ul></div>}
+            {authorityRecord.notes.slice(1).map((note, index) => <div className="authority-world__record-section" key={index}><h3>{note.kind || panelText.notes}</h3><p>{note.value}</p></div>)}
+            <div className="authority-world__record-section"><h3>{panelText.source}</h3><p>{authorityRecord.source}{authorityRecord.source_identifier ? ` · ${authorityRecord.source_identifier}` : ""}</p>{authorityRecord.source_url?.startsWith("https://") && <a href={authorityRecord.source_url} target="_blank" rel="noopener noreferrer">{authorityRecord.source_url}</a>}</div>
+            <div className="authority-world__record-section"><h3>{panelText.librarianUse}</h3><p>{authorityRecord.rights_statement}</p><div className="authority-world__record-downloads"><a href={`/autoridades/${authorityRecord.id}/marc.xml`}>MARCXML</a><a href={`/autoridades/${authorityRecord.id}/marc.mrc`}>ISO 2709</a><a href={`/autoridades/${authorityRecord.id}/skos.jsonld`}>SKOS/JSON-LD</a></div></div>
+            <div className="authority-world__record-section authority-world__record-value"><details><summary>MARC21</summary><pre>{authorityRecord.marc_text}</pre></details></div>
+            <div className="authority-world__record-section authority-world__record-value"><h3>{authorityValueCopy[language].title}</h3><details><summary>{panelText.publicUse}</summary><p>{authorityValueCopy[language].publicText}</p></details><details><summary>{panelText.librarianUse}</summary><p>{authorityValueCopy[language].librarianText}</p></details></div>
+          </>}
+        </div>}
       </div>
       <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button></div>
     </aside>

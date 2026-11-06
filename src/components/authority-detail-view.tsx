@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AppIcon } from "@/components/app-icon";
 import { authorityGuidedCopy } from "@/lib/authority-guided-copy";
 
@@ -18,6 +18,12 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
   const [professional, setProfessional] = useState(false);
   const [tab, setTab] = useState<"details" | "marc">("details");
   const [copyMessage, setCopyMessage] = useState("");
+  const detailRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!professional) return;
+    const frame = requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [professional]);
 
   async function copyMarc() {
     try {
@@ -37,7 +43,7 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
         <AppIcon className="authority-professional-switch__arrow" name={professional ? "chevronDown" : "arrowRight"} />
       </button>
     </div>
-    <div id="authority-detail-content">
+    <div id="authority-detail-content" ref={detailRef}>
       {professional ? <section className="authority-professional-view" aria-label={professionalTitle}>
         <div className="authority-professional-view__heading"><div><span className="authority-professional-view__eyebrow">{professionalTitle}</span><h2>{professionalSubtitle}</h2></div><button type="button" className="button button--secondary button--small" onClick={() => setProfessional(false)}>{copy.back}</button></div>
         <div className="authority-professional-view__tabs" role="tablist" aria-label={professionalTitle}>
@@ -47,7 +53,7 @@ export function AuthorityDetailView({ hero, children, professionalContent, marcT
         {tab === "details" ? <div id="authority-details-panel" role="tabpanel" aria-labelledby="authority-details-tab" className="authority-professional-view__details">{professionalContent}</div> : <div id="authority-marc-panel" role="tabpanel" aria-labelledby="authority-marc-tab" className="authority-professional-view__marc">
           <div className="authority-professional-view__marc-heading"><h3>{copy.marcTab}</h3><button type="button" className="button button--primary button--small" onClick={copyMarc}><AppIcon name="copy" />{copy.copyMarc}</button></div>
           <div className="authority-professional-view__guidance notice notice--alert"><span className="notice__symbol"><AppIcon name="help" /></span><div><p>{copy.marcViewHelp}</p><p>{copy.marcLegend}</p></div></div>
-          <div className="authority-professional-view__code"><code>{marcText.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div>
+          <div className="authority-professional-view__code" onCopy={(event) => { event.clipboardData.setData("text/plain", marcText); event.preventDefault(); }}><code>{marcText.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div>
           <p className="authority-professional-view__copy-status" role="status">{copyMessage}</p>
         </div>}
       </section> : <div className="public-authority-detail__grid"><div className="public-authority-detail__content">{children}</div></div>}

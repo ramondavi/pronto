@@ -9092,3 +9092,36 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 /* Long MARC fields wrap visually while the copy button retains the original lines. */
 .authority-professional-view__code { overflow-x: hidden; overflow-y: auto; }
 .authority-professional-view__code code { box-sizing: border-box; width: 100%; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.authority-professional-view__code-line { padding-left: 4ch; text-indent: -4ch; }
+#authority-detail-content { scroll-margin-top: 24px; }
+.authority-world__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-world__tabs button { min-height: 36px; border-radius: var(--radius-sm); color: var(--text-muted); font-size: .78rem; font-weight: 700; }
+.authority-world__tabs button[aria-selected="true"] { background: var(--institutional); color: var(--surface-raised); }
+.authority-world__tabs button:disabled { opacity: .45; cursor: not-allowed; }
+.authority-world__record { display: grid; gap: 14px; padding: 16px 0; min-width: 0; }
+.authority-world__record-heading { display: flex; justify-content: space-between; align-items: center; }
+.authority-world__record-heading a { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--institutional); }
+.authority-world__record-heading a svg { width: 17px; height: 17px; }
+.authority-world__record > .eyebrow { margin: 0; color: var(--institutional); font-size: .66rem; }
+.authority-world__record > h2 { margin: -8px 0 0; font-size: 1.28rem; line-height: 1.2; overflow-wrap: anywhere; }
+.authority-world__related-place { width: fit-content; padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--institutional); font-size: .76rem; text-align: left; }
+.authority-world__record > p,.authority-world__record-section p { margin: 0; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
+.authority-world__record-section { padding-top: 12px; border-top: 1px solid var(--line); }
+.authority-world__record-section h3 { margin: 0 0 8px; color: var(--institutional); font-size: .8rem; }
+.authority-world__record-section :is(ol,ul) { display: grid; gap: 6px; margin: 0; padding-left: 20px; font-size: .8rem; line-height: 1.45; }
+.authority-world__record-section a { color: var(--institutional); overflow-wrap: anywhere; }
+.authority-world__record-downloads { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.authority-world__record-downloads a { padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .72rem; font-weight: 700; text-decoration: none; }
+.authority-world__record-value details { margin-top: 8px; padding: 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.authority-world__record-value summary { color: var(--institutional); font-size: .8rem; font-weight: 700; cursor: pointer; }
+.authority-world__record-value details p { margin-top: 8px; }
+.authority-world__record-value pre { max-height: 220px; margin: 8px 0 0; padding: 10px; overflow: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); font-size: .68rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; }
+.authority-world__marker { position: relative; display: grid; place-items: center; }
+.authority-world__marker--selected { width: 22px; height: 22px; background: var(--institutional); box-shadow: 0 0 0 5px color-mix(in srgb,var(--institutional) 28%,transparent),0 0 0 8px var(--surface-raised); }
+.authority-world__marker--cluster { width: 30px; height: 30px; color: white; font-size: .7rem; font-weight: 800; }
+.authority-world__marker-tooltip { position: absolute; bottom: calc(100% + 9px); left: 50%; width: max-content; max-width: 180px; padding: 5px 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font-size: .72rem; font-weight: 700; line-height: 1.2; box-shadow: var(--shadow-card); opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(4px); transition: opacity .15s ease,transform .15s ease; }
+.authority-world__marker:is(:hover,:focus-visible) .authority-world__marker-tooltip { opacity: 1; transform: translateX(-50%); }
+.authority-world__marker--selected .authority-world__marker-tooltip,.authority-world__leaflet-tooltip--selected { border-color: var(--institutional); background: var(--institutional-soft); color: var(--institutional); }
+.authority-world__marker-shell { border: 0; background: transparent; }
+.authority-world__marker-shell .authority-world__marker { pointer-events: none; }
+.authority-world__leaflet-tooltip { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; font-size: .72rem; font-weight: 700; box-shadow: var(--shadow-card); }
