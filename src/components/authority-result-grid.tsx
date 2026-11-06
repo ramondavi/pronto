@@ -32,12 +32,24 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
     let disposed = false;
     let waiting = 0;
     let finishing = 0;
+    let returning = 0;
     let durationMs = 8000;
     const outers = [titleOuter.current, equivalentOuter.current];
     const clear = () => {
       window.clearTimeout(waiting);
       window.clearTimeout(finishing);
-      outers.forEach((outer) => outer?.classList.remove("is-autoplaying"));
+      window.clearTimeout(returning);
+      outers.forEach((outer) => outer?.classList.remove("is-autoplaying", "is-returning"));
+    };
+    const finish = () => {
+      window.clearTimeout(finishing);
+      window.clearTimeout(returning);
+      outers.forEach((outer) => {
+        if (!outer?.classList.contains("is-scrolling")) return;
+        outer.classList.remove("is-autoplaying");
+        outer.classList.add("is-returning");
+      });
+      returning = window.setTimeout(() => outers.forEach((outer) => outer?.classList.remove("is-returning")), 500);
     };
     const schedule = () => {
       if (disposed || !visible || played || card?.matches(":hover") || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !outers.some((outer) => outer?.classList.contains("is-scrolling"))) return;
@@ -46,7 +58,7 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
         if (card?.matches(":hover")) return;
         played = true;
         outers.forEach((outer) => outer?.classList.add("is-autoplaying"));
-        finishing = window.setTimeout(clear, durationMs);
+        finishing = window.setTimeout(finish, durationMs);
       }, 2400);
     };
     const measure = () => {
@@ -68,7 +80,7 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
     const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule(); else window.clearTimeout(waiting); }, { threshold: .5 });
     if (card) visibility.observe(card);
     const enter = () => { played = true; clear(); };
-    const leave = () => clear();
+    const leave = () => finish();
     card?.addEventListener("mouseenter", enter);
     card?.addEventListener("mouseleave", leave);
     document.fonts.ready.then(measure);

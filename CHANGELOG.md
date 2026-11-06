@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: mantém a largura da página ao abrir o registro MARC21 e apresenta suas orientações como aviso do Pronto!. A identificação passa a usar a nota “Sobre este tema” cadastrada pela biblioteca; os detalhes guiados aproveitam a largura antes ocupada pelo painel lateral. Nos cartões, o texto truncado respeita a margem interna e retorna com transição suave.
+
 - 05/11/2026: a página individual coloca o acesso “Para bibliotecários” no canto superior direito da identificação. O botão alterna a leitura guiada com uma vista técnica maior, sem recarregar a página; nela, abas separam origem e exportações da leitura MARC21, com cópia pelo botão dedicado.
 
 - 05/11/2026: os nomes longos dos cartões começam truncados com reticências, fazem um único ciclo automático após breve espera quando visíveis e repetem o letreiro apenas enquanto o cursor permanece sobre o cartão.

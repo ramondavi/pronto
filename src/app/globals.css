@@ -9059,3 +9059,26 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-professional-view__copy-status { min-height: 1.4em; margin: 9px 0 0; color: var(--institutional); font-size: .8rem; }
 @media(max-width:800px) { .authority-professional-view__details { grid-template-columns: 1fr; } }
 @media(max-width:600px) { .public-authority-detail__hero-wrap .public-authority-detail__identity-top { min-height: 0; margin-bottom: 15px; } .authority-professional-switch { position: relative; top: auto; right: auto; width: 100%; margin-top: 12px; } .authority-professional-view__heading,.authority-professional-view__marc-heading { align-items: flex-start; flex-direction: column; } }
+
+/* Keep the MARC viewport inside the page grid; only the record itself scrolls. */
+.public-authority-detail > #authority-detail-content,#authority-detail-content > .authority-professional-view,.authority-professional-view__marc { min-width: 0; width: 100%; max-width: 100%; box-sizing: border-box; }
+.authority-professional-view__marc { overflow: hidden; }
+.authority-professional-view__code { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; }
+.authority-professional-view__guidance.notice { display: flex; align-items: flex-start; gap: 11px; margin: 17px 0 13px; border-top-color: var(--institutional); }
+.authority-professional-view__guidance .notice__symbol { flex: none; }
+.authority-professional-view__guidance > div { min-width: 0; }
+.authority-professional-view__guidance p { font-size: .82rem; line-height: 1.5; }
+.authority-professional-view__guidance p + p { margin-top: 6px; }
+
+/* Guided cards use the full details width after the former side panel was removed. */
+#authority-detail-content .public-authority-detail__content { grid-template-columns: repeat(2,minmax(0,1fr)); max-width: none; align-items: stretch; }
+#authority-detail-content .public-authority-detail__content > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media(max-width:760px) { #authority-detail-content .public-authority-detail__content { grid-template-columns: minmax(0,1fr); } }
+
+/* The text and equivalent share the card's inner right edge in their resting state. */
+.public-authorities__list--cards .public-authorities__marquee { width: calc(100% - 16px); }
+.public-authorities__marquee.is-scrolling.is-returning > span { animation: authority-marquee-return .5s ease-out both; }
+.public-authorities__marquee.is-scrolling.is-returning::after { animation: authority-ellipsis-return .5s ease-out both; }
+@keyframes authority-marquee-return { from { opacity: 0; transform: translateX(0); } to { opacity: 1; transform: translateX(0); } }
+@keyframes authority-ellipsis-return { from { opacity: 0; } to { opacity: 1; } }
+@media(prefers-reduced-motion:reduce) { .public-authorities__marquee.is-scrolling.is-returning > span,.public-authorities__marquee.is-scrolling.is-returning::after { animation: none; } }
