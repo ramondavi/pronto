@@ -9204,3 +9204,23 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-world__marker:is(:hover,:focus-visible) > .authority-world__marker-tooltip--right { transform: translateX(0) translateY(-50%) scale(1) !important; }
 .authority-world__leaflet-tooltip { padding: 6px 9px; max-width: 150px; font-size: .68rem; }
 @media(prefers-reduced-motion:reduce) { .authority-world__marker-tooltip,.authority-world__tab-tip { transition: none; } }
+.authority-world__panel[data-tab="details"][data-open="true"] .authority-world__panel-content { flex: 1 1 auto; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--institutional) var(--surface-raised); }
+.authority-world__panel[data-tab="details"] .authority-world__panel-content::-webkit-scrollbar { width: 8px; }
+.authority-world__panel[data-tab="details"] .authority-world__panel-content::-webkit-scrollbar-thumb { border: 2px solid var(--surface-raised); border-radius: var(--radius); background: var(--institutional); }
+.authority-world__tab-tip { top: calc(100% + 8px); bottom: auto; }
+.authority-world__search-tip { margin-top: 3px; }
+.authority-world__marker--cluster:is(:hover,:focus-visible) { color: #fff; }
+.authority-world__record-loading { display: grid; justify-items: center; gap: 9px; padding: 24px; color: var(--institutional); font-size: .8rem; font-weight: 650; }
+.authority-world__record-section h3 { display: flex; align-items: center; gap: 7px; }
+.authority-world__record-section h3 svg { width: 16px; height: 16px; }
+.authority-world__record-section { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 88%,transparent); }
+.authority-world__record-section p > span:first-child { display: inline-block; margin-right: 5px; color: var(--institutional); font-weight: 650; }
+.authority-world__record-value .authority-professional-view__code { max-height: 220px; margin-top: 8px; padding: 10px; }
+.authority-world__record-value .authority-professional-view__code code { font-size: .68rem; line-height: 1.5; }
+.authority-world__compass { display: flex; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: var(--shadow-card); }
+.authority-world__compass button { display: grid; place-items: center; width: 38px; height: 38px; border: 0; background: transparent; color: var(--institutional); font-size: 1.3rem; cursor: pointer; }
+.authority-world__compass button + button { border-left: 1px solid var(--line); }
+.authority-world__compass button:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+.authority-world__compass button:disabled { opacity: .38; cursor: not-allowed; }
+.authority-world__compass button span { display: grid; place-items: center; transition: transform .3s ease; }
+.authority-world__compass svg { width: 19px; height: 19px; }
