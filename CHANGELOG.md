@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: reorganiza a página individual de autoridade em leitura guiada, com composição, formas de busca, relações e notas apenas quando houver dados. O painel para bibliotecários separa origem e condições de uso dos três formatos de download, cada um com explicação curta, nos seis idiomas.
+
 - 05/11/2026: preserva a visualização em cartões ou lista ao mudar filtros, fazer outra busca ou avançar a página de resultados do catálogo público durante a sessão.
 
 - 05/11/2026: os letreiros dos cartões começam visíveis e parados, deslizam até mostrar o fim do texto, desaparecem suavemente e reiniciam de imediato na posição inicial.
