@@ -26,21 +26,53 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
   const equivalentOuter = useRef<HTMLSpanElement>(null);
   const equivalentInner = useRef<HTMLSpanElement>(null);
   useEffect(() => {
+    const card = titleOuter.current?.closest<HTMLElement>(".public-authorities__result");
+    let visible = false;
+    let played = false;
+    let disposed = false;
+    let waiting = 0;
+    let finishing = 0;
+    let durationMs = 8000;
+    const outers = [titleOuter.current, equivalentOuter.current];
+    const clear = () => {
+      window.clearTimeout(waiting);
+      window.clearTimeout(finishing);
+      outers.forEach((outer) => outer?.classList.remove("is-autoplaying"));
+    };
+    const schedule = () => {
+      if (disposed || !visible || played || card?.matches(":hover") || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !outers.some((outer) => outer?.classList.contains("is-scrolling"))) return;
+      window.clearTimeout(waiting);
+      waiting = window.setTimeout(() => {
+        if (card?.matches(":hover")) return;
+        played = true;
+        outers.forEach((outer) => outer?.classList.add("is-autoplaying"));
+        finishing = window.setTimeout(clear, durationMs);
+      }, 2400);
+    };
     const measure = () => {
+      if (disposed) return;
       const pairs = [[titleOuter.current, titleInner.current], [equivalentOuter.current, equivalentInner.current]] as const;
       const distances = pairs.map(([outer, inner]) => outer && inner ? Math.max(0, inner.scrollWidth - outer.clientWidth) : 0);
-      const duration = `${Math.min(22, Math.max(8, Math.max(...distances) / 22 + 5))}s`;
+      durationMs = Math.min(22000, Math.max(8000, Math.max(...distances) / 22 * 1000 + 5000));
+      const duration = `${durationMs}ms`;
       pairs.forEach(([outer], index) => {
         if (!outer) return;
         outer.classList.toggle("is-scrolling", distances[index] > 2);
         outer.style.setProperty("--heading-travel", `${-distances[index]}px`);
         outer.style.setProperty("--heading-duration", duration);
       });
+      schedule();
     };
     const observer = new ResizeObserver(measure);
     [titleOuter.current, titleInner.current, equivalentOuter.current, equivalentInner.current].forEach((element) => { if (element) observer.observe(element); });
+    const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule(); else window.clearTimeout(waiting); }, { threshold: .5 });
+    if (card) visibility.observe(card);
+    const enter = () => { played = true; clear(); };
+    const leave = () => clear();
+    card?.addEventListener("mouseenter", enter);
+    card?.addEventListener("mouseleave", leave);
     document.fonts.ready.then(measure);
-    return () => observer.disconnect();
+    return () => { disposed = true; clear(); observer.disconnect(); visibility.disconnect(); card?.removeEventListener("mouseenter", enter); card?.removeEventListener("mouseleave", leave); };
   }, [item.label, item.label_en, englishLabel]);
   return <>
     <h3><Link href={`/autoridades/${item.id}`} title={item.label}><span className="public-authorities__marquee" ref={titleOuter}><span ref={titleInner}><Highlight value={item.label} terms={terms} /></span></span></Link></h3>
