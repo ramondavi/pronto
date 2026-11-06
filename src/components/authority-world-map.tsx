@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { Icon3dCubeSphere, IconCube3dSphereOff, IconPin, IconPinnedOff } from "@tabler/icons-react";
 import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { AppIcon } from "@/components/app-icon";
@@ -123,6 +123,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const [mapView, setMapView] = useState<MapView | null>(null);
   const mapNode = useRef<HTMLDivElement>(null);
   const panelNode = useRef<HTMLElement>(null);
+  const compassDrag = useRef<{ startAngle: number; startBearing: number; startX: number; startY: number; moved: boolean } | null>(null);
   const mapRef = useRef<MapLibre.Map | null>(null);
   const markersRef = useRef<MapLibre.Marker[]>([]);
   const maplibreRef = useRef<typeof MapLibre | null>(null);
@@ -261,6 +262,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         });
         map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setMinimumZoom(map.getMinZoom()); setBearing(map.getBearing()); setViewportRevision((value) => value + 1); });
         map.on("pitchend", () => { if (map) setTilted(map.getPitch() > 1); });
+        map.on("rotate", () => { if (map) setBearing(map.getBearing()); });
         themeObserver = new MutationObserver(() => { const nextStyle = styleForTheme(); if (nextStyle !== currentStyle) { currentStyle = nextStyle; map?.setStyle(nextStyle); } });
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         loadTimer = setTimeout(() => { if (!disposed && !loaded) setMapError(true); }, 8000);
@@ -385,6 +387,10 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     }, 250);
     return () => window.clearTimeout(timer);
   }, [initialAuthorityId, points, ready, rasterReady]);
+  const compassAngle = (event: PointerEvent<HTMLButtonElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    return Math.atan2(event.clientY - bounds.top - bounds.height / 2, event.clientX - bounds.left - bounds.width / 2) * 180 / Math.PI;
+  };
   return <main className="authority-world" id="mapa-autoridades">
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
@@ -394,19 +400,17 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
       <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}>
         <button type="button" disabled={mapZoom >= 17.95} onClick={() => rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button>
         <button type="button" disabled={mapZoom <= minimumZoom + .01} onClick={() => rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button>
-        <button type="button" onClick={() => { if (rasterReady && rasterRef.current) { if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64] }); else rasterRef.current.flyTo(scale.center, scale.zoom); } else if (mapRef.current) { if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64 }); else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, pitch: 0, bearing: 0 }); } setTilted(false); }} aria-label={t.reset} title={t.reset}><AppIcon name="compass" /></button>
+        <button type="button" onClick={() => { if (rasterReady && rasterRef.current) { if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64] }); else rasterRef.current.flyTo(scale.center, scale.zoom); } else if (mapRef.current) { if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64 }); else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, pitch: 0, bearing: 0 }); } setTilted(false); }} aria-label={t.reset} title={t.reset}><AppIcon name="refresh" /></button>
         <button type="button" disabled={mapError} aria-pressed={tilted} onClick={() => { const map = mapRef.current; if (!map) return; map.easeTo({ pitch: tilted ? 0 : 58, duration: 700 }); }} aria-label={tilted ? extras.flatten : extras.tilt} title={tilted ? extras.flatten : extras.tilt}>{tilted ? <IconCube3dSphereOff size={18} /> : <Icon3dCubeSphere size={18} />}</button>
       </div>
       <div className="authority-world__compass" role="group" aria-label={extras.resetNorth}>
-        <button type="button" disabled={mapError} onClick={() => mapRef.current?.rotateTo((mapRef.current?.getBearing() ?? 0) - 15, { duration: 300 })} aria-label={extras.turnLeft} title={extras.turnLeft}>↶</button>
-        <button type="button" disabled={mapError || Math.abs(bearing) < 1} onClick={() => mapRef.current?.rotateTo(0, { duration: 500 })} aria-label={extras.resetNorth} title={extras.resetNorth}><span style={{ transform: `rotate(${-bearing}deg)` }}><AppIcon name="compass" /></span></button>
-        <button type="button" disabled={mapError} onClick={() => mapRef.current?.rotateTo((mapRef.current?.getBearing() ?? 0) + 15, { duration: 300 })} aria-label={extras.turnRight} title={extras.turnRight}>↷</button>
+        <button type="button" disabled={mapError} onPointerDown={(event) => { compassDrag.current = { startAngle: compassAngle(event), startBearing: mapRef.current?.getBearing() ?? 0, startX: event.clientX, startY: event.clientY, moved: false }; event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { const drag = compassDrag.current; if (!drag) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 4) drag.moved = true; if (drag.moved) mapRef.current?.setBearing(drag.startBearing + (compassAngle(event) - drag.startAngle)); }} onPointerUp={() => { if (compassDrag.current && !compassDrag.current.moved) mapRef.current?.rotateTo(0, { duration: 500 }); compassDrag.current = null; }} onPointerCancel={() => { compassDrag.current = null; }} onClick={(event) => { if (event.detail === 0) mapRef.current?.rotateTo(0, { duration: 500 }); }} aria-label={extras.resetNorth} title={extras.resetNorth}><span style={{ transform: `rotate(${-bearing}deg)` }}><AppIcon name="compass" /></span></button>
       </div>
     </div>
     <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
     <aside ref={panelNode} className="authority-world__panel" data-open={panelOpen} data-tab={panelTab} style={panelOpen && panelTab === "details" ? { height: explorePanelHeight ?? 560 } : undefined} aria-label={t.title}>
+      <div className="authority-world__tabs-shell" aria-hidden={!panelOpen} inert={!panelOpen}><div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><span className="authority-world__tab-wrap"><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{extras.theme}</button>{!selectedAuthorityId && <span className="authority-world__tab-tip" role="tooltip">{extras.selectPoint}</span>}</span></div></div>
       <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen}>
-        <div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><span className="authority-world__tab-wrap"><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{extras.theme}</button>{!selectedAuthorityId && <span className="authority-world__tab-tip" role="tooltip">{extras.selectPoint}</span>}</span></div>
         {panelTab === "explore" ? <>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
         <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onFocus={() => { setSuggestionsOpen(true); if (!searchTipSeen.current) { searchTipSeen.current = true; setSearchTipVisible(true); } }} onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 180)} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} /></div></label>
