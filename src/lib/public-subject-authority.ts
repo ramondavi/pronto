@@ -77,36 +77,75 @@ function marcField(tag: string, values: { code: string; value: string }[], ind1 
   return `<datafield tag="${tag}" ind1="${xml(ind1)}" ind2=" ">${values.map(({ code, value }) => `<subfield code="${code}">${xml(value)}</subfield>`).join("")}</datafield>`;
 }
 
-/** MARCXML is a MARC 21 authority interchange encoding; only mapped fields are emitted. */
-export function authorityAsMarcXml(record: PublicAuthority): string {
+type MarcField = { tag: string; value?: string; ind1?: string; ind2?: string; subfields?: { code: string; value: string }[] };
+
+function authorityMarcFields(record: PublicAuthority): { leader: string; fields: MarcField[] } {
   const tag = headingTagByKind[record.heading_type ?? ""] ?? "150";
   const firstCode = ({ "180": "x", "181": "z", "182": "y", "185": "v" } as Record<string, string>)[tag] ?? "a";
   const heading = record.components.length
     ? record.components.map((part, index) => ({ code: part.marcCode ?? (index === 0 ? firstCode : (marcParts[part.kind] ?? "x")), value: part.value }))
     : [{ code: firstCode, value: record.label }];
-  const variants = record.variants.map((entry, index) => safeText(entry.value)
-    ? marcField(String(Number(tag) + 300), [{ code: firstCode, value: entry.value }], record.marc_mapping.variant_ind1[index]) : "");
-  const relations = record.relations.map((entry, index) => safeText(entry.value) && /^(Mais amplo|Mais específico|Associativa)/.test(entry.kind ?? "")
-    ? marcField(String(Number(tag) + 400), [
-      ...((entry.kind ?? "").startsWith("Mais amplo") ? [{ code: "w", value: "g" }] : (entry.kind ?? "").startsWith("Mais específico") ? [{ code: "w", value: "h" }] : []),
-      { code: firstCode, value: entry.value },
-    ], record.marc_mapping.relation_ind1[index]) : "");
-  const notes = record.notes.filter((entry) => safeText(entry.value)).map((entry) => marcField(entry.kind?.includes("680") ? "680" : "667", [{ code: "a", value: entry.value }]));
   const date = new Date(record.published_at);
   const stamp = Number.isNaN(date.getTime()) ? "" : date.toISOString().replace(/[-:T]/g, "").slice(0, 14) + ".0";
   const dateEntered = Number.isNaN(date.getTime()) ? "000000" : date.toISOString().slice(2, 10).replaceAll("-", "");
   const fixed = Array.from({ length: 40 }, () => "|");
   dateEntered.split("").forEach((character, index) => { fixed[index] = character; });
-  fixed[9] = "a"; // established heading
-  fixed[39] = "d"; // other cataloging source
+  fixed[9] = "a";
+  fixed[39] = "d";
   const source = authoritySources[record.source] ?? record.source;
+  const data = (fieldTag: string, subfields: { code: string; value: string }[], ind1 = " "): MarcField => ({ tag: fieldTag, ind1, ind2: " ", subfields });
+  return { leader: "00000nz  a2200000n  4500", fields: [
+    { tag: "001", value: record.id }, { tag: "003", value: "Pronto" }, { tag: "005", value: stamp }, { tag: "008", value: fixed.join("") },
+    data("040", [{ code: "a", value: source }, { code: "b", value: "por" }, { code: "c", value: "Pronto!" }]),
+    data(tag, heading, record.marc_mapping.heading_ind1),
+    ...record.variants.flatMap((entry, index) => safeText(entry.value) ? [data(String(Number(tag) + 300), [{ code: firstCode, value: entry.value }], record.marc_mapping.variant_ind1[index])] : []),
+    ...record.relations.flatMap((entry, index) => safeText(entry.value) && /^(Mais amplo|Mais específico|Associativa)/.test(entry.kind ?? "") ? [data(String(Number(tag) + 400), [
+      ...((entry.kind ?? "").startsWith("Mais amplo") ? [{ code: "w", value: "g" }] : (entry.kind ?? "").startsWith("Mais específico") ? [{ code: "w", value: "h" }] : []),
+      { code: firstCode, value: entry.value },
+    ], record.marc_mapping.relation_ind1[index])] : []),
+    ...record.notes.filter((entry) => safeText(entry.value)).map((entry) => data(entry.kind?.includes("680") ? "680" : "667", [{ code: "a", value: entry.value }])),
+    ...(record.source === "pronto" ? [] : [data("670", [{ code: "a", value: `${source}${record.source_identifier ? ` (${record.source_identifier})` : ""}` }])]),
+  ] };
+}
+
+/** MARCXML is a MARC 21 authority interchange encoding; only mapped fields are emitted. */
+export function authorityAsMarcXml(record: PublicAuthority): string {
+  const { leader, fields } = authorityMarcFields(record);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<collection xmlns="http://www.loc.gov/MARC21/slim"><record>` +
-    `<leader>00000nz  a2200000n  4500</leader><controlfield tag="001">${xml(record.id)}</controlfield>` +
-    `<controlfield tag="003">Pronto</controlfield><controlfield tag="005">${stamp}</controlfield>` +
-    `<controlfield tag="008">${fixed.join("")}</controlfield>` +
-    marcField("040", [{ code: "a", value: source }, { code: "b", value: "por" }, { code: "c", value: "Pronto!" }]) +
-    marcField(tag, heading, record.marc_mapping.heading_ind1) + variants.join("") + relations.join("") + notes.join("") +
-    (record.source === "pronto" ? "" : marcField("670", [{ code: "a", value: `${source}${record.source_identifier ? ` (${record.source_identifier})` : ""}` }])) + `</record></collection>`;
+    `<leader>${leader}</leader>` + fields.map((field) => field.subfields
+      ? marcField(field.tag, field.subfields, field.ind1)
+      : `<controlfield tag="${field.tag}">${xml(field.value)}</controlfield>`).join("") + `</record></collection>`;
+}
+
+/** MARC 21 authority record in ISO 2709, encoded as UTF-8 bytes. */
+export function authorityAsIso2709(record: PublicAuthority): Uint8Array {
+  const { leader, fields } = authorityMarcFields(record);
+  const encoder = new TextEncoder();
+  const fieldBytes = fields.map((field) => {
+    const text = field.subfields
+      ? `${(field.ind1 ?? " ").slice(0, 1)}${(field.ind2 ?? " ").slice(0, 1)}${field.subfields.map(({ code, value }) => `\x1f${code.slice(0, 1)}${safeText(value)}`).join("")}`
+      : safeText(field.value);
+    const data = encoder.encode(text);
+    return { tag: field.tag, bytes: Uint8Array.from([...data, 0x1e]) };
+  });
+  let offset = 0;
+  const directory = fieldBytes.map(({ tag, bytes }) => {
+    if (bytes.length > 9999 || offset > 99999) throw new Error("Campo MARC excede o limite ISO 2709.");
+    const entry = `${tag}${String(bytes.length).padStart(4, "0")}${String(offset).padStart(5, "0")}`;
+    offset += bytes.length;
+    return entry;
+  }).join("");
+  const base = 24 + directory.length + 1;
+  const length = base + offset + 1;
+  if (base > 99999 || length > 99999) throw new Error("Registro MARC excede o limite ISO 2709.");
+  const fixedLeader = `${String(length).padStart(5, "0")}${leader.slice(5, 12)}${String(base).padStart(5, "0")}${leader.slice(17)}`;
+  const result = new Uint8Array(length);
+  result.set(encoder.encode(fixedLeader + directory), 0);
+  result[base - 1] = 0x1e;
+  let cursor = base;
+  for (const field of fieldBytes) { result.set(field.bytes, cursor); cursor += field.bytes.length; }
+  result[cursor] = 0x1d;
+  return result;
 }
 
 /** JSON-LD is an RDF serialization of the mapped SKOS fields. */

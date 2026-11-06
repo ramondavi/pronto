@@ -1,11 +1,11 @@
-import { authorityAsMarcXml, authorityAsSkosJsonLd, getPublicAuthority, searchPublicAuthorities, type PublicAuthority } from "@/lib/public-subject-authority";
+import { authorityAsIso2709, authorityAsMarcXml, authorityAsSkosJsonLd, getPublicAuthority, searchPublicAuthorities, type PublicAuthority } from "@/lib/public-subject-authority";
 import { authorityHeadingTypes, authorityLanguages, authorityRelations, authoritySearchOption, authoritySorts, authoritySources } from "@/lib/authority-search-query";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const params = url.searchParams;
   const format = params.get("formato");
-  if (format !== "marc" && format !== "skos") return new Response("Formato inválido.", { status: 400 });
+  if (format !== "marc" && format !== "skos" && format !== "iso2709") return new Response("Formato inválido.", { status: 400 });
   const options = {
     query: (params.get("busca") ?? "").trim().slice(0, 200),
     source: authoritySearchOption(params.get("fonte") ?? undefined, authoritySources, "all"),
@@ -35,6 +35,10 @@ export async function GET(request: Request) {
   if (format === "skos") {
     const body = JSON.stringify({ "@context": { skos: "http://www.w3.org/2004/02/skos/core#" }, "@graph": items.map((item) => authorityAsSkosJsonLd(item, url.origin)) }, null, 2);
     return new Response(body, { headers: { "Content-Type": "application/ld+json; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-skos.jsonld", "Cache-Control": "no-store" } });
+  }
+  if (format === "iso2709") {
+    const bytes = Buffer.concat(items.map((item) => Buffer.from(authorityAsIso2709(item))));
+    return new Response(bytes, { headers: { "Content-Type": "application/marc; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-marc21.mrc", "Cache-Control": "no-store" } });
   }
   const records = items.map((item) => authorityAsMarcXml(item).replace(/^.*?<collection[^>]*>/s, "").replace(/<\/collection>\s*$/s, "")).join("");
   const body = `<?xml version="1.0" encoding="UTF-8"?>\n<collection xmlns="http://www.loc.gov/MARC21/slim">${records}</collection>`;

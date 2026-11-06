@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: acrescenta download MARC21 ISO 2709 em UTF-8 para uma autoridade ou seleção de até 500 registros, com conferência de leitura de volta pelo importador do Pronto.
+
 - 05/11/2026: esclarece as ações de seleção dos resultados com rótulos completos e ícones distintos para selecionar a página, selecionar todos os registros encontrados e cancelar a seleção.
 
 - 05/11/2026: oferece visualização em cartões ou lista e simplifica a contagem para “Exibindo X de Y resultados”. As ações de seleção ficam fora do menu de exportação, que passa a explicar os formatos disponíveis.
