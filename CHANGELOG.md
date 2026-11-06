@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: descrições da autoridade individual passam a aproveitar a largura interna disponível nos cartões e na identificação, evitando quebras de linha prematuras.
+
 - 05/11/2026: permite selecionar e copiar diretamente o texto do registro MARC21 exibido na página individual, mantendo o botão de cópia como atalho.
 
 - 05/11/2026: mantém a largura da página ao abrir o registro MARC21 e apresenta suas orientações como aviso do Pronto!. A identificação passa a usar a nota “Sobre este tema” cadastrada pela biblioteca; os detalhes guiados aproveitam a largura antes ocupada pelo painel lateral. Nos cartões, o texto truncado respeita a margem interna e retorna com transição suave.
