@@ -14,13 +14,47 @@ import scaleOutlines from "../../public/maps/authority-scale-outlines.json";
 
 type Language = keyof typeof authorityMapCopy;
 type Scale = "world" | "southAmerica" | "brazil" | "northeast" | "bahia" | "salvador";
+type MapView = { zoom: number; west: number; east: number; south: number; north: number; latitude: number; longitude: number };
+const geographicLevels = ["continent", "country", "macroregion", "state", "municipality"] as const;
+function uniquePlaces(points: AuthorityMapPoint[]) {
+  return Array.from(new Map(points.map((point) => [`${point.place_label.toLocaleLowerCase("pt-BR")}:${point.latitude}:${point.longitude}`, point])).values());
+}
+function hierarchyRows(points: AuthorityMapPoint[], view: MapView | null) {
+  const all = uniquePlaces(points);
+  if (!view || view.zoom < 4) {
+    const continents = new Map<string, number>();
+    for (const point of all) if (point.geography.continent) continents.set(point.geography.continent, (continents.get(point.geography.continent) ?? 0) + 1);
+    return Array.from(continents, ([name, count]) => ({ name, count, depth: 0 }));
+  }
+  const visible = all.filter((point) => point.longitude >= view.west && point.longitude <= view.east && point.latitude >= view.south && point.latitude <= view.north && point.geography.country);
+  if (!visible.length) return [];
+  const maxDepth = view.zoom >= 10 ? 5 : view.zoom >= 7 ? 4 : view.zoom >= 6 ? 3 : view.zoom >= 5 ? 2 : 1;
+  const rows: { name: string; count: number; depth: number }[] = [];
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const key = geographicLevels[depth];
+    const groups = new Map<string, { name: string; path: string[] }>();
+    for (const point of visible) {
+      const name = point.geography[key];
+      if (!name) continue;
+      const path = geographicLevels.slice(0, depth + 1).map((level) => point.geography[level]?.toLocaleLowerCase("pt-BR") ?? "");
+      groups.set(path.join("/"), { name, path });
+    }
+    if (!groups.size) break;
+    for (const { name, path } of groups.values()) {
+      const count = all.filter((point) => geographicLevels.slice(0, depth + 1).every((level, index) => (point.geography[level]?.toLocaleLowerCase("pt-BR") ?? "") === path[index])).length;
+      rows.push({ name, count, depth });
+    }
+    if (groups.size > 1) break;
+  }
+  return rows;
+}
 const panelCopy = {
-  pt: { explore: "Explorar", details: "Autoridade", openPage: "Abrir página da autoridade", loading: "Carregando autoridade…", unavailable: "Não foi possível carregar a autoridade.", preferred: "Termo preferido", equivalent: "Em outros idiomas", composition: "Como o termo é formado", variants: "Outras formas de busca", relations: "Termos relacionados", notes: "Sobre este tema", source: "Origem", publicUse: "Para quem pesquisa", librarianUse: "Para bibliotecários" },
-  en: { explore: "Explore", details: "Authority", openPage: "Open authority page", loading: "Loading authority…", unavailable: "Could not load the authority.", preferred: "Preferred term", equivalent: "In other languages", composition: "How the term is formed", variants: "Other search forms", relations: "Related terms", notes: "About this theme", source: "Source", publicUse: "For visitors", librarianUse: "For librarians" },
-  es: { explore: "Explorar", details: "Autoridad", openPage: "Abrir página de la autoridad", loading: "Cargando autoridad…", unavailable: "No se pudo cargar la autoridad.", preferred: "Término preferido", equivalent: "En otros idiomas", composition: "Cómo se forma el término", variants: "Otras formas de búsqueda", relations: "Términos relacionados", notes: "Sobre este tema", source: "Origen", publicUse: "Para visitantes", librarianUse: "Para bibliotecarios" },
-  de: { explore: "Erkunden", details: "Normdatensatz", openPage: "Normdatensatz öffnen", loading: "Datensatz wird geladen…", unavailable: "Datensatz konnte nicht geladen werden.", preferred: "Bevorzugter Begriff", equivalent: "In anderen Sprachen", composition: "Aufbau des Begriffs", variants: "Weitere Suchformen", relations: "Verwandte Begriffe", notes: "Über dieses Thema", source: "Quelle", publicUse: "Für Besuchende", librarianUse: "Für Bibliotheken" },
-  fr: { explore: "Explorer", details: "Autorité", openPage: "Ouvrir la notice", loading: "Chargement de la notice…", unavailable: "Impossible de charger la notice.", preferred: "Terme préféré", equivalent: "Dans d’autres langues", composition: "Composition du terme", variants: "Autres formes de recherche", relations: "Termes associés", notes: "À propos de ce thème", source: "Source", publicUse: "Pour les visiteurs", librarianUse: "Pour les bibliothécaires" },
-  it: { explore: "Esplora", details: "Autorità", openPage: "Apri pagina dell’autorità", loading: "Caricamento autorità…", unavailable: "Impossibile caricare l’autorità.", preferred: "Termine preferito", equivalent: "In altre lingue", composition: "Composizione del termine", variants: "Altre forme di ricerca", relations: "Termini correlati", notes: "Informazioni sul tema", source: "Fonte", publicUse: "Per i visitatori", librarianUse: "Per i bibliotecari" },
+  pt: { explore: "Explorar", details: "Autoridade", pending: "Hierarquia ainda não revisada", openPage: "Abrir página da autoridade", loading: "Carregando autoridade…", unavailable: "Não foi possível carregar a autoridade.", preferred: "Termo preferido", equivalent: "Em outros idiomas", composition: "Como o termo é formado", variants: "Outras formas de busca", relations: "Termos relacionados", notes: "Sobre este tema", source: "Origem", publicUse: "Para quem pesquisa", librarianUse: "Para bibliotecários" },
+  en: { explore: "Explore", details: "Authority", pending: "Hierarchy awaiting review", openPage: "Open authority page", loading: "Loading authority…", unavailable: "Could not load the authority.", preferred: "Preferred term", equivalent: "In other languages", composition: "How the term is formed", variants: "Other search forms", relations: "Related terms", notes: "About this theme", source: "Source", publicUse: "For visitors", librarianUse: "For librarians" },
+  es: { explore: "Explorar", details: "Autoridad", pending: "Jerarquía pendiente de revisión", openPage: "Abrir página de la autoridad", loading: "Cargando autoridad…", unavailable: "No se pudo cargar la autoridad.", preferred: "Término preferido", equivalent: "En otros idiomas", composition: "Cómo se forma el término", variants: "Otras formas de búsqueda", relations: "Términos relacionados", notes: "Sobre este tema", source: "Origen", publicUse: "Para visitantes", librarianUse: "Para bibliotecarios" },
+  de: { explore: "Erkunden", details: "Normdatensatz", pending: "Hierarchie noch nicht geprüft", openPage: "Normdatensatz öffnen", loading: "Datensatz wird geladen…", unavailable: "Datensatz konnte nicht geladen werden.", preferred: "Bevorzugter Begriff", equivalent: "In anderen Sprachen", composition: "Aufbau des Begriffs", variants: "Weitere Suchformen", relations: "Verwandte Begriffe", notes: "Über dieses Thema", source: "Quelle", publicUse: "Für Besuchende", librarianUse: "Für Bibliotheken" },
+  fr: { explore: "Explorer", details: "Autorité", pending: "Hiérarchie en attente de révision", openPage: "Ouvrir la notice", loading: "Chargement de la notice…", unavailable: "Impossible de charger la notice.", preferred: "Terme préféré", equivalent: "Dans d’autres langues", composition: "Composition du terme", variants: "Autres formes de recherche", relations: "Termes associés", notes: "À propos de ce thème", source: "Source", publicUse: "Pour les visiteurs", librarianUse: "Pour les bibliothécaires" },
+  it: { explore: "Esplora", details: "Autorità", pending: "Gerarchia in attesa di revisione", openPage: "Apri pagina dell’autorità", loading: "Caricamento autorità…", unavailable: "Impossibile caricare l’autorità.", preferred: "Termine preferito", equivalent: "In altre lingue", composition: "Composizione del termine", variants: "Altre forme di ricerca", relations: "Termini correlati", notes: "Informazioni sul tema", source: "Fonte", publicUse: "Per i visitatori", librarianUse: "Per i bibliotecari" },
 } as const;
 const scales: { key: Scale; center: [number, number]; zoom: number; bounds?: [[number, number], [number, number]] }[] = [
   { key: "world", center: [12, 0], zoom: 3 },
@@ -60,6 +94,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const [headerVisible, setHeaderVisible] = useState(true);
   const [ready, setReady] = useState(false);
   const [viewportRevision, setViewportRevision] = useState(0);
+  const [mapView, setMapView] = useState<MapView | null>(null);
   const mapNode = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibre.Map | null>(null);
   const markersRef = useRef<MapLibre.Marker[]>([]);
@@ -171,7 +206,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
           if (loadTimer) clearTimeout(loadTimer);
           setReady(true);
         });
-        map.on("moveend", () => setViewportRevision((value) => value + 1));
+        map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setViewportRevision((value) => value + 1); });
         themeObserver = new MutationObserver(() => { const nextStyle = styleForTheme(); if (nextStyle !== currentStyle) { currentStyle = nextStyle; map?.setStyle(nextStyle); } });
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         loadTimer = setTimeout(() => { if (!disposed && !loaded) setMapError(true); }, 8000);
@@ -192,7 +227,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
       rasterRef.current = map;
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' }).addTo(map);
       rasterMarkersRef.current = L.layerGroup().addTo(map);
-      map.on("moveend", () => setViewportRevision((value) => value + 1));
+      map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setViewportRevision((value) => value + 1); });
       setRasterReady(true);
     }).catch(() => {});
     return () => { disposed = true; map?.remove(); rasterRef.current = null; rasterMarkersRef.current = null; rasterOutlineRef.current = null; leafletRef.current = null; };
@@ -299,7 +334,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         <div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{panelText.details}</button></div>
         {panelTab === "explore" ? <>
         <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => setScaleIndex(Number(event.target.value))} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => setScaleIndex(index)}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
-        <div className="authority-world__places"><h2>{t.all} <span>{places.length}</span></h2>{query ? <ul>{places.slice(0, 20).flatMap((place) => place.points.map((point) => <li key={`${place.key}:${point.authority_id}`}><button type="button" onClick={() => choosePlace({ ...place, points: [point] })}>{point.term_label}<span>{place.name} →</span></button></li>))}</ul> : <p>{points.length ? "" : t.empty}</p>}{query && places.length === 0 && <p>{t.noResults}</p>}</div>
+        <div className="authority-world__places"><h2>{t.all} <span>{uniquePlaces(points).length}</span></h2>{query ? <ul>{places.slice(0, 20).flatMap((place) => place.points.map((point) => <li key={`${place.key}:${point.authority_id}`}><button type="button" onClick={() => choosePlace({ ...place, points: [point] })}>{point.term_label}<span>{place.name} →</span></button></li>))}</ul> : <ul className="authority-world__hierarchy">{hierarchyRows(points, mapView).map((row) => <li key={`${row.depth}:${row.name}`} style={{ paddingInlineStart: `${row.depth * 12}px` }}><span>{row.name}</span><strong>{row.count}</strong></li>)}{uniquePlaces(points).filter((point) => !point.geography.country).length > 0 && <li><span>{panelText.pending}</span><strong>{uniquePlaces(points).filter((point) => !point.geography.country).length}</strong></li>}</ul>}{!query && points.length === 0 && <p>{t.empty}</p>}{query && places.length === 0 && <p>{t.noResults}</p>}</div>
         </> : <div className="authority-world__record" role="tabpanel">
           {recordError ? <p>{panelText.unavailable}</p> : !authorityRecord ? <p>{panelText.loading}</p> : <>
             <div className="authority-world__record-heading"><span className="public-authority-detail__type">{publicAuthorityType(language, authorityRecord.heading_type)}</span><Link href={`/autoridades/${authorityRecord.id}`} aria-label={panelText.openPage} title={panelText.openPage}><AppIcon name="external" /></Link></div>

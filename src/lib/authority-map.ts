@@ -8,6 +8,7 @@ export type AuthorityMapPoint = {
   longitude: number;
   in_brazil: boolean;
   kind: "heading" | "subdivision" | "associated";
+  geography: { continent?: string; country?: string; macroregion?: string; state?: string; municipality?: string };
 };
 
 export async function getPublicAuthorityMapPoints(): Promise<AuthorityMapPoint[]> {
@@ -18,5 +19,6 @@ export async function getPublicAuthorityMapPoints(): Promise<AuthorityMapPoint[]
     && typeof point.place_label === "string" && Number.isFinite(point.latitude)
     && Number.isFinite(point.longitude) && Math.abs(point.latitude) <= 90
     && Math.abs(point.longitude) <= 180 && typeof point.in_brazil === "boolean"
-    && (point.kind === "heading" || point.kind === "subdivision" || point.kind === "associated"));
+    && (point.kind === "heading" || point.kind === "subdivision" || point.kind === "associated"))
+    .map((point) => ({ ...point, geography: point.geography && typeof point.geography === "object" ? point.geography : {} }));
 }
