@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: a visualização MARC21 quebra campos extensos dentro do quadro, sem barra de rolagem horizontal; a cópia pelo botão mantém as linhas originais do registro.
+
 - 05/11/2026: descrições da autoridade individual passam a aproveitar a largura interna disponível nos cartões e na identificação, evitando quebras de linha prematuras.
 
 - 05/11/2026: permite selecionar e copiar diretamente o texto do registro MARC21 exibido na página individual, mantendo o botão de cópia como atalho.

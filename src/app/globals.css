@@ -9088,3 +9088,7 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .public-authority-detail__content .authority-guide__heading p { max-width: none; }
 .public-authority-detail__hero .public-authority-detail__summary-copy { flex: 1 1 auto; max-width: none; }
 .public-authority-detail__hero .public-authority-detail__intro { max-width: none; }
+
+/* Long MARC fields wrap visually while the copy button retains the original lines. */
+.authority-professional-view__code { overflow-x: hidden; overflow-y: auto; }
+.authority-professional-view__code code { box-sizing: border-box; width: 100%; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
