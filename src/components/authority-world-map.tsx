@@ -168,7 +168,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     const clear = () => { if (timer) clearTimeout(timer); };
     const reveal = () => { clear(); setHeaderVisible(true); };
     const schedule = () => { clear(); timer = setTimeout(() => { if (!chrome.matches(":hover") && !chrome.contains(document.activeElement)) setHeaderVisible(false); }, 4000); };
-    const revealAtTop = (event: PointerEvent) => { if (event.clientY < chrome.getBoundingClientRect().top + 64) reveal(); };
+    const revealAtTop = (event: globalThis.PointerEvent) => { if (event.clientY < chrome.getBoundingClientRect().top + 64) reveal(); };
     chrome.addEventListener("pointerenter", reveal);
     chrome.addEventListener("pointerleave", schedule);
     chrome.addEventListener("focusin", reveal);
