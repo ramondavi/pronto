@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 05/11/2026: a página individual coloca o acesso “Para bibliotecários” no canto superior direito da identificação. O botão alterna a leitura guiada com uma vista técnica maior, sem recarregar a página; nela, abas separam origem e exportações da leitura MARC21, com cópia pelo botão dedicado.
+
 - 05/11/2026: os nomes longos dos cartões começam truncados com reticências, fazem um único ciclo automático após breve espera quando visíveis e repetem o letreiro apenas enquanto o cursor permanece sobre o cartão.
 
 - 05/11/2026: reorganiza a página individual de autoridade em leitura guiada, com composição, formas de busca, relações e notas apenas quando houver dados. O painel para bibliotecários separa origem e condições de uso dos três formatos de download, cada um com explicação curta, nos seis idiomas.

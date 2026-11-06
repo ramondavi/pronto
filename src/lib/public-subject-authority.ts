@@ -108,6 +108,14 @@ function authorityMarcFields(record: PublicAuthority): { leader: string; fields:
   ] };
 }
 
+/** Human-readable view of the same mapped fields used in the MARCXML and ISO 2709 exports. */
+export function authorityAsMarcText(record: PublicAuthority): string {
+  const { leader, fields } = authorityMarcFields(record);
+  return [`=LDR  ${leader}`, ...fields.map((field) => field.subfields
+    ? `=${field.tag}  ${field.ind1 ?? " "}${field.ind2 ?? " "}${field.subfields.map(({ code, value }) => `$${code}${safeText(value)}`).join("")}`
+    : `=${field.tag}  ${safeText(field.value)}`)].join("\n");
+}
+
 /** MARCXML is a MARC 21 authority interchange encoding; only mapped fields are emitted. */
 export function authorityAsMarcXml(record: PublicAuthority): string {
   const { leader, fields } = authorityMarcFields(record);
