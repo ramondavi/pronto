@@ -15,8 +15,10 @@ export async function GET(request: Request) {
     relation: authoritySearchOption(params.get("relacao") ?? undefined, authorityRelations, "all"),
   };
   const ids = [...new Set(params.getAll("id"))];
+  const excluded = [...new Set(params.getAll("excluir"))];
   if (ids.length > 500) return new Response("Selecione até 500 registros.", { status: 422 });
-  if (ids.some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return new Response("Identificador inválido.", { status: 400 });
+  if (excluded.length > 500 || (ids.length && excluded.length)) return new Response("Seleção inválida.", { status: 400 });
+  if ([...ids, ...excluded].some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return new Response("Identificador inválido.", { status: 400 });
   let items: PublicAuthority[];
   if (ids.length) {
     const selected = await Promise.all(ids.map(getPublicAuthority));
@@ -32,6 +34,8 @@ export async function GET(request: Request) {
       items.push(...next.items);
     }
   }
+  if (excluded.length) items = items.filter((item) => !excluded.includes(item.id));
+  if (!items.length) return new Response("Nenhum registro selecionado.", { status: 422 });
   if (format === "skos") {
     const body = JSON.stringify({ "@context": { skos: "http://www.w3.org/2004/02/skos/core#" }, "@graph": items.map((item) => authorityAsSkosJsonLd(item, url.origin)) }, null, 2);
     return new Response(body, { headers: { "Content-Type": "application/ld+json; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-skos.jsonld", "Cache-Control": "no-store" } });

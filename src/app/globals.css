@@ -8899,3 +8899,33 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .authority-value-note__audiences p { margin: 0; color: var(--text-muted); font-size: .9rem; line-height: 1.65; }
 .authority-value-note__closing { margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); color: var(--institutional); font-size: .92rem; font-weight: 650; line-height: 1.55; }
 @media(max-width:720px) { .authority-value-note__audiences { grid-template-columns: minmax(0,1fr); } }
+
+/* Eight advantages keep two even rows on wide screens. */
+.home-benefits__item--featured { grid-column: auto; }
+.home-benefits__item--featured h3 { font-size: clamp(1.05rem,1.6vw,1.35rem); }
+
+.public-authorities__list--cards .public-authorities__result { min-height: 230px; padding: 20px; border-top-width: 3px; }
+.public-authorities__list--cards .public-authorities__result-top { min-height: 30px; margin-bottom: 13px; }
+.public-authorities__result-top .public-authorities__select { flex: none; }
+.public-authorities__list--cards .authority-result-badges { margin: 0 0 10px; }
+.public-authorities__list--cards .public-authorities__result h3 { margin: 0 0 9px; font-size: clamp(1.18rem,1.65vw,1.48rem); line-height: 1.25; }
+.public-authorities__list--cards .public-authorities__english { margin-bottom: 5px; }
+.public-authorities__list--cards .public-authorities__variants { margin: 4px 0 0; font-size: .78rem; }
+.public-authorities__list--cards .public-authorities__variants strong { color: var(--text); font-weight: 650; }
+.public-authorities__list--cards .public-authorities__result-footer { margin-top: auto; padding-top: 14px; border-top: 0; }
+.public-authorities__list--cards .public-authorities__open { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; margin: 0; padding: 0 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--institutional); font-size: .79rem; font-weight: 750; text-decoration: none; }
+.public-authorities__list--cards .public-authorities__open svg { width: 16px; height: 16px; }
+.public-authorities__list--cards .public-authorities__open:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); text-decoration: none; }
+.public-authorities__list--list { grid-template-columns: minmax(0,1fr); gap: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); overflow: hidden; }
+.public-authorities__list--list .public-authorities__result--row { display: grid; grid-template-columns: 18px minmax(78px,110px) minmax(0,2fr) minmax(0,1.4fr) minmax(90px,135px) 34px; align-items: center; gap: 14px; min-height: 64px; margin: 0; padding: 9px 16px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+.public-authorities__list--list .public-authorities__result--row:last-child { border-bottom: 0; }
+.public-authorities__list--list .public-authorities__result--row:is(:hover,:focus-within) { transform: none; background: var(--institutional-soft); box-shadow: none; }
+.public-authorities__row-type { width: fit-content; max-width: 100%; padding: 4px 7px; overflow: hidden; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); font-size: .7rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.public-authorities__list--list .public-authorities__result--row h3 { min-width: 0; margin: 0; overflow: hidden; font-size: .93rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.public-authorities__row-secondary,.public-authorities__row-source { min-width: 0; margin: 0; overflow: hidden; color: var(--text-muted); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.public-authorities__row-source { text-align: right; }
+.public-authorities__row-open { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--institutional); }
+.public-authorities__row-open svg { width: 17px; height: 17px; }
+.public-authorities__row-open:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--surface-raised); }
+@media(max-width:1000px) { .public-authorities__list--list .public-authorities__result--row { grid-template-columns: 18px minmax(75px,100px) minmax(0,1.8fr) minmax(0,1fr) 34px; } .public-authorities__row-source { display: none; } }
+@media(max-width:720px) { .public-authorities__list--list .public-authorities__result--row { grid-template-columns: 18px minmax(0,1fr) 34px; gap: 5px 10px; } .public-authorities__row-type { grid-column: 2; grid-row: 1; } .public-authorities__list--list .public-authorities__result--row h3 { grid-column: 2; grid-row: 2; } .public-authorities__row-secondary { grid-column: 2; grid-row: 3; } .public-authorities__row-open { grid-column: 3; grid-row: 1 / 4; } .public-authorities__row-source { display: none; } .public-authorities__list--list .public-authorities__select { grid-row: 1 / 4; } }
