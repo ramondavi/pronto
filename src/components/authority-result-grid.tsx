@@ -10,7 +10,9 @@ import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { SourceMark } from "./authority-source-select";
 import type { AuthoritySource } from "@/lib/authority-preview";
 import { AppIcon } from "./app-icon";
-import { useEffect, useRef, useState } from "react";
+import { BookLoadingIcon } from "./book-loading-icon";
+import { LoadingBookMessages } from "./loading-book-messages";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 const authoritySources: Record<string, string> = { bn: "Biblioteca Nacional", aat: "Getty AAT", ufba: "Pergamum UFBA", pergamum: "Rede Pergamum", loc: "Library of Congress", pronto: "Pronto!" };
 
 function Highlight({ value, terms }: { value: string; terms: string[] }) {
@@ -20,7 +22,7 @@ function Highlight({ value, terms }: { value: string; terms: string[] }) {
   return <>{value.split(pattern).map((part, index) => matched.some((term) => foldAuthorityText(term) === foldAuthorityText(part)) ? <mark key={index}>{part}</mark> : part)}</>;
 }
 
-function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; terms: string[]; englishLabel: string }) {
+function CardTitles({ item, terms, englishLabel, onOpen }: { item: PublicAuthority; terms: string[]; englishLabel: string; onOpen: (event: MouseEvent<HTMLAnchorElement>) => void }) {
   const titleOuter = useRef<HTMLSpanElement>(null);
   const titleInner = useRef<HTMLSpanElement>(null);
   const equivalentOuter = useRef<HTMLSpanElement>(null);
@@ -87,7 +89,7 @@ function CardTitles({ item, terms, englishLabel }: { item: PublicAuthority; term
     return () => { disposed = true; clear(); observer.disconnect(); visibility.disconnect(); card?.removeEventListener("mouseenter", enter); card?.removeEventListener("mouseleave", leave); };
   }, [item.label, item.label_en, englishLabel]);
   return <>
-    <h3><Link href={`/autoridades/${item.id}`} title={item.label}><span className="public-authorities__marquee" ref={titleOuter}><span ref={titleInner}><Highlight value={item.label} terms={terms} /></span></span></Link></h3>
+    <h3><Link href={`/autoridades/${item.id}`} title={item.label} onClick={onOpen}><span className="public-authorities__marquee" ref={titleOuter}><span ref={titleInner}><Highlight value={item.label} terms={terms} /></span></span></Link></h3>
     <div className="public-authorities__equivalent">{item.label_en && <span className="public-authorities__marquee" ref={equivalentOuter}><span ref={equivalentInner}><span className="public-authorities__equivalent-language">{englishLabel}</span><span className="public-authorities__english"><Highlight value={item.label_en} terms={terms} /></span></span></span>}</div>
   </>;
 }
@@ -97,6 +99,10 @@ type SortColumn = "type" | "label" | "equivalent" | "source";
 export function AuthorityResultGrid({ items, query, variantsLabel, openLabel, selectedIds, allSelected, excludedIds, onToggle, view, sortable }: { items: PublicAuthority[]; query: string; variantsLabel: string; openLabel: string; selectedIds: string[]; allSelected: boolean; excludedIds: string[]; onToggle: (id: string) => void; view: "cards" | "list"; sortable: boolean }) {
   const { language } = useInterfaceLanguage();
   const [sort, setSort] = useState<{ column: SortColumn; direction: "asc" | "desc" } | null>(null);
+  const [opening, setOpening] = useState(false);
+  const showOpening = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.defaultPrevented) setOpening(true);
+  };
   const t = authorityDiscoveryExtras[language];
   const selectLabel = { pt: "Selecionar", en: "Select", es: "Seleccionar", de: "Auswählen", fr: "Sélectionner", it: "Seleziona" }[language];
   const terms = parseAuthorityQuery(query).flatMap((group) => group.include).flatMap((term) => term.split(/[*?]/).filter((part) => part.length > 1));
@@ -118,19 +124,20 @@ export function AuthorityResultGrid({ items, query, variantsLabel, openLabel, se
       if (view === "list") return <article className="card public-authorities__result public-authorities__result--row" key={item.id}>
         <label className="public-authorities__select"><input type="checkbox" checked={checked} onChange={() => onToggle(item.id)} aria-label={`${selectLabel} ${item.label}`} /></label>
         <span className="public-authorities__row-type">{type}</span>
-        <h3><Link href={`/autoridades/${item.id}`}><Highlight value={item.label} terms={terms} /></Link></h3>
+        <h3><Link href={`/autoridades/${item.id}`} onClick={showOpening}><Highlight value={item.label} terms={terms} /></Link></h3>
         <p className="public-authorities__row-secondary" title={english}>{english ? <Highlight value={english} terms={terms} /> : "—"}</p>
         <span className="public-authorities__row-source" title={authoritySources[item.source] ?? item.source}>{authoritySources[item.source] ?? item.source}</span>
-        <Link className="public-authorities__row-open" href={`/autoridades/${item.id}`} aria-label={`${openLabel}: ${item.label}`} title={openLabel}><AppIcon name="arrowRight" /></Link>
+        <Link className="public-authorities__row-open" href={`/autoridades/${item.id}`} onClick={showOpening} aria-label={`${openLabel}: ${item.label}`} title={openLabel}><AppIcon name="arrowRight" /></Link>
       </article>;
       return <article className="card public-authorities__result" key={item.id}>
         <div className="public-authorities__result-top"><label className="public-authorities__select"><input type="checkbox" checked={checked} onChange={() => onToggle(item.id)} aria-label={`${selectLabel} ${item.label}`} /></label><span className="public-authorities__source">{item.source in authoritySources ? <SourceMark source={item.source as AuthoritySource | "pronto"} /> : (authoritySources[item.source] ?? item.source)}</span></div>
         {item.heading_type && <div className="authority-result-badges"><span>{type}</span></div>}
-        <CardTitles item={item} terms={terms} englishLabel={englishLabel} />
+        <CardTitles item={item} terms={terms} englishLabel={englishLabel} onOpen={showOpening} />
         {matched && <p className="public-authorities__match">{t.matched}: <Highlight value={matchedVariant.value} terms={terms} /></p>}
         {!!item.variants.length && <p className="public-authorities__variants"><strong>{variantsLabel}:</strong> {item.variants.slice(0, 2).map((variant) => variant.value).join(" · ")}</p>}
-        <div className="public-authorities__result-footer"><Link className="public-authorities__open" href={`/autoridades/${item.id}`}>{openLabel}<AppIcon name="arrowRight" /></Link></div>
+        <div className="public-authorities__result-footer"><Link className="public-authorities__open" href={`/autoridades/${item.id}`} onClick={showOpening}>{openLabel}<AppIcon name="arrowRight" /></Link></div>
       </article>;
     })}</div>
+    {opening && <div className="panel-loading public-authorities__opening" role="status" aria-live="polite" aria-label="Carregando tema"><BookLoadingIcon /><LoadingBookMessages /></div>}
   </>;
 }

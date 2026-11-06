@@ -9166,6 +9166,7 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 @keyframes authority-marker-pulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb,var(--marker-color) 20%,transparent),0 0 0 12px color-mix(in srgb,var(--surface-raised) 80%,transparent); } }
 @media(prefers-reduced-motion:reduce) { .authority-world__marker--selected:not(.authority-world__marker--cluster) { animation: none; } }
 .public-loading { min-height: 100dvh; background: var(--surface-raised); }
+.public-authorities__opening { position: fixed; inset: 0; z-index: 1000; min-height: 100dvh; background: var(--surface-raised); }
 .authority-world__panel[data-open="true"] { height: auto; }
 .authority-world__panel[data-open="true"] .authority-world__panel-content { flex: 0 1 auto; padding-bottom: 15px; }
 .authority-world__panel[data-tab="explore"] .authority-world__panel-content { overflow-y: auto; scrollbar-width: none; }
