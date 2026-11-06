@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 06/11/2026: o mapa público ganha abas Explorar e Tema no topo, dica de busca completa, acesso identificado à autoridade, marcadores por tipo e controle de inclinação. A busca completa recebe o texto digitado no mapa e abre com o campo visível.
+
 - 06/11/2026: o cadastro de localidades passa a reutilizar caminhos geográficos revisados. O painel do mapa apresenta contagens por continente, país, região, estado e município conforme a área visível; pontos antigos aguardam classificação sem deixar de aparecer no mapa.
 
 - 06/11/2026: a leitura MARC21 alinha as linhas quebradas e permite copiar o registro original diretamente. O acesso técnico rola até a seção. No mapa público, pontos e resultados abrem os dados da autoridade no painel com abas, destaque do marcador, contagem de pontos próximos e acesso à página individual sem recarregar o mapa.

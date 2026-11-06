@@ -10,7 +10,7 @@ import { AppIcon } from "./app-icon";
 
 type Options = { query: string; source: string; heading: string; sort: string; variantLanguage: string; relation: string };
 
-export function AuthorityCatalogSearch({ options, initialItems, initialTotal, page, labels }: { options: Options; initialItems: PublicAuthority[]; initialTotal: number; page: number; labels: { found: string; results: string; clear: string; variants: string; open: string; empty: string; emptyHint: string; browse: string; browsePlaces: string; professional: string; export: string; professionalIntro: string; exportResults: string; exportLimit: string; catalogue: string; previous: string; next: string; pending: string; failed: string } }) {
+export function AuthorityCatalogSearch({ options, initialItems, initialTotal, page, focusSearch = false, labels }: { options: Options; initialItems: PublicAuthority[]; initialTotal: number; page: number; focusSearch?: boolean; labels: { found: string; results: string; clear: string; variants: string; open: string; empty: string; emptyHint: string; browse: string; browsePlaces: string; professional: string; export: string; professionalIntro: string; exportResults: string; exportLimit: string; catalogue: string; previous: string; next: string; pending: string; failed: string } }) {
   const { language } = useInterfaceLanguage();
   const [draft, setDraft] = useState(options.query);
   const [live, setLive] = useState<{ items: PublicAuthority[]; total: number; query: string; isPreview?: boolean } | null>(null);
@@ -35,10 +35,10 @@ export function AuthorityCatalogSearch({ options, initialItems, initialTotal, pa
   };
   const requestVersion = useRef(0);
   useEffect(() => {
-    if (!options.query && options.source === "all" && options.heading === "all" && options.variantLanguage === "all" && options.relation === "all") return;
+    if (!focusSearch && !options.query && options.source === "all" && options.heading === "all" && options.variantLanguage === "all" && options.relation === "all") return;
     const frame = window.requestAnimationFrame(() => document.getElementById("catalogue-search")?.scrollIntoView({ behavior: "smooth", block: "start" }));
     return () => window.cancelAnimationFrame(frame);
-  }, [options.query, options.source, options.heading, options.variantLanguage, options.relation]);
+  }, [focusSearch, options.query, options.source, options.heading, options.variantLanguage, options.relation]);
 
   useEffect(() => {
     if (!draft || draft === options.query) return;

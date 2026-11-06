@@ -9136,3 +9136,32 @@ button.public-authorities__sort:is(:hover,:focus-visible) { color: var(--institu
 .authority-world__marker-shell { border: 0; background: transparent; }
 .authority-world__marker-shell .authority-world__marker { pointer-events: none; }
 .authority-world__leaflet-tooltip { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; font-size: .72rem; font-weight: 700; box-shadow: var(--shadow-card); }
+.authority-world__panel[data-tab="explore"] .authority-world__panel-content { overflow-y: auto; scrollbar-width: none; }
+.authority-world__panel[data-tab="explore"] .authority-world__panel-content::-webkit-scrollbar { display: none; }
+.authority-world__panel-heading { margin-top: 12px; }
+.authority-world__search-tip { display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: start; gap: 8px; margin: -5px 0 14px; padding: 10px 11px; border: 1px solid var(--line); border-left: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--text); font-size: .76rem; line-height: 1.4; }
+.authority-world__search-tip > svg { width: 18px; height: 18px; color: var(--institutional); }
+.authority-world__search-tip p { grid-column: 2; margin: 0; }
+.authority-world__search-tip a { grid-column: 2; color: var(--institutional); font-weight: 700; text-decoration: none; }
+.authority-world__search-tip a:hover { text-decoration: underline; }
+.authority-world__search-tip button { grid-column: 3; grid-row: 1; width: 22px; height: 22px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--institutional); font-size: 1.1rem; cursor: pointer; }
+.authority-world__record-heading a { display: inline-flex; width: auto; height: auto; min-height: 34px; gap: 6px; padding: 5px 8px; font-size: .7rem; font-weight: 700; text-decoration: none; }
+.authority-world__record-heading a:hover { background: var(--institutional-soft); }
+.authority-world__controls { width: 152px; }
+.authority-world__zoom button { width: 38px; }
+.authority-world__canvas { background: #bed2e4; }
+:root[data-theme="dark"] .authority-world__canvas { background: #24425a; }
+.authority-world__marker { --marker-color: #1a3b70; background: var(--marker-color); box-shadow: 0 0 0 3px color-mix(in srgb,var(--marker-color) 25%,transparent); }
+.authority-world__marker--heading { --marker-color: #1a3b70; }
+.authority-world__marker--subdivision { --marker-color: #a55221; }
+.authority-world__marker--associated { --marker-color: #187151; }
+.authority-world__marker--mixed { --marker-color: #654897; }
+.authority-world__marker--selected:not(.authority-world__marker--cluster) { width: 22px; height: 22px; box-shadow: 0 0 0 5px color-mix(in srgb,var(--marker-color) 30%,transparent),0 0 0 8px var(--surface-raised); animation: authority-marker-pulse 1.8s ease-in-out infinite; }
+.authority-world__marker--cluster { width: 30px; height: 30px; border-width: 3px; border-color: var(--surface-raised); box-shadow: 0 0 0 2px var(--marker-color); }
+.authority-world__marker--cluster.authority-world__marker--selected { width: 34px; height: 34px; border-style: dashed; box-shadow: 0 0 0 3px var(--marker-color),0 0 0 6px var(--surface-raised); }
+.authority-world__marker > .authority-world__marker-tooltip { display: block; width: max-content; height: auto; min-width: 92px; max-width: 220px; padding: 8px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-card); white-space: normal; text-align: center; }
+.authority-world__marker--selected > .authority-world__marker-tooltip { border-color: var(--marker-color); background: var(--surface-raised); color: var(--marker-color); }
+.authority-world__leaflet-tooltip { padding: 8px 13px; border-color: var(--line); background: var(--surface-raised); color: var(--text); }
+.authority-world__leaflet-tooltip::before { display: none; }
+@keyframes authority-marker-pulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb,var(--marker-color) 20%,transparent),0 0 0 12px color-mix(in srgb,var(--surface-raised) 80%,transparent); } }
+@media(prefers-reduced-motion:reduce) { .authority-world__marker--selected:not(.authority-world__marker--cluster) { animation: none; } }
