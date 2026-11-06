@@ -8886,3 +8886,16 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .public-authorities__row-side .public-authorities__open { margin: 0; white-space: nowrap; }
 @media(max-width:720px) { .public-authorities__list--list { grid-template-columns: minmax(0,1fr); } .public-authorities__list--list .public-authorities__result--row { grid-template-columns: auto minmax(0,1fr); } .public-authorities__row-side { grid-column: 2; display: flex; align-items: center; justify-content: space-between; } }
 @media(max-width:620px) { .public-authorities__results-tools { width: 100%; justify-content: flex-end; } .public-authorities__selection-actions { width: 100%; } .public-authorities__export-options { left: auto; right: 0; } }
+
+.authority-value-note { display: grid; gap: clamp(20px,3vw,30px); margin-top: clamp(12px,3vw,34px); padding: clamp(24px,4vw,48px); border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(135deg,var(--surface-raised),color-mix(in srgb,var(--institutional) 6%,var(--surface-raised))); box-shadow: var(--shadow-card); }
+.authority-value-note__heading { max-width: 850px; }
+.authority-value-note__heading .eyebrow { margin: 0 0 10px; color: var(--institutional); }
+.public-authorities .authority-value-note h2 { margin: 0 0 12px; font-size: clamp(1.75rem,3vw,2.7rem); line-height: 1.15; }
+.authority-value-note__heading > p:last-child { margin: 0; color: var(--text-muted); font-size: clamp(.95rem,1.4vw,1.08rem); line-height: 1.65; }
+.authority-value-note__audiences { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.authority-value-note__audiences > div { padding: clamp(18px,2.3vw,28px); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); }
+.authority-value-note__audiences svg { width: 27px; height: 27px; margin-bottom: 13px; color: var(--institutional); stroke-width: 1.7; }
+.authority-value-note__audiences h3 { margin: 0 0 9px; color: var(--text); font-size: 1.05rem; line-height: 1.3; }
+.authority-value-note__audiences p { margin: 0; color: var(--text-muted); font-size: .9rem; line-height: 1.65; }
+.authority-value-note__closing { margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); color: var(--institutional); font-size: .92rem; font-weight: 650; line-height: 1.55; }
+@media(max-width:720px) { .authority-value-note__audiences { grid-template-columns: minmax(0,1fr); } }

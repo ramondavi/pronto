@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { AuthorityValueNote } from "@/components/authority-value-note";
 import { AuthorityCatalogSearch } from "@/components/authority-catalog-search";
 import { searchPublicAuthoritiesPage } from "@/lib/public-subject-authority";
 import { authorityHeadingTypes, authorityLanguages, authorityRelations, authoritySearchOption, authoritySorts, authoritySources as sourceOptions } from "@/lib/authority-search-query";
@@ -36,5 +37,6 @@ export default async function PublicAuthoritiesPage({ searchParams }: { searchPa
   return <><SiteHeader /><main className="container public-authorities">
     <header className="public-authorities__intro"><div><p className="eyebrow">{discovery.eyebrow}</p><h1>{publicCopy.title}</h1><p>{publicCopy.intro}</p></div><div className="authority-public-links"><Link className="button button--secondary" href="/autoridades/explorar">{publicCopy.browse} ↗</Link><Link className="button button--secondary" href="/autoridades/mapa">{authorityMapCopy[language].open} ↗</Link></div></header>
     <AuthorityCatalogSearch key={`${query}-${source}-${heading}-${sort}-${variantLanguage}-${relation}-${page}`} options={{ query, source, heading, sort, variantLanguage, relation }} initialItems={items} initialTotal={total} page={page} labels={{ found: discovery.results, results: publicCopy.results, clear: discovery.clear, variants: publicCopy.variants, open: discovery.open, empty: publicCopy.empty, emptyHint: publicCopy.emptyHint, browse: publicCopy.browse, browsePlaces: authorityMapCopy[language].open, professional: publicCopy.professional, export: publicCopy.export, professionalIntro: publicCopy.professionalIntro, exportResults: extra.exportResults, exportLimit: extra.exportLimit, catalogue: copy.catalogue, previous: copy.previous, next: copy.next, pending: discovery.pending, failed: discovery.failed }} />
+    <AuthorityValueNote language={language} />
   </main></>;
 }

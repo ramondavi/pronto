@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { AuthorityValueNote } from "@/components/authority-value-note";
 import { AuthorityDiscoverySearch } from "@/components/authority-discovery-search";
 import { authoritySources, confirmedPublicAuthorityRelation, getPublicAuthority, searchPublicAuthorities } from "@/lib/public-subject-authority";
 import { publicAuthorityCopy } from "@/lib/public-authority-copy";
@@ -60,5 +61,6 @@ export default async function PublicAuthorityPage({ params }: { params: Promise<
       <details className="authority-professional authority-professional--detail"><summary><span>{publicCopy.professional}</span><small>{publicCopy.record}</small></summary><div className="authority-professional__body"><p>{publicCopy.professionalIntro}</p><section className="card"><p className="eyebrow">{copy.record}</p><h2>{copy.source}</h2><dl><div><dt>{copy.source}</dt><dd>{authoritySources[record.source] ?? record.source}</dd></div>{record.source_identifier && <div><dt>{copy.identifier}</dt><dd>{record.source_identifier}</dd></div>}<div><dt>{copy.rights}</dt><dd>{record.rights_statement}</dd></div></dl>{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noopener noreferrer">{copy.original} ↗</a></p>}</section><section className="card public-authority-detail__export"><p className="eyebrow">MARC21 / SKOS</p><h2>{copy.export}</h2><p>{copy.exportNote}</p><div className="public-authorities__exports"><a className="button button--secondary" href={`/autoridades/${record.id}/marc.xml`}>{copy.marc}</a><a className="button button--secondary" href={`/autoridades/${record.id}/marc.mrc`}>{isoLabel}</a><a className="button button--secondary" href={`/autoridades/${record.id}/skos.jsonld`}>{copy.skos}</a></div></section></div></details>
     </aside></div>
     <section className="public-authorities__search-panel" aria-label={copy.search}><h2 className="public-authority-detail__search-title">{detailCopy.more}</h2><AuthorityDiscoverySearch variant="catalog" collapsibleFilters /></section>
+    <AuthorityValueNote language={language} />
   </main></>;
 }
