@@ -245,31 +245,60 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
       if (disposed || !mapNode.current) return;
       maplibreRef.current = M;
       try {
-        const styleForTheme = () => `https://tiles.openfreemap.org/styles/${document.documentElement.dataset.theme === "dark" ? "fiord" : "liberty"}`;
-        let currentStyle = styleForTheme();
-        map = new M.Map({ container: mapNode.current, style: currentStyle, center: [scales[0].center[1], scales[0].center[0]], zoom: scales[0].zoom, minZoom: 2, maxZoom: 18, maxPitch: 60, renderWorldCopies: true, attributionControl: false });
+        // Liberty contains the 3D buildings and POI symbols absent from Fiord.
+        // Keep its layers in both themes and change only their paint properties.
+        const originalPaint = new Map<string, unknown>();
+        const paint = (id: string, property: string, value: unknown, dark: boolean) => {
+          if (!map?.getLayer(id)) return;
+          const key = `${id}:${property}`;
+          if (!originalPaint.has(key)) originalPaint.set(key, map.getPaintProperty(id, property) ?? null);
+          map.setPaintProperty(id, property, dark ? value : originalPaint.get(key));
+        };
+        const applyTheme = () => {
+          if (!map?.isStyleLoaded()) return;
+          const dark = document.documentElement.dataset.theme === "dark";
+          map.setSky({ "sky-color": dark ? "#24425a" : "#bed2e4", "horizon-color": dark ? "#24425a" : "#bed2e4", "atmosphere-blend": 0 });
+          for (const layer of map.getStyle().layers) {
+            if (layer.type === "background") paint(layer.id, "background-color", "#202b3a", dark);
+            if (layer.type === "fill") {
+              if (/water|ocean|sea/i.test(layer.id)) paint(layer.id, "fill-color", "#24425a", dark);
+              else if (/park|forest|wood|grass|landcover/i.test(layer.id)) paint(layer.id, "fill-color", "#35483f", dark);
+              else if (/building/i.test(layer.id)) paint(layer.id, "fill-color", "#526174", dark);
+              else paint(layer.id, "fill-color", "#354155", dark);
+            }
+            if (layer.type === "fill-extrusion") paint(layer.id, "fill-extrusion-color", "#78899c", dark);
+            if (layer.type === "line") {
+              if (/road|street|highway|transport/i.test(layer.id)) paint(layer.id, "line-color", "#71849c", dark);
+              else if (/water|river|stream/i.test(layer.id)) paint(layer.id, "line-color", "#507c9b", dark);
+            }
+            if (layer.type === "symbol" && layer.layout?.["text-field"]) {
+              paint(layer.id, "text-color", "#e4ebf2", dark);
+              paint(layer.id, "text-halo-color", "#182531", dark);
+              paint(layer.id, "text-halo-width", 1.25, dark);
+            }
+          }
+          if (map.getLayer("authority-scale-outline")) {
+            paint("authority-scale-outline", "line-color", "#d5e8ff", dark);
+          }
+        };
+        map = new M.Map({ container: mapNode.current, style: "https://tiles.openfreemap.org/styles/liberty", center: [scales[0].center[1], scales[0].center[0]], zoom: scales[0].zoom, minZoom: 2, maxZoom: 18, maxPitch: 60, renderWorldCopies: true, attributionControl: false });
         mapRef.current = map;
         map.on("style.load", () => {
           if (!map) return;
           const dark = document.documentElement.dataset.theme === "dark";
-          map.setSky({ "sky-color": dark ? "#24425a" : "#bed2e4", "horizon-color": dark ? "#24425a" : "#bed2e4", "atmosphere-blend": 0 });
           const label = ["coalesce", ["get", `name:${language}`], ["get", `name_${language}`], ["get", "name:latin"], ["get", "name_en"], ["get", "name"]];
           for (const layer of map.getStyle().layers) {
-            if (layer.type === "fill") {
-              if (/water|ocean|sea/i.test(layer.id)) map.setPaintProperty(layer.id, "fill-color", dark ? "#24425a" : "#bed2e4");
-              else if (/park|forest|wood|grass|landcover/i.test(layer.id)) map.setPaintProperty(layer.id, "fill-color", dark ? "#35483f" : "#dce8d7");
-            }
             if (layer.type === "symbol" && layer.layout?.["text-field"] && /name|label|poi|airport/i.test(layer.id)) {
               map.setLayoutProperty(layer.id, "text-field", label);
-              map.setPaintProperty(layer.id, "text-halo-color", dark ? "#182531" : "#f8f8f4");
-              map.setPaintProperty(layer.id, "text-halo-width", 1.25);
             }
           }
           map.addSource("authority-scale-outline", { type: "geojson", data: outline(scaleRef.current.key) });
           map.addLayer({ id: "authority-scale-outline", type: "line", source: "authority-scale-outline", paint: { "line-color": dark ? "#d5e8ff" : "#1a3b70", "line-width": 2, "line-opacity": .82, "line-dasharray": [3, 2] } });
+          applyTheme();
         });
         map.on("load", () => {
           if (disposed || !map) return;
+          applyTheme();
           loaded = true;
           if (loadTimer) clearTimeout(loadTimer);
           setReady(true);
@@ -277,7 +306,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setMinimumZoom(map.getMinZoom()); setBearing(map.getBearing()); setViewportRevision((value) => value + 1); });
         map.on("pitchend", () => { if (map) setTilted(map.getPitch() > 1); });
         map.on("rotate", () => { if (map) setBearing(map.getBearing()); });
-        themeObserver = new MutationObserver(() => { const nextStyle = styleForTheme(); if (nextStyle !== currentStyle) { currentStyle = nextStyle; map?.setStyle(nextStyle); } });
+        themeObserver = new MutationObserver(applyTheme);
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         loadTimer = setTimeout(() => { if (!disposed && !loaded) setMapError(true); }, 8000);
         observer = new ResizeObserver(() => map?.resize());
