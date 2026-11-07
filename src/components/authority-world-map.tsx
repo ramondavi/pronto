@@ -405,6 +405,16 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     const bounds = event.currentTarget.getBoundingClientRect();
     return Math.atan2(event.clientY - bounds.top - bounds.height / 2, event.clientX - bounds.left - bounds.width / 2) * 180 / Math.PI;
   };
+  const compassClickBearing = (event: PointerEvent<HTMLButtonElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const dx = event.clientX - bounds.left - bounds.width / 2;
+    const dy = event.clientY - bounds.top - bounds.height / 2;
+    if (Math.hypot(dx, dy) <= bounds.width * .17) return 0;
+    const angleFromNorth = (compassAngle(event) + 90 + 360) % 360;
+    const currentBearing = mapRef.current?.getBearing() ?? 0;
+    const directionIndex = Math.round((angleFromNorth + currentBearing) / 45) % 8;
+    return directionIndex * 45;
+  };
   const compassDegrees = ((Math.round(bearing) % 360) + 360) % 360;
   const compassLabels = language === "pt" ? ["N", "NE", "L", "SE", "S", "SO", "O", "NO"] : language === "de" ? ["N", "NO", "O", "SO", "S", "SW", "W", "NW"] : language === "en" ? ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] : ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
   const compassDirection = compassLabels[Math.round(compassDegrees / 45) % 8];
@@ -421,7 +431,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         <button type="button" disabled={mapError} aria-pressed={tilted} onClick={() => { const map = mapRef.current; if (!map) return; map.easeTo({ pitch: tilted ? 0 : 58, duration: 700 }); }} aria-label={tilted ? extras.flatten : extras.tilt} title={tilted ? extras.flatten : extras.tilt}>{tilted ? <IconCube3dSphereOff size={18} /> : <Icon3dCubeSphere size={18} />}</button>
       </div>
       <div className="authority-world__compass" role="group" aria-label={extras.resetNorth}>
-        <button type="button" disabled={mapError} onPointerDown={(event) => { compassDrag.current = { startAngle: compassAngle(event), startBearing: mapRef.current?.getBearing() ?? 0, startX: event.clientX, startY: event.clientY, moved: false }; event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { const drag = compassDrag.current; if (!drag) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 4) drag.moved = true; if (drag.moved) mapRef.current?.setBearing(drag.startBearing + (compassAngle(event) - drag.startAngle)); }} onPointerUp={() => { if (compassDrag.current && !compassDrag.current.moved) mapRef.current?.rotateTo(0, { duration: 500 }); compassDrag.current = null; }} onPointerCancel={() => { compassDrag.current = null; }} onClick={(event) => { if (event.detail === 0) mapRef.current?.rotateTo(0, { duration: 500 }); }} aria-label={`${extras.resetNorth}. ${compassDirection}, ${compassDegrees}°`} title={`${compassDirection} · ${compassDegrees}° — ${extras.resetNorth}`}><CompassArt bearing={bearing} labels={compassLabels} degrees={compassDegrees} direction={compassDirection} /></button>
+        <button type="button" disabled={mapError} onPointerDown={(event) => { compassDrag.current = { startAngle: compassAngle(event), startBearing: mapRef.current?.getBearing() ?? 0, startX: event.clientX, startY: event.clientY, moved: false }; event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { const drag = compassDrag.current; if (!drag) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 4) drag.moved = true; if (drag.moved) mapRef.current?.setBearing(drag.startBearing + (compassAngle(event) - drag.startAngle)); }} onPointerUp={(event) => { if (compassDrag.current && !compassDrag.current.moved) mapRef.current?.rotateTo(compassClickBearing(event), { duration: 500 }); compassDrag.current = null; }} onPointerCancel={() => { compassDrag.current = null; }} onClick={(event) => { if (event.detail === 0) mapRef.current?.rotateTo(0, { duration: 500 }); }} aria-label={`${extras.resetNorth}. ${compassDirection}, ${compassDegrees}°`} title={`${compassDirection} · ${compassDegrees}° — ${extras.resetNorth}`}><CompassArt bearing={bearing} labels={compassLabels} degrees={compassDegrees} direction={compassDirection} /></button>
       </div>
     </div>
     <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
