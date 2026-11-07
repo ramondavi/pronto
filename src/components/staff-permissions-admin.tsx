@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { cataloguePermissionCopy } from "@/lib/catalogue-permission-copy";
+import { fixedPermissionDefinitions, permissionLocations } from "@/lib/permission-locations";
 import { AppIcon } from "@/components/app-icon";
 
 export type PermissionDefinition = {
@@ -55,7 +56,8 @@ export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, i
   initialOverrides: PermissionOverride[];
   initialRoles: InheritedRole[];
 }) {
-  const definitions = useMemo(() => storedDefinitions.map(item => ({ ...item, ...cataloguePermissionCopy[item.code] })), [storedDefinitions]);
+  const definitions = useMemo(() => [...storedDefinitions, ...fixedPermissionDefinitions.filter((fixed) => !storedDefinitions.some((item) => item.code === fixed.code))]
+    .map(item => ({ ...item, ...cataloguePermissionCopy[item.code], ...permissionLocations[item.code] })), [storedDefinitions]);
   const staff = users.filter((item) => item.role === "cataloger" || item.role === "administrator");
   const [selectedId, setSelectedId] = useState(staff[0]?.id ?? "");
   const [search, setSearch] = useState("");
@@ -73,19 +75,20 @@ export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, i
   const activeStudentRole = roles.some((item) => item.profile_id === selectedId && item.inherited_role === "student" && validAt(item, clock));
   const activeAdminRole = roles.some((item) => item.profile_id === selectedId && item.inherited_role === "administrator" && validAt(item, clock));
   const grouped = useMemo(() => {
-    const groups = new Map<string, PermissionDefinition[]>();
+    const groups = new Map<string, Map<string, PermissionDefinition[]>>();
     for (const definition of definitions) {
-      const heading = `${definition.area} · ${definition.screen}`;
-      groups.set(heading, [...(groups.get(heading) ?? []), definition]);
+      const screens = groups.get(definition.area) ?? new Map<string, PermissionDefinition[]>();
+      screens.set(definition.screen, [...(screens.get(definition.screen) ?? []), definition]);
+      groups.set(definition.area, screens);
     }
     return [...groups.entries()];
   }, [definitions]);
   const activeOverrides = overrides.filter((item) => item.profile_id === selectedId && validAt(item, clock));
   const normalizedSearch = normalizePermissionSearch(search.trim());
-  const visibleGroups = grouped.map(([heading, items]) => [heading, items.filter((item) =>
-    normalizePermissionSearch(`${heading} ${item.action} ${item.description}`).includes(normalizedSearch) &&
+  const visibleGroups = grouped.map(([area, screens]) => [area, [...screens.entries()].map(([screen, items]) => [screen, items.filter((item) =>
+    normalizePermissionSearch(`${area} ${screen} ${item.action} ${item.description}`).includes(normalizedSearch) &&
     (!onlyIndividual || activeOverrides.some((override) => override.permission_code === item.code) || (item.code === "student.preview" && activeStudentRole)),
-  )] as const).filter(([, items]) => items.length > 0);
+  )] as const).filter(([, items]) => items.length > 0)] as const).filter(([, screens]) => screens.length > 0);
   const adminRoleMatches = selected?.role === "cataloger" && normalizePermissionSearch("Administração delegada Herdar permissões padrão de administrador catalogador sem gerenciar permissões").includes(normalizedSearch) &&
     (!onlyIndividual || activeAdminRole);
 
@@ -170,7 +173,7 @@ export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, i
       <select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setFeedback(""); setClock(Date.now()); }}>
         {staff.map((item) => <option value={item.id} key={item.id}>{item.full_name} · {item.email}</option>)}
       </select>
-    </label><label className="staff-permissions__search">Buscar ação ou área<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Ex.: calendário, ficha" /></label><label className="staff-permissions__only-individual"><input type="checkbox" checked={onlyIndividual} onChange={(event) => setOnlyIndividual(event.target.checked)} />Só decisões individuais</label></div>
+    </label><label className="staff-permissions__search">Buscar tela, aba ou ação<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Ex.: Assuntos, Nada Consta" /></label><label className="staff-permissions__only-individual"><input type="checkbox" checked={onlyIndividual} onChange={(event) => setOnlyIndividual(event.target.checked)} />Só decisões individuais</label></div>
     {selected && <div className="staff-permissions__person-summary"><AppIcon name="account" /><div><strong>{selected.full_name}</strong><span>{selected.email}</span></div><span className="staff-permissions__person-role">{selected.role === "administrator" ? "Administrador" : "Catalogador"} · {selected.status === "active" ? "Ativa" : selected.status === "blocked" ? "Bloqueada" : "Inativa"}</span></div>}
     <p className="staff-permissions__guidance"><AppIcon name="help" />O horário é o de Salvador. Sem fim definido, a decisão vale até ser revogada. Quando há decisões simultâneas, prevalece a mais recente ainda válida.</p>
     {feedback && <p className="auth-feedback" role="status">{feedback}</p>}
@@ -194,15 +197,18 @@ export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, i
           </details>
         </div>
       </details>}
-      {visibleGroups.map(([heading, items]) => <details className="staff-permissions__group" key={`${selectedId}:${heading}`}>
-        <summary className="staff-permissions__group-summary"><AppIcon name="shield" /><strong>{heading}</strong><span>{items.length} {items.length === 1 ? "ação" : "ações"}</span><AppIcon className="staff-permissions__group-chevron" name="arrowRight" /></summary>
+      {visibleGroups.map(([area, screens]) => <details className="staff-permissions__group" key={`${selectedId}:${area}`} open={normalizedSearch ? true : undefined}>
+        <summary className="staff-permissions__group-summary"><AppIcon name="shield" /><strong>{area}</strong><span>{screens.reduce((count, [, items]) => count + items.length, 0)} ações · {screens.length} {screens.length === 1 ? "tela" : "telas"}</span><AppIcon className="staff-permissions__group-chevron" name="arrowRight" /></summary>
+        <div className="staff-permissions__screens">
+        {screens.map(([screen, items]) => <details className="staff-permissions__screen" key={`${area}:${screen}`} open={normalizedSearch ? true : undefined}>
+        <summary className="staff-permissions__screen-summary"><AppIcon name="arrowRight" /><strong>{screen}</strong><span>{items.length} {items.length === 1 ? "ação" : "ações"}</span></summary>
         <div className="staff-permissions__group-grid">
         {items.map((item) => {
           const current = overrides.filter((override) => override.profile_id === selectedId && override.permission_code === item.code && validAt(override, clock))
             .sort((a, b) => b.valid_from.localeCompare(a.valid_from) || b.id.localeCompare(a.id))[0];
           const inherited = item.default_roles.includes("student") && activeStudentRole;
           const basic = item.default_roles.includes(selected.role) || (selected.role === "administrator" && item.default_roles.includes("cataloger")) || (activeAdminRole && item.default_roles.includes("administrator")) || inherited;
-          const effective = item.code === "admin.permissions.manage" ? selected.role === "administrator" : current ? current.effect === "allow" : basic;
+          const effective = item.code === "admin.permissions.manage" || item.code === "admin.backups.view" ? selected.role === "administrator" && selected.status === "active" : current ? current.effect === "allow" : basic;
           return <details className="staff-permissions__item" key={`${selectedId}:${item.code}`}>
             <summary className="staff-permissions__item-summary"><span><strong>{item.action}</strong><small>{current ? "Decisão individual" : inherited ? "Visão de estudante" : activeAdminRole && item.default_roles.includes("administrator") && selected.role === "cataloger" && item.code !== "admin.permissions.manage" ? "Administração delegada" : "Perfil padrão"}</small></span><small className={`staff-permissions__effective${effective ? " is-allowed" : " is-denied"}`}><AppIcon name={effective ? "check" : "lock"} />{effective ? "Permitido" : "Bloqueado"}</small><AppIcon className="staff-permissions__item-chevron" name="arrowRight" /></summary>
             <div className="staff-permissions__item-body"><div className="staff-permissions__activity-info"><p>{item.description}</p>{item.code === "student.preview" && activeStudentRole && <small>Uma concessão antiga por herança também está ativa. A decisão individual prevalece e a concessão antiga pode ser revogada abaixo.</small>}{current && <small>Decisão individual vigente até {current.valid_until ? formatDate(current.valid_until) : "revogação"}</small>}</div>
@@ -223,6 +229,7 @@ export function StaffPermissionsAdmin({ users, definitions: storedDefinitions, i
             </div>
           </details>;
         })}
+        </div></details>)}
         </div>
       </details>)}
       {!adminRoleMatches && visibleGroups.length === 0 && <p className="staff-permissions__empty">Nenhuma ação corresponde aos filtros.</p>}

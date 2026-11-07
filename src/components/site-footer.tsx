@@ -14,12 +14,12 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { LibrarySocialLinks } from "./library-social-links";
 
 const footerCopy = {
-  pt: ["Fichas catalográficas e autodepósito", "Central de ajuda", "Privacidade", "Acessibilidade", "Feito pelos bibliotecários da BIB/FAUFBA com", "e", "amor", "Código aberto no GitHub", "Licença", "Informações", "Instituições"],
-  en: ["Catalog records and self-deposit", "Help center", "Privacy", "Accessibility", "Made by the BIB/FAUFBA librarians with", "and", "love", "Open source on GitHub", "License", "Information", "Institutions"],
-  es: ["Fichas catalográficas y autodepósito", "Centro de ayuda", "Privacidad", "Accesibilidad", "Creado por los bibliotecarios de BIB/FAUFBA con", "y", "amor", "Código abierto en GitHub", "Licencia", "Información", "Instituciones"],
-  de: ["Katalogeinträge und Selbsteinreichung", "Hilfe", "Datenschutz", "Barrierefreiheit", "Erstellt von der BIB/FAUFBA-Bibliothek mit", "und", "Liebe", "Quellcode auf GitHub", "Lizenz", "Informationen", "Institutionen"],
-  fr: ["Notices de catalogage et auto-dépôt", "Centre d’aide", "Confidentialité", "Accessibilité", "Créé par les bibliothécaires de la BIB/FAUFBA avec", "et", "amour", "Code source sur GitHub", "Licence", "Informations", "Institutions"],
-  it: ["Schede catalografiche e autodeposito", "Centro assistenza", "Privacy", "Accessibilità", "Creato dai bibliotecari BIB/FAUFBA con", "e", "amore", "Codice su GitHub", "Licenza", "Informazioni", "Istituzioni"],
+  pt: ["Fichas catalográficas e autodepósito", "Central de ajuda", "Privacidade", "Acessibilidade", "Feito pelos bibliotecários da BIB/FAUFBA com", "e", "amor", "Código aberto no GitHub", "Licença", "Informações", "Instituições", "Catálogo de autoridades"],
+  en: ["Catalog records and self-deposit", "Help center", "Privacy", "Accessibility", "Made by the BIB/FAUFBA librarians with", "and", "love", "Open source on GitHub", "License", "Information", "Institutions", "Authority catalog"],
+  es: ["Fichas catalográficas y autodepósito", "Centro de ayuda", "Privacidad", "Accesibilidad", "Creado por los bibliotecarios de BIB/FAUFBA con", "y", "amor", "Código abierto en GitHub", "Licencia", "Información", "Instituciones", "Catálogo de autoridades"],
+  de: ["Katalogeinträge und Selbsteinreichung", "Hilfe", "Datenschutz", "Barrierefreiheit", "Erstellt von der BIB/FAUFBA-Bibliothek mit", "und", "Liebe", "Quellcode auf GitHub", "Lizenz", "Informationen", "Institutionen", "Normdatenkatalog"],
+  fr: ["Notices de catalogage et auto-dépôt", "Centre d’aide", "Confidentialité", "Accessibilité", "Créé par les bibliothécaires de la BIB/FAUFBA avec", "et", "amour", "Code source sur GitHub", "Licence", "Informations", "Institutions", "Catalogue d’autorités"],
+  it: ["Schede catalografiche e autodeposito", "Centro assistenza", "Privacy", "Accessibilità", "Creato dai bibliotecari BIB/FAUFBA con", "e", "amore", "Codice su GitHub", "Licenza", "Informazioni", "Istituzioni", "Catalogo delle autorità"],
 };
 
 export function SiteFooter({ version }: { version: string }) {
@@ -136,6 +136,7 @@ export function SiteFooter({ version }: { version: string }) {
         </div>
         <nav className={styles.navigation} aria-label={t[9]}>
           <Link href="/ajuda">{t[1]}</Link>
+          <Link href="/autoridades">{t[11]}</Link>
           <Link href="/politica-de-privacidade">{t[2]}</Link>
           <Link href="/acessibilidade">{t[3]}</Link>
         </nav>

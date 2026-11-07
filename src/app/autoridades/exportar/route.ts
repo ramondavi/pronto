@@ -1,0 +1,50 @@
+import { authorityAsIso2709, authorityAsMarcXml, authorityAsSkosJsonLd, getPublicAuthority, searchPublicAuthorities, type PublicAuthority } from "@/lib/public-subject-authority";
+import { authorityHeadingTypes, authorityLanguages, authorityRelations, authoritySearchOption, authoritySorts, authoritySources } from "@/lib/authority-search-query";
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const params = url.searchParams;
+  const format = params.get("formato");
+  if (format !== "marc" && format !== "skos" && format !== "iso2709") return new Response("Formato inválido.", { status: 400 });
+  const options = {
+    query: (params.get("busca") ?? "").trim().slice(0, 200),
+    source: authoritySearchOption(params.get("fonte") ?? undefined, authoritySources, "all"),
+    heading: authoritySearchOption(params.get("tipo") ?? undefined, authorityHeadingTypes, "all"),
+    sort: authoritySearchOption(params.get("ordem") ?? undefined, authoritySorts, "relevance"),
+    variantLanguage: authoritySearchOption(params.get("idioma") ?? undefined, authorityLanguages, "all"),
+    relation: authoritySearchOption(params.get("relacao") ?? undefined, authorityRelations, "all"),
+  };
+  const ids = [...new Set(params.getAll("id"))];
+  const excluded = [...new Set(params.getAll("excluir"))];
+  if (ids.length > 500) return new Response("Selecione até 500 registros.", { status: 422 });
+  if (excluded.length > 500 || (ids.length && excluded.length)) return new Response("Seleção inválida.", { status: 400 });
+  if ([...ids, ...excluded].some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return new Response("Identificador inválido.", { status: 400 });
+  let items: PublicAuthority[];
+  if (ids.length) {
+    const selected = await Promise.all(ids.map(getPublicAuthority));
+    if (selected.some((item) => !item)) return new Response("Registro indisponível para exportação.", { status: 404 });
+    items = selected as PublicAuthority[];
+  } else {
+    const first = await searchPublicAuthorities({ ...options, page: 0 });
+    if (first.total > 500) return new Response("Mais de 500 registros. Refine a busca antes de exportar.", { status: 422 });
+    items = [...first.items];
+    for (let page = 1; items.length < first.total; page++) {
+      const next = await searchPublicAuthorities({ ...options, page });
+      if (!next.items.length) break;
+      items.push(...next.items);
+    }
+  }
+  if (excluded.length) items = items.filter((item) => !excluded.includes(item.id));
+  if (!items.length) return new Response("Nenhum registro selecionado.", { status: 422 });
+  if (format === "skos") {
+    const body = JSON.stringify({ "@context": { skos: "http://www.w3.org/2004/02/skos/core#" }, "@graph": items.map((item) => authorityAsSkosJsonLd(item, url.origin)) }, null, 2);
+    return new Response(body, { headers: { "Content-Type": "application/ld+json; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-skos.jsonld", "Cache-Control": "no-store" } });
+  }
+  if (format === "iso2709") {
+    const bytes = Buffer.concat(items.map((item) => Buffer.from(authorityAsIso2709(item))));
+    return new Response(bytes, { headers: { "Content-Type": "application/marc; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-marc21.mrc", "Cache-Control": "no-store" } });
+  }
+  const records = items.map((item) => authorityAsMarcXml(item).replace(/^.*?<collection[^>]*>/s, "").replace(/<\/collection>\s*$/s, "")).join("");
+  const body = `<?xml version="1.0" encoding="UTF-8"?>\n<collection xmlns="http://www.loc.gov/MARC21/slim">${records}</collection>`;
+  return new Response(body, { headers: { "Content-Type": "application/marcxml+xml; charset=utf-8", "Content-Disposition": "attachment; filename=pronto-autoridades-marc.xml", "Cache-Control": "no-store" } });
+}

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readAuthorityPreview } from "../src/lib/authority-preview.ts";
+import { formatAuthorityModified, readAuthorityPreview, suggestedAuthorityLabels } from "../src/lib/authority-preview.ts";
 const bn = `000 00397nz  a2200145o  4500
 001 000077411
 003 Br
@@ -22,6 +22,13 @@ test("BN preserva cabeçalho composto, identidade e relação com o conjunto", (
  assert.equal(r.variants[0].value, "Fatores climáticos no planejamento urbano");
  assert.equal(r.mappings[0].value, "City planning - Climatic factors");
  assert.equal(r.original, bn);
+ assert.deepEqual(suggestedAuthorityLabels(r).portuguese, "Planejamento urbano - Fatores climáticos");
+ assert.deepEqual(suggestedAuthorityLabels(r).english, "City planning - Climatic factors");
+ assert.equal(formatAuthorityModified(r.modified), "24/11/2005 às 16:17:00");
+});
+test("data MARC inválida fica visível no formato original", () => {
+ assert.equal(formatAuthorityModified("20261399161700.3"), "20261399161700.3");
+ assert.equal(formatAuthorityModified("20051124161700.123"), "24/11/2005 às 16:17:00");
 });
 test("550 sem w não inventa hierarquia; todas as variantes são mantidas", () => {
  const [r] = readAuthorityPreview("150 __ |a Comunidade urbana |x Desenvolvimento\n450 __ |a Variante um\n450 __ |a Variante dois\n550 __ |a Planejamento urbano\n680 __ |a Nota de uso", "ufba");

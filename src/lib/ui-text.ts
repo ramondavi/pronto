@@ -182,6 +182,7 @@ const text: Record<string, Translations> = {
   "Lembrar de mim": { en: "Remember me", es: "Recordarme", de: "Angemeldet bleiben", fr: "Se souvenir de moi", it: "Ricordami" },
   "Esqueci minha senha": { en: "Forgot my password", es: "Olvidé mi contraseña", de: "Passwort vergessen", fr: "Mot de passe oublié", it: "Password dimenticata" },
   "Entrar": { en: "Sign in", es: "Iniciar sesión", de: "Anmelden", fr: "Se connecter", it: "Accedi" },
+  "Entrando...": { en: "Signing in...", es: "Iniciando sesión...", de: "Anmeldung läuft...", fr: "Connexion en cours...", it: "Accesso in corso..." },
   "Ainda não tem conta?": { en: "No account yet?", es: "¿Aún no tiene cuenta?", de: "Noch kein Konto?", fr: "Vous n’avez pas encore de compte ?", it: "Non hai ancora un account?" },
   "Criar conta": { en: "Create account", es: "Crear cuenta", de: "Konto erstellen", fr: "Créer un compte", it: "Crea un account" },
   "Já tem uma conta?": { en: "Already have an account?", es: "¿Ya tiene una cuenta?", de: "Sie haben bereits ein Konto?", fr: "Vous avez déjà un compte ?", it: "Hai già un account?" },

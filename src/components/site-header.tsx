@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./brand";
+import { BrandPixels } from "./brand-pixels";
 import { LibrarySocialLinks } from "./library-social-links";
 import { createClient } from "@/lib/supabase/server";
 import { PublicBreadcrumbs } from "./breadcrumbs";
@@ -12,8 +13,11 @@ import { SiteHeaderGreeting } from "./site-header-greeting";
 import { formatLibraryHour, formatServiceDate, isCurrentServiceAnnouncement, isLibraryClosedNow, isLibraryClosureAnnouncement, libraryClosingTime, serviceDayKey } from "@/lib/service-announcements";
 import { uiText } from "@/lib/ui-text";
 import { homeCopy } from "@/lib/home-copy";
+import { authorityPublicCopy } from "@/lib/authority-public-copy";
+import { authorityMapCopy } from "@/lib/authority-map-copy";
 import { ServiceDayRefresh } from "@/components/service-day-refresh";
 import { HeaderExploreMenu } from "@/components/header-explore-menu";
+import { HeaderRouteNav } from "@/components/header-route-nav";
 import { ServiceStatusPeek } from "@/components/service-status-peek";
 
 const copy = {
@@ -25,7 +29,7 @@ const copy = {
   it: ["La mia area", "Ciao", "Panoramica", "La mia richiesta", "Autodeposito", "Il mio account", "Richieste", "I miei casi", "Amministrazione", "Navigazione principale", "Come funziona", "Centro assistenza", "Esci", "Accedi", "Esplora", "Vantaggi"],
 };
 
-export async function SiteHeader({ articleTitle, showServiceStatus = true, closingTimeOverride }: { articleTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string } = {}) {
+export async function SiteHeader({ articleTitle, authorityTitle, showServiceStatus = true, closingTimeOverride, mapCompact = false, showBreadcrumbs = true }: { articleTitle?: string; authorityTitle?: string; showServiceStatus?: boolean; closingTimeOverride?: string; mapCompact?: boolean; showBreadcrumbs?: boolean } = {}) {
   const language = await getInterfaceLanguage();
   const t = copy[language];
   const supabase = await createClient();
@@ -60,17 +64,17 @@ export async function SiteHeader({ articleTitle, showServiceStatus = true, closi
       <ServiceDayRefresh closingTime={closingTime} />
       <header className="site-header">
         <div className="container site-header__inner">
-        <div className="shell-brand"><Brand compact /></div>
+        <div className="shell-brand">{mapCompact ? <Link href="/" className="site-header__map-brand" aria-label="Pronto! — Página inicial"><BrandPixels symbol /></Link> : <Brand compact />}</div>
         {showServiceStatus && <ServiceStatusPeek className="site-header__service-peek" title={status} date={today} now={now} reason={closureAnnouncement?.title} message={closed ? uiText(language, "Você pode solicitar a ficha mesmo com a biblioteca fechada. O prazo é contado em dias úteis.") : currentAnnouncement?.message} closed={closed} hint={closed ? uiText(language, "Passe o mouse para saber mais") : uiText(language, "Fechamento previsto hoje às {time}", { time: formatLibraryHour(closingTime) })} hoursLabel={dailyHours ? uiText(language, "Funcionamento hoje: 8h às {time}", { time: formatLibraryHour(closingTime) }) : uiText(language, "Funcionamento: seg. a sex., 8h às 21h")} detailsLabel={uiText(language, "Detalhes do funcionamento da biblioteca")} />}
-        <nav id="menu-principal" aria-label={t[9]} className="site-header__nav" tabIndex={-1}>
-          <HeaderExploreMenu labels={{ trigger: t[14], how: t[10], benefits: t[15], questions: homeCopy[language].faq }} />
+        <HeaderRouteNav label={t[9]}>
+          <HeaderExploreMenu labels={{ trigger: t[14], how: t[10], benefits: t[15], questions: homeCopy[language].faq, themes: authorityPublicCopy[language].title, world: authorityMapCopy[language].title }} />
           <Link className="site-header__help-link" href="/ajuda" aria-label={t[11]}><AppIcon name="help" /><span>{t[11]}</span></Link>
           {user ? <><div className="site-header__account site-header__account--desktop"><Link className="site-header__access" href={accessHref} aria-label={accessLabel}><span className="site-header__access-icon"><AppIcon name="account" />{accountAvatar}</span><span className="site-header__access-label">{accessLabel}</span><SiteHeaderGreeting key={user.id} greeting={t[1]} firstName={firstName} userId={user.id} fallback={accessLabel} /></Link><div className="site-header__submenu">{panelLinks.map(([label, href, icon]) => <Link key={href} href={href}><AppIcon name={icon} /><span>{label}</span></Link>)}<form action={logout}><button className="site-header__logout" type="submit"><AppIcon name="logout" />{t[12]}</button></form></div></div><details className="site-header__account site-header__account--touch"><summary className="site-header__access" aria-label={accessLabel}><span className="site-header__access-icon"><AppIcon name="account" />{accountAvatar}</span><span>{accessLabel}</span></summary><div className="site-header__submenu">{panelLinks.map(([label, href, icon]) => <Link key={href} href={href}><AppIcon name={icon} /><span>{label}</span></Link>)}<form action={logout}><button className="site-header__logout" type="submit"><AppIcon name="logout" />{t[12]}</button></form></div></details></> : <Link className="site-header__access" href={accessHref}><AppIcon name="account" />{t[13]}</Link>}
           <LibrarySocialLinks />
-        </nav>
+        </HeaderRouteNav>
         </div>
       </header>
-      <PublicBreadcrumbs articleTitle={articleTitle} />
+      {showBreadcrumbs && <PublicBreadcrumbs articleTitle={articleTitle} authorityTitle={authorityTitle} />}
     </>
   );
 }

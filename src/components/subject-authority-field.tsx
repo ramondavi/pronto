@@ -6,6 +6,7 @@ import { SubjectAuthorityImporter, type ImportedSubject } from "./subject-author
 import { createClient } from "@/lib/supabase/client";
 import { canOfferAuthorityImport, normalizeSubjectLabel, type SubjectCatalogueMatch } from "@/lib/subject-authority";
 import type { AuthoritySource } from "@/lib/authority-preview";
+import { authorityHeadingLabel } from "@/lib/authority-heading-types";
 export function SubjectAuthorityField({ id, value, source, requestId, editable, invalid, onChange, onSelect, onImported, fallback, pendingReview=false, onRemoveProposal }: {
  pendingReview?:boolean; onRemoveProposal?:()=>void;
  id: string; value: string; source: string; requestId: string; editable: boolean; invalid: boolean; fallback: SubjectCatalogueMatch[];
@@ -31,7 +32,7 @@ export function SubjectAuthorityField({ id, value, source, requestId, editable, 
  return <div className="subject-authority-field">
   <label className="autocomplete-field"><span className="cataloging-field-label"><AppIcon name="tag" />Termo preferido — português</span>
    <input id={id} aria-invalid={invalid} value={value} disabled={!editable || !source || pendingReview} placeholder={source ? "Assunto conforme a fonte" : "Selecione a fonte primeiro"} maxLength={120} autoComplete="off" onFocus={() => setFocused(true)} onBlur={() => window.setTimeout(() => setFocused(false),120)} onChange={e => {setImporting(false); onChange(e.target.value);}} />
-   {focused && query.length > 0 && matches.length > 0 && <span className="cataloging-autocomplete">{matches.map(t => <button type="button" key={t.id} onMouseDown={e => e.preventDefault()} onClick={() => {onSelect(t);setFocused(false);setImporting(false);}}>{t.preferred_label_pt}{t.matched_variant && <small>Encontrado pela variante: {t.matched_variant}</small>}</button>)}</span>}
+   {focused && query.length > 0 && matches.length > 0 && <span className="cataloging-autocomplete">{matches.map(t => <button type="button" key={t.id} onMouseDown={e => e.preventDefault()} onClick={() => {onSelect(t);setFocused(false);setImporting(false);}}><strong>{t.preferred_label_pt}</strong><span className="cataloging-authority-badges"><small>{t.active === false ? "Inativo" : "Ativo"}</small>{t.heading_tag && <small>{authorityHeadingLabel(t.heading_tag)}</small>}{t.published !== undefined && <small>{t.published ? "Publicado" : "Não publicado"}</small>}</span>{t.matched_variant && <small>Encontrado pela variante: {t.matched_variant}</small>}</button>)}</span>}
   </label>
   {editable && source && query.length >= 2 && current.state === "error" && <p className="field-help" role="status">Não foi possível conferir o catálogo completo. O preenchimento manual continua disponível. <button type="button" className="text-action" onClick={() => setRetry(n => n+1)}>Tentar busca novamente</button></p>}
   {pendingReview && <div className="subject-authority-field__pending" role="status"><AppIcon name="clock" /><div><strong>Aguardando revisão</strong><p>Somente neste rascunho. Revise e ative o termo antes de homologar.</p></div>{onRemoveProposal && <button type="button" className="button button--secondary button--small" disabled={!editable} onClick={onRemoveProposal}>Retirar do rascunho</button>}</div>}

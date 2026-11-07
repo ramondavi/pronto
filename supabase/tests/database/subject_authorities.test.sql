@@ -60,7 +60,7 @@ values (
 );
 
 
-create function pg_temp.authority_fixture(ident text default 'Br / TESTE-1') returns jsonb language sql as $$select jsonb_build_object('source','bn','identifier',ident,'original','150 __ |a Assunto sintético','variants',jsonb_build_array(jsonb_build_object('value','Variante sintética','language','pt')),'relations',jsonb_build_array(jsonb_build_object('kind','Mais amplo','value','Referência pendente')),'notes',jsonb_build_array(jsonb_build_object('value','Nota preservada')))$$;
+create function pg_temp.authority_fixture(ident text default 'Br / TESTE-1') returns jsonb language sql as $$select jsonb_build_object('source','bn','identifier',ident,'heading_type','topic','original','150 __ |a Assunto sintético','variants',jsonb_build_array(jsonb_build_object('value','Variante sintética','language','pt')),'relations',jsonb_build_array(jsonb_build_object('kind','Mais amplo','value','Referência pendente')),'notes',jsonb_build_array(jsonb_build_object('value','Nota preservada')))$$;
 insert into public.academic_enrollments(id,student_profile_id,academic_program_id,registration_number)
 values('30000000-0000-4000-8000-000000000001',(select id from public.student_profiles where profile_id='10000000-0000-4000-8000-000000000001'),'20000000-0000-4000-8000-000000000001','SINTETICO'),('30000000-0000-4000-8000-000000000002',(select id from public.student_profiles where profile_id='10000000-0000-4000-8000-000000000002'),'20000000-0000-4000-8000-000000000001','SINTETICO2');
 insert into public.cataloging_requests(id,student_profile_id,academic_enrollment_id,protocol,status,title,public_work_url,defended_and_approved,final_file_confirmed,approval_page_confirmed,assigned_to)
