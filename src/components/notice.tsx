@@ -15,6 +15,14 @@ export function Notice({ announcement, closed, date, now, hoursLabel, mobileHour
     document.addEventListener("visibilitychange", update);
     return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", update); };
   }, []);
-  const message = closed?.message ?? announcement?.message ?? `${copy.average} ${copy.days}`;
-  return <aside className={`notice notice--status${closed ? " notice--status-closed" : ""}`} aria-label={copy.label} role="status"><div className="notice-status__meta"><div className="notice-status__times">{date?.value && <time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time>}<time dateTime={clock.value} aria-label={`${clockLabel}: ${clock.label}`}><AppIcon name="clock" />{clock.label}</time></div><p className="notice-status__hours"><AppIcon name="clock" /><span className={mobileHoursLabel ? "notice-status__hours-default" : undefined}>{hoursLabel}</span>{mobileHoursLabel && <span className="notice-status__hours-mobile">{mobileHoursLabel}</span>}</p></div><div className="notice-status__body"><span className="notice-status__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : announcement ? "calendar" : "check"} /></span><div className="notice-status__heading"><strong>{closed?.title ?? announcement?.title ?? copy.normal}</strong>{!closed && !announcement && <small className="notice-status__closing">{closingLabel}</small>}{closed?.reason && <span className="notice-status__reason">{closed.reason}</span>}</div></div>{message && <p className="notice-status__message">{message}</p>}</aside>;
+  const message = closed ? null : announcement?.message;
+  return <aside className={`notice notice--status${closed ? " notice--status-closed" : ""}`} aria-label={copy.label} role="status">
+    <div className="notice-status__meta"><div className="notice-status__times">{date?.value && <time dateTime={date.value}><AppIcon name="calendar" />{date.label}</time>}<time dateTime={clock.value} aria-label={`${clockLabel}: ${clock.label}`}><AppIcon name="clock" />{clock.label}</time></div><p className="notice-status__hours"><AppIcon name="clock" /><span className={mobileHoursLabel ? "notice-status__hours-default" : undefined}>{hoursLabel}</span>{mobileHoursLabel && <span className="notice-status__hours-mobile">{mobileHoursLabel}</span>}</p></div>
+    <div className="notice-status__body">
+      <span className="notice-status__icon" aria-hidden="true"><AppIcon name={closed ? "lock" : announcement ? "calendar" : "check"} /></span>
+      <div className="notice-status__heading"><strong>{closed?.title ?? announcement?.title ?? copy.normal}</strong>{closed ? <small className="notice-status__closing">{closed.message}</small> : !announcement && <small className="notice-status__closing">{closingLabel}</small>}{closed?.reason && <span className="notice-status__reason">{closed.reason}</span>}</div>
+      <div className="notice-status__average"><span>{copy.average}</span><strong>{copy.days}</strong></div>
+    </div>
+    {message && <p className="notice-status__message">{message}</p>}
+  </aside>;
 }

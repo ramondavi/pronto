@@ -74,7 +74,7 @@ test("links do rodapé público formam uma linha no desktop", async ({ page }) =
     columns: new Set(links.map((link) => Math.round(link.getBoundingClientRect().left))).size,
     rows: new Set(links.map((link) => Math.round(link.getBoundingClientRect().top))).size,
   }));
-  expect(alignment).toEqual({ columns: 3, rows: 1 });
+  expect(alignment).toEqual({ columns: 4, rows: 1 });
 });
 
 test("páginas públicas não criam rolagem horizontal", async ({ page }) => {

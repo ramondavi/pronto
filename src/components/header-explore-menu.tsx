@@ -2,11 +2,16 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AppIcon } from "@/components/app-icon";
+import { IconBuildingArch } from "@tabler/icons-react";
 
-type Labels = { trigger: string; how: string; benefits: string; questions: string };
+type Labels = { trigger: string; how: string; benefits: string; questions: string; themes: string; world: string };
 
 export function HeaderExploreMenu({ labels }: { labels: Labels }) {
+  const pathname = usePathname();
+  const themeCurrent = pathname.startsWith("/autoridades") && pathname !== "/autoridades/mapa";
+  const worldCurrent = pathname === "/autoridades/mapa";
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const [open, setOpen] = useState(false);
@@ -29,7 +34,7 @@ export function HeaderExploreMenu({ labels }: { labels: Labels }) {
     };
   }, []);
 
-  return <div className={`site-header__explore${open ? " is-open" : ""}`} ref={menuRef}
+  return <div className={`site-header__explore${open ? " is-open" : ""}${themeCurrent || worldCurrent ? " is-current" : ""}`} ref={menuRef}
     onPointerEnter={(event) => { if (event.pointerType === "mouse") setOpen(true); }}
     onPointerLeave={(event) => { if (event.pointerType === "mouse") setOpen(false); }}
     onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}
@@ -39,6 +44,9 @@ export function HeaderExploreMenu({ labels }: { labels: Labels }) {
       <Link href="/#como-funciona" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="review" />{labels.how}</Link>
       <Link href="/#vantagens" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="sparkles" />{labels.benefits}</Link>
       <Link href="/#duvidas-frequentes" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}><AppIcon name="help" />{labels.questions}</Link>
+      <div className="site-header__explore-divider" aria-hidden="true" />
+      <Link href="/autoridades" tabIndex={open ? 0 : -1} aria-current={themeCurrent ? "page" : undefined} onClick={() => setOpen(false)}><IconBuildingArch stroke={1.5} />{labels.themes}</Link>
+      <Link href="/autoridades/mapa" tabIndex={open ? 0 : -1} aria-current={worldCurrent ? "page" : undefined} onClick={() => setOpen(false)}><AppIcon name="globe" />{labels.world}</Link>
     </div>
   </div>;
 }

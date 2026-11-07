@@ -162,23 +162,6 @@ export function StaffActivityFeed({ initialEvents, userId, initialLoadError = fa
     Array.from(posts.children).forEach((child) => observer.observe(child));
     return () => observer.disconnect();
   }, [events.length, updateFeedEdges]);
-  useEffect(() => {
-    const posts = postsRef.current;
-    const side = posts?.closest(".staff-overview-main")?.querySelector<HTMLElement>(".staff-overview-main__side");
-    const calendar = side?.querySelector<HTMLElement>(".staff-calendar");
-    if (!posts || !side || !calendar || posts.querySelectorAll(":scope > .staff-feed__item").length < 2) return;
-    const update = () => {
-      const distance = calendar.getBoundingClientRect().bottom - posts.getBoundingClientRect().top;
-      const height = `${Math.max(0, Math.floor((distance - 20) / 2))}px`;
-      if (posts.style.getPropertyValue("--feed-initial-card-height") !== height) posts.style.setProperty("--feed-initial-card-height", height);
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(side);
-    observer.observe(posts);
-    window.addEventListener("resize", update);
-    return () => { observer.disconnect(); window.removeEventListener("resize", update); posts.style.removeProperty("--feed-initial-card-height"); };
-  }, [events.length]);
   useEffect(() => () => { if (scrollHintTimerRef.current !== null) window.clearTimeout(scrollHintTimerRef.current); if (scrollFadeTimerRef.current !== null) window.clearTimeout(scrollFadeTimerRef.current); }, []);
 
 

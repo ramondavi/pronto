@@ -6,6 +6,230 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 07/11/2026: a gestão de autoridades passa a classificar lugares revisados e registrar definições, contexto e critérios públicos; a página individual e o mapa apresentam essas informações quando preenchidas. O mapa melhora a leitura dos pontos, a navegação e o acesso ao registro MARC21. A publicação exige revisão individual dos dados alterados.
+
+- 06/11/2026: o mapa público passa a ajustar a altura do painel ao conteúdo, mostra sugestões de busca para lugares publicados, identifica o motivo de bloqueio da aba Tema e separa os controles de inclinação, rotação e zoom. Os pontos isolados têm dicas posicionadas conforme a tela; agrupamentos mostram apenas a contagem. As páginas públicas usam a mesma animação de carregamento do painel.
+
+- 06/11/2026: o mapa público ganha abas Explorar e Tema no topo, dica de busca completa, acesso identificado à autoridade, marcadores por tipo e controle de inclinação. A busca completa recebe o texto digitado no mapa e abre com o campo visível.
+
+- 06/11/2026: o cadastro de localidades passa a reutilizar caminhos geográficos revisados. O painel do mapa apresenta contagens por continente, país, região, estado e município conforme a área visível; pontos antigos aguardam classificação sem deixar de aparecer no mapa.
+
+- 06/11/2026: a leitura MARC21 alinha as linhas quebradas e permite copiar o registro original diretamente. O acesso técnico rola até a seção. No mapa público, pontos e resultados abrem os dados da autoridade no painel com abas, destaque do marcador, contagem de pontos próximos e acesso à página individual sem recarregar o mapa.
+
+- 05/11/2026: a visualização MARC21 quebra campos extensos dentro do quadro, sem barra de rolagem horizontal; a cópia pelo botão mantém as linhas originais do registro.
+
+- 05/11/2026: descrições da autoridade individual passam a aproveitar a largura interna disponível nos cartões e na identificação, evitando quebras de linha prematuras.
+
+- 05/11/2026: permite selecionar e copiar diretamente o texto do registro MARC21 exibido na página individual, mantendo o botão de cópia como atalho.
+
+- 05/11/2026: mantém a largura da página ao abrir o registro MARC21 e apresenta suas orientações como aviso do Pronto!. A identificação passa a usar a nota “Sobre este tema” cadastrada pela biblioteca; os detalhes guiados aproveitam a largura antes ocupada pelo painel lateral. Nos cartões, o texto truncado respeita a margem interna e retorna com transição suave.
+
+- 05/11/2026: a página individual coloca o acesso “Para bibliotecários” no canto superior direito da identificação. O botão alterna a leitura guiada com uma vista técnica maior, sem recarregar a página; nela, abas separam origem e exportações da leitura MARC21, com cópia pelo botão dedicado.
+
+- 05/11/2026: os nomes longos dos cartões começam truncados com reticências, fazem um único ciclo automático após breve espera quando visíveis e repetem o letreiro apenas enquanto o cursor permanece sobre o cartão.
+
+- 05/11/2026: reorganiza a página individual de autoridade em leitura guiada, com composição, formas de busca, relações e notas apenas quando houver dados. O painel para bibliotecários separa origem e condições de uso dos três formatos de download, cada um com explicação curta, nos seis idiomas.
+
+- 05/11/2026: preserva a visualização em cartões ou lista ao mudar filtros, fazer outra busca ou avançar a página de resultados do catálogo público durante a sessão.
+
+- 05/11/2026: os letreiros dos cartões começam visíveis e parados, deslizam até mostrar o fim do texto, desaparecem suavemente e reiniciam de imediato na posição inicial.
+
+- 05/11/2026: desacelera os letreiros dos cartões, suaviza a retomada nas extremidades e aproxima a apresentação do equivalente da página individual, com filete lateral e pesos tipográficos equilibrados.
+
+- 05/11/2026: os cartões do catálogo destacam o termo preferido em negrito e animam automaticamente nomes longos; o idioma e o equivalente passam a ocupar a mesma linha e, quando necessário, deslizam sincronizados com o termo preferido.
+
+- 05/11/2026: identifica as colunas da lista pública e permite ordenar os resultados da página quando a busca está sem filtros; os cartões alinham os equivalentes, identificam seu idioma e deslizam nomes longos ao receber foco. Corrige um zero indevido no conteúdo dos cartões.
+
+- 05/11/2026: torna contextuais os controles de seleção de autoridades, preserva exclusões individuais ao exportar todos os resultados e redesenha cartões e lista compacta sem numeração. A página inicial ganha uma vantagem sobre os termos revisados pela Biblioteca da FAUFBA.
+
+- 05/11/2026: acrescenta às páginas públicas de autoridades uma explicação, em seis idiomas, sobre o benefício da busca para o público e o trabalho de revisão dos bibliotecários da FAUFBA.
+
+- 05/11/2026: acrescenta download MARC21 ISO 2709 em UTF-8 para uma autoridade ou seleção de até 500 registros, com conferência de leitura de volta pelo importador do Pronto.
+
+- 05/11/2026: esclarece as ações de seleção dos resultados com rótulos completos e ícones distintos para selecionar a página, selecionar todos os registros encontrados e cancelar a seleção.
+
+- 05/11/2026: oferece visualização em cartões ou lista e simplifica a contagem para “Exibindo X de Y resultados”. As ações de seleção ficam fora do menu de exportação, que passa a explicar os formatos disponíveis.
+
+- 05/11/2026: corrige o contraste da lixeira de buscas recentes ao passar o cursor ou focá-la no tema claro da página inicial.
+
+- 05/11/2026: arredonda os exemplos e buscas recentes da página inicial e troca a limpeza do histórico por uma lixeira. Limpar os filtros do catálogo atualiza os resultados sem recarregar a página. Os cartões passam a oferecer seleção individual, da página ou de até 500 resultados encontrados; a comparação sai da lista e a exportação aparece somente com seleção, incluindo cópia textual de MARC21 para um registro.
+
+- 05/11/2026: diferencia a limpeza dos filtros com ícone de recarregar e alinha o controle à altura dos seletores. As buscas recentes e sua ação de limpeza passam a compartilhar a mesma linha, com rótulos mais discretos.
+
+- 05/11/2026: aproxima os cartões da busca pública, destaca a contagem exibida/encontrada e torna o aviso vazio mais leve. Mudanças nos filtros atualizam os resultados sem envio; histórico e ações de limpeza ganham posições próprias, e os menus recuperam o contorno arredondado.
+
+- 05/11/2026: alinha a seta dos filtros avançados, mantém visíveis as buscas recentes do catálogo com expressão e filtros reaplicáveis, reúne as ações de limpar filtros e histórico e simplifica o resumo dos resultados. A lista exibe 20 cartões por página e muda de página sem recarregar o restante do catálogo.
+
+- 05/11/2026: restaura o contorno arredondado direito dos menus de filtros públicos sem deixar a barra de rolagem cobrir os cantos.
+
+- 05/11/2026: adota “Tipo de tema” nos filtros públicos, preserva “Assunto” como categoria específica e substitui usos genéricos de “assunto” por “tema” nas páginas, na ajuda e nas traduções do catálogo.
+
+- 05/11/2026: limita a barra de rolagem dos filtros públicos ao contorno arredondado dos menus e remove suas setas nativas para preservar os cantos.
+
+- 05/11/2026: remove a faixa lateral vazia dos filtros públicos, afasta a barra de rolagem dos rótulos, suaviza o título da busca avançada e alinha o acesso ao mapa à margem direita da identificação.
+
+- 05/11/2026: reduz e suaviza os logos nos resultados públicos; alinha o acesso ao mapa ao último equivalente e apresenta a busca após os detalhes da autoridade, com filtros inicialmente recolhidos nessa página.
+
+- 05/11/2026: afasta a barra de rolagem da borda dos seletores públicos e atualiza seus rótulos imediatamente ao trocar o idioma.
+
+- 05/11/2026: aplica a barra de rolagem visual do Pronto às listas dos filtros de busca do catálogo público de autoridades.
+
+- 05/11/2026: exibe automaticamente as cinco buscas recentes em estilo discreto e alinha os logos das fontes à margem interna dos cartões de resultados.
+
+- 05/11/2026: apresenta os logos das fontes sem fundo nos cartões públicos, ajusta o botão do mapa e os equivalentes na autoridade individual e ordena as fontes nos filtros da busca.
+
+- 05/11/2026: compacta a identificação pública dos temas, organiza equivalentes por idioma, distingue o histórico de buscas das sugestões e identifica as fontes nos resultados pelos logos; completa a tradução dos filtros e da ajuda.
+
+- 05/11/2026: melhora as buscas públicas e da análise com etiquetas, ajusta a navegação pelo mapa e reformula a apresentação da autoridade em foco.
+
+- 05/11/2026: esclarece na busca pública que maiúsculas, minúsculas e acentos não mudam os resultados.
+
+- 05/11/2026: a ajuda da busca pública abre com as duas seções recolhidas, permite expandir uma por vez e apresenta orientações diretas para combinar busca rápida com filtros ou construir uma busca avançada.
+
+- 05/11/2026: reorganiza a ajuda da busca pública no padrão dos modais do Pronto, com filtros e operadores em seções recolhíveis e exemplos separados; alinha e retira o negrito dos valores nos seletores de filtros.
+
+- 05/11/2026: mantém os filtros da busca pública sempre visíveis, sem controle de expansão.
+
+- 05/11/2026: reúne os exemplos de operadores, truncagem e filtros da busca pública numa ajuda acessível por botão; simplifica a orientação na página, retira “Para bibliotecários” dos controles e oferece exploração por local quando a busca não encontra temas.
+
+- 05/11/2026: amplia o filtro público para os tipos MARC de autoridade, mostra resultados enquanto se digita e permite aplicar filtros, operadores booleanos e truncagem pelo botão de busca. A conferência da importação exibe o tipo detectado. Iguala o respiro da busca inicial entre os estados compacto e expandido e agrupa as etiquetas de situação e tipo na gestão de assuntos.
+
+- 05/11/2026: identifica e filtra os tipos de autoridades MARC21 e a publicação na gestão de assuntos; permite revisar o tipo e associar lugares a cabeçalhos geográficos, subdivisões e instituições, reunindo registros do mesmo lugar no mapa. Uniformiza os campos de Temas por área com os formulários administrativos.
+
+- 05/11/2026: esclarece por que autoridades sem lugar não oferecem coordenadas e uniformiza os campos de publicação e localização no painel administrativo.
+
+- 05/11/2026: substitui os quadrados tracejados no mapa completo pelo contorno das regiões selecionadas, mantendo o enquadramento e a busca por abrangência.
+
+- 05/11/2026: aproxima os conteúdos da hero e da descoberta do cabeçalho público, preservando o espaço entre hero, busca e mapa na primeira tela.
+
+- 05/11/2026: coloca Temas da Faculdade no fim do menu Explorar das páginas públicas, com separador discreto e mais espaço entre os grupos.
+
+- 05/11/2026: elimina o salto da busca e do mapa ao contrair a descoberta da página inicial, animando largura, altura e posição sem compensação temporária; iguala a largura do aviso no cabeçalho flutuante à das demais páginas públicas.
+
+- 05/11/2026: mantém a geometria animada dentro da primeira seção, acrescenta Temas da Faculdade ao menu Explorar, alinha os acessos das páginas públicas e simplifica a busca. O mapa ganha cores da paleta, painel mais compacto, enquadramento por abrangência e contorno tracejado do recorte.
+
+- 05/11/2026: melhora o contraste do mapa, simplifica o cabeçalho sem breadcrumbs e separa o controle de fixação; o painel recolhe e abre a partir da base sem cortar o botão.
+
+- 05/11/2026: compacta o cabeçalho do mapa com o símbolo do Pronto!, ajusta o painel e a régua de escalas, acompanha o tema claro ou escuro e esclarece os créditos cartográficos nos seis idiomas.
+
+- 04/11/2026: acrescenta América do Sul e silhuetas à régua do mapa, alinha o cursor às extremidades e transforma cabeçalho e breadcrumbs em bloco flutuante.
+
+- 04/11/2026: corrige a inicialização do mapa vetorial e restaura automaticamente o mapa anterior se os vetores não carregarem.
+
+- 04/11/2026: troca o mapa completo por cartografia vetorial com nomes conforme o idioma selecionado e corrige o controle de fixação do cabeçalho.
+
+- 04/11/2026: devolve fundo sólido e sombra ao cabeçalho do mapa, corrige sua animação e permite abrir o mapa completo pelo recorte da página inicial.
+
+- 04/11/2026: compacta o painel do mapa, inclui a escala Nordeste, ajusta o cabeçalho e a altura do mapa e remove a repetição de Pronto! nos títulos públicos.
+
+- 04/11/2026: sincroniza a saída das sugestões com o fechamento da busca inicial para eliminar o vazio transitório no cartão.
+
+- 04/11/2026: elimina o bloco branco que aparecia brevemente dentro da busca ao contrair a descoberta da página inicial.
+
+- 04/11/2026: mantém cabeçalho e breadcrumbs visíveis sobre o mapa, move e compacta o painel para a esquerda, esclarece a filtragem por escala e o controle de recenter e limita o arraste à área cartografada.
+
+- 04/11/2026: reorganiza o aviso fechado da página inicial, mantém os textos da descoberta iguais nos dois estados, melhora a sequência da contração, mostra nomes simultâneos no mapa compacto e reforça a rolagem por seções.
+
+- 04/11/2026: amplia o mapa público de lugares para toda a área de conteúdo, com cabeçalho e painel translúcidos, régua de escalas mundo–Salvador e acesso ao mapa nas páginas de autoridades.
+
+- 04/11/2026: desce a busca e o mapa aproveitando o espaço livre, mantém explicação e links visíveis na seção contraída e elimina o corte das sugestões ao passar o cursor.
+
+- 04/11/2026: reúne dois temas e dois lugares sugeridos em uma linha, compacta a apresentação abaixo da busca e reduz o mapa expandido para preservar a hero.
+
+- 04/11/2026: alinha o contorno do mapa à margem direita, mantém livres os botões de acesso ao expandir a busca e acrescenta exemplos de lugares de Salvador; passar o mouse sobre o mapa também abre a busca.
+
+- 04/11/2026: elimina a rolagem lateral na página inicial, alinha e redimensiona o mapa nos dois estados e torna a busca contraída mais compacta e a expandida mais larga sobre o mapa.
+
+- 04/11/2026: ancora a busca inicial para expandir acima da primeira tela, alinha busca e mapa à hero, reduz a sobreposição do mapa e amplia o título em linha única; retira a legenda de lugares ilustrativos.
+
+- 04/11/2026: corrige o corte da busca inicial expandida, aproxima o mapa do Brasil da busca compacta e torna perceptível o efeito de vidro sobre o mapa.
+
+- 04/11/2026: torna todo o conteúdo da busca inicial expandida acessível por rolagem, aplica vidro translúcido sobre o mapa e mostra pontos ilustrativos alternados até haver localidades revisadas; a busca passa a reconhecer nomes de lugares e pares de coordenadas das autoridades públicas.
+
+- 04/11/2026: aplica a animação do título da hero nos seis idiomas, integra um mapa maior do Brasil ao fundo da busca inicial, ajusta o espaço da expansão, aproxima os links de exploração por área temática e por local e remove o rótulo redundante dos cabeçalhos públicos de autoridades.
+
+- 04/11/2026: apresenta um recorte do Brasil na busca inicial e um mapa público de lugares associados a temas, com pontos revistos pela biblioteca, consulta por lugar e tema e visualização mundial na área de conteúdo; a equipe pode conferir coordenadas e fonte em cada autoridade.
+
+- 04/11/2026: reduz e aproxima o ícone arquitetônico do título na busca inicial contraída, preservando a composição expandida.
+
+- 04/11/2026: corrige a animação de subida da hero ao expandir a busca e centraliza o ícone arquitetônico na linha do título.
+
+- 04/11/2026: restaura a navegação suave por telas na página inicial, mantém a barra Brasil visível e deixa o rodapé seguir as dúvidas naturalmente; amplia o movimento da hero, alinha o ícone dos temas e explica a organização dos ramos da árvore na Administração.
+
+- 04/11/2026: estabiliza a expansão da busca inicial e o movimento da hero, alinha o título ao ícone, mostra seis dúvidas frequentes editáveis e devolve ao rodapé a rolagem natural após as perguntas.
+
+- 04/11/2026: organiza a página inicial em seções de tela cheia no desktop, com rolagem suave e navegação lateral por pontos, e retira a linha antes de “Como funciona”; estabiliza a busca e alinha seu ícone à barra.
+
+- 04/11/2026: acrescenta um ícone de arco arquitetônico ao lado da apresentação dos temas abaixo da busca inicial.
+
+- 04/11/2026: mantém “Como funciona” imóvel durante a expansão da busca e amplia o deslocamento suave do conteúdo da hero.
+
+- 04/11/2026: limita a expansão da busca inicial aos seus conteúdos, estabiliza a borda sob o cursor e retira o sublinhado da seta do link por área.
+
+- 04/11/2026: desloca suavemente o conteúdo da hero para cima quando a busca expande, preservando os espaços entre seus elementos.
+
+- 04/11/2026: faz a busca inicial expandir para cima dentro da primeira tela e apresenta a origem dos temas em linguagem simples nos seis idiomas.
+
+- 03/11/2026: estabiliza a expansão da busca inicial ao passar o mouse, eliminando a oscilação da barra.
+
+- 03/11/2026: restaura o alinhamento lateral original da hero, leva a busca compacta até o fim da primeira tela e apresenta a exploração por área como link simples.
+
+- 03/11/2026: amplia a busca compacta na página inicial e leva a transição para “Como funciona” ao fim da primeira tela no desktop; organiza a explicação dos temas e o acesso por área quando a busca expande.
+
+- 03/11/2026: limita o catálogo público a temas vinculados a pelo menos um trabalho com ficha homologada ou atendimento concluído e esclarece essa origem na busca inicial; a equipe vê o requisito antes de publicar.
+
+- 03/11/2026: aproxima o texto da busca pública e encurta o degradê antes de “Como funciona”, preservando a expansão por mouse e teclado.
+
+- 03/11/2026: reduz o espaçamento entre estado e fechamento previsto e o preenchimento interno do prazo médio no aviso da hero.
+
+- 03/11/2026: aproxima estado e horário no aviso da hero, deixa a caixa do prazo transparente e separa “Como funciona” por uma linha de largura total.
+
+- 03/11/2026: mostra o prazo médio em caixa destacada à direita do aviso da hero, tanto no funcionamento aberto quanto no fechado.
+
+- 03/11/2026: estende o fundo animado da hero por toda a busca, remove a animação concorrente e leva o degradê até “Como funciona”.
+
+- 03/11/2026: alinha o horário previsto de fechamento logo abaixo do estado no aviso da página inicial.
+
+- 03/11/2026: mantém o fundo da hero em toda a área da busca e reserva o degradê para a passagem à seção “Como funciona”.
+
+- 03/11/2026: destaca o funcionamento em verde ou vermelho, mantém “Antes de começar” aberto e cria uma transição contínua entre a hero e a busca pública.
+
+- 03/11/2026: simplifica a hero da página inicial, reúne o funcionamento em linha, recolhe “Antes de começar” e aplica à busca as cores institucionais nos dois temas.
+
+- 03/11/2026: remove os rótulos acima dos módulos da Visão geral da equipe e uniformiza a altura das atualizações do feed, sem alongar os primeiros cartões.
+
+- 01/11/2026: simplifica “Antes de começar”, alinha sua largura ao aviso, ajusta a busca do hero para tons neutros por tema e mostra integralmente a descrição no estado compacto.
+
+- 01/11/2026: abre a edição dos temas por área dentro do cartão selecionado e leva suavemente a tela aos campos, respeitando movimento reduzido.
+
+- 01/11/2026: encaixa a busca pública na borda inferior do hero e organiza a Visão geral da equipe como mesa de trabalho, com o estado atualizado do backup de produção para administradores.
+
+- 01/11/2026: separa Temas por área da aba Assuntos e cria uma aba própria em Administração → Conteúdo, com acesso e navegação consistentes.
+
+- 01/11/2026: acrescenta uma navegação visível na aba Assuntos para alternar entre o catálogo e os temas por área sem percorrer uma lista longa.
+
+- 01/11/2026: organiza o controle de acessos por área, tela e aba do painel, identifica o acesso fixo de consulta ao backup e facilita localizar cada ação pela busca.
+- 01/11/2026: recoloca o catálogo de assuntos no início da aba e ajusta cartões, ordem, ações e edição dos percursos por área ao padrão da Administração.
+
+- 01/11/2026: faz avatar e tipo de vínculo abrirem Minha conta, aproxima o catálogo público dos breadcrumbs, prepara a edição dos percursos por área na Administração e reforça a importação de autoridades com data legível, sugestões de termos, pendências específicas, bloqueio de homônimas da mesma fonte e motivo obrigatório para edições.
+
+- 01/11/2026: mostra “Entrando...” durante o login com senha de estudantes e equipe e impede envios repetidos por clique ou Enter enquanto a autenticação responde.
+
+- 01/11/2026: acrescenta breadcrumbs traduzidos nos seis idiomas às páginas públicas de temas, exploração por área e detalhes de cada autoridade.
+
+- 30/10/2026: reduz a altura da busca pública quando expandida, aproxima título e apresentação e elimina espaços vazios, mantendo sugestões e atalhos.
+
+- 30/10/2026: deixa a busca pública inicial compacta até a aproximação do mouse ou foco no campo, expandindo a seção para mostrar exemplos e informações completas e recolhendo-a ao sair.
+
+- 30/10/2026: amplia a busca pública para toda a largura da seção inicial, anima o fundo e o placeholder, retira o botão redundante e renova o catálogo e a exploração por áreas com modos de cartões e árvore; reúne recursos técnicos em áreas para bibliotecários.
+- 30/10/2026: prepara um resumo público dos temas mais usados em fichas homologadas, exibido apenas após cinco usos e liberação individual do registro, sem divulgar referências a atendimentos.
+
+- 30/10/2026: amplia a descoberta pública com histórico local, temas frequentes, correção, relações e áreas; oferece filtros adicionais, comparação, destaque e exportação em lote de autoridades liberadas, e reorganiza o acionamento de backup na administração.
+
+- 30/10/2026: destaca na página inicial a descoberta dos temas da Faculdade, com sugestões de busca e animação geométrica; aprimora a consulta pública de autoridades com filtros, operadores, ordenação e páginas internas renovadas na prévia.
+
+- 29/10/2026: prepara na prévia o catálogo público de autoridades de assuntos, com liberação individual, consulta aberta e exportações MARCXML e SKOS/JSON-LD; registros anteriores começam privados.
+
 - 29/10/2026: atualiza o pacote manual e o executor para reconhecer o instalador privado como ferramenta independente, com referência explícita no manifesto e bloqueio de arquivos não revisados.
 
 - 29/10/2026: corrige a retomada imediata da consulta automática após cancelamento e documenta a preparação conferida de banco e pacote privado para publicação.

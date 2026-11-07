@@ -2,9 +2,9 @@ import type { InterfaceLanguage } from "@/lib/interface-language";
 import type { AppIconName } from "@/components/app-icon";
 
 type Benefit = { title: string; description: string };
-type BenefitsCopy = { eyebrow: string; title: string; introduction: string; items: [Benefit, Benefit, Benefit, Benefit, Benefit, Benefit, Benefit] };
+type BenefitsCopy = { eyebrow: string; title: string; introduction: string; items: [Benefit, Benefit, Benefit, Benefit, Benefit, Benefit, Benefit, Benefit] };
 
-export const benefitIcons = ["shield", "edit", "eye", "review", "lock", "document", "upload"] as const satisfies readonly AppIconName[];
+export const benefitIcons = ["shield", "edit", "eye", "review", "lock", "document", "upload", "book"] as const satisfies readonly AppIconName[];
 
 export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
   pt: {
@@ -17,6 +17,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "PDF completo no seu dispositivo", description: "Compartilhe um link para análise. Ao inserir a ficha, o trabalho completo é processado no seu navegador." },
       { title: "Ficha alinhada ao trabalho", description: "Ajuste tipografia e cores, e gere a página da ficha nas dimensões do seu PDF." },
       { title: "Guia para o RI/UFBA", description: "Quando seu curso exigir autodepósito, reaproveite os dados conferidos e siga orientações para publicar." },
+      { title: "Temas organizados por especialistas", description: "Descubra os assuntos e lugares dos trabalhos da Faculdade por termos revisados pelos bibliotecários de arquitetura da Biblioteca da FAUFBA." },
     ],
   },
   en: {
@@ -29,6 +30,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "Full PDF stays on your device", description: "Share a link for review. The complete work is processed in your browser when you insert the record." },
       { title: "A record that fits your work", description: "Choose typeface and colors, and generate the record page to match your PDF’s dimensions." },
       { title: "RI/UFBA guidance", description: "If your course requires self-deposit, reuse the reviewed details and follow the publication guide." },
+      { title: "Themes organized by specialists", description: "Discover the subjects and places in the Faculty’s work through terms reviewed by FAUFBA Library’s architecture librarians." },
     ],
   },
   es: {
@@ -41,6 +43,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "PDF completo en su dispositivo", description: "Comparta un enlace para la revisión. Al insertar la ficha, el trabajo completo se procesa en su navegador." },
       { title: "Ficha adaptada al trabajo", description: "Elija tipografía y colores, y genere la página de la ficha con las dimensiones de su PDF." },
       { title: "Guía para el RI/UFBA", description: "Si su curso exige el autodepósito, reutilice los datos revisados y siga la guía de publicación." },
+      { title: "Temas organizados por especialistas", description: "Descubra los asuntos y lugares de los trabajos de la Facultad con términos revisados por los bibliotecarios de arquitectura de la Biblioteca FAUFBA." },
     ],
   },
   de: {
@@ -53,6 +56,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "Vollständiges PDF bleibt bei Ihnen", description: "Teilen Sie zur Prüfung einen Link. Beim Einfügen des Eintrags wird die ganze Arbeit im Browser verarbeitet." },
       { title: "Eintrag passend zur Arbeit", description: "Wählen Sie Schrift und Farben und erstellen Sie die Seite im Format Ihres PDFs." },
       { title: "Anleitung für RI/UFBA", description: "Falls Ihr Studiengang die Selbsteinreichung verlangt, übernehmen Sie geprüfte Daten und folgen der Anleitung." },
+      { title: "Fachlich geordnete Themen", description: "Entdecken Sie Themen und Orte der Fakultätsarbeiten mit Begriffen, die von den Architekturfachkräften der FAUFBA-Bibliothek geprüft wurden." },
     ],
   },
   fr: {
@@ -65,6 +69,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "PDF complet sur votre appareil", description: "Partagez un lien pour l’examen. Le travail complet est traité dans votre navigateur lors de l’insertion de la notice." },
       { title: "Notice adaptée au travail", description: "Choisissez police et couleurs, puis créez la page aux dimensions de votre PDF." },
       { title: "Guide pour le RI/UFBA", description: "Si votre cursus exige l’auto-dépôt, réutilisez les données vérifiées et suivez le guide de publication." },
+      { title: "Des thèmes organisés par des spécialistes", description: "Découvrez les sujets et les lieux des travaux de la Faculté grâce aux termes révisés par les bibliothécaires en architecture de la FAUFBA." },
     ],
   },
   it: {
@@ -77,6 +82,7 @@ export const homeBenefitsCopy: Record<InterfaceLanguage, BenefitsCopy> = {
       { title: "PDF completo sul tuo dispositivo", description: "Condividi un link per la verifica. Quando inserisci la scheda, il lavoro completo viene elaborato nel browser." },
       { title: "Scheda adatta al lavoro", description: "Scegli carattere e colori e genera la pagina nelle dimensioni del tuo PDF." },
       { title: "Guida per il RI/UFBA", description: "Se il corso richiede l’autodeposito, riutilizza i dati verificati e segui la guida alla pubblicazione." },
+      { title: "Temi organizzati da specialisti", description: "Scopri argomenti e luoghi dei lavori della Facoltà con termini rivisti dai bibliotecari di architettura della Biblioteca FAUFBA." },
     ],
   },
 };
