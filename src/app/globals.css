@@ -9317,3 +9317,25 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
 .site-header__nav[data-current-section="panel"] .site-header__access { outline: 2px solid var(--institutional); outline-offset: 3px; }
 @media(max-width:700px) { .authority-world__controls,.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__controls { width: 276px; } }
 .authority-world__marker--cluster { box-sizing: border-box; width: 34px; height: 34px; overflow: visible; border: 3px solid var(--surface-raised); box-shadow: inset 0 0 0 1px var(--marker-color); white-space: nowrap; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* The map tools stay beside the map; the place filter stays in the panel. */
+.authority-map-page__chrome { overflow: visible; }
+.authority-map-page__chrome .authority-world__header-pin { position: absolute; top: 0; left: calc(100% + 8px); width: 38px; height: 100%; min-height: 76px; border-radius: var(--radius); opacity: 0; pointer-events: none; transition: opacity .18s ease; }
+.authority-map-page__chrome:is(:hover,:focus-within) .authority-world__header-pin { opacity: 1; pointer-events: auto; }
+@media(hover:none) { .authority-map-page__chrome .authority-world__header-pin { opacity: 1; pointer-events: auto; } }
+.authority-world__controls { grid-template-columns: 152px 116px; grid-template-rows: 38px 46px; }
+.authority-world__control-actions { grid-column: 1; grid-row: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 6px; }
+.authority-world__control-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; padding: 0 5px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: color-mix(in srgb,var(--surface-raised) 85%,transparent); color: var(--institutional); font-size: .66rem; font-weight: 700; box-shadow: var(--shadow-card); cursor: pointer; }
+.authority-world__control-actions button:is(:hover,:focus-visible) { background: var(--institutional-soft); }
+.authority-world__control-actions svg { width: 14px; height: 14px; flex: none; }
+.authority-world__legend-popover { position: absolute; bottom: calc(100% + 8px); left: 0; width: min(300px,calc(100vw - 24px)); padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-card); font-size: .74rem; }
+.authority-world__legend-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; color: var(--institutional); }
+.authority-world__legend-head button { width: 27px; height: 27px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--text); cursor: pointer; }
+.authority-world__legend-popover > div:nth-child(2) { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.authority-world__legend-popover > div:nth-child(2) > span { display: inline-flex; align-items: center; gap: 6px; }
+.authority-world__legend-popover p { margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--line); color: var(--text-muted); line-height: 1.4; }
+.authority-world__place-tools { display: block; margin-bottom: 9px; }
+.authority-world__place-tools label { display: block; }
+.authority-world__place-tools select { box-sizing: border-box; height: 42px; padding: 0 12px; line-height: 1.3; }
+.authority-world__place-tools p { margin: 5px 0 0; color: var(--text-muted); font-size: .68rem; line-height: 1.35; }
+.site-header__nav[data-current-section="explore"] .site-header__explore > button,.site-header__nav[data-current-section="help"] > .site-header__help-link { padding: 7px 9px; border-radius: var(--radius-sm); background: var(--institutional-soft); color: var(--institutional); text-decoration: none; }

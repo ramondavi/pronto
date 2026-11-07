@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import { Icon3dCubeSphere, IconCube3dSphereOff, IconPin, IconPinnedOff } from "@tabler/icons-react";
 import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { AppIcon } from "@/components/app-icon";
@@ -76,12 +77,20 @@ function mapTooltip(name: string) {
   return tooltip;
 }
 const mapToolCopy = {
-  pt: { filter: "Tipo de lugar", all: "Todos", neighborhood: "Bairros", square: "Praças", street: "Ruas e vias", institution: "Locais associados", other: "Outros lugares", legend: "Legenda dos pontos", heading: "Lugar", subdivision: "Subdivisão geográfica", associated: "Local associado", mixed: "Vários tipos", cluster: "Pontos agrupados", share: "Compartilhar esta vista", copied: "Link copiado", copyFailed: "Não foi possível copiar o link" },
+  pt: { filter: "Tipo de lugar", all: "Todos", neighborhood: "Bairros", square: "Praças", street: "Ruas e vias", institution: "Autoridades ligadas a lugares", other: "Demais lugares", legend: "Legenda dos pontos", heading: "Lugar", subdivision: "Subdivisão geográfica", associated: "Autoridade ligada a um lugar", mixed: "Tipos diferentes no mesmo ponto", cluster: "Pontos agrupados", share: "Compartilhar esta vista", copied: "Link copiado", copyFailed: "Não foi possível copiar o link" },
   en: { filter: "Place type", all: "All", neighborhood: "Neighborhoods", square: "Squares", street: "Streets", institution: "Linked places", other: "Other places", legend: "Point legend", heading: "Place", subdivision: "Geographic subdivision", associated: "Linked place", mixed: "Several types", cluster: "Grouped points", share: "Share this view", copied: "Link copied", copyFailed: "Could not copy link" },
   es: { filter: "Tipo de lugar", all: "Todos", neighborhood: "Barrios", square: "Plazas", street: "Calles", institution: "Lugares vinculados", other: "Otros lugares", legend: "Leyenda de puntos", heading: "Lugar", subdivision: "Subdivisión geográfica", associated: "Lugar vinculado", mixed: "Varios tipos", cluster: "Puntos agrupados", share: "Compartir esta vista", copied: "Enlace copiado", copyFailed: "No se pudo copiar" },
   de: { filter: "Ortstyp", all: "Alle", neighborhood: "Stadtteile", square: "Plätze", street: "Straßen", institution: "Verknüpfte Orte", other: "Andere Orte", legend: "Punktlegende", heading: "Ort", subdivision: "Geografische Unterteilung", associated: "Verknüpfter Ort", mixed: "Mehrere Typen", cluster: "Gruppierte Punkte", share: "Ansicht teilen", copied: "Link kopiert", copyFailed: "Link konnte nicht kopiert werden" },
   fr: { filter: "Type de lieu", all: "Tous", neighborhood: "Quartiers", square: "Places", street: "Rues", institution: "Lieux associés", other: "Autres lieux", legend: "Légende des points", heading: "Lieu", subdivision: "Subdivision géographique", associated: "Lieu associé", mixed: "Plusieurs types", cluster: "Points regroupés", share: "Partager cette vue", copied: "Lien copié", copyFailed: "Impossible de copier le lien" },
   it: { filter: "Tipo di luogo", all: "Tutti", neighborhood: "Quartieri", square: "Piazze", street: "Strade", institution: "Luoghi associati", other: "Altri luoghi", legend: "Legenda dei punti", heading: "Luogo", subdivision: "Suddivisione geografica", associated: "Luogo associato", mixed: "Vari tipi", cluster: "Punti raggruppati", share: "Condividi questa vista", copied: "Link copiato", copyFailed: "Impossibile copiare il link" },
+} as const;
+const mapControlCopy = {
+  pt: { hideHeader: "Ocultar cabeçalho", showHeader: "Mostrar cabeçalho", close: "Fechar legenda", legendHint: "Local associado é um ponto ligado a uma instituição ou outra autoridade. Vários tipos reúne autoridades diferentes no mesmo ponto.", filterHint: "Filtra pelo nome do lugar. Outros lugares não indicam bairro, praça ou via no nome." },
+  en: { hideHeader: "Hide header", showHeader: "Show header", close: "Close legend", legendHint: "Linked places belong to an institution or another authority. Several types combines different authorities at one point.", filterHint: "Filters by place name. Other places have no neighborhood, square or street label." },
+  es: { hideHeader: "Ocultar encabezado", showHeader: "Mostrar encabezado", close: "Cerrar leyenda", legendHint: "Los lugares vinculados pertenecen a una institución u otra autoridad. Varios tipos reúne distintas autoridades en un punto.", filterHint: "Filtra por el nombre del lugar. Otros lugares no indican barrio, plaza o calle." },
+  de: { hideHeader: "Kopfzeile ausblenden", showHeader: "Kopfzeile anzeigen", close: "Legende schließen", legendHint: "Verknüpfte Orte gehören zu einer Einrichtung oder anderen Autorität. Mehrere Typen vereint verschiedene Autoritäten an einem Punkt.", filterHint: "Filtert nach Ortsnamen. Andere Orte nennen keinen Stadtteil, Platz oder Straße." },
+  fr: { hideHeader: "Masquer l’en-tête", showHeader: "Afficher l’en-tête", close: "Fermer la légende", legendHint: "Les lieux associés sont liés à un établissement ou une autre autorité. Plusieurs types réunit diverses autorités sur un point.", filterHint: "Filtre selon le nom du lieu. Les autres lieux ne précisent pas quartier, place ou rue." },
+  it: { hideHeader: "Nascondi intestazione", showHeader: "Mostra intestazione", close: "Chiudi legenda", legendHint: "I luoghi associati sono collegati a un ente o a un’altra autorità. Vari tipi riunisce autorità diverse nello stesso punto.", filterHint: "Filtra in base al nome del luogo. Altri luoghi non indicano quartiere, piazza o strada." },
 } as const;
 function hierarchyRows(points: AuthorityMapPoint[], view: MapView | null) {
   const all = uniquePlaces(points);
@@ -157,10 +166,16 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const panelText = panelCopy[language];
   const extras = mapExtras[language];
   const toolText = mapToolCopy[language];
+  const controlText = mapControlCopy[language];
   const [query, setQuery] = useState("");
   const [placeFilter, setPlaceFilter] = useState<PlaceType>("all");
   const [shareStatus, setShareStatus] = useState("");
+  const [legendOpen, setLegendOpen] = useState(false);
+  const [chromeHost, setChromeHost] = useState<HTMLElement | null>(null);
   const [scaleIndex, setScaleIndex] = useState(0);
+  const [outlineScale, setOutlineScale] = useState<Scale | null>(null);
+  const scaleFromMap = useRef(false);
+  const userMovedMap = useRef(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [panelTab, setPanelTab] = useState<"explore" | "details">(initialAuthorityId ? "details" : "explore");
   const [searchTipVisible, setSearchTipVisible] = useState(false);
@@ -198,6 +213,14 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const scaleRef = useRef(scale);
   const restoredView = useRef(false);
   useEffect(() => { scaleRef.current = scale; }, [scale]);
+  useEffect(() => { setChromeHost(document.querySelector<HTMLElement>(".authority-map-page__chrome")); }, []);
+  const chooseScale = (index: number) => { scaleFromMap.current = false; setOutlineScale(scales[index].key); setScaleIndex(index); };
+  const followMapZoom = (zoom: number) => {
+    const next = zoom < 3 ? 0 : zoom < 4.5 ? 1 : zoom < 5.5 ? 2 : zoom < 6.5 ? 3 : zoom < 9 ? 4 : 5;
+    scaleFromMap.current = true;
+    setOutlineScale(null);
+    setScaleIndex(next);
+  };
   useEffect(() => {
     if (panelTab !== "explore" || !panelNode.current || !panelOpen) return;
     const panel = panelNode.current;
@@ -350,7 +373,8 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
           if (loadTimer) clearTimeout(loadTimer);
           setReady(true);
         });
-        map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setMinimumZoom(map.getMinZoom()); setBearing(map.getBearing()); setViewportRevision((value) => value + 1); });
+        map.on("movestart", (event) => { if (event.originalEvent) userMovedMap.current = true; });
+        map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setMinimumZoom(map.getMinZoom()); setBearing(map.getBearing()); setViewportRevision((value) => value + 1); if (userMovedMap.current) { userMovedMap.current = false; followMapZoom(map.getZoom()); } });
         map.on("pitchend", () => { if (map) setTilted(map.getPitch() > 1); });
         map.on("rotate", () => { if (map) setBearing(map.getBearing()); });
         themeObserver = new MutationObserver(applyTheme);
@@ -373,7 +397,8 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
       rasterRef.current = map;
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' }).addTo(map);
       rasterMarkersRef.current = L.layerGroup().addTo(map);
-      map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setViewportRevision((value) => value + 1); });
+      map.on("movestart", (event) => { if ("originalEvent" in event) userMovedMap.current = true; });
+      map.on("moveend", () => { if (!map) return; const bounds = map.getBounds(); const center = map.getCenter(); setMapView({ zoom: map.getZoom(), west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth(), latitude: center.lat, longitude: center.lng }); setMapZoom(map.getZoom()); setViewportRevision((value) => value + 1); if (userMovedMap.current) { userMovedMap.current = false; followMapZoom(map.getZoom()); } });
       setRasterReady(true);
     }).catch(() => {});
     return () => { disposed = true; map?.remove(); rasterRef.current = null; rasterMarkersRef.current = null; rasterOutlineRef.current = null; leafletRef.current = null; };
@@ -389,17 +414,19 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   }, [ready, language]);
   useEffect(() => {
     const vectorSource = mapRef.current?.getSource("authority-scale-outline") as MapLibre.GeoJSONSource | undefined;
-    vectorSource?.setData(outline(scale.key));
+    vectorSource?.setData(outline(outlineScale ?? "world"));
     if (rasterReady && rasterRef.current) {
       rasterOutlineRef.current?.remove();
-      rasterOutlineRef.current = leafletRef.current ? leafletRef.current.layerGroup((outline(scale.key).features[0]?.geometry.coordinates ?? []).map((ring) => leafletRef.current!.polyline(ring.map(([longitude, latitude]) => [latitude, longitude] as [number, number]), { color: "#1a3b70", weight: 2, dashArray: "6 5", interactive: false }))).addTo(rasterRef.current) : null;
+      rasterOutlineRef.current = leafletRef.current ? leafletRef.current.layerGroup((outline(outlineScale ?? "world").features[0]?.geometry.coordinates ?? []).map((ring) => leafletRef.current!.polyline(ring.map(([longitude, latitude]) => [latitude, longitude] as [number, number]), { color: "#1a3b70", weight: 2, dashArray: "6 5", interactive: false }))).addTo(rasterRef.current) : null;
+      if (scaleFromMap.current) { scaleFromMap.current = false; return; }
       if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64], duration: .8 });
       else rasterRef.current.flyTo(scale.center, scale.zoom, { duration: .8 });
     } else if (ready && mapRef.current) {
+      if (scaleFromMap.current) { scaleFromMap.current = false; return; }
       if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64, duration: 800 });
       else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, duration: 800 });
     }
-  }, [ready, rasterReady, scale]);
+  }, [ready, rasterReady, scale, outlineScale]);
   useEffect(() => {
     if ((!ready && !rasterReady) || restoredView.current) return;
     const params = new URLSearchParams(window.location.search);
@@ -533,11 +560,13 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
     {(points.length === 0 || (mapError && !rasterReady)) && <div className="authority-world__empty">{mapError && !rasterReady ? ui.mapUnavailable : t.empty}</div>}
+    {chromeHost && createPortal(<button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-label={headerPinned ? controlText.hideHeader : controlText.showHeader} aria-pressed={headerPinned} title={headerPinned ? controlText.hideHeader : controlText.showHeader}>{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</button>, chromeHost)}
     <div className="authority-world__controls">
-      <button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-label={headerPinned ? ui.unpinHeader : ui.pinHeader} aria-pressed={headerPinned} title={headerPinned ? ui.unpinHeader : ui.pinHeader}>{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</button>
+      {legendOpen && <div className="authority-world__legend-popover" role="dialog" aria-label={toolText.legend}><div className="authority-world__legend-head"><strong>{toolText.legend}</strong><button type="button" onClick={() => setLegendOpen(false)} aria-label={controlText.close}>×</button></div><div>{(["heading", "subdivision", "associated", "mixed", "cluster"] as const).map((kind) => <span key={kind}><i className={`authority-world__legend-dot authority-world__legend-dot--${kind}`} />{toolText[kind]}</span>)}</div><p>{controlText.legendHint}</p></div>}
+      <div className="authority-world__control-actions"><button type="button" onClick={() => setLegendOpen((open) => !open)} aria-expanded={legendOpen}><AppIcon name="help" />{toolText.legend}</button><button type="button" onClick={shareView} aria-label={shareStatus === toolText.copied ? toolText.copied : toolText.share} title={shareStatus === toolText.copied ? toolText.copied : toolText.share}><AppIcon name={shareStatus === toolText.copied ? "check" : "link"} /></button></div>
       <div className="authority-world__zoom" role="group" aria-label={ui.mapControls}>
-        <button type="button" disabled={mapZoom >= 17.95} onClick={() => rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={t.zoomIn} title={t.zoomIn}>+</button>
-        <button type="button" disabled={mapZoom <= minimumZoom + .01} onClick={() => rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={t.zoomOut} title={t.zoomOut}>−</button>
+        <button type="button" disabled={mapZoom >= 17.95} onClick={() => { userMovedMap.current = true; rasterReady ? rasterRef.current?.zoomIn() : mapRef.current?.zoomIn(); }} aria-label={t.zoomIn} title={t.zoomIn}>+</button>
+        <button type="button" disabled={mapZoom <= minimumZoom + .01} onClick={() => { userMovedMap.current = true; rasterReady ? rasterRef.current?.zoomOut() : mapRef.current?.zoomOut(); }} aria-label={t.zoomOut} title={t.zoomOut}>−</button>
         <button type="button" onClick={() => { setSelectedAuthorityId(null); setPanelTab("explore"); setAuthorityRecord(null); setQuery(""); if (rasterReady && rasterRef.current) { if (scale.bounds) rasterRef.current.flyToBounds([[scale.bounds[0][1], scale.bounds[0][0]], [scale.bounds[1][1], scale.bounds[1][0]]], { padding: [64, 64] }); else rasterRef.current.flyTo(scale.center, scale.zoom); } else if (mapRef.current) { if (scale.bounds) mapRef.current.fitBounds(scale.bounds, { padding: 64 }); else mapRef.current.flyTo({ center: [scale.center[1], scale.center[0]], zoom: scale.zoom, pitch: 0, bearing: 0 }); } setTilted(false); }} aria-label={t.reset} title={t.reset}><AppIcon name="refresh" /></button>
         <button type="button" disabled={mapError} aria-pressed={tilted} onClick={() => { const map = mapRef.current; if (!map) return; map.easeTo({ pitch: tilted ? 0 : 58, duration: 700 }); }} aria-label={tilted ? extras.flatten : extras.tilt} title={tilted ? extras.flatten : extras.tilt}>{tilted ? <IconCube3dSphereOff size={18} /> : <Icon3dCubeSphere size={18} />}</button>
       </div>
@@ -554,10 +583,9 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onFocus={() => { setSuggestionsOpen(true); if (!searchTipSeen.current) { searchTipSeen.current = true; setSearchTipVisible(true); } }} onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 180)} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} /></div></label>
         {suggestionsOpen && query.trim().length >= 2 && <div className="authority-world__suggestions" role="region" aria-live="polite">{suggestionsLoading ? <p>{t.search}…</p> : suggestions.length ? <ul>{suggestions.map((item) => <li key={item.id}><button type="button" onClick={() => { const point = points.find((candidate) => candidate.authority_id === item.id); if (point) openAuthority(point); }}><span className="authority-world__suggestion-type">{item.heading_type ? publicAuthorityType(language, item.heading_type) : item.source}</span><strong>{item.label}</strong>{item.label_en && <small>{item.label_en}</small>}</button></li>)}</ul> : <p>{t.noResults}</p>}</div>}
         {searchTipVisible && <div className="authority-world__search-tip" role="note"><AppIcon name="help" /><p>{extras.searchTip}</p><Link href={`/autoridades?busca=${encodeURIComponent(query.trim())}&mapa=1`} onClick={() => setSearchTipVisible(false)}>{extras.advancedSearch} ↗</Link><button type="button" onClick={() => setSearchTipVisible(false)} aria-label={extras.dismiss} title={extras.dismiss}>×</button></div>}
-        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => setScaleIndex(Number(event.target.value))} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => setScaleIndex(index)}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
-        <div className="authority-world__place-tools"><label htmlFor="authority-map-place-type">{toolText.filter}<select id="authority-map-place-type" value={placeFilter} onChange={(event) => setPlaceFilter(event.target.value as PlaceType)}>{(["all", "neighborhood", "square", "street", "institution", "other"] as const).map((kind) => <option key={kind} value={kind}>{toolText[kind]}</option>)}</select></label><button type="button" onClick={shareView}><AppIcon name="link" />{toolText.share}</button></div>
-        {shareStatus && <p className="authority-world__share-status" role="status">{shareStatus}</p>}
-        <details className="authority-world__legend"><summary>{toolText.legend}</summary><div>{(["heading", "subdivision", "associated", "mixed", "cluster"] as const).map((kind) => <span key={kind}><i className={`authority-world__legend-dot authority-world__legend-dot--${kind}`} />{toolText[kind]}</span>)}</div></details>
+        <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => chooseScale(Number(event.target.value))} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => chooseScale(index)}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
+        <div className="authority-world__place-tools"><label htmlFor="authority-map-place-type">{toolText.filter}<select id="authority-map-place-type" value={placeFilter} onChange={(event) => setPlaceFilter(event.target.value as PlaceType)}>{(["all", "neighborhood", "square", "street", "institution", "other"] as const).map((kind) => <option key={kind} value={kind}>{toolText[kind]}</option>)}</select></label><p>{controlText.filterHint}</p></div>
+        {shareStatus && <p className="sr-only" role="status">{shareStatus}</p>}
         <div className="authority-world__places"><h2>{t.all} <span>{uniquePlaces(points).length}</span></h2><ul className="authority-world__hierarchy">{hierarchyRows(points, mapView).map((row) => <li key={`${row.depth}:${row.name}`} style={{ paddingInlineStart: `${row.depth * 12}px` }}><span>{row.name}</span><strong>{row.count}</strong></li>)}{uniquePlaces(points).filter((point) => !point.geography.country).length > 0 && <li><span>{panelText.pending}</span><strong>{uniquePlaces(points).filter((point) => !point.geography.country).length}</strong></li>}</ul>{points.length === 0 && <p>{t.empty}</p>}</div>
         </> : <div className="authority-world__record" role="tabpanel">
           {recordError ? <p>{panelText.unavailable}</p> : !authorityRecord ? <div className="authority-world__record-loading" role="status"><BookLoadingIcon compact /><span>{panelText.loading}</span></div> : <>
