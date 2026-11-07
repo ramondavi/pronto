@@ -1,6 +1,6 @@
 export const authorityGuidedCopy = {
   pt: {
-    composition: "Veja as partes que compõem a forma usada pela biblioteca para identificar este tema.",
+    composition: "Quando o nome combina um assunto ou lugar com complementos, veja aqui cada parte separadamente.",
     variants: "Estas formas também ajudam a encontrar o mesmo tema na busca.",
     relations: "Descubra termos próximos. Um link aparece somente quando o vínculo com outro registro foi confirmado.",
     notes: "Informações da biblioteca que ajudam a entender ou usar este tema.",
