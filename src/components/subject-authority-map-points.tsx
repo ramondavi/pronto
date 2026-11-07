@@ -7,7 +7,7 @@ import { AppIcon } from "./app-icon";
 import { AuthorityPlaceFields, authorityPlaceComplete, emptyAuthorityPlace, saveAuthorityPlace, type AuthorityPlaceDraft } from "./authority-place-fields";
 
 type RecordInfo = { heading_type?: string; associated_place?: string; fields?: { tag: string; subfields?: { code: string; value: string }[] }[]; components?: { kind: string; value: string }[] };
-type Point = { component_position: number; place_label: string; latitude: number; longitude: number; in_brazil: boolean; location_source: string; geography?: Partial<AuthorityPlaceDraft["geography"]> };
+type Point = { component_position: number; place_label: string; latitude: number; longitude: number; in_brazil: boolean; location_source: string; place_type?: AuthorityPlaceDraft["placeType"]; geography?: Partial<AuthorityPlaceDraft["geography"]> };
 type Candidate = { position: number; value: string; relationship: "same_place" | "associated_place" };
 
 export function SubjectAuthorityMapPoints({ authorityId, record }: { authorityId: string; record: RecordInfo }) {
@@ -39,7 +39,7 @@ export function SubjectAuthorityMapPoints({ authorityId, record }: { authorityId
   function edit(candidate: Candidate) {
     const point = points.find((item) => item.component_position === candidate.position);
     setEditing(candidate.position);
-    setDraft({ ...emptyAuthorityPlace(candidate.value || point?.place_label || ""), latitude: point ? String(point.latitude) : "", longitude: point ? String(point.longitude) : "", inBrazil: point?.in_brazil ?? false, source: point?.location_source ?? "", geography: { ...emptyAuthorityPlace().geography, ...(point?.in_brazil ? { continent: "América do Sul", country: "Brasil" } : {}), ...(point?.geography ?? {}) } });
+    setDraft({ ...emptyAuthorityPlace(candidate.value || point?.place_label || ""), latitude: point ? String(point.latitude) : "", longitude: point ? String(point.longitude) : "", inBrazil: point?.in_brazil ?? false, placeType: point?.place_type ?? (candidate.position === -1 ? "institution" : "other"), source: point?.location_source ?? "", geography: { ...emptyAuthorityPlace().geography, ...(point?.in_brazil ? { continent: "América do Sul", country: "Brasil" } : {}), ...(point?.geography ?? {}) } });
     setPlaceReason(""); setMessage("");
   }
 

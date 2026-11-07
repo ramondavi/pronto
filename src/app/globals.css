@@ -9358,4 +9358,37 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
 :root[data-theme="dark"] .authority-world__marker-tooltip.is-scrolling::after { background: #f3f6fb; }
 .authority-world__marker--selected > .authority-world__marker-tooltip { color: var(--text); }
 .authority-world__marker--selected > .authority-world__marker-tooltip::before { display: none; }
+.authority-world__place-tools select { line-height: 42px; padding-block: 0; }
+.authority-world__marker > .authority-world__marker-tooltip { isolation: isolate; padding-inline: 12px; pointer-events: auto; }
+.authority-world__marker > .authority-world__marker-tooltip::before { display: none; }
+.authority-world__marker-tooltip .authority-world__tooltip-text { max-width: none; }
+.authority-world__marker-tooltip.is-scrolling::after,.authority-world__leaflet-tooltip .authority-world__marker-tooltip.is-scrolling::after { right: 12px; top: 0; bottom: 0; width: 22px; height: auto; transform: none; box-shadow: -5px 0 5px var(--surface-raised); }
+.authority-world__marker-tooltip:is(:hover,:focus-within).is-scrolling::after { display: none; }
+.authority-world__marker-tooltip:is(:hover,:focus-within).is-scrolling .authority-world__tooltip-text { animation: authority-card-pan var(--heading-duration,8s) linear infinite; }
+:root[data-theme="dark"] .authority-world__marker-tooltip.is-scrolling::after { box-shadow: -5px 0 5px #f3f6fb; }
+.authority-world__tabs-shell { transition: box-shadow .2s ease; }
+.authority-world__panel[data-scrolled="true"] .authority-world__tabs-shell { box-shadow: var(--shadow-card); }
 .public-authority-detail__hero .public-authority-detail__summary { margin-top: 10px; }
+
+/* Reviewed public descriptions use the same spacing and icon language in both views. */
+.authority-profile-view { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 18px; margin: 0 0 28px; }
+.authority-profile-view__item { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); box-shadow: var(--shadow-card); }
+.authority-profile-view__item h3 { display: flex; align-items: center; gap: 9px; margin: 0 0 10px; color: var(--institutional); font-size: 1rem; }
+.authority-profile-view__item h3 svg,.authority-profile-view__review svg { width: 18px; height: 18px; flex: none; }
+.authority-profile-view__item p { margin: 0; color: var(--text); line-height: 1.55; white-space: pre-line; overflow-wrap: anywhere; }
+.authority-profile-view__review { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--text-muted); font-size: .8rem; }
+.authority-profile-view--compact { display: block; margin: 0; }
+.authority-profile-view--compact .authority-profile-view__item { margin: 0 0 10px; padding: 12px; box-shadow: none; }
+.authority-professional-view .authority-profile-view { margin-bottom: 20px; }
+
+/* Clip labels at the inner text edge; the label itself moves only during its marquee. */
+.authority-world__marker-tooltip.is-scrolling::after,.authority-world__leaflet-tooltip .authority-world__marker-tooltip.is-scrolling::after { content: none !important; }
+.authority-world__marker-tooltip .authority-world__tooltip-text { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.authority-world__marker-tooltip.is-scrolling.is-autoplaying .authority-world__tooltip-text,.authority-world__marker-tooltip.is-scrolling:is(:hover,:focus-within) .authority-world__tooltip-text,.authority-world__marker:is(:hover,:focus-visible) .authority-world__marker-tooltip.is-scrolling .authority-world__tooltip-text { width: max-content; max-width: none; overflow: visible; text-overflow: clip; }
+.authority-world__leaflet-tooltip::before { display: none !important; }
+.authority-world__place-tools select { box-sizing: border-box; height: 42px; padding: 0 12px; line-height: normal; text-align: left; text-align-last: left; }
+.authority-world__canvas { background-color: #162b4a; background-image: radial-gradient(1px 1px at 8% 12%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 23% 67%,#e1ecff 60%,transparent 100%),radial-gradient(1px 1px at 41% 32%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 69% 17%,#d6e8ff 60%,transparent 100%),radial-gradient(1px 1px at 87% 73%,#fff 70%,transparent 100%),radial-gradient(1px 1px at 93% 40%,#fff 70%,transparent 100%),radial-gradient(circle at 40% 54%,#294569,#101d34 68%); background-size: 290px 290px,390px 390px,260px 260px,430px 430px,340px 340px,310px 310px,100% 100%; }
+:root[data-theme="dark"] .authority-world__canvas { background-color: #060d1c; background-image: radial-gradient(1px 1px at 8% 12%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 23% 67%,#e1ecff 60%,transparent 100%),radial-gradient(1px 1px at 41% 32%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 69% 17%,#d6e8ff 60%,transparent 100%),radial-gradient(1px 1px at 87% 73%,#fff 70%,transparent 100%),radial-gradient(1px 1px at 93% 40%,#fff 70%,transparent 100%),radial-gradient(circle at 40% 54%,#142c52,#050b18 68%); }
+.authority-world__canvas { animation: authority-star-drift 90s linear infinite alternate; }
+@keyframes authority-star-drift { from { background-position: 0 0,0 0,0 0,0 0,0 0,0 0,center; } to { background-position: 55px -28px,-45px 32px,36px 24px,-60px -33px,22px 44px,-28px 41px,center; } }
+@media (prefers-reduced-motion: reduce) { .authority-world__canvas { animation: none; } }

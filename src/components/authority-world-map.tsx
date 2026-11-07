@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
-import { Icon3dCubeSphere, IconCube3dSphereOff, IconPin, IconPinnedOff } from "@tabler/icons-react";
+import { Icon3dCubeSphere, IconCube3dSphereOff, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { AppIcon } from "@/components/app-icon";
 import { BookLoadingIcon } from "@/components/book-loading-icon";
+import { AuthorityProfileView } from "@/components/authority-profile-view";
 import type * as MapLibre from "maplibre-gl";
 import type * as Leaflet from "leaflet";
 import type { AuthorityMapPoint } from "@/lib/authority-map";
@@ -43,12 +44,7 @@ function markerKind(point: AuthorityMapPoint) {
 }
 type PlaceType = "all" | "neighborhood" | "square" | "street" | "institution" | "other";
 function placeType(point: AuthorityMapPoint): Exclude<PlaceType, "all"> {
-  if (point.kind === "associated") return "institution";
-  const name = point.place_label.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  if (/\b(bairro|district|distrito)\b/.test(name)) return "neighborhood";
-  if (/\b(praca|largo|square|plaza)\b/.test(name)) return "square";
-  if (/\b(rua|avenida|travessa|alameda|street|road)\b/.test(name)) return "street";
-  return "other";
+  return point.place_type;
 }
 function activateMapTooltip(tooltip: HTMLElement) {
   requestAnimationFrame(() => {
@@ -56,13 +52,13 @@ function activateMapTooltip(tooltip: HTMLElement) {
     const inner = tooltip.querySelector<HTMLElement>(".authority-world__tooltip-text");
     if (!inner || tooltip.dataset.measured === "true") return;
     tooltip.dataset.measured = "true";
-    const travel = Math.max(0, inner.scrollWidth - Math.max(0, tooltip.clientWidth - 24));
+    const travel = Math.max(0, inner.scrollWidth - Math.max(0, tooltip.clientWidth - 28));
     if (travel < 2) return;
     tooltip.classList.add("is-scrolling");
     tooltip.style.setProperty("--heading-travel", `${-travel}px`);
     const duration = Math.min(22000, Math.max(8000, travel / 22 * 1000 + 5000));
     tooltip.style.setProperty("--heading-duration", `${duration}ms`);
-    window.setTimeout(() => { if (tooltip.isConnected && !tooltip.matches(":hover")) tooltip.classList.add("is-autoplaying"); }, 2400);
+    window.setTimeout(() => { if (tooltip.isConnected && !tooltip.matches(":hover") && !tooltip.parentElement?.matches(":hover")) tooltip.classList.add("is-autoplaying"); }, 2400);
     tooltip.addEventListener("animationend", () => { if (!tooltip.classList.contains("is-autoplaying")) return; tooltip.classList.remove("is-autoplaying"); tooltip.classList.add("is-returning"); window.setTimeout(() => tooltip.classList.remove("is-returning"), 500); });
   });
 }
@@ -85,12 +81,12 @@ const mapToolCopy = {
   it: { filter: "Tipo di luogo", all: "Tutti", neighborhood: "Quartieri", square: "Piazze", street: "Strade", institution: "Luoghi associati", other: "Altri luoghi", legend: "Legenda dei punti", heading: "Luogo", subdivision: "Suddivisione geografica", associated: "Luogo associato", mixed: "Vari tipi", cluster: "Punti raggruppati", share: "Condividi questa vista", copied: "Link copiato", copyFailed: "Impossibile copiare il link" },
 } as const;
 const mapControlCopy = {
-  pt: { hideHeader: "Ocultar cabeçalho", showHeader: "Mostrar cabeçalho", close: "Fechar legenda", legendHint: "Local associado reúne uma instituição, evento ou outro tema ligado ao lugar. Vários tipos indica temas diferentes no mesmo ponto.", filterHint: "Filtra pelo nome do lugar. Demais lugares não indicam bairro, praça ou via no nome." },
-  en: { hideHeader: "Hide header", showHeader: "Show header", close: "Close legend", legendHint: "Linked places belong to an institution or another authority. Several types combines different authorities at one point.", filterHint: "Filters by place name. Other places have no neighborhood, square or street label." },
-  es: { hideHeader: "Ocultar encabezado", showHeader: "Mostrar encabezado", close: "Cerrar leyenda", legendHint: "Los lugares vinculados pertenecen a una institución u otra autoridad. Varios tipos reúne distintas autoridades en un punto.", filterHint: "Filtra por el nombre del lugar. Otros lugares no indican barrio, plaza o calle." },
-  de: { hideHeader: "Kopfzeile ausblenden", showHeader: "Kopfzeile anzeigen", close: "Legende schließen", legendHint: "Verknüpfte Orte gehören zu einer Einrichtung oder anderen Autorität. Mehrere Typen vereint verschiedene Autoritäten an einem Punkt.", filterHint: "Filtert nach Ortsnamen. Andere Orte nennen keinen Stadtteil, Platz oder Straße." },
-  fr: { hideHeader: "Masquer l’en-tête", showHeader: "Afficher l’en-tête", close: "Fermer la légende", legendHint: "Les lieux associés sont liés à un établissement ou une autre autorité. Plusieurs types réunit diverses autorités sur un point.", filterHint: "Filtre selon le nom du lieu. Les autres lieux ne précisent pas quartier, place ou rue." },
-  it: { hideHeader: "Nascondi intestazione", showHeader: "Mostra intestazione", close: "Chiudi legenda", legendHint: "I luoghi associati sono collegati a un ente o a un’altra autorità. Vari tipi riunisce autorità diverse nello stesso punto.", filterHint: "Filtra in base al nome del luogo. Altri luoghi non indicano quartiere, piazza o strada." },
+  pt: { hideHeader: "Ocultar cabeçalho", showHeader: "Mostrar cabeçalho", close: "Fechar legenda", legendHint: "Local associado reúne uma instituição, evento ou outro tema ligado ao lugar. Vários tipos indica temas diferentes no mesmo ponto.", filterHint: "Filtra pela categoria do lugar conferida pela biblioteca. Lugares antigos aguardam classificação." },
+  en: { hideHeader: "Hide header", showHeader: "Show header", close: "Close legend", legendHint: "Linked places belong to an institution or another authority. Several types combines different authorities at one point.", filterHint: "Filters by the place category reviewed by the library. Older places await classification." },
+  es: { hideHeader: "Ocultar encabezado", showHeader: "Mostrar encabezado", close: "Cerrar leyenda", legendHint: "Los lugares vinculados pertenecen a una institución u otra autoridad. Varios tipos reúne distintas autoridades en un punto.", filterHint: "Filtra por la categoría del lugar revisada por la biblioteca. Los lugares antiguos esperan clasificación." },
+  de: { hideHeader: "Kopfzeile ausblenden", showHeader: "Kopfzeile anzeigen", close: "Legende schließen", legendHint: "Verknüpfte Orte gehören zu einer Einrichtung oder anderen Autorität. Mehrere Typen vereint verschiedene Autoritäten an einem Punkt.", filterHint: "Filtert nach der von der Bibliothek geprüften Ortskategorie. Ältere Orte warten auf Einordnung." },
+  fr: { hideHeader: "Masquer l’en-tête", showHeader: "Afficher l’en-tête", close: "Fermer la légende", legendHint: "Les lieux associés sont liés à un établissement ou une autre autorité. Plusieurs types réunit diverses autorités sur un point.", filterHint: "Filtre selon la catégorie du lieu vérifiée par la bibliothèque. Les anciens lieux attendent leur classement." },
+  it: { hideHeader: "Nascondi intestazione", showHeader: "Mostra intestazione", close: "Chiudi legenda", legendHint: "I luoghi associati sono collegati a un ente o a un’altra autorità. Vari tipi riunisce autorità diverse nello stesso punto.", filterHint: "Filtra per la categoria del luogo verificata dalla biblioteca. I luoghi precedenti attendono classificazione." },
 } as const;
 function hierarchyRows(points: AuthorityMapPoint[], view: MapView | null) {
   const all = uniquePlaces(points);
@@ -327,7 +323,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         const applyTheme = () => {
           if (!map?.isStyleLoaded()) return;
           const dark = document.documentElement.dataset.theme === "dark";
-          map.setSky({ "sky-color": dark ? "#24425a" : "#bed2e4", "horizon-color": dark ? "#24425a" : "#bed2e4", "atmosphere-blend": 0 });
+          map.setSky({ "sky-color": dark ? "rgba(10, 20, 41, 0)" : "rgba(19, 42, 76, 0)", "horizon-color": dark ? "rgba(10, 20, 41, 0)" : "rgba(19, 42, 76, 0)", "atmosphere-blend": 0 });
           for (const layer of map.getStyle().layers) {
             if (layer.type === "background") paint(layer.id, "background-color", "#202b3a", dark);
             if (layer.type === "fill") {
@@ -563,7 +559,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
     {(points.length === 0 || (mapError && !rasterReady)) && <div className="authority-world__empty">{mapError && !rasterReady ? ui.mapUnavailable : t.empty}</div>}
-    {chromeHost && createPortal(<button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned((value) => !value); setHeaderVisible(true); }} aria-label={headerPinned ? controlText.hideHeader : controlText.showHeader} aria-pressed={headerPinned} title={headerPinned ? controlText.hideHeader : controlText.showHeader}>{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</button>, chromeHost)}
+    {chromeHost && createPortal(<button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned(!headerPinned); setHeaderVisible(!headerPinned); }} aria-label={headerPinned ? controlText.hideHeader : controlText.showHeader} aria-pressed={headerPinned} title={headerPinned ? controlText.hideHeader : controlText.showHeader}>{headerPinned ? <IconEyeOff size={18} /> : <IconEye size={18} />}</button>, chromeHost)}
     <div className="authority-world__controls">
       {legendOpen && <div className="authority-world__legend-popover" role="dialog" aria-label={toolText.legend}><div className="authority-world__legend-head"><strong>{toolText.legend}</strong><button type="button" onClick={() => setLegendOpen(false)} aria-label={controlText.close}>×</button></div><div>{(["heading", "subdivision", "associated", "mixed", "cluster"] as const).map((kind) => <span key={kind}><i className={`authority-world__legend-dot authority-world__legend-dot--${kind}`} />{toolText[kind]}</span>)}</div><p>{controlText.legendHint}</p></div>}
       <div className="authority-world__control-actions"><button type="button" onClick={() => setLegendOpen((open) => !open)} aria-expanded={legendOpen}><AppIcon name="help" />{toolText.legend}</button><button type="button" onClick={shareView} aria-label={shareStatus === toolText.copied ? toolText.copied : toolText.share} title={shareStatus === toolText.copied ? toolText.copied : toolText.share}><AppIcon name={shareStatus === toolText.copied ? "check" : "link"} /></button></div>
@@ -580,7 +576,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
     <aside ref={panelNode} className="authority-world__panel" data-open={panelOpen} data-tab={panelTab} style={panelOpen && panelTab === "details" ? { height: explorePanelHeight ?? 560 } : undefined} aria-label={t.title}>
       <div className="authority-world__tabs-shell" aria-hidden={!panelOpen} inert={!panelOpen}><div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><span className="authority-world__tab-wrap"><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{extras.theme}</button>{!selectedAuthorityId && <span className="authority-world__tab-tip" role="tooltip">{extras.selectPoint}</span>}</span></div></div>
-      <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen}>
+      <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen} onScroll={(event) => { const panel = event.currentTarget.closest<HTMLElement>(".authority-world__panel"); if (panel) panel.dataset.scrolled = String(panelTab === "details" && event.currentTarget.scrollTop > 2); }}>
         {panelTab === "explore" ? <>
         <div className="authority-world__panel-heading"><p className="eyebrow"><AppIcon name="globe" />{ui.panelEyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
         <label className="authority-world__search"><span>{t.search}</span><div><AppIcon name="search" /><input type="search" value={query} onFocus={() => { setSuggestionsOpen(true); if (!searchTipSeen.current) { searchTipSeen.current = true; setSearchTipVisible(true); } }} onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 180)} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} /></div></label>
@@ -596,14 +592,15 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
             <p className="eyebrow">{panelText.preferred}</p><h2>{authorityRecord.label}</h2>
             {places.find((place) => place.points.some((point) => point.authority_id === authorityRecord.id))?.points.filter((point) => point.authority_id !== authorityRecord.id).map((point) => <button type="button" className="authority-world__related-place" key={point.authority_id} onClick={() => openAuthority(point)}>{point.term_label} →</button>)}
             {authorityRecord.notes[0]?.value && <div className="authority-world__record-section authority-world__record-section--intro"><h3><AppIcon name="book" />{panelText.notes}</h3><p>{authorityRecord.notes[0].value}</p></div>}
+            <AuthorityProfileView profile={authorityRecord.public_profile} language={language} compact />
             {authorityRecord.label_en && <div className="authority-world__record-section"><h3><AppIcon name="globe" />{panelText.equivalent}</h3><p><span lang="en">English (EN)</span> {authorityRecord.label_en}</p></div>}
             {authorityRecord.components.length > 1 && <div className="authority-world__record-section"><h3><AppIcon name="hierarchy" />{panelText.composition}</h3><ol>{authorityRecord.components.map((part, index) => <li key={index}><strong>{part.kind === "Assunto-base" ? publicAuthorityType(language, authorityRecord.heading_type) : part.kind}</strong> {part.value}</li>)}</ol></div>}
             {!!authorityRecord.variants.length && <div className="authority-world__record-section"><h3><AppIcon name="search" />{panelText.variants}</h3><ul>{authorityRecord.variants.map((part, index) => <li key={index}>{part.value}</li>)}</ul></div>}
             {!!authorityRecord.relations.length && <div className="authority-world__record-section"><h3><AppIcon name="link" />{panelText.relations}</h3><ul>{authorityRecord.relations.map((part, index) => <li key={index}>{part.kind && <strong>{part.kind}: </strong>}{part.value}</li>)}</ul></div>}
             {authorityRecord.notes.slice(1).map((note, index) => <div className="authority-world__record-section" key={index}><h3><AppIcon name="document" />{note.kind || panelText.notes}</h3><p>{note.value}</p></div>)}
             <div className="authority-world__record-section"><h3><AppIcon name="book" />{panelText.source}</h3><p>{({ pronto: "Pronto!", pergamum_ufba: "Pergamum UFBA", rede_pergamum: "Rede Pergamum", bn: "Biblioteca Nacional", loc: "Library of Congress", getty_aat: "Getty AAT" } as Record<string, string>)[authorityRecord.source.toLowerCase()] ?? authorityRecord.source}{authorityRecord.source_identifier ? ` · ${authorityRecord.source_identifier}` : ""}</p>{authorityRecord.source_url?.startsWith("https://") && <a href={authorityRecord.source_url} target="_blank" rel="noopener noreferrer">{authorityRecord.source_url}</a>}</div>
-            <div className="authority-world__record-section"><h3><AppIcon name="book" />{panelText.librarianUse}</h3><p>{authorityRecord.rights_statement}</p><div className="authority-world__record-downloads"><a href={`/autoridades/${authorityRecord.id}/marc.xml`}>MARCXML</a><a href={`/autoridades/${authorityRecord.id}/marc.mrc`}>ISO 2709</a><a href={`/autoridades/${authorityRecord.id}/skos.jsonld`}>SKOS/JSON-LD</a></div></div>
-            <div className="authority-world__record-section authority-world__record-value"><details><summary>MARC21</summary><div className="authority-professional-view__code" onCopy={(event) => { event.clipboardData.setData("text/plain", authorityRecord.marc_text); event.preventDefault(); }}><code>{authorityRecord.marc_text.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div></details></div>
+            <AuthorityProfileView profile={authorityRecord.public_profile} language={language} professional compact />
+            <div className="authority-world__record-section authority-world__record-value"><h3><AppIcon name="download" />{language === "pt" ? "Exportar tema" : panelText.librarianUse}</h3><p>{authorityRecord.rights_statement}</p><div className="authority-world__record-downloads"><a href={`/autoridades/${authorityRecord.id}/marc.xml`}>MARCXML</a><a href={`/autoridades/${authorityRecord.id}/marc.mrc`}>ISO 2709</a><a href={`/autoridades/${authorityRecord.id}/skos.jsonld`}>SKOS/JSON-LD</a></div><details><summary><AppIcon name="document" />MARC21<AppIcon name="chevronDown" /></summary><div className="authority-professional-view__code" onCopy={(event) => { event.clipboardData.setData("text/plain", authorityRecord.marc_text); event.preventDefault(); }}><code>{authorityRecord.marc_text.split("\n").map((line, index) => <span className="authority-professional-view__code-line" key={index}><strong>{line.slice(0, 4)}</strong>{line.slice(4)}</span>)}</code></div></details></div>
             <div className="authority-world__record-section authority-world__record-value"><h3><AppIcon name="help" />{authorityValueCopy[language].title}</h3><details><summary><AppIcon name="globe" />{panelText.publicUse}<AppIcon name="chevronDown" /></summary><p>{authorityValueCopy[language].publicText}</p></details><details><summary><AppIcon name="book" />{panelText.librarianUse}<AppIcon name="chevronDown" /></summary><p>{authorityValueCopy[language].librarianText}</p></details></div>
           </>}
         </div>}

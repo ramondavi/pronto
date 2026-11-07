@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseAuthorityQuery } from "@/lib/authority-search-query";
 import { headingTagByKind } from "@/lib/authority-heading-types";
+import type { AuthorityPublicProfile } from "@/components/subject-authority-public-profile";
 
 export type PublicAuthority = {
   id: string; label: string; label_en: string | null; source: string; source_identifier: string | null;
@@ -11,6 +12,7 @@ export type PublicAuthority = {
   relations: { kind?: string; value: string; identifier?: string }[];
   rights_statement: string; published_at: string;
   marc_mapping: { heading_ind1: string; variant_ind1: string[]; relation_ind1: string[] };
+  public_profile?: AuthorityPublicProfile | null;
 };
 
 export const authoritySources: Record<string, string> = {
@@ -61,9 +63,12 @@ export async function searchPublicAuthoritiesPage(options: AuthoritySearchOption
 
 export async function getPublicAuthority(id: string): Promise<PublicAuthority | null> {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
-  const { data, error } = await (await createClient()).rpc("get_public_subject_authority", { target_authority_id: id });
+  const client = await createClient();
+  const { data, error } = await client.rpc("get_public_subject_authority", { target_authority_id: id });
   if (error) throw error;
-  return data && typeof data === "object" ? data as PublicAuthority : null;
+  if (!data || typeof data !== "object") return null;
+  const profile = await client.rpc("get_public_subject_authority_profile", { target_authority_id: id });
+  return { ...data as PublicAuthority, public_profile: !profile.error && profile.data && typeof profile.data === "object" ? profile.data as AuthorityPublicProfile : null };
 }
 
 const safeText = (value: unknown) => String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim();

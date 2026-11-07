@@ -7,10 +7,11 @@ import { authorityHeadingLabel } from "@/lib/authority-heading-types";
 
 export type AuthorityPlaceDraft = {
   placeLabel: string; latitude: string; longitude: string; inBrazil: boolean;
+  placeType: "neighborhood" | "square" | "street" | "institution" | "other";
   source: string; linkedAuthorityId: string; linkReason: string; editReason: string;
   geography: { continent: string; country: string; macroregion: string; state: string; municipality: string };
 };
-export const emptyAuthorityPlace = (placeLabel = ""): AuthorityPlaceDraft => ({ placeLabel, latitude: "", longitude: "", inBrazil: false, source: "", linkedAuthorityId: "", linkReason: "", editReason: "", geography: { continent: "", country: "", macroregion: "", state: "", municipality: "" } });
+export const emptyAuthorityPlace = (placeLabel = ""): AuthorityPlaceDraft => ({ placeLabel, latitude: "", longitude: "", inBrazil: false, placeType: "other", source: "", linkedAuthorityId: "", linkReason: "", editReason: "", geography: { continent: "", country: "", macroregion: "", state: "", municipality: "" } });
 type Match = { authority_id: string; place_label: string; heading_tag: string; latitude: number; longitude: number; in_brazil: boolean; location_source: string };
 type PathMatch = { id: string; name: string; level: number; path: Partial<AuthorityPlaceDraft["geography"]> };
 
@@ -40,6 +41,7 @@ export function AuthorityPlaceFields({ value, onChange, disabled, editablePlace 
     <div className="authority-place-fields__heading"><AppIcon name="globe" /><div><strong>Localização revisada</strong><small>Confira a posição no mapa antes de salvar. Nenhuma coordenada é inferida do nome.</small></div></div>
     <div className="authority-place-fields__grid">
       {editablePlace && <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="tag" />Lugar associado</span><input value={value.placeLabel} disabled={disabled} maxLength={250} onChange={(event) => update({ placeLabel: event.target.value })} placeholder="Ex.: Salvador (BA)" /></label>}
+      <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="tag" />Tipo de lugar</span><select value={value.placeType} disabled={disabled} onChange={(event) => update({ placeType: event.target.value as AuthorityPlaceDraft["placeType"] })}><option value="neighborhood">Bairro</option><option value="square">Praça ou largo</option><option value="street">Rua ou via</option><option value="institution">Local associado a instituição ou evento</option><option value="other">Outro lugar</option></select><small className="field-help">Confirme a categoria pelo lugar, não apenas pelo texto do termo.</small></label>
       <label><span className="catalogue-field-label"><AppIcon name="globe" />Latitude</span><input type="number" step="any" min="-90" max="90" value={value.latitude} disabled={disabled} onChange={(event) => update({ latitude: event.target.value })} /></label>
       <label><span className="catalogue-field-label"><AppIcon name="globe" />Longitude</span><input type="number" step="any" min="-180" max="180" value={value.longitude} disabled={disabled} onChange={(event) => update({ longitude: event.target.value })} /></label>
       <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="document" />Fonte das coordenadas</span><input value={value.source} disabled={disabled} maxLength={500} onChange={(event) => update({ source: event.target.value })} placeholder="Ex.: malha geográfica do IBGE" /></label>
@@ -76,6 +78,8 @@ export async function saveAuthorityPlace(authorityId: string, position: number, 
   const client = createClient();
   const point = await client.rpc("admin_review_subject_authority_map_point", { target_authority_id: authorityId, part_position: position, latitude_value: Number(value.latitude), longitude_value: Number(value.longitude), in_brazil_value: value.inBrazil, location_source_value: value.source.trim(), continent_value: value.geography.continent.trim(), country_value: value.geography.country.trim(), macroregion_value: value.geography.macroregion.trim() || null, state_value: value.geography.state.trim() || null, municipality_value: value.geography.municipality.trim() || null, edit_reason: value.editReason.trim() || null });
   if (point.error) throw point.error;
+  const type = await client.rpc("admin_set_subject_authority_place_type", { target_authority_id: authorityId, part_position: position, place_type_value: value.placeType, edit_reason: value.editReason.trim() || null });
+  if (type.error) throw type.error;
   if (value.linkedAuthorityId) {
     const link = await client.rpc("admin_link_authority_place", { source_authority_id: authorityId, target_authority_id: value.linkedAuthorityId, relationship_value: relationship, edit_reason: value.linkReason.trim() });
     if (link.error) throw link.error;
