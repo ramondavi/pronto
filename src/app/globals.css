@@ -7917,11 +7917,6 @@ dialog.pronto-modal.catalogue-record-dialog[open] { display: flex; flex-directio
 @supports (appearance: base-select) { .authority-discovery-search__filters select { display: flex; align-items: center; justify-content: space-between; gap: 10px; } }
 @supports (appearance: base-select) {
   .authority-discovery-search__filters select::picker(select) { padding: 6px; border-color: transparent; box-shadow: inset 0 0 0 1px var(--line); scrollbar-gutter: auto; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)) var(--surface-raised); clip-path: inset(0 round var(--radius)); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 12px; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { margin-block: 8px; border-inline: 3px solid var(--surface-raised); border-radius: 9px; background: var(--surface-raised); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb { border-inline: 3px solid var(--surface-raised); border-radius: 9px; background: color-mix(in srgb, var(--institutional) 68%, var(--surface-raised)); }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb:hover { background: var(--institutional); }
 }
 .authority-discovery-search__operators { margin: 14px 0 0; color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
 .authority-discovery-search__operators code { display: inline-block; padding: 2px 5px; border-radius: 4px; background: var(--institutional-soft); color: var(--institutional); white-space: normal; }
@@ -8817,9 +8812,6 @@ body:has(.home-section-nav) #como-funciona,body:has(.home-section-nav) .home-ben
 .authority-discovery-search__clear-filters { margin-bottom: 4px; }
 @supports (appearance: base-select) {
   .authority-discovery-search__filters select::picker(select) { padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); box-shadow: var(--shadow-card); clip-path: none; scrollbar-width: thin; scrollbar-color: color-mix(in srgb,var(--institutional) 65%,var(--surface-raised)) transparent; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar { width: 7px; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-track { margin-block: 10px; border: 0; background: transparent; }
-  .authority-discovery-search__filters select::picker(select)::-webkit-scrollbar-thumb { border: 0; border-radius: 6px; background: color-mix(in srgb,var(--institutional) 65%,var(--surface-raised)); }
 }
 @media(max-width:900px) { .authority-discovery-search__filters { grid-template-columns: repeat(2,minmax(0,1fr)) auto; } }
 @media(max-width:620px) { .authority-discovery-search__filters { grid-template-columns: minmax(0,1fr) auto; } .authority-discovery-search__filters label { grid-column: 1 / -1; } .authority-discovery-search__clear-filters { grid-column: 2; } }
@@ -9387,6 +9379,9 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
 .authority-world__marker-tooltip.is-scrolling.is-autoplaying .authority-world__tooltip-text,.authority-world__marker-tooltip.is-scrolling:is(:hover,:focus-within) .authority-world__tooltip-text,.authority-world__marker:is(:hover,:focus-visible) .authority-world__marker-tooltip.is-scrolling .authority-world__tooltip-text { width: max-content; max-width: none; overflow: visible; text-overflow: clip; }
 .authority-world__leaflet-tooltip::before { display: none !important; }
 .authority-world__place-tools select { box-sizing: border-box; height: 42px; padding: 0 12px; line-height: normal; text-align: left; text-align-last: left; }
+@supports (appearance: base-select) {
+  .authority-world__place-tools select { display: flex; align-items: center; justify-content: space-between; min-height: 42px; line-height: 1.2; }
+}
 .authority-world__canvas { background-color: #162b4a; background-image: radial-gradient(1px 1px at 8% 12%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 23% 67%,#e1ecff 60%,transparent 100%),radial-gradient(1px 1px at 41% 32%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 69% 17%,#d6e8ff 60%,transparent 100%),radial-gradient(1px 1px at 87% 73%,#fff 70%,transparent 100%),radial-gradient(1px 1px at 93% 40%,#fff 70%,transparent 100%),radial-gradient(circle at 40% 54%,#294569,#101d34 68%); background-size: 290px 290px,390px 390px,260px 260px,430px 430px,340px 340px,310px 310px,100% 100%; }
 :root[data-theme="dark"] .authority-world__canvas { background-color: #060d1c; background-image: radial-gradient(1px 1px at 8% 12%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 23% 67%,#e1ecff 60%,transparent 100%),radial-gradient(1px 1px at 41% 32%,#fff 70%,transparent 100%),radial-gradient(2px 2px at 69% 17%,#d6e8ff 60%,transparent 100%),radial-gradient(1px 1px at 87% 73%,#fff 70%,transparent 100%),radial-gradient(1px 1px at 93% 40%,#fff 70%,transparent 100%),radial-gradient(circle at 40% 54%,#142c52,#050b18 68%); }
 .authority-world__canvas { animation: authority-star-drift 90s linear infinite alternate; }

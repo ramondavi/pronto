@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 07/11/2026: a gestão de autoridades passa a classificar lugares revisados e registrar definições, contexto e critérios públicos; a página individual e o mapa apresentam essas informações quando preenchidas. O mapa melhora a leitura dos pontos, a navegação e o acesso ao registro MARC21. A publicação exige revisão individual dos dados alterados.
+
 - 06/11/2026: o mapa público passa a ajustar a altura do painel ao conteúdo, mostra sugestões de busca para lugares publicados, identifica o motivo de bloqueio da aba Tema e separa os controles de inclinação, rotação e zoom. Os pontos isolados têm dicas posicionadas conforme a tela; agrupamentos mostram apenas a contagem. As páginas públicas usam a mesma animação de carregamento do painel.
 
 - 06/11/2026: o mapa público ganha abas Explorar e Tema no topo, dica de busca completa, acesso identificado à autoridade, marcadores por tipo e controle de inclinação. A busca completa recebe o texto digitado no mapa e abre com o campo visível.
