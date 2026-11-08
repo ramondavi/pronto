@@ -107,6 +107,7 @@ export function SiteFooter({ version }: { version: string }) {
       footerRow.style.removeProperty("--language-align-offset");
     };
   }, [pathname]);
+  if (pathname.startsWith("/guia-equipe")) return null;
   return (
     <footer className={styles.footer} id="creditos">
       <div className={styles.decoration} aria-hidden="true" />

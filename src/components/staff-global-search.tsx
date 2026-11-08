@@ -29,7 +29,7 @@ export function StaffGlobalSearch({ prominent = false, firstName = "", greetingV
   useEffect(() => { if (prominent) input.current?.focus(); }, [prominent]);
   useEffect(() => {
     if (query || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const suggestions = ["Buscar protocolos…", "Buscar assuntos…", "Buscar códigos CDU…", "Buscar datas do calendário…", "Buscar configurações…"];
+    const suggestions = ["Buscar protocolos…", "Buscar assuntos…", "Buscar no guia da equipe…", "Buscar respostas rápidas…", "Buscar códigos CDU…", "Buscar datas do calendário…", "Buscar configurações…"];
     let suggestion = 0;
     let letters = 0;
     let removing = false;
@@ -64,7 +64,7 @@ export function StaffGlobalSearch({ prominent = false, firstName = "", greetingV
   }, [query]);
   return <section className={`staff-global-search${prominent ? " staff-global-search--prominent" : ""}`} role="search" aria-label="Busca no painel">
     {prominent && <div className="staff-global-search__architecture" aria-hidden="true"><svg><defs><pattern id="staff-search-architecture" width="600" height="190" patternUnits="userSpaceOnUse"><rect x="30" y="-36" width="148" height="110" /><rect x="225" y="110" width="126" height="96" /><rect x="442" y="-52" width="128" height="102" /><rect x="62" y="130" width="92" height="84" /><rect x="352" y="25" width="76" height="76" /><path d="M0 103h148m-24-8v16M468 0v80m-9-13h18" /></pattern></defs><rect className="staff-global-search__pattern-plane" width="100%" height="100%" /></svg></div>}
-    {prominent && <div className="staff-global-search__intro"><h2>{searchGreetings[greetingVariant % searchGreetings.length](firstName)}</h2><p>Pesquise protocolos, pessoas, assuntos e configurações.</p></div>}
+    {prominent && <div className="staff-global-search__intro"><h2>{searchGreetings[greetingVariant % searchGreetings.length](firstName)}</h2><p>Pesquise protocolos, pessoas, assuntos, configurações, respostas rápidas e o guia da equipe.</p></div>}
     <label className="sr-only" htmlFor={id}>Buscar no painel</label>
     <div className="staff-global-search__field"><AppIcon name="search" /><input ref={input} id={id} type="search" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={placeholder} aria-controls={`${id}-results`} />{(loading || query.trim().length >= 2 && resolvedQuery !== query.trim()) && <span className="staff-global-search__busy" role="status" aria-label="Buscando resultados"><BookLoadingIcon compact /></span>}</div>
     {query.trim().length >= 2 && <div className="staff-global-search__results" id={`${id}-results`} aria-live="polite">{resolvedQuery !== query.trim() || loading ? <div className="search-results-pending" aria-hidden="true" /> : failed ? <p>Não foi possível buscar agora. Tente novamente.</p> : results.length === 0 ? <SearchEmptyState scope="panel" /> : <ul>{results.map((result) => <li key={result.id}><Link href={result.href} onClick={() => setQuery("")}><span>{result.type}</span><strong>{result.title}</strong><small>{result.detail}</small><AppIcon name="arrowRight" /></Link></li>)}</ul>}</div>}

@@ -186,6 +186,12 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
       const compact = window.matchMedia("(max-width: 700px)").matches;
       headings.forEach((heading) => {
         if (!heading.isConnected) { headings.delete(heading); return; }
+        if (!compact) {
+          heading.classList.remove("is-scrolling");
+          heading.style.removeProperty("--heading-travel");
+          heading.style.removeProperty("--heading-duration");
+          return;
+        }
         const distance = compact ? Math.max(0, (heading.firstElementChild?.scrollWidth ?? 0) - heading.clientWidth) : 0;
         heading.classList.toggle("is-scrolling", distance > 2);
         heading.style.setProperty("--heading-travel", `${-distance}px`);
@@ -448,6 +454,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
           </div>}
           <Link onClick={() => setMobileMenuOpen(false)} className={activeClass("/painel/conta")} href="/painel/conta" aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
           {previewAllowed && <button className="dashboard-nav__preview-mobile" type="button" role="switch" aria-checked="false" onClick={() => { setMobileMenuOpen(false); router.push("/painel/visao-estudante"); }}><span className="dashboard-preview-switch__track"><span /></span><span>Ver como estudante</span></button>}
+          {isStaff && !previewMode && <Link className="dashboard-nav__guide-mobile" onClick={() => setMobileMenuOpen(false)} href="/guia-equipe" aria-label="Guia da equipe" title="Guia da equipe"><AppIcon className="dashboard-nav__icon" name="book" /><span className="dashboard-nav__label">Guia da equipe</span></Link>}
         </nav> : <nav className={`dashboard-nav__menu${mobileMenuOpen ? " is-open" : ""}`} id="menu-painel" aria-label={t.studentArea}>
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === null || searchParams.get("tela") === "inicio" ? "is-active" : undefined : activeClass("/painel")} href={previewMode ? previewHref("") : "/painel"} aria-label={t.overview} title={t.overview}><SidebarIcon name="overview" /><span className="dashboard-nav__label">{t.overview}</span></Link>
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? ["solicitacoes", "solicitacao", "correcao"].includes(searchParams.get("tela") ?? "") ? "is-active" : undefined : activeClass("/painel/solicitacao")} href={previewMode ? previewHref("solicitacoes") : "/painel/solicitacao"} aria-label={t.request} title={t.request}><SidebarIcon name="request" /><span className="dashboard-nav__label">{t.request}</span></Link>
@@ -455,6 +462,7 @@ export function DashboardShell({ children, fullName, role, userId, avatarChoice,
           <Link onClick={() => setMobileMenuOpen(false)} className={previewMode ? searchParams.get("tela") === "conta" ? "is-active" : undefined : activeClass("/painel/conta")} href={previewMode ? previewHref("conta") : "/painel/conta"} aria-label={t.account} title={t.account}><SidebarIcon name="account" /><span className="dashboard-nav__label">{t.account}</span></Link>
         </nav>}
         {isStaff && !previewMode && previewAllowed && <button className="dashboard-nav__preview-switch" type="button" role="switch" aria-checked="false" aria-label="Ver como estudante" title="Ver como estudante" onClick={() => router.push("/painel/visao-estudante")}><AppIcon className="dashboard-nav__preview-icon" name="eye" /><span className="dashboard-preview-switch__track"><span /></span><span className="dashboard-nav__preview-label">Ver como estudante</span></button>}
+        {isStaff && !previewMode && <Link className="dashboard-nav__guide-shortcut" href="/guia-equipe" aria-label="Guia da equipe" title="Guia da equipe"><AppIcon className="dashboard-nav__icon" name="book" /><span className="dashboard-nav__label">Guia da equipe</span></Link>}
       </aside>
       <div className="dashboard-content">
         <header className={`dashboard-header${isStaff && !previewMode ? " dashboard-header--staff" : ""}`}>

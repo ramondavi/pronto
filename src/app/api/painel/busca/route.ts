@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { userAdminPermissions, userHasPermission } from "@/lib/staff-permissions";
 import { adminSections, adminTabHref, canOpenAdminTab } from "@/lib/admin-navigation";
 import { readableAuditAction } from "@/lib/audit-labels";
+import { findStaffGuidePages } from "@/lib/staff-guide-search";
 
 type SearchResult = { id: string; type: string; title: string; detail: string; href: string };
 const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
@@ -33,7 +34,7 @@ export async function GET(request: Request) {
   const canSeeFaq = canOpenAdminTab("faq", adminPermissions);
   const dateMatch = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(term) ?? /^(\d{4})-(\d{2})-(\d{2})$/.exec(term);
   const date = dateMatch ? term.includes("/") ? `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}` : term : null;
-  const [requests, programs, terms, cdu, notices, people, help, metadata, requestPeople, keywords, templates, coordination, sla, audit, datedNotices, hours, permissionDefinitions, staffAccount, programSettings, retention, enrollments] = await Promise.all([
+  const [requests, programs, terms, cdu, notices, people, help, metadata, requestPeople, keywords, templates, coordination, sla, audit, datedNotices, hours, permissionDefinitions, staffAccount, programSettings, retention, enrollments, guide, quickAnswers] = await Promise.all([
     canSeeQueue ? supabase.from("cataloging_requests").select("id,protocol,title,subtitle,status,public_work_url").or(`protocol.ilike.${pattern},title.ilike.${pattern},subtitle.ilike.${pattern},equivalent_title.ilike.${pattern},public_work_url.ilike.${pattern},volume_information.ilike.${pattern},library_note.ilike.${pattern}`).limit(8) : Promise.resolve({ data: null }),
     canSeePrograms ? supabase.from("academic_programs").select("id,code,name,service_level_business_days").or(`code.ilike.${pattern},name.ilike.${pattern}`).limit(6) : Promise.resolve({ data: null }),
     canSeeSubjects ? supabase.from("controlled_terms").select("id,preferred_label_pt,preferred_label_en").or(`preferred_label_pt.ilike.${pattern},preferred_label_en.ilike.${pattern}`).limit(6) : Promise.resolve({ data: null }),
@@ -55,8 +56,12 @@ export async function GET(request: Request) {
     canSeePrograms ? supabase.from("academic_programs").select("*").limit(100) : Promise.resolve({ data: null }),
     canOpenAdminTab("retention", adminPermissions) ? supabase.from("nada_consta_documents").select("id,request_id,original_name,purge_after").ilike("original_name", pattern).limit(6) : Promise.resolve({ data: null }),
     canSeeQueue ? supabase.from("academic_enrollments").select("id,registration_number,cataloging_requests(id,protocol)").ilike("registration_number", pattern).limit(6) : Promise.resolve({ data: null }),
+    supabase.from("staff_guide_pages").select("published_slug,published_section,published_title,published_summary,published_html").not("published_at", "is", null),
+    supabase.from("knowledge_base_entries").select("id,title,summary,audiences").eq("active", true).eq("kind", "answer").or(`title.ilike.${pattern},summary.ilike.${pattern},body_html.ilike.${pattern}`),
   ]);
   const results: SearchResult[] = [];
+  for (const row of quickAnswers.data ?? []) if (!row.audiences.includes("public") && (row.audiences.includes("cataloger") || profile.role === "administrator" && row.audiences.includes("administrator"))) results.push({ id: `quick-answer-${row.id}`, type: "Resposta rápida da equipe", title: row.title, detail: row.summary ?? "", href: `/painel?ajuda=${encodeURIComponent(row.id)}` });
+  for (const row of findStaffGuidePages(guide.data ?? [], term)) results.push({ id: `guide-${row.published_slug}`, type: "Guia da equipe", title: row.published_title!, detail: row.published_summary ?? "", href: `/guia-equipe/${row.published_slug}` });
   for (const row of requests.data ?? []) results.push({ id: `request-${row.id}`, type: "Protocolo", title: `${row.protocol} · ${row.title}`, detail: row.subtitle || requestStatusLabels[row.status] || "Consultar protocolo", href: `/painel/atendimento/${row.id}` });
   for (const row of metadata.data ?? []) results.push({ id: `metadata-${row.request_id}`, type: "CDU / Cutter do protocolo", title: [row.cdu_code, row.cutter_code].filter(Boolean).join(" · "), detail: "Abrir dados de catalogação", href: `/painel/atendimento/${row.request_id}` });
   for (const row of requestPeople.data ?? []) results.push({ id: `request-person-${row.request_id}-${row.role}-${row.transcribed_name}`, type: "Pessoa no protocolo", title: row.transcribed_name, detail: row.authorized_name ? `Nome autorizado: ${row.authorized_name}` : personRoleLabels[row.role] || "Pessoa relacionada ao trabalho", href: `/painel/atendimento/${row.request_id}` });

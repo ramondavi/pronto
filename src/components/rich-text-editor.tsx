@@ -5,18 +5,23 @@ import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { TableKit } from "@tiptap/extension-table";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { AppIcon, type AppIconName } from "./app-icon";
 import { createClient } from "@/lib/supabase/client";
 import { KnowledgeAlignment, KnowledgeHeadingIcon, KnowledgeHighlight, KnowledgeIcon, KnowledgeImage, KnowledgeSection, KnowledgeTextColor } from "./knowledge-editor-extensions";
 import { headingIconChoices, headingIconColors } from "@/lib/knowledge-heading-options";
+import { StaffPanelReferenceNode } from "./staff-panel-reference-extension";
+import { StaffPanelReferencePicker } from "./staff-panel-reference-picker";
+import { StaffGuideIncludeNode } from "./staff-guide-include-extension";
+import { StaffGuideIncludePicker, type StaffGuideIncludeSource } from "./staff-guide-include-picker";
+import type { InterfaceLanguage } from "@/lib/interface-language";
 
 type EditorDialog = "link" | "image" | "color" | "highlight" | null;
 type InlineTool = "link" | "color" | "highlight" | null;
 const isHttpsUrl = (value: string) => /^https:\/\/[^\s]+$/i.test(value.trim());
 const colorSwatches = ["#183968", "#111111", "#a4262c", "#216a45", "#805400", "#fff0a8", "#dce9ff", "#ffffff"];
 
-export function RichTextEditor({ value, onChange, variant = "full", editable = true }: { value: string; onChange: (html: string) => void; variant?: "full" | "reply"; editable?: boolean }) {
+export function RichTextEditor({ value, onChange, variant = "full", editable = true, guidePageId, guideSources = [], referenceScope, referenceLanguage = "pt" }: { value: string; onChange: (html: string) => void; variant?: "full" | "reply"; editable?: boolean; guidePageId?: string; guideSources?: StaffGuideIncludeSource[]; referenceScope?: "staff" | "public"; referenceLanguage?: InterfaceLanguage }) {
   const [dialog, setDialog] = useState<EditorDialog>(null);
   const [dialogValue, setDialogValue] = useState("");
   const [imageAlt, setImageAlt] = useState("");
@@ -31,15 +36,21 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   const [inlineError, setInlineError] = useState("");
   const [headingIconPickerOpen, setHeadingIconPickerOpen] = useState(false);
   const [tablePickerOpen, setTablePickerOpen] = useState(false);
+  const [panelReferencePickerOpen, setPanelReferencePickerOpen] = useState(false);
+  const [panelReferenceQuery, setPanelReferenceQuery] = useState("");
+  const [guideIncludePickerOpen, setGuideIncludePickerOpen] = useState(false);
+  const [pickerPlacement, setPickerPlacement] = useState({ above: false, height: 500 });
   const [tableRows, setTableRows] = useState(3);
   const [tableColumns, setTableColumns] = useState(3);
   const [tableHeaderRow, setTableHeaderRow] = useState(true);
   const fileInput = useRef<HTMLInputElement>(null);
+  const panelReferenceControlRef = useRef<HTMLSpanElement>(null);
+  const guideIncludeControlRef = useRef<HTMLSpanElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const selectedRange = useRef<{ from: number; to: number; image: boolean } | null>(null);
   const editor = useEditor({
-    extensions: [StarterKit.configure(variant === "reply" ? { heading: false, blockquote: false, horizontalRule: false, code: false, codeBlock: false, strike: false, link: false } : { heading: { levels: [1, 2, 3, 4, 5, 6] }, link: false }), Link.configure({ openOnClick: false, autolink: variant === "full" }), ...(variant === "reply" ? [] : [KnowledgeImage.configure({ allowBase64: false, resize: { enabled: true, minWidth: 80, minHeight: 80, alwaysPreserveAspectRatio: true } }), TableKit, KnowledgeSection, KnowledgeIcon, KnowledgeTextColor, KnowledgeHighlight, KnowledgeAlignment, KnowledgeHeadingIcon])],
+    extensions: [StarterKit.configure(variant === "reply" ? { heading: false, blockquote: false, horizontalRule: false, code: false, codeBlock: false, strike: false, link: false } : { heading: { levels: [1, 2, 3, 4, 5, 6] }, link: false }), Link.configure({ openOnClick: false, autolink: variant === "full" }), ...(variant === "reply" ? [] : [KnowledgeImage.configure({ allowBase64: false, resize: { enabled: true, minWidth: 80, minHeight: 80, alwaysPreserveAspectRatio: true } }), TableKit, KnowledgeSection, KnowledgeIcon, KnowledgeTextColor, KnowledgeHighlight, KnowledgeAlignment, KnowledgeHeadingIcon, ...((guidePageId || referenceScope) ? [StaffPanelReferenceNode] : []), ...(guidePageId ? [StaffGuideIncludeNode] : [])])],
     content: value,
     immediatelyRender: false,
     editorProps: { attributes: { "aria-label": variant === "reply" ? "Resposta ao estudante" : "Conteúdo completo", class: variant === "reply" ? "rich-editor__content" : "rich-editor__content knowledge-rich-content knowledge-article__body" } },
@@ -64,7 +75,7 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   useEffect(() => { editor?.setEditable(editable); }, [editor, editable]);
   useEffect(() => {
     if (!editor) return;
-    const closePicker = () => { setHeadingIconPickerOpen(false); setTablePickerOpen(false); };
+    const closePicker = () => { setHeadingIconPickerOpen(false); setTablePickerOpen(false); setPanelReferencePickerOpen(false); setGuideIncludePickerOpen(false); };
     editor.on("selectionUpdate", closePicker);
     editor.view.dom.addEventListener("pointerdown", closePicker);
     return () => {
@@ -83,6 +94,14 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   const button = (label: string, run: () => void, active = false, content: ReactNode = label) => (
     <button type="button" aria-label={label} aria-pressed={active} title={label} className={active ? "is-active" : ""} disabled={!editable} onMouseDown={(event) => event.preventDefault()} onClick={run}>{content}</button>
   );
+  const placePicker = (control: HTMLSpanElement | null) => {
+    const bounds = control?.getBoundingClientRect();
+    if (!bounds) return;
+    const below = window.innerHeight - bounds.bottom - 28;
+    const above = bounds.top - 28;
+    const useAbove = below < 500 && above > below;
+    setPickerPlacement({ above: useAbove, height: Math.max(180, Math.min(500, useAbove ? above : below)) });
+  };
   const tableAction = (label: string, icon: AppIconName, run: () => void, disabled = false) => (
     <button type="button" disabled={!editable || disabled} onMouseDown={(event) => event.preventDefault()} onClick={run}><AppIcon name={icon} /><span>{label}</span></button>
   );
@@ -152,17 +171,17 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
       if (width !== undefined && (!Number.isInteger(width) || width < 80 || width > 1600)) { setImageError("Use largura entre 80 e 1600 pixels."); return; }
       let src = imageSource === "url" ? dialogValue.trim() : "";
       if (imageSource === "file" && imageFile) {
-        if (!["image/png", "image/jpeg", "image/webp", "image/gif"].includes(imageFile.type) || imageFile.size > 2 * 1024 * 1024) { setImageError("Use PNG, JPEG, WebP ou GIF com até 2 MB."); return; }
+        if (!(guidePageId ? ["image/png", "image/jpeg", "image/webp"] : ["image/png", "image/jpeg", "image/webp", "image/gif"]).includes(imageFile.type) || imageFile.size > 2 * 1024 * 1024) { setImageError("Use uma imagem permitida com até 2 MB."); return; }
         setUploading(true);
         const extension = imageFile.type === "image/jpeg" ? "jpg" : imageFile.type.split("/")[1];
-        const path = `${crypto.randomUUID()}.${extension}`;
-        const storage = createClient().storage.from("knowledge-images");
+        const path = `${guidePageId ? `${guidePageId}/` : ""}${crypto.randomUUID()}.${extension}`;
+        const storage = createClient().storage.from(guidePageId ? "staff-guide-images" : "knowledge-images");
         const { error } = await storage.upload(path, imageFile, { contentType: imageFile.type, upsert: false });
         setUploading(false);
         if (error) { setImageError("Não foi possível enviar a imagem. Tente novamente."); return; }
-        src = storage.getPublicUrl(path).data.publicUrl;
+        src = guidePageId ? `/api/staff-guide/images/${path}` : storage.getPublicUrl(path).data.publicUrl;
       }
-      if (!isHttpsUrl(src)) { setImageError("Use uma URL HTTPS válida ou escolha um arquivo."); return; }
+      if (!(guidePageId ? /^\/api\/staff-guide\/images\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(png|jpg|webp)$/.test(src) : isHttpsUrl(src))) { setImageError("Escolha uma imagem válida."); return; }
       editor.chain().focus().setImage({ src, alt: imageAlt.trim(), ...(width ? { width } : {}) }).run();
     }
     if (dialog === "color" || dialog === "highlight") {
@@ -201,6 +220,12 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
       <div className="rich-editor__tool-group" role="group" aria-label="Inserir conteúdo">
         {button("Link", () => openDialog("link"), toolbarState?.link, <AppIcon name="link" />)}
         {variant === "full" && button("Imagem", () => openDialog("image"), toolbarState?.image, <AppIcon name="image" />)}
+        {(guidePageId || referenceScope) && <span ref={panelReferenceControlRef} className={`rich-editor__panel-reference-control${pickerPlacement.above ? " is-above" : ""}`} style={{ "--picker-height": `${pickerPlacement.height}px` } as CSSProperties}>{button("Inserir elemento do painel", () => { if (!panelReferencePickerOpen) placePicker(panelReferenceControlRef.current); setPanelReferencePickerOpen((open) => !open); }, panelReferencePickerOpen, <AppIcon name="panelExpand" />)}
+          {panelReferencePickerOpen && <StaffPanelReferencePicker query={panelReferenceQuery} onQueryChange={setPanelReferenceQuery} scope={referenceScope ?? "staff"} language={referenceLanguage} onInsert={(key) => { editor.chain().focus().insertContent({ type: "staffPanelReference", attrs: { key, language: referenceScope === "public" ? referenceLanguage : null } }).run(); setPanelReferencePickerOpen(false); setPanelReferenceQuery(""); }} />}
+        </span>}
+        {guidePageId && <span ref={guideIncludeControlRef} className={`rich-editor__guide-include-control${pickerPlacement.above ? " is-above" : ""}`} style={{ "--picker-height": `${pickerPlacement.height}px` } as CSSProperties}>{button("Incorporar capítulo ou tópico", () => { if (!guideIncludePickerOpen) placePicker(guideIncludeControlRef.current); setGuideIncludePickerOpen((open) => !open); }, guideIncludePickerOpen, <AppIcon name="book" />)}
+          {guideIncludePickerOpen && <StaffGuideIncludePicker sources={guideSources} onInsert={(source, label) => { editor.chain().focus().insertContent({ type: "staffGuideInclude", attrs: { source, label } }).run(); setGuideIncludePickerOpen(false); }} />}
+        </span>}
         {variant === "full" && <span className="rich-editor__table-control">{button("Tabela", () => setTablePickerOpen((open) => !open), toolbarState?.table, <AppIcon name="table" />)}
           {tablePickerOpen && <div className="rich-editor__table-panel" role="group" aria-label={toolbarState?.table ? "Editar tabela" : "Inserir tabela"}>
             {toolbarState?.table ? <><strong>Editar tabela</strong><div className="rich-editor__table-actions">
@@ -262,8 +287,8 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
         </div>
         {dialog === "link" && <div className="rich-editor__dialog-body"><label>Endereço do link<input autoFocus type="url" value={dialogValue} onChange={(event) => { setDialogValue(event.target.value); setImageError(""); }} placeholder="https://exemplo.com" /></label><fieldset className="rich-editor__link-target"><legend>Abrir link</legend><label><input type="radio" name="dialog-link-target" checked={linkTarget === "_blank"} onChange={() => setLinkTarget("_blank")} />Em outra aba</label><label><input type="radio" name="dialog-link-target" checked={linkTarget === "_self"} onChange={() => setLinkTarget("_self")} />Na própria página</label></fieldset><p className="rich-editor__dialog-hint">Use um endereço HTTPS para abrir o destino com segurança.</p></div>}
         {dialog === "image" && <div className="rich-editor__dialog-body">
-          <div className="rich-editor__source-tabs" role="group" aria-label="Origem da imagem"><button type="button" className={imageSource === "file" ? "is-active" : ""} aria-pressed={imageSource === "file"} onClick={() => { setImageSource("file"); setImageError(""); }}><AppIcon name="upload" />Arquivo</button><button type="button" className={imageSource === "url" ? "is-active" : ""} aria-pressed={imageSource === "url"} onClick={() => { setImageSource("url"); setImageError(""); }}><AppIcon name="link" />Endereço</button></div>
-          {imageSource === "file" ? <div className="rich-editor__file-field"><input ref={fileInput} className="sr-only" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => { setImageFile(event.target.files?.[0] ?? null); setImageError(""); }} /><button type="button" onClick={() => fileInput.current?.click()}><AppIcon name="upload" /><span>{imageFile ? imageFile.name : "Escolher imagem"}</span></button><small>PNG, JPEG, WebP ou GIF · até 2 MB</small></div> : <label>Endereço da imagem<input autoFocus type="url" value={dialogValue} onChange={(event) => { setDialogValue(event.target.value); setImageError(""); }} placeholder="https://exemplo.com/imagem.png" /></label>}
+          {!guidePageId && <div className="rich-editor__source-tabs" role="group" aria-label="Origem da imagem"><button type="button" className={imageSource === "file" ? "is-active" : ""} aria-pressed={imageSource === "file"} onClick={() => { setImageSource("file"); setImageError(""); }}><AppIcon name="upload" />Arquivo</button><button type="button" className={imageSource === "url" ? "is-active" : ""} aria-pressed={imageSource === "url"} onClick={() => { setImageSource("url"); setImageError(""); }}><AppIcon name="link" />Endereço</button></div>}
+          {imageSource === "file" || guidePageId ? <div className="rich-editor__file-field"><input ref={fileInput} className="sr-only" type="file" accept={guidePageId ? "image/png,image/jpeg,image/webp" : "image/png,image/jpeg,image/webp,image/gif"} onChange={(event) => { setImageFile(event.target.files?.[0] ?? null); setImageError(""); }} /><button type="button" onClick={() => fileInput.current?.click()}><AppIcon name="upload" /><span>{imageFile ? imageFile.name : "Escolher imagem"}</span></button><small>{guidePageId ? "PNG, JPEG ou WebP" : "PNG, JPEG, WebP ou GIF"} · até 2 MB</small></div> : <label>Endereço da imagem<input autoFocus type="url" value={dialogValue} onChange={(event) => { setDialogValue(event.target.value); setImageError(""); }} placeholder="https://exemplo.com/imagem.png" /></label>}
           <div className="rich-editor__image-fields"><label>Descrição alternativa<input value={imageAlt} onChange={(event) => { setImageAlt(event.target.value); setImageError(""); }} placeholder="O que a imagem mostra?" /></label><label>Largura <span>(opcional)</span><input type="number" inputMode="numeric" min={80} max={1600} value={imageWidth} onChange={(event) => setImageWidth(event.target.value)} placeholder="px" /></label></div>
           <p className="rich-editor__dialog-hint">Depois de inserir, você também pode ajustar o tamanho pelas alças da imagem.</p>
         </div>}

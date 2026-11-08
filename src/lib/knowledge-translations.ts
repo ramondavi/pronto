@@ -1,5 +1,6 @@
 import { articleHtml, helpArticles, type KnowledgeEntry, type KnowledgeItem, type KnowledgeSection, type KnowledgeTranslation } from "@/lib/knowledge-base";
 import type { InterfaceLanguage } from "@/lib/interface-language";
+import { taskKnowledgeTranslation } from "@/lib/knowledge-task-translations";
 
 type OtherLanguage = Exclude<InterfaceLanguage, "pt">;
 type ShortCopy = { title: string; summary: string; body?: string[] };
@@ -263,6 +264,22 @@ const escapeHtml = (value: string) => value.replaceAll("&", "&amp;").replaceAll(
 
 export function fallbackKnowledgeTranslation(entry: KnowledgeEntry, language: InterfaceLanguage): KnowledgeTranslation | null {
   if (language === "pt") return null;
+  const taskTranslation = taskKnowledgeTranslation(entry, language);
+  if (taskTranslation) {
+    if (entry.slug !== "compartilhar-link-publico") return taskTranslation;
+    const original = helpArticles.find((item) => item.slug === entry.slug);
+    const localized = articleCopy[entry.slug]?.[language];
+    const serviceNames = new Set(["Google Drive", "Microsoft OneDrive", "Dropbox", "iCloud Drive", "Proton Drive", "Nextcloud"]);
+    if (!original?.sections || !localized || localized.sections.length !== original.sections.length) return taskTranslation;
+    const services = original.sections.flatMap((section, index) => {
+      if (!serviceNames.has(section.title)) return [];
+      const translation = localized.sections[index];
+      return [{ ...section, title: translation.title, paragraphs: translation.paragraphs, steps: translation.steps,
+        links: section.links?.map((link, linkIndex) => ({ ...link, label: translation.links?.[linkIndex] ?? link.label })) }];
+    });
+    const serviceTitle = { en: "Set up your chosen service", es: "Configura el servicio elegido", de: "Den gewählten Dienst einrichten", fr: "Configurer le service choisi", it: "Configura il servizio scelto" }[language];
+    return { ...taskTranslation, body_html: `${taskTranslation.body_html}<h2>${serviceTitle}</h2>${articleHtml({ id: "services", kind: "Artigo de ajuda", category: "Solicitação", title: serviceTitle, summary: "", sections: services })}` };
+  }
   const short = shortCopy[entry.title]?.[language];
   if (short && entry.kind !== "article") {
     const paragraphs = short.body ?? [short.summary];

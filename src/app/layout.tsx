@@ -1,13 +1,12 @@
 import { siteCopy } from "@/lib/site-copy";
 import type { Metadata } from "next";
-import Script from "next/script";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { ThemeScript } from "@/components/theme-script";
 import { AccessibilityControls } from "@/components/accessibility-controls";
 import { SiteFooter } from "@/components/site-footer";
-import { GovernmentBar } from "@/components/government-bar";
+import { ConditionalGovernmentBar } from "@/components/conditional-government-bar";
 import { InterfaceLanguageProvider } from "@/components/interface-language";
 import { CookieNotice } from "@/components/cookie-notice";
 import { TooltipViewportManager } from "@/components/tooltip-viewport-manager";
@@ -67,8 +66,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body>
         <InterfaceLanguageProvider initialLanguage={interfaceLanguage} initialDeviceLanguage={deviceLanguage} initialPreference={Boolean(savedLanguage)}>
-          <GovernmentBar portalLabel={copy[3]} />
-          <Script id="barra-brasil-oficial" src="https://barra.brasil.gov.br/barra_2.0.js" strategy="afterInteractive" />
+          <ConditionalGovernmentBar portalLabel={copy[3]} />
           <a className="skip-link" href="#conteudo">{copy[2]}</a>
           <AccessibilityControls />
           <TooltipViewportManager />

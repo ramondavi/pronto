@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { articleHtml, helpArticles, initialKnowledgeEntries, type KnowledgeEntry, type KnowledgeItem } from "@/lib/knowledge-base";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
+import { publicInterfaceReferenceByKey } from "@/lib/public-interface-references";
+import { staffPanelReferenceByKey } from "@/lib/staff-panel-references";
 import type { InterfaceLanguage } from "@/lib/interface-language";
 import { userHasPermission } from "@/lib/staff-permissions";
 
@@ -66,12 +68,34 @@ export function safeKnowledgeHtml(html: string) {
   });
 }
 
-export function toKnowledgeItem(entry: KnowledgeEntry): KnowledgeItem {
+function safeKnowledgeWithReferences(html: string, language: InterfaceLanguage, allowStaff: boolean) {
+  const references: string[] = [];
+  const marked = html.replace(/<span\b([^>]*)>[^<]*<\/span>/gi, (match, attributes: string) => {
+    const key = attributes.match(/\bdata-panel-ref=["']([a-z0-9-]+)["']/i)?.[1];
+    if (!key) return match;
+    const publicReference = publicInterfaceReferenceByKey.get(key);
+    const staffReference = allowStaff ? staffPanelReferenceByKey.get(key) : undefined;
+    if (!publicReference && !staffReference) return "";
+    const marker = `PRONTO_PUBLIC_REFERENCE_${references.length}_END`;
+    const label = (publicReference?.labels[language] ?? staffReference?.label ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const iconName = publicReference?.icon ?? staffReference?.icon;
+    const group = publicReference?.group ?? staffReference?.group ?? "";
+    const icon = iconName ? '<span class="staff-panel-reference__icon" aria-hidden="true"></span>' : "";
+    references.push(`<span class="staff-panel-reference${iconName ? "" : " staff-panel-reference--field"}" data-panel-ref="${key}" title="${group}">${icon}<span>${label}</span></span>`);
+    return marker;
+  });
+  return safeKnowledgeHtml(marked).replace(/PRONTO_PUBLIC_REFERENCE_(\d+)_END/g, (_match, index: string) => references[Number(index)] ?? "");
+}
+
+export const safePublicKnowledgeHtml = (html: string, language: InterfaceLanguage) => safeKnowledgeWithReferences(html, language, false);
+export const safeStaffKnowledgeHtml = (html: string, language: InterfaceLanguage) => safeKnowledgeWithReferences(html, language, true);
+
+export function toKnowledgeItem(entry: KnowledgeEntry, language: InterfaceLanguage, allowStaff = false): KnowledgeItem {
   return {
     id: entry.id, slug: entry.slug ?? undefined,
     kind: entry.kind === "faq" ? "Pergunta frequente" : entry.kind === "answer" ? "Dúvida rápida" : "Artigo de ajuda",
     title: entry.title, summary: entry.summary, category: entry.category,
-    bodyHtml: safeKnowledgeHtml(entry.body_html),
+    bodyHtml: safeKnowledgeWithReferences(entry.body_html, language, allowStaff),
   };
 }
 

@@ -136,6 +136,7 @@ function announcementColorCategory(item: Announcement) {
 export function AdminOperations(props: {
   area: AdminArea;
   tab: string;
+  guideContent?: ReactNode;
   depositFollowup?: ReactNode;
   users: User[];
   staffCandidates: StaffCandidate[];
@@ -1170,6 +1171,7 @@ export function AdminOperations(props: {
         <div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="help" /></span><div><p className="eyebrow">Orientação ao público</p><h2>Conteúdo da Central de ajuda</h2><p>Organize perguntas frequentes, respostas rápidas e artigos por público e ordem de exibição.</p></div></div>
         <KnowledgeBaseAdmin entries={props.knowledge} initialEntryId={props.initialKnowledgeId} initialLanguage={props.initialKnowledgeLanguage} faqOnly={!props.grantedPermissions.includes("admin.knowledge.manage")} canEdit={props.grantedPermissions.includes("admin.knowledge.manage") || props.grantedPermissions.includes("admin.faq.manage")} overview={<SectionStats items={[{ icon: "help", value: props.knowledge.filter((entry) => entry.kind === "faq").length, label: "Perguntas frequentes" }, { icon: "document", value: props.knowledge.filter((entry) => entry.kind !== "faq").length, label: "Respostas e artigos" }, { icon: "review", value: props.knowledge.filter((entry) => entry.active).length, label: "Conteúdos ativos" }]} />} />
       </section>
+      {props.guideContent && <section className="panel admin-section staff-guide-editor"><div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="book" /></span><div><p className="eyebrow">Orientação à equipe</p><h2>Capítulos do Guia da Equipe</h2><p>Crie, revise e publique procedimentos para catalogadores e administradores.</p></div></div>{props.guideContent}</section>}
       <CduCatalogAdmin entries={props.cduEntries} />
       <ControlledTermsAdmin />
       {activeTab === "areas" && <AuthorityAreasAdmin />}
