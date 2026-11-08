@@ -51,7 +51,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Revisar dados enviados e corrigir diretamente os que admitem edição auditada.
 - [ ] Solicitar correção ao estudante por modelo e orientação complementar; revisar o retorno.
 - [ ] Registrar pessoas relacionadas e conferir nomes autorizados.
-- [ ] Selecionar, criar ou vincular assuntos controlados e registrar fontes por termo.
+- [ ] Selecionar, criar ou vincular assuntos controlados e registrar fontes por termo. [Rascunho da seleção no atendimento](guia-equipe/capitulos/escolher-assuntos-controlados.md); cadastro e importação exigem capítulos próprios, além de capturas e publicação.
 - [ ] Informar CDU, Cutter e demais elementos da descrição; conferir prévia.
 - [ ] Revisar a referência e homologar a ficha, inclusive impedimentos e efeitos. [Rascunho do passo a passo](guia-equipe/capitulos/revisar-homologar-ficha.md); faltam conferência de fluxo completo, capturas finais e publicação.
 - [ ] Conferir ou devolver Nada Consta, liberar ficha e concluir o atendimento quando as condições forem atendidas.
