@@ -43,7 +43,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 ### Navegação e atendimento
 
 - [ ] Localizar atendimento por pessoa, matrícula, protocolo, título ou orientador; aplicar e limpar filtros; alternar Fila geral/Meus atendimentos e Ativos/Encerrados. [Rascunho do passo a passo](guia-equipe/capitulos/localizar-atendimento.md); faltam conferência e publicação.
-- [ ] Entender a situação de um atendimento pela legenda, linha de evolução, histórico e avisos.
+- [ ] Entender a situação de um atendimento pela legenda, linha de evolução, histórico e avisos. [Rascunho dos estados](guia-equipe/capitulos/entender-estados-atendimento.md); faltam capturas de todos os estados e publicação.
 - [ ] Assumir atendimento sem responsável e abrir a análise. [Rascunho do passo a passo](guia-equipe/capitulos/assumir-atendimento.md); faltam conferência e publicação.
 - [ ] Devolver atendimento à fila; atribuir ou reatribuir a outro profissional quando houver permissão.
 - [ ] Marcar, alterar ou retirar prioridade com motivo, quando permitido.
