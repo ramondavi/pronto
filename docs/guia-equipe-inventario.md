@@ -74,8 +74,8 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Criar/revisar resposta rápida interna ou artigo da Central de Ajuda, definir audiência e publicação.
 - [ ] Criar/revisar capítulo do Guia da Equipe, preencher telas abordadas, incorporar trecho, guardar rascunho e publicar versão conferida. [Rascunho do passo a passo](guia-equipe/capitulos/criar-publicar-capitulo.md); faltam conferência e publicação.
 - [ ] Encontrar assunto existente e conferir estado, forma preferida, variantes, fontes e vínculos.
-- [ ] Cadastrar assunto manual ou importar autoridade; tratar correspondência e pendência. [Rascunho do cadastro manual](guia-equipe/capitulos/cadastrar-assunto-manual.md); importação ainda sem capítulo, e faltam capturas e publicação.
-- [ ] Revisar, ativar, desativar, mesclar ou excluir assunto quando a ação for permitida.
+- [ ] Cadastrar assunto manual ou importar autoridade; tratar correspondência e pendência. [Rascunho do cadastro manual](guia-equipe/capitulos/cadastrar-assunto-manual.md) e [rascunho da importação](guia-equipe/capitulos/conferir-importar-autoridade.md); faltam conferência de arquivos e estados, capturas e publicação.
+- [ ] Revisar, ativar, desativar, mesclar ou excluir assunto quando a ação for permitida. [Rascunho da correção de forma](guia-equipe/capitulos/corrigir-assunto-existente.md), com distinção entre **Editar** e **Ver autoridade**; as outras decisões exigem procedimentos próprios, além de capturas e publicação.
 - [ ] Preparar publicação pública de autoridade e conferir resultado no catálogo.
 - [ ] Manter lugar e vínculos geográficos usados no mapa.
 - [ ] Criar/revisar percurso de Temas por área e conferir a apresentação pública.
