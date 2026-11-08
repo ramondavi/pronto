@@ -53,7 +53,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Registrar pessoas relacionadas e conferir nomes autorizados.
 - [ ] Selecionar, criar ou vincular assuntos controlados e registrar fontes por termo.
 - [ ] Informar CDU, Cutter e demais elementos da descrição; conferir prévia.
-- [ ] Revisar a referência e homologar a ficha, inclusive impedimentos e efeitos.
+- [ ] Revisar a referência e homologar a ficha, inclusive impedimentos e efeitos. [Rascunho do passo a passo](guia-equipe/capitulos/revisar-homologar-ficha.md); faltam conferência de fluxo completo, capturas finais e publicação.
 - [ ] Conferir ou devolver Nada Consta, liberar ficha e concluir o atendimento quando as condições forem atendidas.
 - [ ] Consultar histórico e registros de decisão sem alterar o atendimento.
 

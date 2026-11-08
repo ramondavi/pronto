@@ -30,6 +30,16 @@ const mainReferences: StaffPanelReference[] = [
   { key: "queue-release", label: "Devolver à fila", icon: "inbox", group: "Fila de solicitações · Ações do cartão", kind: "control" },
   { key: "queue-assign", label: "Atribuir atendimento", group: "Fila de solicitações · Ações do cartão", kind: "control" },
   { key: "queue-reassign", label: "Reatribuir atendimento", group: "Fila de solicitações · Ações do cartão", kind: "control" },
+  { key: "analysis-validate-metadata", label: "Confirmar validação", icon: "check", group: "Atendimento · Metadados", kind: "control" },
+  { key: "analysis-validate-citation", label: "Validar referência", icon: "check", group: "Atendimento · Revisão da ficha", kind: "control" },
+  { key: "analysis-revalidate-citation", label: "Revalidar referência", icon: "check", group: "Atendimento · Revisão da ficha", kind: "control" },
+  { key: "analysis-homologate-card", label: "Homologar ficha catalográfica", icon: "check", group: "Atendimento · Revisão da ficha", kind: "control" },
+  { key: "analysis-confirm-homologation", label: "Confirmar homologação", icon: "check", group: "Atendimento · Revisão da ficha", kind: "control" },
+  { key: "guide-new-chapter", label: "Novo capítulo", icon: "document", group: "Administração · Guia da equipe", kind: "control" },
+  { key: "guide-save-draft", label: "Salvar rascunho", icon: "check", group: "Administração · Guia da equipe", kind: "control" },
+  { key: "guide-publish-chapter", label: "Publicar capítulo", icon: "check", group: "Administração · Guia da equipe", kind: "control" },
+  { key: "guide-publish-revision", label: "Publicar nova versão", icon: "check", group: "Administração · Guia da equipe", kind: "control" },
+  { key: "guide-unpublish-chapter", label: "Retirar da publicação", icon: "eyeOff", group: "Administração · Guia da equipe", kind: "control" },
 ];
 
 export const staffPanelReferences: StaffPanelReference[] = [
