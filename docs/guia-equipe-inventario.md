@@ -72,7 +72,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 
 - [ ] Criar, revisar, ordenar e usar modelo de resposta.
 - [ ] Criar/revisar resposta rápida interna ou artigo da Central de Ajuda, definir audiência e publicação.
-- [ ] Criar/revisar capítulo do Guia da Equipe, preencher telas abordadas, incorporar trecho, guardar rascunho e publicar versão conferida.
+- [ ] Criar/revisar capítulo do Guia da Equipe, preencher telas abordadas, incorporar trecho, guardar rascunho e publicar versão conferida. [Rascunho do passo a passo](guia-equipe/capitulos/criar-publicar-capitulo.md); faltam conferência e publicação.
 - [ ] Encontrar assunto existente e conferir estado, forma preferida, variantes, fontes e vínculos.
 - [ ] Cadastrar assunto manual ou importar autoridade; tratar correspondência e pendência.
 - [ ] Revisar, ativar, desativar, mesclar ou excluir assunto quando a ação for permitida.
