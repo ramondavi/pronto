@@ -59,7 +59,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 
 ### Contas e funcionamento
 
-- [ ] Criar/provisionar conta de integrante da equipe ou estudante conforme permissão.
+- [ ] Criar/provisionar conta de integrante da equipe ou estudante conforme permissão. [Rascunho para conta da equipe](guia-equipe/capitulos/provisionar-conta-equipe.md); faltam conferência institucional e publicação, e a criação de conta de estudante é tarefa distinta.
 - [ ] Alterar situação de conta; compreender bloqueio, inativação e reativação.
 - [ ] Conferir acesso efetivo de uma pessoa e registrar decisão individual de permissão ou período.
 - [ ] Alterar perfil de conta apenas nas transições que o sistema e a regra institucional permitirem; conferir o efeito sobre permissões herdadas.
