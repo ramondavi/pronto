@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 08/11/2026: prepara o Guia da Equipe com acesso restrito, edição visual, busca, referências aos elementos do painel e imagens privadas; detalha cinco guias da Central de Ajuda em seis idiomas. Corrige a apresentação do mapa completo de autoridades, dos guias e das abas administrativas em telas pequenas.
+
 - 07/11/2026: a gestão de autoridades passa a classificar lugares revisados e registrar definições, contexto e critérios públicos; a página individual e o mapa apresentam essas informações quando preenchidas. O mapa melhora a leitura dos pontos, a navegação e o acesso ao registro MARC21. A publicação exige revisão individual dos dados alterados.
 
 - 06/11/2026: o mapa público passa a ajustar a altura do painel ao conteúdo, mostra sugestões de busca para lugares publicados, identifica o motivo de bloqueio da aba Tema e separa os controles de inclinação, rotação e zoom. Os pontos isolados têm dicas posicionadas conforme a tela; agrupamentos mostram apenas a contagem. As páginas públicas usam a mesma animação de carregamento do painel.

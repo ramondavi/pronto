@@ -28,7 +28,7 @@ export async function userHasPermission(supabase: SupabaseClient, code: string, 
     if (data === true) return true;
     if (role === "administrator" && adminPermissionCodes.includes(code)) {
       const { data: definition } = await supabase.from("permission_definitions").select("code").eq("code", code).maybeSingle();
-      if (!definition) return true; // Migração nova ainda não aplicada no banco local.
+      if (!definition && code !== "admin.guide.manage") return true; // Migração nova ainda não aplicada no banco local.
     }
     return false;
   }

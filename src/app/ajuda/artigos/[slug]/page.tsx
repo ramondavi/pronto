@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
-import { canEditPublicKnowledge, getPublishedKnowledge, safeKnowledgeHtml } from "@/lib/knowledge-service";
+import { canEditPublicKnowledge, getPublishedKnowledge, safePublicKnowledgeHtml } from "@/lib/knowledge-service";
 import { AppIcon } from "@/components/app-icon";
+import { KnowledgeRichBody } from "@/components/knowledge-rich-body";
 import { getInterfaceLanguage } from "@/lib/server-language";
 import { helpCopy, helpCategoryLabel } from "@/lib/help-copy";
 import type { Metadata } from "next";
@@ -43,7 +44,7 @@ export default async function KnowledgeArticlePage({ params }: { params: Promise
   const dateFormatter = new Intl.DateTimeFormat(language === "pt" ? "pt-BR" : language, { dateStyle: "long", timeZone: "America/Sao_Paulo" });
   const compactDateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "America/Sao_Paulo" });
   const sections: { title: string; level: number }[] = [];
-  const html = safeKnowledgeHtml(article.body_html).replace(/<h([1-6])(\s[^>]*)?>([\s\S]*?)<\/h\1>/gi, (_match, level: string, attributes: string | undefined, heading: string) => {
+  const html = safePublicKnowledgeHtml(article.body_html, language).replace(/<h([1-6])(\s[^>]*)?>([\s\S]*?)<\/h\1>/gi, (_match, level: string, attributes: string | undefined, heading: string) => {
     const title = heading.replace(/<span\b[^>]*aria-hidden=["']true["'][^>]*>[\s\S]*?<\/span>/gi, "").replace(/<[^>]*>/g, "").trim();
     sections.push({ title, level: Number(level) });
     return `<h${level}${attributes ?? ""} id="secao-${sections.length}">${heading}</h${level}>`;
@@ -54,7 +55,7 @@ export default async function KnowledgeArticlePage({ params }: { params: Promise
     <header className="container knowledge-article__heading"><p className="eyebrow">{helpCategoryLabel(language, article.category)} · {t.articles}</p><h1>{article.title}</h1><p>{article.summary}</p>{(publishedAt || updatedAt) && <dl className="knowledge-article__dates">{publishedAt && <div><dt>{dateLabels[language][0]}</dt><dd><time dateTime={publishedAt}><span className="knowledge-article__date-long">{dateFormatter.format(new Date(publishedAt))}</span><span className="knowledge-article__date-compact">{compactDateFormatter.format(new Date(publishedAt))}</span></time></dd></div>}{updatedAt && <div><dt>{dateLabels[language][1]}</dt><dd><time dateTime={updatedAt}><span className="knowledge-article__date-long">{dateFormatter.format(new Date(updatedAt))}</span><span className="knowledge-article__date-compact">{compactDateFormatter.format(new Date(updatedAt))}</span></time></dd></div>}</dl>}</header>
     <div className="container knowledge-article__layout">
       <aside className="knowledge-article__toc" aria-label={a[0]}><strong>{a[0]}</strong>{sections.length ? <ol>{sections.map((section, index) => <li className={`knowledge-article__toc-level-${section.level}`} key={index}><a href={`#secao-${index + 1}`}>{section.title}</a></li>)}</ol> : <p>{a[1]}</p>}{canEdit && <Link className="knowledge-public-edit" href={`/painel/admin?area=conteudo&aba=faq&conteudo=${encodeURIComponent(article.id)}&idioma=${language}`}><AppIcon name="edit" />Editar este conteúdo</Link>}</aside>
-      <article className="knowledge-article__body"><div className="knowledge-rich-content" dangerouslySetInnerHTML={{ __html: html }} /><Link className="button button--secondary" href="/ajuda">{a[2]}</Link></article>
+      <article className="knowledge-article__body"><KnowledgeRichBody html={html} /><Link className="button button--secondary" href="/ajuda">{a[2]}</Link></article>
     </div>
     {related.length > 0 && <section className="container knowledge-related" aria-labelledby="artigos-relacionados"><p className="eyebrow">{a[3]}</p><h2 id="artigos-relacionados">{a[4]}</h2><div className="knowledge-cards">{related.map((item) => <article key={item.id}><span>{helpCategoryLabel(language, item.category)}</span><h3>{item.title}</h3><p>{item.summary}</p><Link href={`/ajuda/artigos/${item.slug}`}>{t.read}</Link></article>)}</div></section>}
   </main></>;

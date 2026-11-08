@@ -6,6 +6,7 @@ import { SavedForm, SaveButton } from "./saved-form";
 import { createClient } from "@/lib/supabase/client";
 import { knowledgeCategories, type KnowledgeEntry, type KnowledgeTranslation } from "@/lib/knowledge-base";
 import { fallbackKnowledgeTranslation } from "@/lib/knowledge-translations";
+import { publicInterfaceReferenceByKey } from "@/lib/public-interface-references";
 import { supportedLanguages, languageLabels, type InterfaceLanguage } from "@/lib/interface-language";
 import { AppIcon, type AppIconName } from "./app-icon";
 import { RichTextEditor } from "./rich-text-editor";
@@ -37,6 +38,8 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
   entry: KnowledgeEntry; expanded: boolean; onToggle: () => void; onSaved: (oldId: string, saved: KnowledgeEntry) => void; faqOnly: boolean; canEdit: boolean; initialLanguage: InterfaceLanguage; jumpLanguage?: InterfaceLanguage; jumpSerial?: number;
 }) {
   const [kind, setKind] = useState(entry.kind);
+  const [audienceSelection, setAudienceSelection] = useState(entry.audiences);
+  const referenceScope = audienceSelection.includes("public") || audienceSelection.includes("student") ? "public" : "staff";
   const [editLanguage, setEditLanguage] = useState<InterfaceLanguage>(initialLanguage);
   useEffect(() => { if (jumpLanguage) setEditLanguage(jumpLanguage); }, [jumpLanguage, jumpSerial]);
   const [localized, setLocalized] = useState<Record<InterfaceLanguage, KnowledgeTranslation>>(() => Object.fromEntries(supportedLanguages.map((language) => {
@@ -58,6 +61,10 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
   async function save(form: FormData) {
     const audiences = form.getAll("audiences").map(String);
     if (!audiences.length) { setFeedback("Selecione pelo menos um público."); return false; }
+    if (audiences.includes("public") || audiences.includes("student")) {
+      const invalidReference = Object.values(localized).some((translation) => [...translation.body_html.matchAll(/data-panel-ref=["']([a-z0-9-]+)["']/gi)].some((match) => !publicInterfaceReferenceByKey.has(match[1])));
+      if (invalidReference) { setFeedback("Este conteúdo tem um elemento restrito à equipe. Remova-o antes de mostrar o texto ao público ou ao estudante."); return false; }
+    }
     if (!localized.pt.body_html.replace(/<[^>]*>/g, "").trim()) { setFeedback("Preencha o conteúdo completo em português."); return false; }
     if (localized.pt.title.trim().length < 5 || localized.pt.summary.trim().length < 5) { setFeedback("Preencha título e resumo em português."); return false; }
     setSaving(true); setFeedback("");
@@ -106,7 +113,7 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
         <label>Ordem de exibição<input name="position" type="number" min="0" max="9999" defaultValue={entry.position} required /></label>
         {kind === "faq" && <label>Destaque na página inicial<select name="featured_position" defaultValue={entry.featured_position ?? ""}><option value="">Não destacar</option>{[1, 2, 3, 4, 5, 6].map((position) => <option key={position} value={position}>Posição {position}</option>)}</select><small>Até seis perguntas aparecem na página inicial, na ordem escolhida. Outras perguntas publicadas completam os espaços livres.</small></label>}
       </div>
-      <fieldset className="knowledge-card__audiences"><legend>Onde mostrar</legend>{audienceOptions.map(([value, label]) => <label key={value}><input type="checkbox" name="audiences" value={value} defaultChecked={entry.audiences.includes(value)} />{label}</label>)}</fieldset>
+      <fieldset className="knowledge-card__audiences"><legend>Onde mostrar</legend>{audienceOptions.map(([value, label]) => <label key={value}><input type="checkbox" name="audiences" value={value} checked={audienceSelection.includes(value)} onChange={(event) => setAudienceSelection((current) => event.target.checked ? [...current, value] : current.filter((item) => item !== value))} />{label}</label>)}</fieldset>
       <div className="knowledge-language-tabs" role="tablist" aria-label="Idioma dos textos">{supportedLanguages.map((language) => <button key={language} type="button" role="tab" aria-selected={editLanguage === language} onClick={() => setEditLanguage(language)}>{languageLabels[language]}</button>)}</div>
       <div className="knowledge-card__fields">
         <label className="knowledge-card__wide">Título — {languageLabels[editLanguage]}<input data-save-name="localized" value={localized[editLanguage].title} onChange={(event) => updateLocalized("title", event.target.value)} maxLength={300} /></label>
@@ -116,7 +123,7 @@ function KnowledgeCard({ entry, expanded, onToggle, onSaved, faqOnly, canEdit, i
         </div>
         <div className="knowledge-card__wide">
           <span className="field-label-with-tooltip">Conteúdo completo <FieldTooltip text="Explicação exibida ao abrir a resposta. Organize artigos com títulos, passos, listas, links e observações." /></span>
-          <div data-save-name="localized"><RichTextEditor key={editLanguage} value={localized[editLanguage].body_html} onChange={(html) => updateLocalized("body_html", html)} /></div>
+          <div data-save-name="localized"><RichTextEditor key={`${editLanguage}-${referenceScope}`} value={localized[editLanguage].body_html} onChange={(html) => updateLocalized("body_html", html)} referenceScope={referenceScope} referenceLanguage={editLanguage} /></div>
         </div>
       </div>
       <div className="knowledge-card__actions"><label className="compact-check"><input type="checkbox" name="active" defaultChecked={entry.active} /> Publicado</label><SaveButton className="button button--primary" disabled={saving}>Salvar conteúdo</SaveButton></div>
