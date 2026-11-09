@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppIcon } from "./app-icon";
 import { staffGuideSections } from "@/lib/staff-guide-sections";
@@ -17,7 +17,6 @@ function topicsFromHeadings(headings: HTMLHeadingElement[]): Topic[] {
 
 export function StaffGuideNavigation({ pages }: { pages: GuideNavigationPage[] }) {
   const pathname = usePathname();
-  const router = useRouter();
   const activeSlug = pathname.startsWith("/guia-equipe/") ? pathname.slice("/guia-equipe/".length) : "";
   const [allTopics, setAllTopics] = useState<Record<string, Topic[]>>({});
   const [expanded, setExpanded] = useState<string[]>(activeSlug ? [activeSlug] : []);
@@ -71,7 +70,7 @@ export function StaffGuideNavigation({ pages }: { pages: GuideNavigationPage[] }
         const isActive = activeSlug === page.published_slug;
         const topics = allTopics[page.published_slug] ?? [];
         const isExpanded = expanded.includes(page.published_slug);
-        return <div className="staff-docs__chapter" key={page.published_slug}><button type="button" className={`staff-docs__chapter-heading${isActive ? " is-active" : ""}`} aria-current={isActive ? "page" : undefined} aria-expanded={topics.length ? isExpanded : undefined} aria-controls={topics.length ? `staff-docs-topics-${page.published_slug}` : undefined} onClick={() => { if (isActive) setExpanded((current) => isExpanded ? current.filter((slug) => slug !== page.published_slug) : [...current, page.published_slug]); else { setExpanded((current) => current.includes(page.published_slug) ? current : [...current, page.published_slug]); router.push(`/guia-equipe/${page.published_slug}`); } }}><span>{page.published_title}</span>{topics.length > 0 && <AppIcon name="chevronDown" />}</button>{topics.length > 0 && <div id={`staff-docs-topics-${page.published_slug}`} className="staff-docs__topics" aria-label={`Tópicos de ${page.published_title}`} hidden={!isExpanded}>{topics.map((topic) => <Link key={topic.id} href={`/guia-equipe/${page.published_slug}#${topic.id}`} onClick={() => { if (isActive) setActiveTopic(topic.id); }} className={`${topic.level === 3 ? "is-nested " : ""}${isActive && activeTopic === topic.id ? "is-current" : ""}`} aria-current={isActive && activeTopic === topic.id ? "location" : undefined}>{topic.title}</Link>)}</div>}</div>;
+        return <div className="staff-docs__chapter" key={page.published_slug}><div className={`staff-docs__chapter-heading${isActive ? " is-active" : ""}`}><Link href={`/guia-equipe/${page.published_slug}`} aria-current={isActive ? "page" : undefined}>{page.published_title}</Link>{topics.length > 0 && <button type="button" aria-label={`${isExpanded ? "Contrair" : "Expandir"} tópicos de ${page.published_title}`} aria-expanded={isExpanded} aria-controls={`staff-docs-topics-${page.published_slug}`} onClick={() => setExpanded((current) => isExpanded ? current.filter((slug) => slug !== page.published_slug) : [...current, page.published_slug])}><AppIcon name="chevronDown" /></button>}</div>{topics.length > 0 && <div id={`staff-docs-topics-${page.published_slug}`} className="staff-docs__topics" aria-label={`Tópicos de ${page.published_title}`} hidden={!isExpanded}>{topics.map((topic) => <Link key={topic.id} href={`/guia-equipe/${page.published_slug}#${topic.id}`} onClick={() => { if (isActive) setActiveTopic(topic.id); }} className={`${topic.level === 3 ? "is-nested " : ""}${isActive && activeTopic === topic.id ? "is-current" : ""}`} aria-current={isActive && activeTopic === topic.id ? "location" : undefined}>{topic.title}</Link>)}</div>}</div>;
       })}</div> : null;
     })}
   </nav>;

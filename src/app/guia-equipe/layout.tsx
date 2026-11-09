@@ -14,6 +14,7 @@ import { userHasPermission } from "@/lib/staff-permissions";
 import packageInfo from "../../../package.json";
 
 export const metadata: Metadata = { title: "Guia da equipe", robots: { index: false, follow: false } };
+export const fetchCache = "force-no-store";
 
 export default async function StaffGuideLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

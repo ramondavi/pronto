@@ -6,6 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { TableKit } from "@tiptap/extension-table";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { AppIcon, type AppIconName } from "./app-icon";
 import { createClient } from "@/lib/supabase/client";
 import { KnowledgeAlignment, KnowledgeHeadingIcon, KnowledgeHighlight, KnowledgeIcon, KnowledgeImage, KnowledgeSection, KnowledgeTextColor } from "./knowledge-editor-extensions";
@@ -15,11 +16,17 @@ import { StaffPanelReferencePicker } from "./staff-panel-reference-picker";
 import { StaffGuideIncludeNode } from "./staff-guide-include-extension";
 import { StaffGuideIncludePicker, type StaffGuideIncludeSource } from "./staff-guide-include-picker";
 import type { InterfaceLanguage } from "@/lib/interface-language";
+import { staffPanelReferences } from "@/lib/staff-panel-references";
+import { publicInterfaceReferences } from "@/lib/public-interface-references";
 
 type EditorDialog = "link" | "image" | "color" | "highlight" | null;
 type InlineTool = "link" | "color" | "highlight" | null;
 const isHttpsUrl = (value: string) => /^https:\/\/[^\s]+$/i.test(value.trim());
 const colorSwatches = ["#183968", "#111111", "#a4262c", "#216a45", "#805400", "#fff0a8", "#dce9ff", "#ffffff"];
+type InlineReference = { from: number; to: number; query: string; left: number; top: number; above: boolean };
+type CopiedFormatting = { marks: { name: string; attrs: Record<string, unknown> }[]; block: { type: "paragraph" | "heading"; attrs: Record<string, unknown> } | null };
+const formatMarkNames = ["bold", "italic", "underline", "strike", "knowledgeTextColor", "knowledgeHighlight"];
+const normalizeReference = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 
 export function RichTextEditor({ value, onChange, variant = "full", editable = true, guidePageId, guideSources = [], referenceScope, referenceLanguage = "pt" }: { value: string; onChange: (html: string) => void; variant?: "full" | "reply"; editable?: boolean; guidePageId?: string; guideSources?: StaffGuideIncludeSource[]; referenceScope?: "staff" | "public"; referenceLanguage?: InterfaceLanguage }) {
   const [dialog, setDialog] = useState<EditorDialog>(null);
@@ -34,10 +41,17 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   const [inlineValue, setInlineValue] = useState("");
   const [linkTarget, setLinkTarget] = useState<"_blank" | "_self">("_blank");
   const [inlineError, setInlineError] = useState("");
+  const [copiedFormatting, setCopiedFormatting] = useState<CopiedFormatting | null>(null);
   const [headingIconPickerOpen, setHeadingIconPickerOpen] = useState(false);
   const [tablePickerOpen, setTablePickerOpen] = useState(false);
   const [panelReferencePickerOpen, setPanelReferencePickerOpen] = useState(false);
   const [panelReferenceQuery, setPanelReferenceQuery] = useState("");
+  const [inlineReference, setInlineReference] = useState<InlineReference | null>(null);
+  const [inlineReferenceIndex, setInlineReferenceIndex] = useState(0);
+  const inlineReferenceRef = useRef<InlineReference | null>(null);
+  const insertInlineReferenceRef = useRef<(key: string) => void>(() => {});
+  const dismissedReferenceRef = useRef<{ from: number; query: string } | null>(null);
+  const inlineReferenceIndexRef = useRef(0);
   const [guideIncludePickerOpen, setGuideIncludePickerOpen] = useState(false);
   const [pickerPlacement, setPickerPlacement] = useState({ above: false, height: 500 });
   const [tableRows, setTableRows] = useState(3);
@@ -49,6 +63,10 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   const toolbarRef = useRef<HTMLDivElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const selectedRange = useRef<{ from: number; to: number; image: boolean } | null>(null);
+  const referenceCatalog = referenceScope === "public"
+    ? publicInterfaceReferences.map((reference) => ({ key: reference.key, label: reference.labels[referenceLanguage], icon: reference.icon, group: reference.group }))
+    : staffPanelReferences;
+  const inlineReferenceMatches = inlineReference ? referenceCatalog.filter((reference) => normalizeReference(reference.label).includes(normalizeReference(inlineReference.query))).slice(0, 8) : [];
   const editor = useEditor({
     extensions: [StarterKit.configure(variant === "reply" ? { heading: false, blockquote: false, horizontalRule: false, code: false, codeBlock: false, strike: false, link: false } : { heading: { levels: [1, 2, 3, 4, 5, 6] }, link: false }), Link.configure({ openOnClick: false, autolink: variant === "full" }), ...(variant === "reply" ? [] : [KnowledgeImage.configure({ allowBase64: false, resize: { enabled: true, minWidth: 80, minHeight: 80, alwaysPreserveAspectRatio: true } }), TableKit, KnowledgeSection, KnowledgeIcon, KnowledgeTextColor, KnowledgeHighlight, KnowledgeAlignment, KnowledgeHeadingIcon, ...((guidePageId || referenceScope) ? [StaffPanelReferenceNode] : []), ...(guidePageId ? [StaffGuideIncludeNode] : [])])],
     content: value,
@@ -74,6 +92,60 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   } });
   useEffect(() => { editor?.setEditable(editable); }, [editor, editable]);
   useEffect(() => {
+    if (!editor || !editable || variant !== "full" || !(guidePageId || referenceScope)) return;
+    const catalog = referenceScope === "public"
+      ? publicInterfaceReferences.map((reference) => ({ key: reference.key, label: reference.labels[referenceLanguage] }))
+      : staffPanelReferences;
+    const clear = () => { inlineReferenceRef.current = null; setInlineReference(null); };
+    const update = () => {
+      const { selection } = editor.state;
+      if (!selection.empty || !editor.isFocused || selection.$from.parent.type.spec.code) { clear(); return; }
+      const before = selection.$from.parent.textBetween(0, selection.$from.parentOffset, "\n", "\ufffc");
+      const match = /(?:^|\s|\(|\[|\{)\[\[([^\[\]\n]{0,80})$/.exec(before);
+      if (!match) { clear(); return; }
+      const query = match[1];
+      const from = selection.from - query.length - 2;
+      if (dismissedReferenceRef.current?.from === from && dismissedReferenceRef.current.query === query) return;
+      dismissedReferenceRef.current = null;
+      const normalized = normalizeReference(query);
+      const exact = query ? catalog.filter((reference) => normalizeReference(reference.label) === normalized) : [];
+      if (exact.length === 1) {
+        editor.chain().focus().deleteRange({ from, to: selection.from }).insertContent({ type: "staffPanelReference", attrs: { key: exact[0].key, language: referenceScope === "public" ? referenceLanguage : null } }).run();
+        clear();
+        return;
+      }
+      const coords = editor.view.coordsAtPos(selection.from);
+      const above = window.innerHeight - coords.bottom < 250 && coords.top > 250;
+      const suggestion = { from, to: selection.from, query, left: Math.max(12, Math.min(coords.left, window.innerWidth - 372)), top: above ? coords.top - 8 : coords.bottom + 8, above };
+      inlineReferenceRef.current = suggestion;
+      inlineReferenceIndexRef.current = 0;
+      setInlineReferenceIndex(0);
+      setInlineReference(suggestion);
+    };
+    const insert = (key: string) => {
+      const suggestion = inlineReferenceRef.current;
+      if (!suggestion) return;
+      editor.chain().focus().deleteRange({ from: suggestion.from, to: suggestion.to }).insertContent({ type: "staffPanelReference", attrs: { key, language: referenceScope === "public" ? referenceLanguage : null } }).run();
+      clear();
+    };
+    insertInlineReferenceRef.current = insert;
+    const onKeyDown = (event: KeyboardEvent) => {
+      const suggestion = inlineReferenceRef.current;
+      if (!suggestion) return;
+      const matches = catalog.filter((reference) => normalizeReference(reference.label).includes(normalizeReference(suggestion.query))).slice(0, 8);
+      if (event.key === "Escape") { event.preventDefault(); dismissedReferenceRef.current = { from: suggestion.from, query: suggestion.query }; clear(); }
+      else if ((event.key === "ArrowDown" || event.key === "ArrowUp") && matches.length) { event.preventDefault(); inlineReferenceIndexRef.current = (inlineReferenceIndexRef.current + (event.key === "ArrowDown" ? 1 : -1) + matches.length) % matches.length; setInlineReferenceIndex(inlineReferenceIndexRef.current); }
+      else if ((event.key === "Enter" || event.key === "Tab") && matches.length) { event.preventDefault(); insert(matches[inlineReferenceIndexRef.current]?.key ?? matches[0].key); }
+    };
+    editor.on("update", update);
+    editor.on("selectionUpdate", update);
+    editor.on("blur", clear);
+    editor.view.dom.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => { editor.off("update", update); editor.off("selectionUpdate", update); editor.off("blur", clear); editor.view.dom.removeEventListener("keydown", onKeyDown, true); window.removeEventListener("scroll", update, true); window.removeEventListener("resize", update); };
+  }, [editor, editable, variant, guidePageId, referenceScope, referenceLanguage]);
+  useEffect(() => {
     if (!editor) return;
     const closePicker = () => { setHeadingIconPickerOpen(false); setTablePickerOpen(false); setPanelReferencePickerOpen(false); setGuideIncludePickerOpen(false); };
     editor.on("selectionUpdate", closePicker);
@@ -94,6 +166,31 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
   const button = (label: string, run: () => void, active = false, content: ReactNode = label) => (
     <button type="button" aria-label={label} aria-pressed={active} title={label} className={active ? "is-active" : ""} disabled={!editable} onMouseDown={(event) => event.preventDefault()} onClick={run}>{content}</button>
   );
+  const copyFormatting = () => {
+    const { selection, doc, storedMarks } = editor.state;
+    let sourceMarks = storedMarks ?? selection.$from.marks();
+    let foundText = false;
+    if (!selection.empty) doc.nodesBetween(selection.from, selection.to, (node) => {
+      if (node.isText && !foundText) { sourceMarks = node.marks; foundText = true; }
+    });
+    const marks = sourceMarks.filter((mark) => formatMarkNames.includes(mark.type.name)).map((mark) => ({ name: mark.type.name, attrs: { ...mark.attrs } }));
+    const blockName = selection.$from.parent.type.name;
+    const block: CopiedFormatting["block"] = variant === "full" && (blockName === "paragraph" || blockName === "heading")
+      ? { type: blockName, attrs: { ...selection.$from.parent.attrs } } : null;
+    setCopiedFormatting({ marks, block });
+  };
+  const pasteFormatting = () => {
+    if (!copiedFormatting) return;
+    if (variant === "full" && copiedFormatting.block) {
+      if (copiedFormatting.block.type === "heading") editor.chain().focus().setHeading({ level: copiedFormatting.block.attrs.level as 1 | 2 | 3 | 4 | 5 | 6 }).updateAttributes("heading", copiedFormatting.block.attrs).run();
+      else editor.chain().focus().setParagraph().updateAttributes("paragraph", copiedFormatting.block.attrs).run();
+    }
+    const available = new Set(editor.extensionManager.extensions.map((extension) => extension.name));
+    const chain = editor.chain().focus();
+    for (const name of formatMarkNames) if (available.has(name)) chain.unsetMark(name);
+    for (const mark of copiedFormatting.marks) if (available.has(mark.name)) chain.setMark(mark.name, mark.attrs);
+    chain.run();
+  };
   const placePicker = (control: HTMLSpanElement | null) => {
     const bounds = control?.getBoundingClientRect();
     if (!bounds) return;
@@ -216,6 +313,8 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
         {variant === "full" && button("Tachado", () => editor.chain().focus().toggleStrike().run(), toolbarState?.strike, <AppIcon name="strike" />)}
         {variant === "full" && button("Cor do texto", () => openDialog("color"), toolbarState?.textColor, <span className="rich-editor__color-tool"><AppIcon name="textColor" /><i style={{ backgroundColor: textColor }} /></span>)}
         {variant === "full" && button("Cor da marcação", () => openDialog("highlight"), toolbarState?.highlight, <span className="rich-editor__color-tool"><AppIcon name="highlight" /><i style={{ backgroundColor: highlightColor }} /></span>)}
+        {button("Copiar formatação", copyFormatting, false, <AppIcon name="copy" />)}
+        <button type="button" aria-label="Colar formatação" title="Colar formatação" disabled={!editable || !copiedFormatting} onMouseDown={(event) => event.preventDefault()} onClick={pasteFormatting}><AppIcon name="paste" /></button>
       </div>
       <div className="rich-editor__tool-group" role="group" aria-label="Inserir conteúdo">
         {button("Link", () => openDialog("link"), toolbarState?.link, <AppIcon name="link" />)}
@@ -278,6 +377,12 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
       </>}
     </BubbleMenu>}
     <EditorContent editor={editor} />
+    {copiedFormatting && <p className="rich-editor__format-status" role="status">Formatação copiada. Selecione o destino e use Colar formatação.</p>}
+    {(guidePageId || referenceScope) && <p className="rich-editor__shortcut-hint">Digite <kbd>[[</kbd> no texto para inserir um elemento do painel.</p>}
+    {inlineReference && createPortal(<div className="rich-editor__inline-reference-suggestions" role="listbox" aria-label="Elementos do painel" style={{ left: inlineReference.left, top: inlineReference.top, transform: inlineReference.above ? "translateY(-100%)" : undefined }} onMouseDown={(event) => event.preventDefault()}>
+      <p>Elemento do painel · continue digitando após [[</p>
+      {inlineReferenceMatches.length ? inlineReferenceMatches.map((reference, index) => <button key={reference.key} type="button" role="option" aria-selected={index === inlineReferenceIndex} className={index === inlineReferenceIndex ? "is-selected" : ""} onClick={() => insertInlineReferenceRef.current(reference.key)}>{reference.icon && <AppIcon name={reference.icon} />}<span><strong>{reference.label}</strong><small>{reference.group}</small></span></button>) : <span className="rich-editor__inline-reference-empty">Nenhum elemento encontrado.</span>}
+    </div>, document.body)}
     {dialog && <div className="rich-editor__dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) closeDialog(); }}>
       <div className="rich-editor__dialog" role="dialog" aria-label={dialog === "link" ? "Editar link" : dialog === "image" ? "Inserir imagem" : dialog === "color" ? "Cor do texto" : "Cor da marcação"} onKeyDown={(event) => { if (event.key === "Escape" && !uploading) closeDialog(); if (event.key === "Enter" && event.target instanceof HTMLInputElement && event.target.type !== "file") { event.preventDefault(); void applyDialog(); } }}>
         <div className="rich-editor__dialog-heading">

@@ -1144,7 +1144,11 @@ body:has(.dashboard-shell) .backend-only { display: inline; }
 .knowledge-rich-content tr:nth-child(even) td { background: color-mix(in srgb, var(--institutional) 3%, var(--surface)); }
 .knowledge-rich-content td p, .knowledge-rich-content th p { margin: 0; }
 .knowledge-rich-content caption { padding: 8px 0; color: var(--text-muted); font-size: .82rem; font-weight: 700; text-align: left; }
-.knowledge-rich-content ol, .knowledge-rich-content ul { display: grid; gap: 10px; margin: 0; padding-left: 28px; }
+.knowledge-rich-content ol, .knowledge-rich-content ul { display: block; margin: 0; padding-left: 28px; }
+.knowledge-rich-content ol { list-style-type: decimal; }
+.knowledge-rich-content ul { list-style-type: disc; }
+.knowledge-rich-content li + li { margin-top: 10px; }
+.knowledge-rich-content li > :is(ol, ul) { margin-top: 10px; }
 .knowledge-rich-content li p { margin: 0; }
 .knowledge-rich-content blockquote { margin: 0; padding: 12px 16px; border-left: 3px solid var(--institutional); background: var(--institutional-soft); }
 .knowledge-rich-content a { color: var(--institutional); font-weight: 750; }
@@ -3979,6 +3983,12 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .staff-docs__main-column > .staff-docs__content { flex: 1 0 auto; }
 .staff-docs__main { width: 100%; }
 .staff-docs__eyebrow { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 34px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--institutional); font-size: .72rem; font-weight: 800; }
+.staff-docs__article-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-bottom: 34px; }
+.staff-docs__article-tools .staff-docs__eyebrow { margin-bottom: 0; }
+.staff-docs__edit-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--institutional); font-size: .72rem; font-weight: 800; text-decoration: none; }
+.staff-docs__edit-link:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
+.staff-docs__edit-link svg { width: 14px; height: 14px; }
+.staff-guide-admin .knowledge-card[id^="guide-editor-"] { scroll-margin-top: 112px; }
 .staff-docs__eyebrow svg { width: 14px; height: 14px; }
 .staff-docs__intro { padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .staff-docs__intro .eyebrow, .staff-docs__article-head .eyebrow { margin: 0 0 8px; }
@@ -4053,6 +4063,18 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .rich-editor__panel-reference-picker button > span { display: grid; gap: 1px; }
 .rich-editor__panel-reference-picker button strong { font-size: .75rem; }
 .rich-editor__panel-reference-picker button small { color: var(--text-muted); font-size: .65rem; font-weight: 500; }
+.rich-editor__inline-reference-suggestions { position: fixed; z-index: 1000; box-sizing: border-box; width: min(360px, calc(100vw - 24px)); max-height: min(320px, 55dvh); overflow-y: auto; padding: 7px; border: 1px solid var(--line); border-top: 3px solid var(--institutional); border-radius: var(--radius-sm); background: var(--surface-raised); box-shadow: var(--shadow-lg); }
+.rich-editor__inline-reference-suggestions > p { margin: 4px 8px 8px; color: var(--text-muted); font-size: .7rem; }
+.rich-editor__inline-reference-suggestions > button { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 42px; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.rich-editor__inline-reference-suggestions > button:is(:hover,:focus-visible), .rich-editor__inline-reference-suggestions > button.is-selected { background: var(--institutional-soft); }
+.rich-editor__inline-reference-suggestions > button > svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--institutional); }
+.rich-editor__inline-reference-suggestions > button > span { display: grid; gap: 2px; }
+.rich-editor__inline-reference-suggestions > button strong { font-size: .78rem; }
+.rich-editor__inline-reference-suggestions > button small, .rich-editor__inline-reference-empty { color: var(--text-muted); font-size: .68rem; }
+.rich-editor__inline-reference-empty { display: block; padding: 8px; }
+.rich-editor__shortcut-hint { margin: 6px 0 0; color: var(--text-muted); font-size: .72rem; }
+.rich-editor__format-status { margin: 6px 0 0; color: var(--institutional); font-size: .72rem; font-weight: 700; }
+.rich-editor__shortcut-hint kbd { padding: 1px 4px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); color: var(--text); font: inherit; font-weight: 750; }
 .rich-editor__guide-include-picker > strong { font-size: .82rem; }
 .rich-editor__toolbar .rich-editor__tool-group .rich-editor__guide-include-picker button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; box-sizing: border-box; width: 100%; height: auto; min-height: 36px; padding: 6px 8px; color: var(--text); font-size: .75rem; text-align: left; }
 .rich-editor__guide-include-picker button svg { flex: 0 0 16px; width: 16px; height: 16px; }
@@ -4107,7 +4129,7 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .staff-docs { --docs-gutter: clamp(24px, 5vw, 84px); }
 .staff-docs__header { display: block; min-height: 0; padding: 0; }
 .staff-docs__header-inner { display: grid; grid-template-columns: minmax(220px, 288px) minmax(160px, 1fr) auto; align-items: center; gap: 0; width: min(100%, 1480px); min-height: 76px; margin-inline: auto; }
-.staff-docs__brand { padding-left: 24px; }
+.staff-docs__brand { padding-left: 0; }
 .staff-docs__brand-slot { position: relative; display: block; flex: 0 0 44px; width: 44px; height: 44px; }
 .staff-docs__brand-icon { position: absolute; inset: 0; transition: opacity .15s ease; }
 .staff-docs__brand-slot .staff-docs__back { position: absolute; inset: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; color: var(--institutional); opacity: 0; pointer-events: none; transition: opacity .15s ease; }
@@ -4129,11 +4151,14 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .staff-docs__nav::-webkit-scrollbar { width: 8px; }
 .staff-docs__nav::-webkit-scrollbar-track { background: var(--surface); }
 .staff-docs__nav::-webkit-scrollbar-thumb { border: 2px solid var(--surface); border-radius: 8px; background: var(--institutional); }
-.staff-docs__chapter-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; box-sizing: border-box; width: 100%; min-width: 0; padding: 9px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: .84rem; font-weight: 600; line-height: 1.4; text-align: left; cursor: pointer; }
-.staff-docs__chapter-heading:is(:hover,:focus-visible) { background: var(--institutional-soft); color: var(--institutional); }
+.staff-docs__chapter-heading { display: flex; align-items: center; justify-content: space-between; gap: 0; box-sizing: border-box; width: 100%; min-width: 0; border-radius: var(--radius-sm); color: var(--text); font-size: .84rem; font-weight: 600; line-height: 1.4; }
+.staff-docs__chapter-heading:is(:hover,:focus-within) { background: var(--institutional-soft); color: var(--institutional); }
 .staff-docs__chapter-heading.is-active { background: var(--institutional-soft); color: var(--institutional); font-weight: 850; box-shadow: inset 3px 0 var(--institutional); }
-.staff-docs__chapter-heading svg { flex: 0 0 16px; width: 16px; height: 16px; transition: transform .15s ease; }
-.staff-docs__chapter-heading[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.staff-docs__chapter-heading > a { flex: 1 1 auto; min-width: 0; padding: 9px 4px 9px 12px; color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.staff-docs__chapter-heading > button { display: grid; flex: 0 0 36px; place-items: center; align-self: stretch; width: 36px; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: inherit; cursor: pointer; }
+.staff-docs__chapter-heading > button:is(:hover,:focus-visible) { background: color-mix(in srgb, var(--institutional) 12%, transparent); }
+.staff-docs__chapter-heading > button svg { width: 16px; height: 16px; transition: transform .15s ease; }
+.staff-docs__chapter-heading > button[aria-expanded="false"] svg { transform: rotate(-90deg); }
 .staff-docs__topics { display: grid; gap: 1px; margin: 4px 0 8px 12px; padding-left: 8px; border-left: 1px solid var(--line); }
 .staff-docs__topics[hidden] { display: none; }
 .staff-docs__topics a { padding: 6px 8px; color: var(--text-muted); font-size: .75rem; font-weight: 500; }
@@ -4149,14 +4174,15 @@ dialog.pronto-modal::backdrop { background: rgb(5 12 16 / 58%); backdrop-filter:
 .staff-docs__related a > span { display: grid; gap: 3px; }
 .staff-docs__related strong { font-size: .84rem; }
 .staff-docs__related small { color: var(--text-muted); font-size: .74rem; }
-.staff-docs__article-footer { display: grid; gap: 18px; }
-.staff-docs__chapter-nav { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; width: 100%; }
-.staff-docs__chapter-nav a { display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--text); text-decoration: none; }
+.staff-docs__article-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; }
+.staff-docs__chapter-nav { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; width: auto; margin-left: auto; }
+.staff-docs__chapter-nav > span { display: none; }
+.staff-docs__chapter-nav a { display: flex; align-items: center; gap: 8px; max-width: 220px; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--text); text-decoration: none; }
 .staff-docs__chapter-nav a:is(:hover,:focus-visible) { border-color: var(--institutional); background: var(--institutional-soft); }
 .staff-docs__chapter-nav a:last-child { justify-content: flex-end; text-align: right; }
 .staff-docs__chapter-nav a span { display: grid; gap: 4px; }
 .staff-docs__chapter-nav a small { color: var(--text-muted); font-size: .7rem; }
-.staff-docs__chapter-nav a strong { color: var(--institutional); font-size: .84rem; }
+.staff-docs__chapter-nav a strong { color: var(--institutional); font-size: .78rem; line-height: 1.25; }
 .staff-docs__footer-content { box-sizing: border-box; width: calc(100% - 24px); gap: 0; padding: 16px 0 18px var(--docs-gutter); border-top: 1px solid var(--line); }
 .staff-docs__footer { background: var(--surface-raised); }
 .staff-docs__footer-side { border-right: 0; }

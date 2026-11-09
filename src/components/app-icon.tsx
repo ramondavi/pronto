@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 import {
   IconAlignCenter, IconAlignLeft, IconAlignRight, IconArchive, IconArrowBackUp, IconArrowForwardUp, IconArrowRight, IconBell, IconBold, IconBook, IconBrandGithub,
-  IconBriefcase, IconChevronDown, IconCalendar, IconCheck, IconCircleCheck, IconClock,
+  IconBriefcase, IconChevronDown, IconCalendar, IconCheck, IconCircleCheck, IconClipboard, IconClock,
   IconColumnInsertLeft, IconColumnInsertRight, IconColumnRemove, IconCompass, IconContrast, IconCopy, IconDownload,
   IconExternalLink, IconEye, IconEyeOff, IconFileText, IconH1, IconH2, IconH3, IconH4, IconH5, IconH6, IconHelp, IconHighlight,
   IconHierarchy, IconHome, IconId, IconInbox, IconItalic, IconKeyboard,
@@ -32,6 +32,7 @@ const icons = {
   compass: IconCompass,
   contrast: IconContrast,
   copy: IconCopy,
+  paste: IconClipboard,
   columnLeft: IconColumnInsertLeft,
   columnRight: IconColumnInsertRight,
   columnRemove: IconColumnRemove,
