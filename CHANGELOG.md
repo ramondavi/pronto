@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 08/11/2026: o Guia da Equipe separa o controle de expansão da abertura do capítulo, alinha o cabeçalho e mostra o acesso direto à edição apenas a quem tem permissão. O editor compartilhado passa a sugerir elementos da interface ao digitar `[[` e permite copiar e colar formatação; listas numeradas voltam a exibir números na edição e na leitura. A navegação entre capítulos fica junto às datas de publicação.
+
 - 08/11/2026: prepara o Guia da Equipe com acesso restrito, edição visual, busca, referências aos elementos do painel e imagens privadas; detalha cinco guias da Central de Ajuda em seis idiomas. Corrige a apresentação do mapa completo de autoridades, dos guias e das abas administrativas em telas pequenas.
 
 - 07/11/2026: a gestão de autoridades passa a classificar lugares revisados e registrar definições, contexto e critérios públicos; a página individual e o mapa apresentam essas informações quando preenchidas. O mapa melhora a leitura dos pontos, a navegação e o acesso ao registro MARC21. A publicação exige revisão individual dos dados alterados.
