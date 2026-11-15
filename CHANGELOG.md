@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 15/11/2026: ajusta o ícone de créditos do mapa móvel, a edição e publicação dos capítulos do Guia da Equipe, a barra do editor de texto e o modelo de confirmação de e-mail sem borda externa.
+
 - 15/11/2026: a edição de assuntos reúne cadastro, autoridade, mapa, apresentação pública e publicação em uma janela com abas. O envio de código estudantil passa a exigir conta ativa e e-mail confirmado, sem revelar a existência da conta.
 
 - 15/11/2026: recupera os ajustes do mapa completo em telas pequenas: cabeçalho retrátil, bússola e controles reposicionados, créditos e legenda em janelas compactas, e botão da janela flutuante só com ícone. Em telas maiores, o cabeçalho pode ser fixado após reaparecer ao passar o cursor.
