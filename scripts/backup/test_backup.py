@@ -288,6 +288,15 @@ class ExecutionTest(unittest.TestCase):
             with self.assertRaisesRegex(backup.BackupError, "storage_content_changed"):
                 backup.download_storage(inventory, Path(temp))
 
+    def test_reviewed_image_is_downloaded_with_its_format_and_signature(self):
+        image = b"\x89PNG\r\n\x1a\nsynthetic"
+        inventory = [{"bucket": "staff-guide-images", "name": "a" * 36 + "/" + "b" * 36 + ".png",
+                      "metadata": {"size": len(image), "mimetype": "image/png"}}]
+        with tempfile.TemporaryDirectory() as temp, patch.object(backup, "safe_request", return_value=io.BytesIO(image)), \
+             patch.dict(os.environ, {"SUPABASE_URL": "https://synthetic.supabase.co", "BACKUP_STORAGE_READ_TOKEN": "synthetic"}):
+            result = backup.download_storage(inventory, Path(temp))
+            self.assertEqual(result[0]["file"], "objects/00000000.png")
+
 
 class ReviewedStorageInventoryTest(unittest.TestCase):
     def inventory(self, rows):
@@ -308,6 +317,16 @@ class ReviewedStorageInventoryTest(unittest.TestCase):
     def test_unknown_bucket_never_becomes_silent_data_loss(self):
         with self.assertRaisesRegex(backup.BackupError, "unreviewed_storage_bucket"):
             self.inventory([("unreviewed", "synthetic.pdf", {"size": 20}, "time")])
+
+    def test_only_reviewed_image_paths_and_mime_types_are_accepted(self):
+        valid = "a" * 36 + ".webp"
+        _, documents = self.inventory([("knowledge-images", valid, {"size": 100, "mimetype": "image/webp"}, "time")])
+        self.assertEqual(documents[0]["bucket"], "knowledge-images")
+        for name, metadata in [("outside.webp", {"size": 100, "mimetype": "image/webp"}),
+                               (valid, {"size": 100, "mimetype": "image/jpeg"}),
+                               (valid, {"size": 3 * 1024 * 1024, "mimetype": "image/webp"})]:
+            with self.subTest(name=name, metadata=metadata), self.assertRaisesRegex(backup.BackupError, "unreviewed_storage_object"):
+                self.inventory([("knowledge-images", name, metadata, "time")])
 
     def test_only_digest_addressed_zip_toolkit_with_reviewed_size_and_mime_is_excluded(self):
         valid = "windows/" + "a" * 64 + "/Pronto-Backup-Manual.zip"
