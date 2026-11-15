@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
-import { Icon3dCubeSphere, IconCube3dSphereOff, IconEye, IconEyeOff } from "@tabler/icons-react";
+import { Icon3dCubeSphere, IconCube3dSphereOff, IconPin, IconPinnedOff, IconInfoCircle, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { publicAuthorityType } from "@/lib/authority-type-public-copy";
 import { AppIcon } from "@/components/app-icon";
 import { BookLoadingIcon } from "@/components/book-loading-icon";
@@ -167,6 +167,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const [placeFilter, setPlaceFilter] = useState<PlaceType>("all");
   const [shareStatus, setShareStatus] = useState("");
   const [legendOpen, setLegendOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const [chromeHost, setChromeHost] = useState<HTMLElement | null>(null);
   const [scaleIndex, setScaleIndex] = useState(0);
   const [outlineScale, setOutlineScale] = useState<Scale | null>(null);
@@ -187,8 +188,9 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   const [selectedAuthorityId, setSelectedAuthorityId] = useState<string | null>(initialAuthorityId ?? null);
   const [authorityRecord, setAuthorityRecord] = useState<(PublicAuthority & { marc_text: string }) | null>(null);
   const [recordError, setRecordError] = useState(false);
-  const [headerPinned, setHeaderPinned] = useState(true);
+  const [headerPinned, setHeaderPinned] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const mobileHeaderTouched = useRef(false);
   const [ready, setReady] = useState(false);
   const [viewportRevision, setViewportRevision] = useState(0);
   const [mapView, setMapView] = useState<MapView | null>(null);
@@ -241,20 +243,30 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
     if (page) { page.dataset.headerPinned = String(headerPinned); page.dataset.headerVisible = String(headerVisible); }
   }, [headerPinned, headerVisible]);
   useEffect(() => {
+    const page = document.querySelector<HTMLElement>(".authority-map-page");
+    const header = page?.querySelector<HTMLElement>(".authority-map-page__chrome .site-header");
+    if (!page || !header) return;
+    const measure = () => page.style.setProperty("--map-header-height", `${header.getBoundingClientRect().height}px`);
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    measure();
+    return () => { observer.disconnect(); page.style.removeProperty("--map-header-height"); };
+  }, []);
+  useEffect(() => {
     if (headerPinned) return;
     const chrome = document.querySelector<HTMLElement>(".authority-map-page__chrome");
     if (!chrome) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const clear = () => { if (timer) clearTimeout(timer); };
-    const reveal = () => { clear(); setHeaderVisible(true); };
-    const schedule = () => { clear(); timer = setTimeout(() => { if (!chrome.matches(":hover") && !chrome.contains(document.activeElement)) setHeaderVisible(false); }, 4000); };
-    const revealAtTop = (event: globalThis.PointerEvent) => { if (event.clientY < chrome.getBoundingClientRect().top + 64) reveal(); };
+    const reveal = () => { if (window.innerWidth <= 700) return; clear(); setHeaderVisible(true); };
+    const schedule = () => { if (window.innerWidth <= 700) return; clear(); timer = setTimeout(() => { if (!chrome.matches(":hover") && !chrome.contains(document.activeElement)) setHeaderVisible(false); }, 4000); };
+    const revealAtTop = (event: globalThis.PointerEvent) => { if (window.innerWidth > 700 && window.matchMedia("(hover: hover)").matches && event.clientY < chrome.getBoundingClientRect().top + 64) reveal(); };
     chrome.addEventListener("pointerenter", reveal);
     chrome.addEventListener("pointerleave", schedule);
     chrome.addEventListener("focusin", reveal);
     chrome.addEventListener("focusout", schedule);
     document.addEventListener("pointermove", revealAtTop);
-    schedule();
+    timer = setTimeout(() => { if (!mobileHeaderTouched.current) setHeaderVisible(false); }, 4000);
     return () => { clear(); chrome.removeEventListener("pointerenter", reveal); chrome.removeEventListener("pointerleave", schedule); chrome.removeEventListener("focusin", reveal); chrome.removeEventListener("focusout", schedule); document.removeEventListener("pointermove", revealAtTop); };
   }, [headerPinned]);
   const filtered = useMemo(() => points.filter((point) => inScale(point, scale.key) && (placeFilter === "all" || placeType(point) === placeFilter) && `${point.place_label} ${point.term_label}`.toLocaleLowerCase(language).includes(query.toLocaleLowerCase(language))), [points, scale.key, placeFilter, query, language]);
@@ -558,8 +570,8 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
   return <main className="authority-world" id="mapa-autoridades">
     <div ref={mapNode} className="authority-world__canvas" role="region" aria-label={ui.mapLabel} />
     {mapError && <div ref={rasterNode} className="authority-world__raster" role="region" aria-label={ui.mapLabel} />}
-    {(points.length === 0 || (mapError && !rasterReady)) && <div className="authority-world__empty">{mapError && !rasterReady ? ui.mapUnavailable : t.empty}</div>}
-    {chromeHost && createPortal(<button type="button" className="authority-world__header-pin" onClick={() => { setHeaderPinned(!headerPinned); setHeaderVisible(!headerPinned); }} aria-label={headerPinned ? controlText.hideHeader : controlText.showHeader} aria-pressed={headerPinned} title={headerPinned ? controlText.hideHeader : controlText.showHeader}>{headerPinned ? <IconEyeOff size={18} /> : <IconEye size={18} />}</button>, chromeHost)}
+    {(points.length === 0 || (mapError && !rasterReady)) && <div className={`authority-world__empty${points.length === 0 && !(mapError && !rasterReady) ? " authority-world__empty--no-places" : ""}`}>{mapError && !rasterReady ? ui.mapUnavailable : t.empty}</div>}
+    {chromeHost && createPortal(<button type="button" className="authority-world__header-pin" onClick={() => { if (window.matchMedia("(max-width: 700px)").matches) { mobileHeaderTouched.current = true; setHeaderVisible((visible) => !visible); return; } setHeaderPinned(!headerPinned); setHeaderVisible(headerPinned ? false : true); }} aria-pressed={headerPinned} title={headerPinned ? "Desafixar cabeçalho" : "Fixar cabeçalho"}><span className="authority-world__header-pin-desktop" aria-hidden="true">{headerPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}</span><span className="authority-world__header-pin-mobile" aria-hidden="true">{headerVisible ? <IconChevronUp size={18} /> : <IconChevronDown size={18} />}</span><span className="sr-only authority-world__header-pin-label-desktop">{headerPinned ? "Desafixar cabeçalho" : "Fixar cabeçalho"}</span><span className="sr-only authority-world__header-pin-label-mobile">{headerVisible ? controlText.hideHeader : controlText.showHeader}</span></button>, chromeHost)}
     <div className="authority-world__controls">
       {legendOpen && <div className="authority-world__legend-popover" role="dialog" aria-label={toolText.legend}><div className="authority-world__legend-head"><strong>{toolText.legend}</strong><button type="button" onClick={() => setLegendOpen(false)} aria-label={controlText.close}>×</button></div><div>{(["heading", "subdivision", "associated", "mixed", "cluster"] as const).map((kind) => <span key={kind}><i className={`authority-world__legend-dot authority-world__legend-dot--${kind}`} />{toolText[kind]}</span>)}</div><p>{controlText.legendHint}</p></div>}
       <div className="authority-world__control-actions"><button type="button" onClick={() => setLegendOpen((open) => !open)} aria-expanded={legendOpen}><AppIcon name="help" />{toolText.legend}</button><button type="button" onClick={shareView} aria-label={shareStatus === toolText.copied ? toolText.copied : toolText.share} title={shareStatus === toolText.copied ? toolText.copied : toolText.share}><AppIcon name={shareStatus === toolText.copied ? "check" : "link"} /></button></div>
@@ -573,7 +585,9 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         <button type="button" disabled={mapError} onPointerDown={(event) => { compassDrag.current = { startAngle: compassAngle(event), startBearing: mapRef.current?.getBearing() ?? 0, startX: event.clientX, startY: event.clientY, moved: false }; event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={(event) => { const drag = compassDrag.current; if (!drag) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 4) drag.moved = true; if (drag.moved) mapRef.current?.setBearing(drag.startBearing + (compassAngle(event) - drag.startAngle)); }} onPointerUp={(event) => { if (compassDrag.current && !compassDrag.current.moved) mapRef.current?.rotateTo(compassClickBearing(event), { duration: 500 }); compassDrag.current = null; }} onPointerCancel={() => { compassDrag.current = null; }} onClick={(event) => { if (event.detail === 0) mapRef.current?.rotateTo(0, { duration: 500 }); }} aria-label={`${extras.resetNorth}. ${compassDirection}, ${compassDegrees}°`} title={`${compassDirection} · ${compassDegrees}° — ${extras.resetNorth}`}><CompassArt bearing={bearing} labels={compassLabels} degrees={compassDegrees} direction={compassDirection} /></button>
       </div>
     </div>
+    <button type="button" className="authority-world__credits-trigger" onClick={() => setCreditsOpen(true)} aria-label="Créditos do mapa" title="Créditos do mapa"><IconInfoCircle size={19} /></button>
     <div className="authority-world__credits">{!mapError && <><span>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></span><span aria-hidden="true"> · </span></>}<span>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></span></div>
+    {creditsOpen && <div className="authority-world__modal-backdrop" onClick={() => setCreditsOpen(false)}><div className="authority-world__modal" role="dialog" aria-modal="true" aria-label="Créditos do mapa" onClick={(event) => event.stopPropagation()}><div className="authority-world__legend-head"><strong>Créditos do mapa</strong><button type="button" onClick={() => setCreditsOpen(false)} aria-label="Fechar">×</button></div><div className="authority-world__credits-modal-content">{!mapError && <p>{ui.creditsMap}: <a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></p>}<p>{ui.creditsData}: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap {ui.creditsContributors}</a></p></div></div></div>}
     <aside ref={panelNode} className="authority-world__panel" data-open={panelOpen} data-tab={panelTab} style={panelOpen && panelTab === "details" ? { height: explorePanelHeight ?? 560 } : undefined} aria-label={t.title}>
       <div className="authority-world__tabs-shell" aria-hidden={!panelOpen} inert={!panelOpen}><div className="authority-world__tabs" role="tablist" aria-label={t.title}><button type="button" role="tab" aria-selected={panelTab === "explore"} onClick={() => setPanelTab("explore")}>{panelText.explore}</button><span className="authority-world__tab-wrap"><button type="button" role="tab" aria-selected={panelTab === "details"} disabled={!selectedAuthorityId} onClick={() => setPanelTab("details")}>{extras.theme}</button>{!selectedAuthorityId && <span className="authority-world__tab-tip" role="tooltip">{extras.selectPoint}</span>}</span></div></div>
       <div className="authority-world__panel-content" aria-hidden={!panelOpen} inert={!panelOpen} onScroll={(event) => { const panel = event.currentTarget.closest<HTMLElement>(".authority-world__panel"); if (panel) panel.dataset.scrolled = String(panelTab === "details" && event.currentTarget.scrollTop > 2); }}>
@@ -585,7 +599,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
         <div className="authority-world__scale"><label htmlFor="authority-map-scale">{ui.scale}</label><p>{ui.scaleHint}</p><div className="authority-world__scale-track"><span className="authority-world__scale-progress" style={{ width: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><span className="authority-world__scale-thumb" style={{ left: `${scaleIndex / (scales.length - 1) * 100}%` }} aria-hidden="true" /><input id="authority-map-scale" type="range" min="0" max={scales.length - 1} step="1" value={scaleIndex} onChange={(event) => chooseScale(Number(event.target.value))} aria-valuetext={scale.key === "world" ? t.world : scale.key === "brazil" ? t.brazil : ui[scale.key]} /></div><div className="authority-world__scale-stops">{scales.map((item, index) => <button type="button" key={item.key} aria-current={scaleIndex === index ? "step" : undefined} onClick={() => chooseScale(index)}><span>{item.key === "world" ? t.world : item.key === "brazil" ? t.brazil : ui[item.key]}</span>{item.key === "world" ? <AppIcon name="globe" /> : <span className={`authority-world__scale-shape authority-world__scale-shape--${item.key}`} aria-hidden="true" />}</button>)}</div></div>
         <div className="authority-world__place-tools"><label htmlFor="authority-map-place-type">{toolText.filter}<select id="authority-map-place-type" value={placeFilter} onChange={(event) => setPlaceFilter(event.target.value as PlaceType)}>{(["all", "neighborhood", "square", "street", "institution", "other"] as const).map((kind) => <option key={kind} value={kind}>{toolText[kind]}</option>)}</select></label><p>{controlText.filterHint}</p></div>
         {shareStatus && <p className="sr-only" role="status">{shareStatus}</p>}
-        <div className="authority-world__places"><h2>{t.all} <span>{uniquePlaces(points).length}</span></h2><ul className="authority-world__hierarchy">{hierarchyRows(points, mapView).map((row) => <li key={`${row.depth}:${row.name}`} style={{ paddingInlineStart: `${row.depth * 12}px` }}><span>{row.name}</span><strong>{row.count}</strong></li>)}{uniquePlaces(points).filter((point) => !point.geography.country).length > 0 && <li><span>{panelText.pending}</span><strong>{uniquePlaces(points).filter((point) => !point.geography.country).length}</strong></li>}</ul>{points.length === 0 && <p>{t.empty}</p>}</div>
+        <div className="authority-world__places"><h2>{t.all} <span>{uniquePlaces(points).length}</span></h2><ul className="authority-world__hierarchy">{hierarchyRows(points, mapView).map((row) => <li key={`${row.depth}:${row.name}`} style={{ paddingInlineStart: `${row.depth * 12}px` }}><span>{row.name}</span><strong>{row.count}</strong></li>)}{uniquePlaces(points).filter((point) => !point.geography.country).length > 0 && <li><span>{panelText.pending}</span><strong>{uniquePlaces(points).filter((point) => !point.geography.country).length}</strong></li>}</ul></div>
         </> : <div className="authority-world__record" role="tabpanel">
           {recordError ? <p>{panelText.unavailable}</p> : !authorityRecord ? <div className="authority-world__record-loading" role="status"><BookLoadingIcon compact /><span>{panelText.loading}</span></div> : <>
             <div className="authority-world__record-heading"><span className="public-authority-detail__type">{publicAuthorityType(language, authorityRecord.heading_type)}</span><Link href={`/autoridades/${authorityRecord.id}`} aria-label={panelText.openPage} title={panelText.openPage}><AppIcon name="external" /></Link></div>
@@ -605,7 +619,7 @@ export function AuthorityWorldMap({ points, language, initialAuthorityId }: { po
           </>}
         </div>}
       </div>
-      <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button></div>
+      <div className="authority-world__panel-footer"><button type="button" className="authority-world__panel-toggle" onClick={() => setPanelOpen((value) => !value)} aria-expanded={panelOpen} aria-label={panelOpen ? ui.collapsePanel : ui.expandPanel} title={panelOpen ? ui.collapsePanel : ui.expandPanel}><AppIcon name={panelOpen ? "panelCollapse" : "panelExpand"} /><span>{panelOpen ? ui.collapsePanel : ui.explorePanel}</span></button></div>
     </aside>
   </main>;
 }

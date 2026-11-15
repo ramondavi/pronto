@@ -9670,6 +9670,48 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
 .authority-world__marker > .authority-world__marker-tooltip { isolation: isolate; padding-inline: 12px; pointer-events: auto; }
 .authority-world__marker > .authority-world__marker-tooltip::before { display: none; }
 .authority-world__marker-tooltip .authority-world__tooltip-text { max-width: none; }
+
+/* Full-screen map: compact tools and a pull-down header on narrow screens. */
+.authority-world__header-pin-mobile { display: none; }
+.authority-world__header-pin-label-mobile { display: none; }
+.authority-map-page[data-header-pinned="true"] .authority-map-page__chrome .authority-world__header-pin { opacity: 1; pointer-events: auto; }
+.authority-world__credits-trigger { display: none; }
+.authority-world__modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / 55%); }
+.authority-world__modal { width: min(420px,100%); padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-card); }
+.authority-world__credits-modal-content p { margin: 10px 0; line-height: 1.5; }
+.authority-world__credits-modal-content a { color: var(--institutional); font-weight: 800; }
+.authority-world__controls:has(.authority-world__legend-popover) { z-index: 950; }
+@media(max-width:700px) {
+  .site-header__nav > .site-header__access { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .site-header__nav > .site-header__access svg { display: block; flex: none; }
+  .authority-map-page .authority-map-page__chrome { top: 0; left: 0; width: 100%; max-width: none; border-radius: 0; transform: none; }
+  .authority-map-page__chrome .site-header__inner { min-height: 64px; gap: 5px; padding: 6px 12px; }
+  .authority-map-page__chrome .site-header__service-peek { flex-basis: 42px; width: 42px; }
+  .authority-map-page__chrome .site-header__nav { gap: 5px; }
+  .authority-world__header-pin-desktop { display: none; }
+  .authority-world__header-pin-mobile { display: grid; place-items: center; }
+  .authority-world__header-pin-label-desktop { display: none; }
+  .authority-world__header-pin-label-mobile { display: inline; }
+  .authority-map-page__chrome .authority-world__header-pin { top: 100%; right: auto; left: 50%; width: 48px; height: 24px; min-height: 24px; border-radius: 0 0 12px 12px; transform: translateX(-50%); opacity: 1; pointer-events: auto; }
+  .authority-map-page[data-header-pinned="false"][data-header-visible="false"] .authority-map-page__chrome { opacity: 1; visibility: visible; pointer-events: auto; }
+  .authority-map-page[data-header-visible="false"] .authority-map-page__chrome .site-header { height: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+  .authority-map-page[data-header-visible="false"] .authority-map-page__chrome { box-shadow: none; background: transparent; }
+  .authority-world__controls,.authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__controls { top: 34px; right: 12px; bottom: auto; left: 12px; grid-template-columns: 92px 152px; grid-template-rows: 38px 46px; justify-content: space-between; width: auto; transition: top .3s ease; }
+  .authority-map-page[data-header-visible="true"] .authority-world__controls,.authority-map-page[data-header-visible="true"] .authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__controls { top: calc(var(--map-header-height, 76px) + 34px); }
+  .authority-world__compass { grid-column: 1; grid-row: 1 / 3; width: 92px; height: 92px; align-self: start; }
+  .authority-world__compass-art { width: 88px; height: 88px; }
+  .authority-world__control-actions { grid-column: 2; grid-row: 1; }
+  .authority-world__zoom { grid-column: 2; grid-row: 2; }
+  .authority-world__empty--no-places { display: none; }
+  .authority-world__credits { display: none; }
+  .authority-world__credits-trigger { position: absolute; z-index: 650; right: 10px; bottom: 10px; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-raised); color: var(--institutional); box-shadow: var(--shadow-card); cursor: pointer; }
+  .authority-world__legend-popover { position: fixed; z-index: 1000; top: 50%; bottom: auto; left: 50%; width: min(340px,calc(100vw - 32px)); padding: 20px; transform: translate(-50%,-50%); box-shadow: 0 0 0 100vmax rgb(0 0 0 / 55%),var(--shadow-card); }
+  .authority-world__panel-toggle { width: 38px; padding: 0; }
+  .authority-world__panel-toggle span { display: none; }
+  .authority-world__panel[data-open="false"] { width: 56px; }
+  .authority-world__panel[data-open="false"] .authority-world__panel-footer { justify-content: center; padding: 8px; }
+  .authority-world__panel[data-open="false"] .authority-world__panel-toggle { width: 38px; }
+}
 .authority-world__marker-tooltip.is-scrolling::after,.authority-world__leaflet-tooltip .authority-world__marker-tooltip.is-scrolling::after { right: 12px; top: 0; bottom: 0; width: 22px; height: auto; transform: none; box-shadow: -5px 0 5px var(--surface-raised); }
 .authority-world__marker-tooltip:is(:hover,:focus-within).is-scrolling::after { display: none; }
 .authority-world__marker-tooltip:is(:hover,:focus-within).is-scrolling .authority-world__tooltip-text { animation: authority-card-pan var(--heading-duration,8s) linear infinite; }
