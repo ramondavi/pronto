@@ -376,9 +376,9 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
         {variant === "full" && button("Marcar texto", () => openInlineTool("highlight"), editor.isActive("knowledgeHighlight"), <AppIcon name="highlight" />)}
       </>}
     </BubbleMenu>}
+    {(guidePageId || referenceScope) && <p className="rich-editor__shortcut-hint"><AppIcon name="help" />Para referenciar um elemento do painel, digite <kbd>[[</kbd> no texto.</p>}
     <EditorContent editor={editor} />
     {copiedFormatting && <p className="rich-editor__format-status" role="status">Formatação copiada. Selecione o destino e use Colar formatação.</p>}
-    {(guidePageId || referenceScope) && <p className="rich-editor__shortcut-hint">Digite <kbd>[[</kbd> no texto para inserir um elemento do painel.</p>}
     {inlineReference && createPortal(<div className="rich-editor__inline-reference-suggestions" role="listbox" aria-label="Elementos do painel" style={{ left: inlineReference.left, top: inlineReference.top, transform: inlineReference.above ? "translateY(-100%)" : undefined }} onMouseDown={(event) => event.preventDefault()}>
       <p>Elemento do painel · continue digitando após [[</p>
       {inlineReferenceMatches.length ? inlineReferenceMatches.map((reference, index) => <button key={reference.key} type="button" role="option" aria-selected={index === inlineReferenceIndex} className={index === inlineReferenceIndex ? "is-selected" : ""} onClick={() => insertInlineReferenceRef.current(reference.key)}>{reference.icon && <AppIcon name={reference.icon} />}<span><strong>{reference.label}</strong><small>{reference.group}</small></span></button>) : <span className="rich-editor__inline-reference-empty">Nenhum elemento encontrado.</span>}
