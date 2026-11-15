@@ -9799,4 +9799,6 @@ dialog.pronto-modal.authority-map-guide[open] { display: flex; flex-direction: c
     transform: translate(-50%, -50%);
   }
   .authority-world__legend-popover > div:nth-child(2) { grid-template-columns: 1fr 1fr; }
+  .authority-world__credits-trigger { bottom: calc(min(48dvh, 420px) + 90px); }
+  .authority-world:has(.authority-world__panel[data-open="false"]) .authority-world__credits-trigger { bottom: 82px; }
 }
