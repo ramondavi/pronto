@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 15/11/2026: a consulta de autoridades mostra os campos do registro sem edição e abre a página pública quando disponível; os seletores dos formulários ficam alinhados. O link do capítulo publicado abre em nova aba. Os modelos de e-mail de autenticação e mensagens transacionais deixam de exibir borda externa; convite e reautenticação usam o visual e o idioma do Pronto!.
+
 - 15/11/2026: ajusta o ícone de créditos do mapa móvel, a edição e publicação dos capítulos do Guia da Equipe, a barra do editor de texto e o modelo de confirmação de e-mail sem borda externa.
 
 - 15/11/2026: a edição de assuntos reúne cadastro, autoridade, mapa, apresentação pública e publicação em uma janela com abas. O envio de código estudantil passa a exigir conta ativa e e-mail confirmado, sem revelar a existência da conta.

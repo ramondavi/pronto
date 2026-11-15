@@ -7794,6 +7794,16 @@ dialog.pronto-modal.catalogue-merge-dialog[open] { display: flex; flex-direction
 @supports (appearance: base-select) {
  .catalogue-workflow select > button { display: block; height: 44px; min-height: 44px; line-height: 44px; }
 }
+@supports (appearance: base-select) {
+ .catalogue-workflow select > button, .subject-editor__panel select > button {
+  display: flex; align-items: center; width: 100%; min-height: 44px; height: 44px;
+  margin: 0; padding: 0; border: 0; background: transparent;
+  color: inherit; font: inherit; line-height: 1.25; text-align: left;
+ }
+ .catalogue-workflow select selectedcontent, .subject-editor__panel select selectedcontent {
+  display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+ }
+}
 
 /* Importação: superfície de upload compartilhada com a geração da ficha. */
 .authority-import-preview__inputs > .authority-import-preview__input-card { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
