@@ -4,10 +4,10 @@ import { createPortal } from "react-dom";
 import { AppIcon } from "./app-icon";
 import { ModalCloseButton } from "./modal-close-button";
 
-export function CatalogueRecordDialog({ title, children, footer, busy = false, onClose }: { title: string; children: ReactNode; footer?: ReactNode; busy?: boolean; onClose: () => void }) {
+export function CatalogueRecordDialog({ title, children, footer, busy = false, className = "", onClose }: { title: string; children: ReactNode; footer?: ReactNode; busy?: boolean; className?: string; onClose: () => void }) {
  const ref = useRef<HTMLDialogElement>(null); const id = useId();
  useEffect(() => { const previous = document.activeElement; const dialog = ref.current; dialog?.showModal(); return () => { dialog?.close(); if (previous instanceof HTMLElement && previous.isConnected) previous.focus({preventScroll:true}); }; }, []);
- return createPortal(<dialog ref={ref} className="pronto-modal catalogue-record-dialog" aria-labelledby={id} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}><header className="catalogue-modal__header"><h2 id={id}><AppIcon name="book" />{title}</h2><ModalCloseButton onClick={onClose} disabled={busy} /></header><div className="catalogue-record-dialog__body">{children}</div>{footer && <footer className="catalogue-record-dialog__footer">{footer}</footer>}</dialog>,document.body);
+ return createPortal(<dialog ref={ref} className={`pronto-modal catalogue-record-dialog ${className}`.trim()} aria-labelledby={id} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}><header className="catalogue-modal__header"><h2 id={id}><AppIcon name="book" />{title}</h2><ModalCloseButton onClick={onClose} disabled={busy} /></header><div className="catalogue-record-dialog__body">{children}</div>{footer && <footer className="catalogue-record-dialog__footer">{footer}</footer>}</dialog>,document.body);
 }
 export function CatalogueConfirmation({ title, label, children, onClose, onConfirm }: {title:string;label:string;children:ReactNode;onClose:()=>void;onConfirm:()=>Promise<boolean>}) {
  const [busy,setBusy]=useState(false);const [error,setError]=useState("");
