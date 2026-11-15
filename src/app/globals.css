@@ -9841,6 +9841,7 @@ dialog.pronto-modal.catalogue-record-dialog.subject-editor-dialog { width: min(1
 .subject-editor__grid,.subject-editor__record-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px 22px; }
 .subject-editor__grid > label,.subject-editor__reason,.subject-editor__record-select { display: grid; align-content: start; gap: 7px; min-width: 0; }
 .subject-editor__grid input,.subject-editor__grid select,.subject-editor__reason textarea,.subject-editor__record-select select { width: 100%; min-width: 0; box-sizing: border-box; }
+.subject-editor__panel select:not([multiple]):not([size]) { display: flex; align-items: center; height: 46px; min-height: 46px; padding-block: 0; }
 .subject-editor__grid small,.subject-editor__reason small,.subject-editor__record-select small,.subject-editor__sources small { color: var(--text-muted); line-height: 1.5; }
 .subject-editor__sources { display: grid; align-content: start; gap: 7px; min-width: 0; font-size: .84rem; }
 .subject-editor__sources p { color: var(--text-muted); }
