@@ -1,6 +1,6 @@
 # Corrigir a forma de um assunto existente
 
-**Estado editorial:** rascunho de 08/11/2026. Campos e ações conferidos na interface da branch do PR #26; faltam execução com registros fictícios em diferentes estados, captura final e conferência na versão instalada antes da publicação.
+**Estado editorial:** rascunho de 08/11/2026. Atualizado para a janela de edição em abas na branch local; faltam execução com registros fictícios em diferentes estados, captura final e conferência na versão instalada antes da publicação.
 
 **Resultado:** corrigir o termo preferido em português ou o equivalente em inglês do cadastro usado em novas catalogações, com motivo auditado. Fichas anteriores preservam a forma que já registraram. **Para quem:** pessoa ativa com permissão de gestão de assuntos.
 
@@ -8,8 +8,8 @@
 
 | Ação no Pronto! | Campos e resultado |
 | --- | --- |
-| **Editar** | Abre **Editar assunto** com **Termo preferido em português**, **Equivalente em inglês** e **Motivo da edição**. Mostra fontes e permite abrir **Ver autoridade** para conferir a origem. **Salvar alterações** muda a forma do assunto para novos usos; não reescreve as fichas anteriores. |
-| **Ver autoridade** | Abre **Detalhes da autoridade** para leitura da origem, identificador, composição do cabeçalho, variantes, notas e fundamentação, quando existem. Há controles especializados para **Tipo de autoridade**, **Catálogo público**, **Localização no mapa público** e **Apresentação pública do tema**. Essas revisões têm campos e consequências próprios; o formulário curto de **Editar** não modifica essa estrutura. |
+| **Editar** | Abre a janela ampla **Editar assunto**. As abas **Cadastro**, **Autoridade**, **Mapa**, **Apresentação pública** e **Publicação** separam o cadastro técnico dos dados destinados à consulta pública. Cada aba salva sua própria alteração. |
+| **Ver autoridade** | Abre **Detalhes da autoridade** para consulta da origem, identificador, composição do cabeçalho, variantes, notas e fundamentação, quando existem. A edição é feita em **Editar**. |
 
 Um assunto legado pode ter apenas o cabeçalho. Nesse caso, **Ver autoridade** informa que ainda não há registro estruturado associado. A ausência desse registro não torna o assunto automaticamente inválido nem autoriza inventar fonte ou identificador.
 
@@ -21,20 +21,25 @@ Um assunto legado pode ter apenas o cabeçalho. Nesse caso, **Ver autoridade** i
 | **Buscar assunto**, **Situação**, **Tipo de autoridade**, **Mostrar** | Localizam o cadastro e ajudam a conferir seu estado e uso. |
 | **Ver protocolos que usam este assunto** | Lista vínculos recentes e indica se há atendimentos relacionados. |
 | **Ver autoridade** | Permite conferir os dados estruturados antes da correção. |
-| **Editar → Termo preferido em português** | Altera a forma usada em novas escolhas. |
-| **Editar → Equivalente em inglês** | Registra ou corrige equivalência somente quando confirmada na fonte. |
-| **Motivo da edição** | Registra a justificativa da alteração para auditoria. |
-| **Salvar alterações** | Confirma a revisão, sujeita às regras de duplicidade e de atendimento aberto. |
+| **Editar → Cadastro → Termo preferido em português** | Altera a forma usada em novas escolhas. |
+| **Editar → Cadastro → Equivalente em inglês** | Registra ou corrige equivalência somente quando confirmada na fonte. |
+| **Editar → Cadastro → Situação do assunto** | Define se o assunto fica disponível para novas escolhas; exige confirmação explícita ao mudar. |
+| **Editar → Cadastro → Motivo da alteração** | Registra a justificativa da alteração para auditoria. |
+| **Editar → Cadastro → Salvar cadastro** | Confirma a revisão, sujeita às regras de duplicidade e de atendimento aberto. |
+| **Editar → Autoridade** | Mostra origem, estrutura e fundamentação; permite revisar o tipo de autoridade sem reescrever o registro importado. |
+| **Editar → Mapa** | Revisa os dados geográficos usados no mapa público. |
+| **Editar → Apresentação pública** | Revisa os textos que poderão aparecer na página pública do tema. |
+| **Editar → Publicação** | Revisa direitos e publicação individual no catálogo público. |
 
-Na edição do guia, insira os elementos da primeira coluna com **Inserir elemento do painel** quando o seletor oferecer o rótulo e ícone oficiais. Não use um rótulo da janela **Ver autoridade** para descrever um campo do formulário **Editar**.
+Na edição do guia, insira os elementos da primeira coluna com **Inserir elemento do painel** quando o seletor oferecer o rótulo e ícone oficiais.
 
 ## Passo a passo
 
 1. Abra **Administração → Conteúdo → Assuntos**. Use **Buscar assunto** e os filtros para localizar o cadastro correto. Confira estado, fonte e quantidade de protocolos antes de mudar qualquer coisa.
-2. Se o motivo da correção depende da origem ou da composição do cabeçalho, abra **Ver autoridade**. Leia identificador e fonte, componentes, variantes e notas existentes. Feche a janela e selecione **Editar** no cartão do assunto correto.
-3. Corrija **Termo preferido em português** ou **Equivalente em inglês** apenas com base na fonte conferida. Não use o equivalente inglês como tradução livre. Preencha **Motivo da edição** com a verificação feita e a razão da mudança.
-4. Selecione **Salvar alterações**. Reabra o cartão e confira a forma atualizada. Se a autoridade estava publicada, verifique o estado da publicação pública: dados alterados exigem nova revisão individual antes de aparecerem no catálogo público.
-5. Se a necessidade era mudar tipo MARC, ponto geográfico, condições de publicação ou texto da apresentação pública, volte a **Ver autoridade** e use a seção própria; esta correção de rótulo não substitui esses procedimentos.
+2. Selecione **Editar** no cartão do assunto correto. Na aba **Autoridade**, confira a origem, o identificador, a composição, as variantes e as notas, quando houver registro estruturado. Um registro importado preserva os dados recebidos da fonte; a correção da fonte ocorre pelo fluxo de importação conferida.
+3. Na aba **Cadastro**, corrija **Termo preferido em português** ou **Equivalente em inglês** apenas com base na fonte conferida. Não use o equivalente inglês como tradução livre. Se mudar **Situação do assunto**, marque a confirmação exibida. Preencha **Motivo da alteração** com a verificação feita e a razão da mudança.
+4. Selecione **Salvar cadastro** e confira a forma atualizada. Se a autoridade estava publicada, abra **Publicação** e verifique o estado: dados alterados exigem nova revisão individual antes de aparecerem no catálogo público.
+5. Para mudar o tipo, use **Autoridade**; para revisar pontos geográficos, use **Mapa**; para textos exibidos ao público, use **Apresentação pública**; para direitos e liberação, use **Publicação**. Cada área salva a própria revisão.
 
 ## Impedimentos
 
@@ -44,6 +49,6 @@ O sistema bloqueia uma forma já pertencente a outro assunto. Um registro vincul
 
 - [ ] Corrigir termo português e equivalente inglês em registros fictícios, com motivo e conferência na lista após salvar.
 - [ ] Testar duplicidade, vínculo a atendimento aberto e efeito sobre publicação pública.
-- [ ] Capturar o cartão, o formulário **Editar assunto** e **Ver autoridade** com e sem registro estruturado.
+- [ ] Capturar o cartão e as abas da janela **Editar assunto** com e sem registro estruturado.
 - [ ] Confirmar fichas históricas preservadas e auditar o motivo registrado.
 - [ ] Registrar **Administração · Assuntos** em **Telas e abas abordadas**.

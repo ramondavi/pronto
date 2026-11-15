@@ -134,13 +134,24 @@ export async function requestStudentCode(_previousState: StudentCodeRequestState
   const failure = (message: string): StudentCodeRequestState => _previousState.status === "sent"
     ? { ..._previousState, error: message }
     : { status: "error", email, message, sentAt: 0, error: message };
+  const genericSuccess = (): StudentCodeRequestState => ({ status: "sent", email, message: "Se esta for uma conta estudantil cadastrada, enviaremos um código para esse e-mail.", sentAt: Date.now(), error: "" });
   if (process.env.STUDENT_EMAIL_OTP_ENABLED !== "true") return failure("O acesso por código ainda não está disponível.");
   if (!isUfbaEmail(email)) return failure("Use seu endereço institucional @ufba.br.");
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const secretKey = process.env.SUPABASE_SECRET_KEY;
+  if (!url || !secretKey) return failure("O acesso por código está temporariamente indisponível. Tente novamente em instantes.");
+  const admin = createSupabaseClient(url, secretKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+  const { data: profile, error: profileError } = await admin.from("profiles").select("id, role, status").eq("email", email).maybeSingle();
+  if (profileError) return failure("O acesso por código está temporariamente indisponível. Tente novamente em instantes.");
+  if (!profile || profile.role !== "student" || profile.status !== "active") return genericSuccess();
+  const { data: account, error: accountError } = await admin.auth.admin.getUserById(profile.id);
+  if (accountError) return failure("O acesso por código está temporariamente indisponível. Tente novamente em instantes.");
+  if (!account.user?.email_confirmed_at) return genericSuccess();
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
   if (error?.status === 429) return failure("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
   if (error) return failure("Não foi possível enviar o código agora. Tente novamente em instantes.");
-  return { status: "sent", email, message: "Se esta for uma conta estudantil cadastrada, enviaremos um código para esse e-mail.", sentAt: Date.now(), error: "" };
+  return genericSuccess();
 }
 
 export async function verifyStudentCode(_previousState: StudentCodeVerifyState, formData: FormData): Promise<StudentCodeVerifyState> {
