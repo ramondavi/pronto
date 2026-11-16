@@ -51,17 +51,19 @@ export function AuthorityPlacePicker({ value, onChange, disabled }: { value: Aut
   function showMarker(latitude: number, longitude: number) {
     if (!leaflet.current || !map.current) return;
     if (!marker.current) {
-      marker.current = leaflet.current.marker([latitude, longitude], { draggable: true }).addTo(map.current);
+      const icon = leaflet.current.divIcon({ className: "authority-place-picker__pin", iconSize: [30, 38], iconAnchor: [15, 36] });
+      marker.current = leaflet.current.marker([latitude, longitude], { draggable: true, icon }).addTo(map.current);
       marker.current.on("dragend", () => { const point = marker.current?.getLatLng(); if (point) choosePoint(point.lat, point.lng); });
     } else marker.current.setLatLng([latitude, longitude]);
   }
 
   function choosePoint(latitude: number, longitude: number) {
     const { value: current, onChange: change } = latest.current;
-    const source = current.source.includes("OpenStreetMap (Nominatim)") && !current.source.includes("ajustado pela equipe")
-      ? `${current.source}; ajustado pela equipe` : current.source;
+    const source = current.source.includes("OpenStreetMap (Nominatim)")
+      ? `${current.source.replace(/; ajustado pela equipe$/, "")}; ajustado pela equipe`
+      : "OpenStreetMap (mapa do Pronto!); ponto marcado pela equipe";
     change({ ...current, latitude: latitude.toFixed(6), longitude: longitude.toFixed(6), source });
-    setMessage("Ponto ajustado. Confira a fonte e salve a localização para publicar a alteração.");
+    setMessage("Ponto ajustado e fonte do mapa registrada automaticamente. Confira a posição antes de salvar.");
   }
 
   async function search(event: FormEvent<HTMLFormElement>) {
@@ -89,7 +91,7 @@ export function AuthorityPlacePicker({ value, onChange, disabled }: { value: Aut
     map.current?.setView([result.latitude, result.longitude], 14);
     showMarker(result.latitude, result.longitude);
     setResults([]);
-    setMessage("Ponto sugerido selecionado. Confira a posição, a hierarquia e a fonte antes de salvar.");
+    setMessage("Ponto sugerido selecionado e fonte da busca registrada automaticamente. Confira a posição e a hierarquia antes de salvar.");
   }
 
   return <section className="authority-place-picker" aria-label="Escolher ponto de referência">
@@ -98,6 +100,6 @@ export function AuthorityPlacePicker({ value, onChange, disabled }: { value: Aut
     {!!results.length && <div className="authority-place-picker__results" role="group" aria-label="Pontos sugeridos">{results.map((result) => <button key={result.id} type="button" disabled={disabled} onClick={() => select(result)}><strong>{result.label}</strong><small>{result.latitude.toFixed(5)}, {result.longitude.toFixed(5)}</small></button>)}</div>}
     {message && <p className="field-help" role="status">{message}</p>}
     <div ref={mapNode} className="authority-place-picker__map" aria-label="Mapa para conferir ou ajustar o ponto" />
-    <p className="field-help">Clique no mapa ou arraste o marcador para ajustar. Em bairros, o ponto representa uma referência visual, não os limites do bairro. Dados de busca: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>.</p>
+    <p className="field-help">Clique no mapa ou arraste o marcador para ajustar. A fonte do mapa ou da sugestão é registrada automaticamente. Em bairros, o ponto representa uma referência visual, não os limites do bairro. Dados de busca: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>.</p>
   </section>;
 }

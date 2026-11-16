@@ -1,5 +1,7 @@
 # Inventário editorial do Guia da Equipe
 
+Atualização de 16/11/2026: há 16 capítulos publicados na produção. Os 16 receberam rascunhos de revisão com “Elementos desta tarefa” e “Quando usar” no início, preservando os rascunhos anteriores e as referências já existentes. A publicação dessas revisões aguarda a entrega conjunta dos novos rótulos do mapa e a conferência visual. As lacunas por tarefa listadas abaixo continuam abertas quando não existe passo a passo específico; a publicação de um capítulo introdutório não as encerra.
+
 Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
 
 ## Situação da cobertura
