@@ -5,7 +5,7 @@ Este arquivo contém somente pontos que o Documento-Mestre Consolidado ainda nã
 ## Vocabulário, CDU, Cutter e MARC 21
 
 - **CDU:** após uso piloto, avaliar se a fórmula simples `2:1` precisa de curadoria ou refinamento, mantendo a ausência de IA.
-- **Vocabulário:** definir futuramente o fluxo administrativo de mesclagem de termos; o cadastro bilíngue, a normalização inicial e a prevenção de novas duplicidades já estão decididos.
+- **Vocabulário:** após uso piloto da mesclagem com escolha do destino, revisão, confirmação e histórico já definidos no mestre, avaliar se são necessários ajustes institucionais adicionais.
 - **MARC 21:** na fase posterior, mapear campos/subcampos e o formato útil ao fluxo real do Pergamum.
 
 ## DSpace/RI-UFBA
@@ -36,7 +36,7 @@ Atualização operacional de 22/10/2026: o responsável confirmou o cadastro dos
 
 ## Fluxo de publicação no RI — discussão de 21/10/2026
 
-- O bibliotecário já registra URL/Handle ao encerrar; nos retrospectivos, o fluxo vigente também exige a URL informada pela secretaria e o início do guia. Avaliar permitir que a Biblioteca registre e valide a publicação antes dessas ações. Proposta ainda não aprovada: estudante/secretaria declara o envio, Biblioteca valida e informa o Handle definitivo; dispensar a dependência da URL fornecida pelo solicitante. Alternativa: aceitar URL sugerida pelo estudante, sempre dependente de validação bibliotecária.
+- Decisão de 16/11/2026: a Biblioteca pode validar e registrar o Handle definitivo sem depender da URL sugerida pela secretaria. A sugestão continua opcional e histórica. Permanece para decisão futura apenas a possibilidade de registrar a publicação antes do início do guia; a exigência atual de início registrado não foi removida.
 - Para programas com depósito obrigatório, avaliar acompanhamento separado de “aguardando envio” e “aguardando validação”, lembretes após liberação da ficha e encerramento somente com publicação verificada. Definir a obrigação institucional por programa; a declaração de envio não comprova publicação. Não implementar automaticamente esta proposta.
 
 ### Validação individual dos e-mails — 22/10/2026

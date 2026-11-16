@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(25);
+select plan(28);
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
  ('a1000000-0000-4000-8000-000000000001','teste.retrospectiva.admin@ufba.br',now(),'{}'),
@@ -49,18 +49,17 @@ select throws_ok($$select * from public.open_student_request_v12(pg_temp.retrosp
 reset role;
 alter table public.cataloging_card_homologations disable trigger user;
 insert into public.cataloging_card_homologations(request_id,snapshot,homologated_by,librarian_name_snapshot,librarian_crb_snapshot)
- select id,'{}','a1000000-0000-4000-8000-000000000001','Biblioteca Teste','5/0000' from public.cataloging_requests where title='Retrospectivo primeiro';
+ select id,'{}','a1000000-0000-4000-8000-000000000001','Biblioteca Teste','5/0000' from public.cataloging_requests where title in ('Retrospectivo primeiro','Retrospectivo segundo');
 alter table public.cataloging_card_homologations enable trigger user;
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000001';
-update public.cataloging_requests set status='approved' where title='Retrospectivo primeiro';
-update public.cataloging_requests set status='canceled' where title='Retrospectivo segundo';
+update public.cataloging_requests set status='approved' where title in ('Retrospectivo primeiro','Retrospectivo segundo');
 -- A configuração real da prévia mantém o guia comum da RAU+E desativado.
 update public.academic_programs set repository_deposit_enabled=false where code='athdc-specialization';
 
 set local role authenticated;
 select throws_ok($$select public.end_retrospective_access('a1000000-0000-4000-8000-000000000002')$$,'P0001','retrospective_batch_not_finished','administrador não encerra lote com protocolo aberto');
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000002';
-select ok((select count(*)=1 from public.cataloging_card_homologations),'ficha homologada é liberada sem Nada Consta');
+select ok((select count(*)=2 from public.cataloging_card_homologations),'fichas homologadas são liberadas sem Nada Consta');
 select throws_ok($$select public.report_retrospective_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'),'https://example.org/falso')$$,'P0001','ri_ufba_url_required','rejeita URL fora do RI/UFBA');
 select throws_ok($$select public.start_repository_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'))$$,'P0001','repository_access_confirmation_required','guia desativado não permite iniciar nem no retrospectivo');
 reset role;
@@ -68,12 +67,15 @@ update public.academic_programs set repository_deposit_enabled=true where code='
 insert into public.repository_access_preparations(request_id,state,destination)
  select r.id,'{"route":"ready"}',jsonb_build_array(p.code,p.repository_collection_label,p.repository_document_type_label)
  from public.cataloging_requests r join public.academic_enrollments e on e.id=r.academic_enrollment_id
- join public.academic_programs p on p.id=e.academic_program_id where r.title='Retrospectivo primeiro';
+ join public.academic_programs p on p.id=e.academic_program_id where r.title in ('Retrospectivo primeiro','Retrospectivo segundo');
 set local role authenticated;
+select lives_ok($$select public.start_repository_deposit((select id from public.cataloging_requests where title='Retrospectivo segundo'))$$,'secretaria inicia guia sem precisar informar URL');
 select lives_ok($$select public.report_retrospective_deposit((select id from public.cataloging_requests where title='Retrospectivo primeiro'),'https://repositorio.ufba.br/handle/ri/1')$$,'secretaria informa URL de cada depósito');
 select ok((select status='approved' from public.cataloging_requests where title='Retrospectivo primeiro'),'URL informada aguarda conferência profissional');
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000001';
 select lives_ok($$select public.close_cataloging_request((select id from public.cataloging_requests where title='Retrospectivo primeiro'),'https://repositorio.ufba.br/handle/ri/1')$$,'biblioteca confirma publicação e conclui sem Nada Consta');
+select ok(not exists(select 1 from public.retrospective_deposit_reports where request_id=(select id from public.cataloging_requests where title='Retrospectivo segundo')),'segundo trabalho não recebeu URL da secretaria');
+select lives_ok($$select public.close_cataloging_request((select id from public.cataloging_requests where title='Retrospectivo segundo'),'https://repositorio.ufba.br/handle/ri/2')$$,'biblioteca registra Handle conferido sem URL da secretaria');
 select lives_ok($$select public.end_retrospective_access('a1000000-0000-4000-8000-000000000002')$$,'administrador encerra lote terminado');
 set local request.jwt.claim.sub='a1000000-0000-4000-8000-000000000002';
 select ok(not public.has_retrospective_access(),'conta inativa perde exceção imediatamente');

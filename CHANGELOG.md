@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 16/11/2026: permite à Biblioteca concluir um protocolo retrospectivo com o Handle conferido no RI/UFBA sem depender da URL sugerida pela secretaria. A sugestão permanece opcional e histórica. Amplia as referências aos controles de fila, metadados e Nada Consta para novos capítulos do guia. Atualiza o inventário editorial, prepara o roteiro de aceite assistido e registra a causa das falhas recentes da rotina agendada de backup e a cópia manual concluída após a correção.
+
 - 16/11/2026: corrige o marcador móvel de bairros na gestão de assuntos, registra automaticamente a fonte do mapa ao escolher ou ajustar o ponto e elimina espaços vazios e um artefato de hover no Guia da Equipe. Amplia o catálogo de referências aos controles usados nos capítulos revisados.
 
 - 15/11/2026: o cadastro de bairros oferece busca explícita de um ponto de referência, conferência e ajuste no mapa antes de salvar, sem exigir malha geográfica. A legenda pública esclarece que o marcador não define o perímetro do bairro.

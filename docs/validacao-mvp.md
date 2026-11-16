@@ -1,5 +1,7 @@
 # Matriz de validação do MVP
 
+Atualização de 16/11/2026: o [roteiro de aceite assistido](roteiro-aceite-assistido-2026-11.md) está preparado. O responsável informou que ainda não há estudantes ou bibliotecários participantes; a execução e o aceite continuam pendentes.
+
 Use esta matriz para registrar evidência, sem dados pessoais reais. “Automatizado” indica cobertura versionada; “assistido” exige execução e aceite humano.
 
 | Área | Evidência automatizada | Validação assistida necessária |
