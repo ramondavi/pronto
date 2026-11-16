@@ -9,6 +9,7 @@ export const staffPanelFieldReferences = [
   { key: "field-queue-age", label: "Tempo na fila", group: "Fila de solicitações · Busca e filtros" },
   { key: "field-review-template", label: "Modelo de mensagem", group: "Atendimento · Revisão de metadados" },
   { key: "field-review-guidance", label: "Orientação complementar", group: "Atendimento · Revisão de metadados" },
+  { key: "field-nada-return-reason", label: "Motivo da devolução", group: "Atendimento · Finalização e liberação" },
   { key: "field-cataloging-people", label: "Pessoas relacionadas", group: "Atendimento · Catalogação" },
   { key: "field-cataloging-subjects", label: "Assuntos controlados", group: "Atendimento · Catalogação" },
   { key: "field-cataloging-subject-source", label: "Fonte", group: "Atendimento · Catalogação · Assuntos controlados" },
