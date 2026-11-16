@@ -1,12 +1,12 @@
 # Inventário editorial do Guia da Equipe
 
-Atualização de 16/11/2026: os 16 capítulos revisados foram publicados na produção após o PR #35. Todos apresentam “Elementos desta tarefa” e “Quando usar” no início, com referências aos elementos do painel. O capítulo “Localizar um bairro no mapa” foi conferido na página publicada. As lacunas por tarefa listadas abaixo continuam abertas quando não existe passo a passo específico; a publicação de um capítulo introdutório não as encerra. As capturas indicadas nos textos continuam reservadas para inserção pela equipe.
+Atualização de 16/11/2026: os 16 capítulos revisados foram publicados na produção após o PR #35. Mais dois procedimentos de catalogação, “Devolver um atendimento à fila” e “Atribuir ou reatribuir um atendimento”, foram publicados no mesmo dia: 18 capítulos ao todo. Todos os revisados e os novos apresentam “Elementos desta tarefa” e “Quando usar” no início, com referências aos elementos do painel. O capítulo “Localizar um bairro no mapa” foi conferido na página publicada. As lacunas por tarefa listadas abaixo continuam abertas quando não existe passo a passo específico; a publicação de um capítulo introdutório não as encerra. As capturas indicadas nos textos continuam reservadas para inserção pela equipe.
 
 Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
 
 ## Situação da cobertura
 
-- **Publicados:** 16 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa e administração. A publicação foi conferida em 16/11/2026.
+- **Publicados:** 18 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa e administração. A publicação foi conferida em 16/11/2026.
 - **Capturas:** os textos publicados indicam as imagens a inserir pela equipe; essas capturas ainda não foram fornecidas.
 - **Plano:** o [sumário editorial](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo continuam como inventário de cobertura. A seção Casos segue sem procedimento publicado.
 - **Lacuna principal:** os 14 títulos do sumário são macrotemas ou pilotos, ainda amplos para garantir um passo a passo de cada ação possível. Eles deverão ser desdobrados em tantos capítulos de tarefa quantos forem necessários, sem transformar a estrutura das telas em estrutura obrigatória do guia.
@@ -47,7 +47,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Localizar atendimento por pessoa, matrícula, protocolo, título ou orientador; aplicar e limpar filtros; alternar Fila geral/Meus atendimentos e Ativos/Encerrados. [Rascunho do passo a passo](guia-equipe/capitulos/localizar-atendimento.md); faltam conferência e publicação.
 - [ ] Entender a situação de um atendimento pela legenda, linha de evolução, histórico e avisos. [Rascunho dos estados](guia-equipe/capitulos/entender-estados-atendimento.md); faltam capturas de todos os estados e publicação.
 - [ ] Assumir atendimento sem responsável e abrir a análise. [Rascunho do passo a passo](guia-equipe/capitulos/assumir-atendimento.md); faltam conferência e publicação.
-- [ ] Devolver atendimento à fila; atribuir ou reatribuir a outro profissional quando houver permissão.
+- [ ] Devolver atendimento à fila; atribuir ou reatribuir a outro profissional quando houver permissão. [Devolução publicada](https://prontobib.vercel.app/guia-equipe/devolver-atendimento-fila) e [atribuição publicada](https://prontobib.vercel.app/guia-equipe/atribuir-reatribuir-atendimento); capturas pela equipe ainda pendentes.
 - [ ] Marcar, alterar ou retirar prioridade com motivo, quando permitido.
 - [ ] Conferir declarações, acesso ao trabalho completo e condição de início da análise.
 - [ ] Revisar dados enviados e corrigir diretamente os que admitem edição auditada.
