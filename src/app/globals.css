@@ -9125,6 +9125,17 @@ html:has(.home-hero-landscape[data-discovery-expanded="true"]) { scroll-snap-typ
 .authority-place-fields__matches button { display: flex; justify-content: space-between; gap: 8px; padding: 9px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); text-align: left; cursor: pointer; }
 .authority-place-fields__matches button:hover { border-color: var(--institutional); }
 .authority-place-fields__matches small { color: var(--text-muted); }
+.authority-place-picker { display: grid; grid-column: 1 / -1; gap: 12px; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.authority-place-picker__search { display: flex; align-items: end; gap: 10px; }
+.authority-place-picker__search label { flex: 1; }
+.authority-place-picker__search button { flex: none; min-height: 46px; }
+.authority-place-picker__results { display: grid; gap: 6px; max-height: 185px; overflow: auto; }
+.authority-place-picker__results button { display: grid; gap: 3px; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); text-align: left; cursor: pointer; }
+.authority-place-picker__results button:hover { border-color: var(--institutional); }
+.authority-place-picker__results small { color: var(--text-muted); }
+.authority-place-picker__map { width: 100%; height: 260px; border-radius: var(--radius-sm); overflow: hidden; }
+.authority-place-picker > p { margin: 0; }
+@media(max-width:600px) { .authority-place-picker__search { align-items: stretch; flex-direction: column; } .authority-place-picker__map { height: 220px; } }
 .authority-type-editor { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-raised); }
 .authority-type-editor h4 { display: flex; align-items: center; gap: 8px; margin: 0; }
 .authority-type-editor h4 svg { width: 18px; height: 18px; color: var(--institutional); }

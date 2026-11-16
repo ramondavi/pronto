@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppIcon } from "./app-icon";
 import { createClient } from "@/lib/supabase/client";
 import { authorityHeadingLabel } from "@/lib/authority-heading-types";
+import { AuthorityPlacePicker } from "./authority-place-picker";
 
 export type AuthorityPlaceDraft = {
   placeLabel: string; latitude: string; longitude: string; inBrazil: boolean;
@@ -38,10 +39,11 @@ export function AuthorityPlaceFields({ value, onChange, disabled, editablePlace 
   }, [pathLookup]);
   const update = (patch: Partial<AuthorityPlaceDraft>) => onChange({ ...value, ...patch });
   return <div className="authority-place-fields">
-    <div className="authority-place-fields__heading"><AppIcon name="globe" /><div><strong>Localização revisada</strong><small>Confira a posição no mapa antes de salvar. Nenhuma coordenada é inferida do nome.</small></div></div>
+    <div className="authority-place-fields__heading"><AppIcon name="globe" /><div><strong>Localização revisada</strong><small>Escolha e confira um ponto de referência antes de salvar. A busca pelo nome apenas sugere coordenadas.</small></div></div>
     <div className="authority-place-fields__grid">
       {editablePlace && <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="tag" />Lugar associado</span><input value={value.placeLabel} disabled={disabled} maxLength={250} onChange={(event) => update({ placeLabel: event.target.value })} placeholder="Ex.: Salvador (BA)" /></label>}
       <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="tag" />Tipo de lugar</span><select value={value.placeType} disabled={disabled} onChange={(event) => update({ placeType: event.target.value as AuthorityPlaceDraft["placeType"] })}><option value="neighborhood">Bairro</option><option value="square">Praça ou largo</option><option value="street">Rua ou via</option><option value="institution">Local associado a instituição ou evento</option><option value="other">Outro lugar</option></select><small className="field-help">Confirme a categoria pelo lugar, não apenas pelo texto do termo.</small></label>
+      {value.placeType === "neighborhood" && <AuthorityPlacePicker value={value} onChange={onChange} disabled={disabled} />}
       <label><span className="catalogue-field-label"><AppIcon name="globe" />Latitude</span><input type="number" step="any" min="-90" max="90" value={value.latitude} disabled={disabled} onChange={(event) => update({ latitude: event.target.value })} /></label>
       <label><span className="catalogue-field-label"><AppIcon name="globe" />Longitude</span><input type="number" step="any" min="-180" max="180" value={value.longitude} disabled={disabled} onChange={(event) => update({ longitude: event.target.value })} /></label>
       <label className="authority-place-fields__wide"><span className="catalogue-field-label"><AppIcon name="document" />Fonte das coordenadas</span><input value={value.source} disabled={disabled} maxLength={500} onChange={(event) => update({ source: event.target.value })} placeholder="Ex.: malha geográfica do IBGE" /></label>
