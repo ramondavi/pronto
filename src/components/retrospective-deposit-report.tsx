@@ -10,7 +10,7 @@ export function RetrospectiveDepositReport({ requestId, initialUrl = "" }: { req
   const [url, setUrl] = useState(initialUrl);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  return <section className="panel retrospective-deposit-report retrospective-context"><div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="upload" /></span><div><p className="eyebrow">Publicação no RI/UFBA</p><h2>Informe o endereço do trabalho</h2><p>Após concluir o depósito, copie a URL permanente da página pública. A Biblioteca conferirá o trabalho antes de encerrar este protocolo.</p></div></div><form className="form-stack" onSubmit={async (event) => {
+  return <section className="panel retrospective-deposit-report retrospective-context"><div className="admin-section__lead"><span className="admin-section__icon"><AppIcon name="upload" /></span><div><p className="eyebrow">Publicação no RI/UFBA</p><h2>Sugira o endereço do trabalho, se desejar</h2><p>Se já tiver a URL permanente da página pública, envie-a para ajudar na conferência. A Biblioteca também pode encontrá-la e registrá-la sem esta etapa.</p></div></div><form className="form-stack" onSubmit={async (event) => {
     event.preventDefault();
     if (busy) return;
     setBusy(true);

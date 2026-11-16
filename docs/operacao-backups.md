@@ -1,6 +1,8 @@
 # Operação e passagem de responsabilidade dos backups
 
-Situação consolidada em 28/10/2026. Este documento não declara a agenda ativada nem substitui o aceite institucional.
+Atualização de 16/11/2026: a agenda está em execução, mas as rodadas agendadas de 09 a 15/11 falharam. O log de 15/11 identifica `unreviewed_storage_bucket` ao inventariar documentos. A correção de cobertura dos depósitos de imagens entrou na master no commit `aeacadc`, após a falha agendada. A [execução manual de 15/11](https://github.com/ramondavi/pronto/actions/runs/43787444933), já com a correção, terminou com sucesso e percorreu exportação, verificação, criptografia e envio. Ainda falta observar uma execução **agendada** bem-sucedida com o código corrigido e conferir seu recibo; sucesso do workflow não substitui ensaio de restauração. O painel não revelou inventário privado nem segredos nesta verificação.
+
+As seções abaixo registram o estado histórico de 28/10/2026 e não devem ser lidas como diagnóstico atual da agenda.
 
 ## O que já foi comprovado
 

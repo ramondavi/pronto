@@ -1,14 +1,14 @@
 # Inventário editorial do Guia da Equipe
 
-Atualização de 16/11/2026: há 16 capítulos publicados na produção. Os 16 receberam rascunhos de revisão com “Elementos desta tarefa” e “Quando usar” no início, preservando os rascunhos anteriores e as referências já existentes. A publicação dessas revisões aguarda a entrega conjunta dos novos rótulos do mapa e a conferência visual. As lacunas por tarefa listadas abaixo continuam abertas quando não existe passo a passo específico; a publicação de um capítulo introdutório não as encerra.
+Atualização de 16/11/2026: os 16 capítulos revisados foram publicados na produção após o PR #35. Todos apresentam “Elementos desta tarefa” e “Quando usar” no início, com referências aos elementos do painel. O capítulo “Localizar um bairro no mapa” foi conferido na página publicada. As lacunas por tarefa listadas abaixo continuam abertas quando não existe passo a passo específico; a publicação de um capítulo introdutório não as encerra. As capturas indicadas nos textos continuam reservadas para inserção pela equipe.
 
 Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
 
 ## Situação da cobertura
 
-- **Capítulo inicial:** “Conheça o Pronto!” é o único capítulo de leitura publicado na instância local de teste. Uma migração idempotente prepara sua instalação inicial, sem substituir edição existente; ela ainda não foi aplicada em produção.
-- **Rascunhos locais:** “Revise e homologue a ficha” e “Gerencie contas e acessos” são pilotos ainda sujeitos à conferência editorial.
-- **Plano:** os outros capítulos do [sumário editorial](guia-equipe-piloto.md) e o desdobramento de Assuntos/autoridades não constituem conteúdo pronto. A seção Casos segue sem procedimento aprovado.
+- **Publicados:** 16 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa e administração. A publicação foi conferida em 16/11/2026.
+- **Capturas:** os textos publicados indicam as imagens a inserir pela equipe; essas capturas ainda não foram fornecidas.
+- **Plano:** o [sumário editorial](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo continuam como inventário de cobertura. A seção Casos segue sem procedimento publicado.
 - **Lacuna principal:** os 14 títulos do sumário são macrotemas ou pilotos, ainda amplos para garantir um passo a passo de cada ação possível. Eles deverão ser desdobrados em tantos capítulos de tarefa quantos forem necessários, sem transformar a estrutura das telas em estrutura obrigatória do guia.
 
 ## Unidade de cobertura: tarefa executável
