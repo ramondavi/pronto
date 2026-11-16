@@ -33,6 +33,11 @@ RENEW_AFTER = timedelta(days=80)
 MAX_STORED_BYTES = 8_000_000_000  # Reserve below B2's 10 GB free allowance.
 MAX_ARCHIVE_BYTES = 2_000_000_000
 MAX_OBJECT_BYTES = 5 * 1024 * 1024  # Current Nada Consta application limit.
+IMAGE_TYPES = {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "gif": "image/gif"}
+IMAGE_SIGNATURES = {"png": lambda data: data.startswith(b"\x89PNG\r\n\x1a\n"),
+                    "jpg": lambda data: data.startswith(b"\xff\xd8\xff"),
+                    "webp": lambda data: data.startswith(b"RIFF") and data[8:12] == b"WEBP",
+                    "gif": lambda data: data.startswith((b"GIF87a", b"GIF89a"))}
 OPERATOR_TOOL_PATH = re.compile(r"windows/([0-9a-f]{64})/Pronto-Backup-Manual\.zip")
 MAX_OPERATOR_TOOL_BYTES = 50 * 1024 * 1024
 
@@ -236,6 +241,24 @@ def operator_tool_reference(bucket, name, metadata):
     return {"bucket": bucket, "name": name, "bytes": size, "sha256": match.group(1)}
 
 
+def storage_extension(bucket, name, metadata):
+    """Only reviewed application-owned object paths enter an encrypted archive."""
+    if bucket == "nada-consta":
+        require(isinstance(name, str) and name.endswith(".pdf"), "unreviewed_storage_object")
+        return "pdf"
+    if bucket not in {"knowledge-images", "staff-guide-images"}:
+        raise BackupError("unreviewed_storage_bucket")
+    pattern = (r"[0-9a-f-]{36}/[0-9a-f-]{36}\.(png|jpg|webp)" if bucket == "staff-guide-images"
+               else r"[0-9a-f-]{36}\.(png|jpg|webp|gif)")
+    match = re.fullmatch(pattern, name) if isinstance(name, str) else None
+    require(match is not None, "unreviewed_storage_object")
+    extension = match.group(1)
+    require(isinstance(metadata, dict) and metadata.get("mimetype") == IMAGE_TYPES[extension]
+            and isinstance(metadata.get("size"), int) and not isinstance(metadata["size"], bool)
+            and 0 < metadata["size"] <= 2 * 1024 * 1024, "unreviewed_storage_object")
+    return extension
+
+
 class DatabaseSnapshot:
     def __init__(self, connection, folder: Path):
         self.connection = connection
@@ -328,7 +351,7 @@ class DatabaseSnapshot:
             if bucket == "backup-tools":
                 self.independent_operator_tools.append(operator_tool_reference(bucket, name, metadata))
                 continue
-            require(bucket == "nada-consta", "unreviewed_storage_bucket")
+            storage_extension(bucket, name, metadata)
             documents.append({"bucket": bucket, "name": name, "metadata": metadata or {}, "updated_at": updated})
         return documents
 
@@ -350,7 +373,8 @@ def download_storage(inventory: list[dict], folder: Path) -> list[dict]:
     for index, entry in enumerate(inventory):
         size = int(entry["metadata"].get("size", -1))
         require(0 <= size <= MAX_OBJECT_BYTES, "unexpected_storage_size")
-        relative = f"objects/{index:08d}.pdf"  # Never use untrusted object names as local paths.
+        extension = storage_extension(entry["bucket"], entry["name"], entry["metadata"])
+        relative = f"objects/{index:08d}.{extension}"  # Never use untrusted object names as local paths.
         path = folder / relative
         path.parent.mkdir(exist_ok=True)
         url = (os.environ["SUPABASE_URL"].rstrip("/") + "/storage/v1/object/authenticated/" +
@@ -368,7 +392,9 @@ def download_storage(inventory: list[dict], folder: Path) -> list[dict]:
                 require(total <= size, "storage_content_changed")
                 output.write(block)
         require(total == size, "storage_content_changed")
-        require(path.read_bytes()[:5] == b"%PDF-", "unexpected_storage_content")
+        signature = path.read_bytes()[:16]
+        require(signature.startswith(b"%PDF-") if extension == "pdf" else IMAGE_SIGNATURES[extension](signature),
+                "unexpected_storage_content")
         result.append({**entry, "file": relative, "sha256": digest_file(path), "size": size})
     return result
 

@@ -18,7 +18,7 @@ import uuid
 
 from manual_backup import private_temporary_directory
 from provision_b2 import BUCKET, b2_call
-from run_backup import BackupError, FORMAT, MAX_ARCHIVE_BYTES, SCHEMAS, canonical_sql, digest_file, require, safe_request
+from run_backup import BackupError, FORMAT, MAX_ARCHIVE_BYTES, SCHEMAS, canonical_sql, digest_file, require, safe_request, storage_extension
 
 IMAGE = "supabase/postgres@sha256:f371b5f3f2ac0a05703f33d6e6134515fb2498cab708fb948a0aeb7481467c00"
 PREFIX = "pronto-production/"
@@ -201,7 +201,8 @@ def unpack_verified(archive, destination, receipt):
         require(digest_file(root / name) == checksum, "backup_file_checksum_mismatch")
     for item in manifest.get("objects", []):
         name = item.get("file", "")
-        require(re.fullmatch(r"objects/\d{8}\.pdf", name) and name not in expected, "unsafe_document_path")
+        extension = storage_extension(item.get("bucket"), item.get("name"), item.get("metadata"))
+        require(re.fullmatch(r"objects/\d{8}\." + extension, name) and name not in expected, "unsafe_document_path")
         require((root / name).stat().st_size == item.get("size") and digest_file(root / name) == item.get("sha256"),
                 "document_checksum_mismatch")
         expected.add(name)

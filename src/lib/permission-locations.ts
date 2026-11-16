@@ -26,6 +26,7 @@ export const permissionLocations: Record<string, { area: string; screen: string 
   "admin.faq.manage": { area: "Administração · Conteúdo", screen: "Ajuda e FAQ" },
   "admin.knowledge.view": { area: "Administração · Conteúdo", screen: "Ajuda e FAQ" },
   "admin.knowledge.manage": { area: "Administração · Conteúdo", screen: "Ajuda e FAQ" },
+  "admin.guide.manage": { area: "Administração · Conteúdo", screen: "Guia da equipe" },
   "admin.subjects.view": { area: "Administração · Conteúdo", screen: "Assuntos" },
   "admin.subjects.manage": { area: "Administração · Conteúdo", screen: "Assuntos e Temas por área" },
   "admin.cdu.view": { area: "Administração · Conteúdo", screen: "Catálogo CDU" },

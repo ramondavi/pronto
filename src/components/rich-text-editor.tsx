@@ -18,6 +18,7 @@ import { StaffGuideIncludePicker, type StaffGuideIncludeSource } from "./staff-g
 import type { InterfaceLanguage } from "@/lib/interface-language";
 import { staffPanelReferences } from "@/lib/staff-panel-references";
 import { publicInterfaceReferences } from "@/lib/public-interface-references";
+import { RichTextReviewTools } from "./rich-text-review-tools";
 
 type EditorDialog = "link" | "image" | "color" | "highlight" | null;
 type InlineTool = "link" | "color" | "highlight" | null;
@@ -28,7 +29,7 @@ type CopiedFormatting = { marks: { name: string; attrs: Record<string, unknown> 
 const formatMarkNames = ["bold", "italic", "underline", "strike", "knowledgeTextColor", "knowledgeHighlight"];
 const normalizeReference = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 
-export function RichTextEditor({ value, onChange, variant = "full", editable = true, guidePageId, guideSources = [], referenceScope, referenceLanguage = "pt" }: { value: string; onChange: (html: string) => void; variant?: "full" | "reply"; editable?: boolean; guidePageId?: string; guideSources?: StaffGuideIncludeSource[]; referenceScope?: "staff" | "public"; referenceLanguage?: InterfaceLanguage }) {
+export function RichTextEditor({ value, onChange, variant = "full", editable = true, guidePageId, guideSources = [], publishedHtml, referenceScope, referenceLanguage = "pt" }: { value: string; onChange: (html: string) => void; variant?: "full" | "reply"; editable?: boolean; guidePageId?: string; guideSources?: StaffGuideIncludeSource[]; publishedHtml?: string | null; referenceScope?: "staff" | "public"; referenceLanguage?: InterfaceLanguage }) {
   const [dialog, setDialog] = useState<EditorDialog>(null);
   const [dialogValue, setDialogValue] = useState("");
   const [imageAlt, setImageAlt] = useState("");
@@ -378,6 +379,7 @@ export function RichTextEditor({ value, onChange, variant = "full", editable = t
     </BubbleMenu>}
     {(guidePageId || referenceScope) && <p className="rich-editor__shortcut-hint"><AppIcon name="help" />Para referenciar um elemento do painel, digite <kbd>[[</kbd> no texto.</p>}
     <EditorContent editor={editor} />
+    {variant === "full" && <RichTextReviewTools editor={editor} html={value} publishedHtml={publishedHtml} guideSources={guideSources} editable={editable} />}
     {copiedFormatting && <p className="rich-editor__format-status" role="status">Formatação copiada. Selecione o destino e use Colar formatação.</p>}
     {inlineReference && createPortal(<div className="rich-editor__inline-reference-suggestions" role="listbox" aria-label="Elementos do painel" style={{ left: inlineReference.left, top: inlineReference.top, transform: inlineReference.above ? "translateY(-100%)" : undefined }} onMouseDown={(event) => event.preventDefault()}>
       <p>Elemento do painel · continue digitando após [[</p>
