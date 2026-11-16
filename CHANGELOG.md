@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 15/11/2026: completa a auditoria de atribuições com a administração delegada para catalogadores, distinguindo-a das permissões individuais e das ações fixas.
+
 - 15/11/2026: organiza os campos e ações da apresentação pública de assuntos e da publicação do Guia da Equipe; melhora o contraste do acesso à edição. O editor ganha busca e substituição, comparação de versões, conferência de links e revisão básica de acessibilidade. O backup passa a incluir os depósitos de imagens da ajuda e do guia com validação de formato e tamanho. A gestão de atribuições mostra o guia na seção correta; o rodapé apresenta “Assuntos” como primeiro acesso informativo.
 
 - 15/11/2026: a consulta de autoridades mostra os campos do registro sem edição e abre a página pública quando disponível; os seletores dos formulários ficam alinhados. O link do capítulo publicado abre em nova aba. Os modelos de e-mail de autenticação e mensagens transacionais deixam de exibir borda externa; convite e reautenticação usam o visual e o idioma do Pronto!.
