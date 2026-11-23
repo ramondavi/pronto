@@ -1,16 +1,16 @@
 # Inventário editorial do Guia da Equipe
 
-Atualização de 23/11/2026: o [Guia da Equipe em produção](https://prontobib.vercel.app/guia-equipe) mostra **48 capítulos publicados e nenhum rascunho**. Dois procedimentos novos foram publicados nesta data: conferência inicial do atendimento e exclusão de assunto sem uso. A contagem anterior, de 46, foi conferida em 16/11/2026. Os 22 procedimentos acrescentados na leva de 16/11 cobrem pessoas, CDU/Cutter, consulta e manutenção de assuntos, contas, programas, calendário, modelos, Ajuda/FAQ, Catálogo CDU, indicadores, depósitos, retenção, backup, auditoria, visão geral, filtros, conta própria e demonstração da visão estudantil. A conferência do editor encontrou em todos os 22 a tabela “Elementos desta tarefa”, “Quando usar”, passo a passo e referências sem elementos indisponíveis. As capturas indicadas nos textos continuam reservadas para inserção pela equipe. As caixas da fila inicial abaixo registram tarefas e qualidade de cobertura; uma caixa aberta não significa necessariamente ausência de capítulo publicado.
+Atualização de 23/11/2026: o [Guia da Equipe em produção](https://prontobib.vercel.app/guia-equipe) mostra **61 capítulos publicados e nenhum rascunho**. Além da conferência inicial e da exclusão de assunto sem uso, foram publicados os 12 casos de resolução e o procedimento de retirada de aviso do mural. A contagem anterior, de 46, foi conferida em 16/11/2026. Os 22 procedimentos acrescentados na leva de 16/11 cobrem pessoas, CDU/Cutter, consulta e manutenção de assuntos, contas, programas, calendário, modelos, Ajuda/FAQ, Catálogo CDU, indicadores, depósitos, retenção, backup, auditoria, visão geral, filtros, conta própria e demonstração da visão estudantil. A conferência do editor encontrou em todos os 22 a tabela “Elementos desta tarefa”, “Quando usar”, passo a passo e referências sem elementos indisponíveis. As capturas indicadas nos textos continuam reservadas para inserção pela equipe. As caixas da fila inicial abaixo registram tarefas e qualidade de cobertura; uma caixa aberta não significa necessariamente ausência de capítulo publicado.
 
 Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
 
-A conferência em produção encontrou acesso efetivo, publicação de autoridade e percursos por área já publicados; os rascunhos locais redundantes foram retirados da entrega. Os dois novos capítulos indicam as capturas que a equipe deve inserir.
+A conferência em produção encontrou acesso efetivo, publicação de autoridade e percursos por área já publicados; os rascunhos locais redundantes foram retirados da entrega. Os novos capítulos indicam as capturas que a equipe deve inserir.
 
 ## Situação da cobertura
 
-- **Publicados:** 48 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa, administração e controle. O índice e a publicação dos dois novos capítulos foram conferidos em 23/11/2026.
+- **Publicados:** 61 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa, administração e controle. O índice e a publicação dos 15 novos capítulos foram conferidos em 23/11/2026.
 - **Capturas:** os textos publicados indicam as imagens a inserir pela equipe; essas capturas ainda não foram fornecidas.
-- **Plano:** o [sumário editorial](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo continuam como inventário de cobertura. A seção Casos segue sem procedimento publicado.
+- **Plano:** o [sumário editorial](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo continuam como inventário de cobertura. A seção Casos contém 12 procedimentos publicados.
 - **Lacuna principal:** os 14 títulos do sumário são macrotemas ou pilotos, ainda amplos para garantir um passo a passo de cada ação possível. Eles deverão ser desdobrados em tantos capítulos de tarefa quantos forem necessários, sem transformar a estrutura das telas em estrutura obrigatória do guia.
 
 ## Unidade de cobertura: tarefa executável
@@ -63,13 +63,13 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 
 ### Contas e funcionamento
 
-- [ ] Criar/provisionar conta de integrante da equipe ou estudante conforme permissão. [Provisionamento da equipe publicado](https://prontobib.vercel.app/guia-equipe/provisionar-conta-equipe); criação de conta estudantil é tarefa distinta. Faltam captura e conferência assistida.
+- [ ] Provisionar conta de integrante da equipe conforme permissão. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/provisionar-conta-equipe); faltam captura e conferência assistida. Estudantes criam a própria conta no cadastro público.
 - [ ] Alterar situação de conta; compreender bloqueio, inativação e reativação. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/alterar-situacao-perfil-conta); falta captura da equipe.
 - [ ] Conferir acesso efetivo de uma pessoa e registrar decisão individual de permissão ou período. [Procedimento já publicado](https://prontobib.vercel.app/guia-equipe/conferir-ajustar-permissoes); falta captura da equipe.
 - [ ] Alterar perfil de conta apenas nas transições que o sistema e a regra institucional permitirem; conferir o efeito sobre permissões herdadas. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/alterar-situacao-perfil-conta); faltam captura e ensaio de cada transição.
 - [ ] Criar ou modificar programa, prazo de atendimento, contato da coordenação e disponibilidade do guia do RI. [Edição de programa existente publicada](https://prontobib.vercel.app/guia-equipe/configurar-programa-sla-ri); não há criação de programa nessa aba.
 - [ ] Cadastrar ou alterar horário, data especial e ocorrência do calendário. [Horário do dia](https://prontobib.vercel.app/guia-equipe/registrar-horario-dia) e [ocorrência](https://prontobib.vercel.app/guia-equipe/publicar-ocorrencia-mural) publicados; faltam capturas.
-- [ ] Criar, revisar ou retirar aviso do mural. [Cadastro e revisão publicados](https://prontobib.vercel.app/guia-equipe/publicar-ocorrencia-mural); retirada ainda exige conferir a ação na interface.
+- [ ] Criar, revisar ou retirar aviso do mural. [Cadastro e revisão](https://prontobib.vercel.app/guia-equipe/publicar-ocorrencia-mural) e [retirada](https://prontobib.vercel.app/guia-equipe/retirar-aviso-mural) publicados; faltam capturas da equipe.
 - [ ] Consultar e ajustar os próprios dados de conta e credenciais quando a tela permitir. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/ajustar-minha-conta-equipe); falta captura da equipe.
 
 ### Conteúdo e catalogação administrativa
@@ -93,7 +93,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Conferir execução e recibos de backup; seguir o procedimento autorizado de restauro. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/conferir-backup-restauro); faltam captura e ensaio assistido de recuperação.
 - [ ] Buscar e interpretar evento na Auditoria. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/consultar-auditoria); falta captura da equipe.
 
-Esta lista é inicial: diálogos, estados condicionais e ações que surgirem na conferência de cada tela entram como linhas próprias antes de considerar sua cobertura completa. Os capítulos de **Casos** explicam combinações de tarefas para resolver situações recorrentes e podem incorporar tópicos já publicados.
+Esta lista é inicial: diálogos, estados condicionais e ações que surgirem na conferência de cada tela entram como linhas próprias antes de considerar sua cobertura completa. Os 12 capítulos de **Casos** publicados em 23/11/2026 explicam combinações de tarefas e apontam para os procedimentos detalhados já disponíveis. A criação de conta estudantil é feita pela própria pessoa no cadastro público; não existe ação equivalente de provisionamento estudantil na gestão da equipe.
 
 ## Índice reverso: telas e abas da equipe
 

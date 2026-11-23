@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 23/11/2026: publica 12 casos de resolução no Guia da Equipe e um procedimento para retirar aviso do mural, distinguindo despublicação de exclusão. O guia passa a 61 capítulos publicados; as capturas continuam indicadas para inserção pela equipe.
+
 - 23/11/2026: publica no Guia da Equipe os procedimentos de conferência inicial do atendimento e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. A conferência evitou duplicar três capítulos que já estavam publicados.
 
 - 16/11/2026: atualiza o inventário editorial para os 46 capítulos publicados no Guia da Equipe e distingue procedimentos disponíveis das capturas e conferências de cobertura ainda pendentes.
