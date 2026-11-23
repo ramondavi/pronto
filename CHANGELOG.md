@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 23/11/2026: redistribui os 61 capítulos do Guia da Equipe em dez seções menores por tarefa, preservando textos, links, público e datas de publicação. O editor e a busca contextual passam a reconhecer as novas seções.
+
 - 23/11/2026: publica 12 casos de resolução no Guia da Equipe e um procedimento para retirar aviso do mural, distinguindo despublicação de exclusão. O guia passa a 61 capítulos publicados; as capturas continuam indicadas para inserção pela equipe.
 
 - 23/11/2026: publica no Guia da Equipe os procedimentos de conferência inicial do atendimento e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. A conferência evitou duplicar três capítulos que já estavam publicados.

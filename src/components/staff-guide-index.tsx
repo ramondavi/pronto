@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AppIcon } from "./app-icon";
-import { staffGuideSections } from "@/lib/staff-guide-sections";
+import { staffGuideVisibleSections } from "@/lib/staff-guide-sections";
 import { staffPanelReferences } from "@/lib/staff-panel-references";
 
 export type StaffGuideIndexPage = {
@@ -14,7 +14,7 @@ export type StaffGuideIndexPage = {
   published_screens: string | null;
 };
 
-const sections = staffGuideSections;
+const sections = staffGuideVisibleSections;
 const screens = (page: StaffGuideIndexPage) => page.published_screens?.split(";").map((item) => item.trim()).filter(Boolean) ?? [];
 const normalizedLabel = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 function PanelScreenLabel({ label }: { label: string }) {
@@ -25,7 +25,7 @@ function PanelScreenLabel({ label }: { label: string }) {
 
 export function StaffGuideIndexContent({ pages }: { pages: StaffGuideIndexPage[] }) {
   const [view, setView] = useState<"cards" | "list">("cards");
-  const groups = sections.map(([key, label]) => ({ key, label, items: pages.filter((page) => page.published_section === key) })).filter((group) => group.items.length || group.key === "casos");
+  const groups = sections.map(([key, label]) => ({ key, label, items: pages.filter((page) => page.published_section === key) })).filter((group) => group.items.length);
   return <div className="staff-docs__index">
     <div className="staff-docs__index-toolbar"><p>{pages.length} {pages.length === 1 ? "capítulo disponível" : "capítulos disponíveis"}</p><div className="staff-docs__view-switch" role="group" aria-label="Visualização dos capítulos"><button type="button" className={view === "cards" ? "is-active" : ""} aria-pressed={view === "cards"} onClick={() => setView("cards")}><AppIcon name="grid" />Cartões</button><button type="button" className={view === "list" ? "is-active" : ""} aria-pressed={view === "list"} onClick={() => setView("list")}><AppIcon name="table" />Lista</button></div></div>
     {view === "cards" ? <div className="staff-docs__section-cards">{groups.map((group) => <section className="staff-docs__section-card" key={group.key} aria-labelledby={`section-${group.key}`}><header><span className="staff-docs__section-card-icon"><AppIcon name="book" /></span><div><h2 id={`section-${group.key}`}>{group.label}</h2><p>{group.items.length} {group.items.length === 1 ? "capítulo" : "capítulos"}</p></div></header><ul>{group.items.map((page) => <li key={page.published_slug}><Link href={`/guia-equipe/${page.published_slug}`}><span><strong>{page.published_title}</strong><small>{page.published_summary}</small></span><AppIcon name="arrowRight" /></Link></li>)}{!group.items.length && <li className="staff-docs__section-pending">Capítulos em preparação</li>}</ul></section>)}</div>
