@@ -4,6 +4,8 @@ Atualização de 16/11/2026: o [Guia da Equipe em produção](https://prontobib.
 
 Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
 
+Em 23/11/2026, foram redigidos localmente cinco procedimentos específicos ainda ausentes: conferência inicial, acesso efetivo, publicação de autoridade, percursos por área e exclusão de assunto sem uso. **São textos de trabalho, não capítulos publicados**; as 46 publicações confirmadas em 16/11 permanecem a contagem de referência. As capturas indicadas devem ser feitas pela equipe.
+
 ## Situação da cobertura
 
 - **Publicados:** 46 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa, administração e controle. O índice e a publicação foram conferidos em 16/11/2026.
@@ -49,7 +51,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Assumir atendimento sem responsável e abrir a análise. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/assumir-atendimento); falta captura da equipe.
 - [ ] Devolver atendimento à fila; atribuir ou reatribuir a outro profissional quando houver permissão. [Devolução publicada](https://prontobib.vercel.app/guia-equipe/devolver-atendimento-fila) e [atribuição publicada](https://prontobib.vercel.app/guia-equipe/atribuir-reatribuir-atendimento); capturas pela equipe ainda pendentes.
 - [ ] Marcar, alterar ou retirar prioridade com motivo, quando permitido. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/definir-prioridade-atendimento); falta captura da equipe.
-- [ ] Conferir declarações, acesso ao trabalho completo e condição de início da análise.
+- [ ] Conferir declarações, acesso ao trabalho completo e condição de início da análise. [Texto local](guia-equipe/capitulos/conferir-declaracoes-acesso-trabalho.md) pronto para conferência editorial e publicação; falta captura da equipe.
 - [ ] Revisar dados enviados e corrigir diretamente os que admitem edição auditada. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/conferir-corrigir-metadados); falta captura da equipe.
 - [ ] Solicitar correção ao estudante por modelo e orientação complementar; revisar o retorno. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/solicitar-conferir-correcao); falta captura da equipe.
 - [ ] Registrar pessoas relacionadas e conferir nomes autorizados. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/conferir-pessoas-ficha); falta captura da equipe.
@@ -63,7 +65,7 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 
 - [ ] Criar/provisionar conta de integrante da equipe ou estudante conforme permissão. [Provisionamento da equipe publicado](https://prontobib.vercel.app/guia-equipe/provisionar-conta-equipe); criação de conta estudantil é tarefa distinta. Faltam captura e conferência assistida.
 - [ ] Alterar situação de conta; compreender bloqueio, inativação e reativação. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/alterar-situacao-perfil-conta); falta captura da equipe.
-- [ ] Conferir acesso efetivo de uma pessoa e registrar decisão individual de permissão ou período.
+- [ ] Conferir acesso efetivo de uma pessoa e registrar decisão individual de permissão ou período. [Texto local](guia-equipe/capitulos/conferir-permissoes-efetivas.md) pronto para conferência editorial e publicação; falta captura da equipe.
 - [ ] Alterar perfil de conta apenas nas transições que o sistema e a regra institucional permitirem; conferir o efeito sobre permissões herdadas. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/alterar-situacao-perfil-conta); faltam captura e ensaio de cada transição.
 - [ ] Criar ou modificar programa, prazo de atendimento, contato da coordenação e disponibilidade do guia do RI. [Edição de programa existente publicada](https://prontobib.vercel.app/guia-equipe/configurar-programa-sla-ri); não há criação de programa nessa aba.
 - [ ] Cadastrar ou alterar horário, data especial e ocorrência do calendário. [Horário do dia](https://prontobib.vercel.app/guia-equipe/registrar-horario-dia) e [ocorrência](https://prontobib.vercel.app/guia-equipe/publicar-ocorrencia-mural) publicados; faltam capturas.
@@ -77,10 +79,10 @@ Cada caixa representa uma **tarefa a verificar**, não um título aprovado nem a
 - [ ] Criar/revisar capítulo do Guia da Equipe, preencher telas abordadas, incorporar trecho, guardar rascunho e publicar versão conferida. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/criar-publicar-capitulo); faltam captura e conferência assistida.
 - [ ] Encontrar assunto existente e conferir estado, forma preferida, variantes, fontes e vínculos. [Consulta de autoridade publicada](https://prontobib.vercel.app/guia-equipe/consultar-autoridade-assunto); falta captura da equipe.
 - [ ] Cadastrar assunto manual ou importar autoridade; tratar correspondência e pendência. [Cadastro](https://prontobib.vercel.app/guia-equipe/cadastrar-assunto-manualmente) e [importação](https://prontobib.vercel.app/guia-equipe/conferir-importar-autoridade) publicados; faltam capturas e conferência assistida de arquivos e estados.
-- [ ] Revisar, ativar, desativar, mesclar ou excluir assunto quando a ação for permitida. [Correção de forma](https://prontobib.vercel.app/guia-equipe/corrigir-assunto-existente), [situação](https://prontobib.vercel.app/guia-equipe/alterar-situacao-assunto) e [mesclagem](https://prontobib.vercel.app/guia-equipe/mesclar-assuntos-duplicados) publicados. Exclusão permanente ainda não tem procedimento próprio; faltam capturas.
-- [ ] Preparar publicação pública de autoridade e conferir resultado no catálogo.
+- [ ] Revisar, ativar, desativar, mesclar ou excluir assunto quando a ação for permitida. [Correção de forma](https://prontobib.vercel.app/guia-equipe/corrigir-assunto-existente), [situação](https://prontobib.vercel.app/guia-equipe/alterar-situacao-assunto) e [mesclagem](https://prontobib.vercel.app/guia-equipe/mesclar-assuntos-duplicados) publicados. [Exclusão permanente](guia-equipe/capitulos/excluir-assunto-sem-uso.md) redigida localmente, ainda sem publicação; faltam capturas.
+- [ ] Preparar publicação pública de autoridade e conferir resultado no catálogo. [Texto local](guia-equipe/capitulos/publicar-autoridade-catalogo.md) pronto para conferência editorial e publicação; falta captura da equipe.
 - [ ] Manter lugar e vínculos geográficos usados no mapa. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/revisar-lugar-autoridade); falta captura da equipe.
-- [ ] Criar/revisar percurso de Temas por área e conferir a apresentação pública.
+- [ ] Criar/revisar percurso de Temas por área e conferir a apresentação pública. [Texto local](guia-equipe/capitulos/manter-percursos-area.md) pronto para conferência editorial e publicação; falta captura da equipe.
 - [ ] Criar/revisar descrição e composição de código no Catálogo CDU. [Procedimento publicado](https://prontobib.vercel.app/guia-equipe/cadastrar-revisar-cdu-catalogo); falta captura da equipe.
 
 ### Acompanhamento e controle

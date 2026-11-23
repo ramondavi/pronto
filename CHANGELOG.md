@@ -6,6 +6,8 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 23/11/2026: redige cinco procedimentos específicos do Guia da Equipe para conferência inicial, permissões, publicação de autoridades, percursos por área e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. Ainda não publicados.
+
 - 16/11/2026: atualiza o inventário editorial para os 46 capítulos publicados no Guia da Equipe e distingue procedimentos disponíveis das capturas e conferências de cobertura ainda pendentes.
 
 - 16/11/2026: permite à Biblioteca concluir um protocolo retrospectivo com o Handle conferido no RI/UFBA sem depender da URL sugerida pela secretaria. A sugestão permanece opcional e histórica. Amplia as referências aos controles de fila, metadados e Nada Consta para novos capítulos do guia. Atualiza o inventário editorial, prepara o roteiro de aceite assistido e registra a causa das falhas recentes da rotina agendada de backup e a cópia manual concluída após a correção.
