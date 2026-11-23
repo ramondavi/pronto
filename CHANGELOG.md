@@ -6,7 +6,7 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
-- 23/11/2026: redige cinco procedimentos específicos do Guia da Equipe para conferência inicial, permissões, publicação de autoridades, percursos por área e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. Ainda não publicados.
+- 23/11/2026: publica no Guia da Equipe os procedimentos de conferência inicial do atendimento e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. A conferência evitou duplicar três capítulos que já estavam publicados.
 
 - 16/11/2026: atualiza o inventário editorial para os 46 capítulos publicados no Guia da Equipe e distingue procedimentos disponíveis das capturas e conferências de cobertura ainda pendentes.
 
