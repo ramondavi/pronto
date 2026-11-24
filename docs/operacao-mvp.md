@@ -9,7 +9,7 @@ Responsável operacional: Ramon Davi Santana. Incidentes de privacidade seguem o
 1. Acesse a página inicial e confirme o aviso vigente da biblioteca.
 2. Entre como Administrador e confira contas bloqueadas/inativas, fila de expurgo e logs recentes.
 3. Entre como Catalogador e verifique a fila, os prazos e tickets atribuídos.
-4. Confirme o canal de envio de e-mails do ambiente. O remetente de produção será `bibarq@ufba.br`, e o envio pela hospedagem ainda precisa ser testado.
+4. Confirme o canal de envio de e-mails do ambiente e o remetente de produção `bibarq@ufba.br`. Faça teste controlado quando a configuração ou o modelo mudar.
 5. Não copie CPF, Nada Consta, links mágicos ou conteúdo de trabalho para chamados, planilhas ou mensagens externas.
 
 ## Incidentes
@@ -34,7 +34,7 @@ Antes de liberar uma versão, execute `npm test`, `npm run typecheck`, `npm run 
 
 Se houver falha crítica após a publicação, reverta a implantação da Vercel para o artefato anterior. Migrações são imutáveis: correções de banco devem ser feitas por nova migração, nunca por reversão destrutiva.
 
-## Implantação inicial
+## Implantação inicial — procedimento e registro histórico
 
 1. Crie os ambientes Preview e Production na Vercel, preservando o framework Next.js.
 2. Cadastre somente a URL do Supabase e a chave pública/publishable como variáveis do navegador. Cadastre segredos apenas nos cofres dos provedores e nunca em variáveis `NEXT_PUBLIC_*`.
@@ -56,17 +56,17 @@ No canal transacional, foi enfileirada uma única mensagem identificada como tes
 - Em 16/10/2026, a recuperação de senha da conta administrativa retornou erro SMTP `535 5.7.8` em duas tentativas. Após o responsável salvar novamente a credencial do SMTP do Auth, a solicitação foi aceita e o destinatário confirmou o recebimento na caixa de entrada. Essa verificação não cobre a fila transacional da Vercel.
 - A migração de entrega adicionou funções restritas à chave de serviço e uma tarefa agendada. A fila limita a cinco tentativas por mensagem; falhas persistentes exigem diagnóstico antes de nova tentativa.
 
-O PR3 foi promovido para o domínio público em 16/10/2026. Ainda faltam o teste controlado de envio de e-mails pela hospedagem e a validação assistida dos fluxos antes de considerar concluído o aceite operacional. A responsabilidade operacional, a Política de Privacidade v1.1, a base institucional, os prazos de guarda e os textos transacionais foram confirmados pelo responsável pelo projeto; as URLs de produção foram confirmadas no painel do Supabase.
+O PR3 foi promovido para o domínio público em 16/10/2026. O envio hospedado foi comprovado no teste controlado de 22/10 descrito acima; esse teste não cobre todos os gatilhos e modelos. A validação assistida dos fluxos ainda depende de participantes antes do aceite operacional. A responsabilidade operacional, a Política de Privacidade v1.1, a base institucional, os prazos de guarda e os textos transacionais foram confirmados pelo responsável pelo projeto; as URLs de produção foram confirmadas no painel do Supabase.
 
-### Sincronização do banco e promoção do site
+### Sincronização do banco e promoção do site — registro de outubro de 2026
 
 - Em 16/10/2026, após revisão de impacto e confirmação explícita, as 11 migrações versionadas de 13 a 15/10 foram aplicadas em ordem ao banco remoto. O `db push --linked --dry-run` indicou o banco atualizado e o `db lint --linked --level error` não apontou erros.
 - Para migrações futuras, apresentar o impacto e obter confirmação explícita antes da aplicação remota. Aplicar as migrações versionadas em ordem, sem executar seus corpos isoladamente no SQL Editor nem alterar o histórico manualmente.
-- As migrações acrescentaram estruturas e controles para catalogação, atendimento, administração, mensagens, pesquisa e e-mails; também configuraram políticas RLS, publicação Realtime, armazenamento e tarefas agendadas. As rotinas de expurgo de mensagens e pesquisa exigem atenção especial à retenção aprovada. Os dois itens do worker estão no Vault, mas o envio real ainda precisa de teste controlado.
+- As migrações acrescentaram estruturas e controles para catalogação, atendimento, administração, mensagens, pesquisa e e-mails; também configuraram políticas RLS, publicação Realtime, armazenamento e tarefas agendadas. As rotinas de expurgo de mensagens e pesquisa exigem atenção especial à retenção aprovada. Os dois itens do worker estão no Vault; o envio hospedado foi comprovado no teste controlado de 22/10.
 - A migração `202610120002` remove as funções, a tabela e a política de ensaio local criadas por migrações anteriores, inclusive as RPCs de entrega via Mailpit, e restabelece a imutabilidade estrita das fichas homologadas. A tela de prévia com dados fictícios e os controles locais de persona, exclusão de protocolo e entrega de e-mails foram retirados do aplicativo. Os testes automatizados permanecem no repositório.
 - Após a aplicação remota, o deployment do commit `e89aaef` (PR3) foi promovido para `prontobib.vercel.app` em 16/10/2026. Com a atribuição automática de domínios desativada na Vercel, builds prontos ficam em Production Staged e não atualizam o domínio sem promoção manual.
 - Foram preservadas a conta administrativa, duas contas reais de catalogadores, cinco programas e a ocorrência de fechamento de 26/10 cadastradas pelo responsável. Não tratar esses registros como dados fictícios de teste.
 
 ## Backup e recuperação — requisito de lançamento
 
-Seguir docs/protocolo-backup-recuperacao.md. Conferir diariamente último ponto recuperável e alertas. Antes do lançamento, registrar destino independente, executor e substituto, cobertura de banco/Auth/Storage, expiração de 90 dias e primeiro ensaio aprovado. Repetir o ensaio trimestralmente. Não restaurar sobre produção sem impacto explicado e confirmação explícita. Estado em 23/10/2026: protocolo documentado; execução e recuperação ainda não comprovadas nesta entrega.
+Seguir [Operação dos backups](operacao-backups.md) e [Protocolo de recuperação](protocolo-backup-recuperacao.md). Conferir diariamente o último ponto recuperável, a agenda e os alertas. Os ensaios isolados de outubro comprovaram a restauração de banco e Auth nos limites registrados, mas não a de PDFs reais, domínio ou SMTP. Repetir o ensaio trimestralmente. Não restaurar sobre produção sem impacto explicado e confirmação explícita.

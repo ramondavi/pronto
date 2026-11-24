@@ -1,6 +1,6 @@
 # Operação e passagem de responsabilidade dos backups
 
-Atualização de 16/11/2026: a agenda está em execução, mas as rodadas agendadas de 09 a 15/11 falharam. O log de 15/11 identifica `unreviewed_storage_bucket` ao inventariar documentos. A correção de cobertura dos depósitos de imagens entrou na master no commit `aeacadc`, após a falha agendada. A [execução manual de 15/11](https://github.com/ramondavi/pronto/actions/runs/43787444933), já com a correção, terminou com sucesso e percorreu exportação, verificação, criptografia e envio. Ainda falta observar uma execução **agendada** bem-sucedida com o código corrigido e conferir seu recibo; sucesso do workflow não substitui ensaio de restauração. O painel não revelou inventário privado nem segredos nesta verificação.
+Atualização de 24/11/2026: as rodadas agendadas de 09 a 15/11 falharam com `unreviewed_storage_bucket` ao inventariar documentos. A correção de cobertura dos depósitos de imagens entrou na `master` no commit `aeacadc`. A [execução manual de 15/11](https://github.com/ramondavi/pronto/actions/runs/43787444933) e a [execução agendada de 23/11](https://github.com/ramondavi/pronto/actions/runs/45258614956) terminaram com sucesso. A falha da agenda foi superada; ainda é preciso conferir o recibo da cópia e o último ponto recuperável. Sucesso do workflow não substitui ensaio de restauração.
 
 As seções abaixo registram o estado histórico de 28/10/2026 e não devem ser lidas como diagnóstico atual da agenda.
 
@@ -17,15 +17,14 @@ As seções abaixo registram o estado histórico de 28/10/2026 e não devem ser 
 
 Não há comprovação de restauração de PDFs reais: nenhum existia nos ensaios. Tampouco há comprovação de recuperação completa do domínio, SMTP e configuração pública apenas a partir dessas cópias. Os ensaios não foram repetidos nesta retomada.
 
-## Pendências para ativar e declarar operação
+## Pendências operacionais e histórico
 
-- Incorporar o PR [#20](https://github.com/ramondavi/pronto/pull/20), após autorização de merge e verificações obrigatórias aprovadas.
+- O PR [#20](https://github.com/ramondavi/pronto/pull/20) foi incorporado em 28/10/2026; não é uma pendência de publicação.
 - Substituto designado pelo responsável em 28/10. A identificação e o contato devem permanecer no registro operacional restrito, fora do repositório público. Ainda falta comprovar acesso, treinamento e recebimento dos alertas; não compartilhar a conta pessoal do responsável.
 - Proton Pass escolhido pelo responsável em 28/10 para a custódia. Ainda falta organizar o cofre destinado à biblioteca, guardar pessoalmente a identidade de recuperação e confirmar o acesso individual do substituto. A escolha do serviço não comprova entrega, titularidade institucional ou aceite. Guardar a chave separada do B2 e do GitHub; não registrar valores na documentação, chat ou logs.
 - Garantir que o substituto disponha do pacote manual e dos acessos necessários antes de uma indisponibilidade. A existência do código no Git não comprova entrega, treinamento ou acesso ao pacote.
-- Cópia operacional atual concluída em 28/10, após autorização explícita para banco/Auth/documentos privados de produção criptografados no B2. Execução [40724106039](https://github.com/ramondavi/pronto/actions/runs/40724106039), iniciada às 13h15min06s e concluída às 13h19min03s de Brasília; a rotina informou nova cópia conferida. Esse resultado não é um novo ensaio de restauração. A agenda permaneceu desligada.
-- Dar aceite explícito para ativar a agenda. A variável permanece false nesta retomada.
-- Após ativação, acompanhar um ciclo agendado real e seu relatório de integridade. Não confundir cron configurado, execução ignorada ou aviso UP com prova suficiente de uma cópia atual recuperável.
+- A cópia operacional de 28/10 foi concluída após autorização explícita, na execução [40724106039](https://github.com/ramondavi/pronto/actions/runs/40724106039). A agenda estava desligada naquela data; depois foi ativada e apresentou as falhas de 09 a 15/11.
+- A rotina agendada voltou a concluir em 23/11. Conferir seu recibo e acompanhar os ciclos seguintes. Não confundir execução concluída ou aviso UP com prova suficiente de uma cópia recuperável.
 
 ## Horário e limite observado
 
