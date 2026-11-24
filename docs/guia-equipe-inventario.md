@@ -1,10 +1,10 @@
 # Inventário editorial do Guia da Equipe
 
-Organização editorial preparada em 23/11/2026: os 61 capítulos serão distribuídos em dez seções menores por tarefa. A mudança conserva os endereços e o conteúdo; o inventário de cobertura abaixo continua organizado pelas telas e ações necessárias à conferência.
+Atualizado em 24/11/2026: os 61 capítulos publicados estão distribuídos em dez seções após o PR #38. A reorganização preservou endereços e conteúdo. O inventário abaixo acompanha a cobertura por tarefa e por tela; seus estados não indicam rascunhos por publicar.
 
 Atualização de 23/11/2026: o [Guia da Equipe em produção](https://prontobib.vercel.app/guia-equipe) mostra **61 capítulos publicados e nenhum rascunho**. Além da conferência inicial e da exclusão de assunto sem uso, foram publicados os 12 casos de resolução e o procedimento de retirada de aviso do mural. A contagem anterior, de 46, foi conferida em 16/11/2026. Os 22 procedimentos acrescentados na leva de 16/11 cobrem pessoas, CDU/Cutter, consulta e manutenção de assuntos, contas, programas, calendário, modelos, Ajuda/FAQ, Catálogo CDU, indicadores, depósitos, retenção, backup, auditoria, visão geral, filtros, conta própria e demonstração da visão estudantil. A conferência do editor encontrou em todos os 22 a tabela “Elementos desta tarefa”, “Quando usar”, passo a passo e referências sem elementos indisponíveis. As capturas indicadas nos textos continuam reservadas para inserção pela equipe. As caixas da fila inicial abaixo registram tarefas e qualidade de cobertura; uma caixa aberta não significa necessariamente ausência de capítulo publicado.
 
-Levantamento de 08/11/2026 sobre a branch local do guia, baseada na `master` do PR #25. **A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas, não uma proposta de capítulos com o nome de cada aba. Títulos citados aqui são provisórios; nenhum procedimento novo está aprovado apenas por constar no inventário. Antes de redigir, conferir rótulos e fluxos na versão instalada em produção.
+**A unidade de documentação é a tarefa que uma pessoa consegue realizar, com passo a passo e resultado verificável.** Uma tela pode exigir vários capítulos; uma tarefa pode passar por mais de uma tela. As tabelas por interface abaixo são um índice reverso para localizar tarefas e verificar lacunas. Antes de ampliar o conteúdo, conferir rótulos e fluxos na versão instalada em produção.
 
 A conferência em produção encontrou acesso efetivo, publicação de autoridade e percursos por área já publicados; os rascunhos locais redundantes foram retirados da entrega. Os novos capítulos indicam as capturas que a equipe deve inserir.
 
@@ -12,8 +12,8 @@ A conferência em produção encontrou acesso efetivo, publicação de autoridad
 
 - **Publicados:** 61 capítulos, incluindo tarefas de atendimento, assuntos/autoridades, mapa, administração e controle. O índice e a publicação dos 15 novos capítulos foram conferidos em 23/11/2026.
 - **Capturas:** os textos publicados indicam as imagens a inserir pela equipe; essas capturas ainda não foram fornecidas.
-- **Plano:** o [sumário editorial](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo continuam como inventário de cobertura. A seção Casos contém 12 procedimentos publicados.
-- **Lacuna principal:** os 14 títulos do sumário são macrotemas ou pilotos, ainda amplos para garantir um passo a passo de cada ação possível. Eles deverão ser desdobrados em tantos capítulos de tarefa quantos forem necessários, sem transformar a estrutura das telas em estrutura obrigatória do guia.
+- **Plano:** o [sumário editorial original](guia-equipe-piloto.md) e o desdobramento por tarefa abaixo servem como referências de cobertura. A seção Casos contém 12 procedimentos publicados.
+- **Lacuna principal:** a publicação dos capítulos não comprova cobertura completa de todas as variações de tela, estado e permissão. A conferência assistida e as capturas pela equipe ainda são necessárias.
 
 ## Unidade de cobertura: tarefa executável
 
@@ -99,48 +99,48 @@ Esta lista é inicial: diálogos, estados condicionais e ações que surgirem na
 
 ## Índice reverso: telas e abas da equipe
 
-| Interface real | Macrotema atual relacionado | Tarefas e variações a inventariar | Situação |
+| Interface real | Referência editorial original | Tarefas e variações a inventariar | Situação |
 | --- | --- | --- | --- |
-| Visão geral | Conheça o Pronto! | cartões, tarefas, atualizações, avisos, busca e ajuda contextual | introdução local; detalhamento pendente |
-| Fila de solicitações: Fila geral, Meus atendimentos | Trabalhe na fila; Entenda os estados do atendimento | busca, filtros, visões, responsável, prioridade, assumir/devolver, histórico | pendente |
-| Atendimento: Metadados | Faça a conferência inicial; Revise os metadados e peça correções | declarações, trabalho completo, dados enviados, orientação, modelos, correções e decisão | pendente |
-| Atendimento: Catalogação | Prepare a catalogação; trilha Assuntos/autoridades | pessoas, assuntos, fontes, CDU, Cutter, descrição e prévia | pendente |
-| Atendimento: Revisão da ficha | Revise e homologue a ficha | referência, requisitos, prévia, PDF, confirmação e efeitos | rascunho local |
-| Atendimento: Finalização e liberação | Valide o Nada Consta e conclua | verificação, liberação, encerramento e comunicação | pendente |
-| Minha conta | Conheça o Pronto!; capítulo específico a definir | dados da conta, senha, avatar e ações disponíveis | introdução local; procedimento pendente |
-| Calendário da biblioteca; Horários da biblioteca | Configure programas e funcionamento | consulta de expediente, avisos e exceções | pendente |
-| Guia da equipe | Conheça o Pronto!; Mantenha modelos e ajuda | busca, índice, leitura, referências e edição conforme permissão | introdução local; procedimento de edição pendente |
-| Ver como estudante | Conheça o Pronto! | finalidade, limites e retorno ao painel da equipe | pendente |
+| Visão geral | Conheça o Pronto! | cartões, tarefas, atualizações, avisos, busca e ajuda contextual | capítulo publicado; captura e conferência pendentes |
+| Fila de solicitações: Fila geral, Meus atendimentos | Trabalhe na fila; Entenda os estados do atendimento | busca, filtros, visões, responsável, prioridade, assumir/devolver, histórico | procedimentos publicados; capturas e conferência pendentes |
+| Atendimento: Metadados | Faça a conferência inicial; Revise os metadados e peça correções | declarações, trabalho completo, dados enviados, orientação, modelos, correções e decisão | procedimentos publicados; capturas e conferência de variações pendentes |
+| Atendimento: Catalogação | Prepare a catalogação; trilha Assuntos/autoridades | pessoas, assuntos, fontes, CDU, Cutter, descrição e prévia | procedimentos publicados; capturas e conferência de variações pendentes |
+| Atendimento: Revisão da ficha | Revise e homologue a ficha | referência, requisitos, prévia, PDF, confirmação e efeitos | procedimento publicado; captura e conferência assistida pendentes |
+| Atendimento: Finalização e liberação | Valide o Nada Consta e conclua | verificação, liberação, encerramento e comunicação | procedimento publicado; captura e conferência assistida pendentes |
+| Minha conta | Conheça o Pronto!; capítulo específico a definir | dados da conta, senha, avatar e ações disponíveis | procedimento publicado; captura e conferência pendentes |
+| Calendário da biblioteca; Horários da biblioteca | Configure programas e funcionamento | consulta de expediente, avisos e exceções | procedimentos publicados; capturas e conferência pendentes |
+| Guia da equipe | Conheça o Pronto!; Mantenha modelos e ajuda | busca, índice, leitura, referências e edição conforme permissão | leitura e edição documentadas; capturas e conferência pendentes |
+| Ver como estudante | Conheça o Pronto! | finalidade, limites e retorno ao painel da equipe | procedimento publicado; captura e conferência pendentes |
 
 ## Índice reverso: Administração · Operação
 
-| Aba real | Macrotema atual relacionado | Tarefas, formulários e campos a conferir | Situação |
+| Aba real | Referência editorial original | Tarefas, formulários e campos a conferir | Situação |
 | --- | --- | --- | --- |
-| Contas | Gerencie contas e acessos | busca, Nome completo, Conta institucional, CRB, Perfil, Situação, provisionamento e mudança de estado | rascunho local |
-| Permissões da equipe | Gerencie contas e acessos | Pessoa da equipe, Período da decisão, Decisão para esta atividade; permissões efetivas e exceções | pendente |
-| Programas e SLA | Configure programas e funcionamento | Nível, Guia do RI, SLA (dias úteis), contato e e-mail da coordenação; opções do autodepósito | pendente |
-| Calendário e mural | Configure programas e funcionamento | Tipo de ocorrência, Nome da ocorrência, Mensagem do mural; datas, horários e publicação | pendente |
+| Contas | Gerencie contas e acessos | busca, Nome completo, Conta institucional, CRB, Perfil, Situação, provisionamento e mudança de estado | procedimentos publicados; capturas e conferência pendentes |
+| Permissões da equipe | Gerencie contas e acessos | Pessoa da equipe, Período da decisão, Decisão para esta atividade; permissões efetivas e exceções | procedimento publicado; captura e conferência pendentes |
+| Programas e SLA | Configure programas e funcionamento | Nível, Guia do RI, SLA (dias úteis), contato e e-mail da coordenação; opções do autodepósito | procedimento publicado; captura e conferência pendentes |
+| Calendário e mural | Configure programas e funcionamento | Tipo de ocorrência, Nome da ocorrência, Mensagem do mural; datas, horários e publicação | procedimentos publicados; capturas e conferência pendentes |
 
 ## Índice reverso: Administração · Conteúdo
 
-| Aba real | Macrotema atual relacionado | Tarefas, formulários e campos a conferir | Situação |
+| Aba real | Referência editorial original | Tarefas, formulários e campos a conferir | Situação |
 | --- | --- | --- | --- |
-| Modelos de resposta | Mantenha modelos e ajuda | Tipo, Nome do modelo, Mensagem para o estudante, ordenação e aplicação no atendimento | pendente |
-| Ajuda e FAQ | Mantenha modelos e ajuda | Tipo de conteúdo, Categoria, Endereço do artigo, Onde mostrar, publicação e respostas rápidas internas | pendente |
-| Guia da equipe | Mantenha modelos e ajuda | Seção, Título, Resumo, Endereço do capítulo, Telas e abas abordadas, Quem pode ler, Ordem de exibição, Versão do Pronto! conferida, editor, rascunho e publicação | pendente |
-| Assuntos | Trilha Assuntos/autoridades | busca, estados, importação, cadastro manual, fontes, variantes, vínculos, revisão e publicação | procedimentos de consulta, cadastro, importação, situação, mesclagem, mapa, publicação e exclusão publicados; capturas pendentes |
-| Temas por área | Trilha Assuntos/autoridades | percurso editorial, áreas, vínculos, ordem e resultado público | pendente |
-| Catálogo CDU | Mantenha os instrumentos de catalogação | Identificação do código, descrição, fonte, auxiliares, composição e revisão | pendente |
+| Modelos de resposta | Mantenha modelos e ajuda | Tipo, Nome do modelo, Mensagem para o estudante, ordenação e aplicação no atendimento | procedimento publicado; captura e conferência pendentes |
+| Ajuda e FAQ | Mantenha modelos e ajuda | Tipo de conteúdo, Categoria, Endereço do artigo, Onde mostrar, publicação e respostas rápidas internas | procedimento publicado; captura e conferência pendentes |
+| Guia da equipe | Mantenha modelos e ajuda | Seção, Título, Resumo, Endereço do capítulo, Telas e abas abordadas, Quem pode ler, Ordem de exibição, Versão do Pronto! conferida, editor, rascunho e publicação | leitura e edição documentadas; capturas e conferência pendentes |
+| Assuntos | Trilha Assuntos/autoridades | busca, estados, importação, cadastro manual, fontes, variantes, vínculos, revisão e publicação | procedimentos publicados; capturas e conferência de variações pendentes |
+| Temas por área | Trilha Assuntos/autoridades | percurso editorial, áreas, vínculos, ordem e resultado público | procedimento publicado; captura e conferência pendentes |
+| Catálogo CDU | Mantenha os instrumentos de catalogação | Identificação do código, descrição, fonte, auxiliares, composição e revisão | procedimento publicado; captura e conferência pendentes |
 
 ## Índice reverso: Administração · Controle
 
-| Aba real | Macrotema atual relacionado | Tarefas e variações a documentar | Situação |
+| Aba real | Referência editorial original | Tarefas e variações a documentar | Situação |
 | --- | --- | --- | --- |
-| Indicadores | Acompanhe o serviço e a publicação | períodos, métricas, filtros e limites de interpretação | pendente |
-| Depósitos pendentes | Acompanhe o serviço e a publicação | consulta, condição histórica, lembretes, confirmação de publicação e permissões | pendente |
-| Arquivos e retenção | Cuide dos registros e da preservação | prazos, estados, limpeza e impedimentos | pendente |
-| Backup e restauro | Cuide dos registros e da preservação | execuções, recibos, recuperação e limites operacionais | pendente |
-| Auditoria | Cuide dos registros e da preservação | busca, período, Tipo de ação e leitura do histórico | pendente |
+| Indicadores | Acompanhe o serviço e a publicação | períodos, métricas, filtros e limites de interpretação | procedimento publicado; captura e conferência pendentes |
+| Depósitos pendentes | Acompanhe o serviço e a publicação | consulta, condição histórica, lembretes, confirmação de publicação e permissões | procedimento publicado; captura e conferência pendentes |
+| Arquivos e retenção | Cuide dos registros e da preservação | prazos, estados, limpeza e impedimentos | procedimento publicado; captura e conferência pendentes |
+| Backup e restauro | Cuide dos registros e da preservação | execuções, recibos, recuperação e limites operacionais | procedimento publicado; captura e ensaio assistido pendentes |
+| Auditoria | Cuide dos registros e da preservação | busca, período, Tipo de ação e leitura do histórico | procedimento publicado; captura e conferência pendentes |
 
 ## Telas condicionais e recursos transversais a verificar
 
