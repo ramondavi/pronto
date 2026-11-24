@@ -9,7 +9,7 @@ Atualizado em 24/11/2026. Regras: [Documento-Mestre](documento-mestre.md); decis
 
 ## Produção e operação
 
-- Produção: `prontobib.vercel.app`; Supabase `vsdkxmpzqwauzotnbdxo`. Confirme deployment e migrações remotas antes de declarar uma mudança publicada.
+- Produção: `prontobib.vercel.app`; Supabase `vsdkxmpzqwauzotnbdxo`. A migração `202611230001` do PR #38 foi aplicada. Confira deployment e banco antes de declarar mudanças publicadas.
 - A falha agendada de backup de 09 a 15/11 (`unreviewed_storage_bucket`) foi corrigida. A [execução agendada de 23/11](https://github.com/ramondavi/pronto/actions/runs/45258614956) concluiu. Conferir recibo e ponto recuperável continua necessário; execução concluída não prova restauração. Ver [Backups](operacao-backups.md).
 - Os ensaios de outubro não cobrem restauração de PDFs reais, domínio e SMTP. Custódia e treinamento do substituto continuam pendentes.
 - O aceite assistido ainda depende de estudantes e bibliotecários participantes. Ver [Roteiro](validacao-mvp.md) e [Operação](operacao-mvp.md).
