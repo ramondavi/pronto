@@ -1,20 +1,15 @@
 # Estado atual — Pronto!
 
-Atualizado em 07/11/2026. Regras: `documento-mestre.md`; pendências: `decisoes-pendentes.md`; caminhos: `mapa-projeto.md`.
+Atualizado em 24/11/2026. Regras: [Documento-Mestre](documento-mestre.md); decisões: [Decisões pendentes](decisoes-pendentes.md); caminhos: [Mapa do projeto](mapa-projeto.md).
 
-## Ambientes
+## Código e conteúdo
 
-- Produção: `prontobib.vercel.app`, banco `vsdkxmpzqwauzotnbdxo`. Migrações até `202611070002` aplicadas em 07/11; código do PR #25 ainda não promovido. Sem dados fictícios.
-- Prévia única: `pronto-git-codex-fundamentacao-termo-c879fe-ramondavis-projects.vercel.app`, banco `cfntochwiztdcawbaedx`. Migrações de autoridades aplicadas seletivamente até `202611070002`; `202610290002` (backup) e `202611050003` (busca interna) permanecem fora da aplicação seletiva.
-- Em 05/11, seis autoridades locais fictícias `[TESTE]` foram criadas apenas na prévia: quatro publicadas com vínculo sintético elegível e duas não publicadas. Dois pontos aparecem no mapa. Não enviar esses registros à produção.
+- A `master` contém os ajustes de recuperação de senha, mapa e autoridades. O modelo versionado de recuperação evita a borda externa e usa o endereço de confirmação da aplicação.
+- O Guia da Equipe tem 61 capítulos em dez seções após o [PR #38](https://github.com/ramondavi/pronto/pull/38). Capturas reservadas seguem para preenchimento pela equipe. O responsável fará as traduções da Central de Ajuda.
 
-## Publicação em curso
+## Produção e operação
 
-- PR #25 pronto para revisão; CI aprovado antes da atualização desta nota. Merge na `master` barrado pela revisão automática; promoção do código pendente.
-- Migrações incorporadas são imutáveis. Não executar reset remoto, seeds em produção nem reescrever fichas ou atendimentos.
-- Backup: consulta automática e roteiros; acionamento auditado e download exclusivos de produção. Primeiro ciclo, custódia e treinamento do substituto: `operacao-backups.md`. Nenhum backup/restauração é disparado por testes.
-
-## Referências
-
-- Autoridades: `gestao-catalogos.md`, `importacao-autoridades.md` e seções pertinentes do documento-mestre.
-- Evidências da entrega anterior em produção: `validacao-publicacao-2026-10-29.md`. Operação e aceite: `validacao-mvp.md`, `operacao-mvp.md`.
+- Produção: `prontobib.vercel.app`; Supabase `vsdkxmpzqwauzotnbdxo`. Confirme deployment e migrações remotas antes de declarar uma mudança publicada.
+- A falha agendada de backup de 09 a 15/11 (`unreviewed_storage_bucket`) foi corrigida. A [execução agendada de 23/11](https://github.com/ramondavi/pronto/actions/runs/45258614956) concluiu. Conferir recibo e ponto recuperável continua necessário; execução concluída não prova restauração. Ver [Backups](operacao-backups.md).
+- Os ensaios de outubro não cobrem restauração de PDFs reais, domínio e SMTP. Custódia e treinamento do substituto continuam pendentes.
+- O aceite assistido ainda depende de estudantes e bibliotecários participantes. Ver [Roteiro](validacao-mvp.md) e [Operação](operacao-mvp.md).
