@@ -38,26 +38,26 @@ Este é um agrupamento editorial inicial de tarefas, não um plano de um capítu
 13. **Acompanhe o serviço e a publicação** — Controle → Indicadores e Depósitos pendentes; filtros, acompanhamento e ações permitidas.
 14. **Cuide dos registros e da preservação** — Controle → Arquivos e retenção, Backup e restauro e Auditoria; leitura dos estados, limites das evidências e ações autorizadas.
 
-### Casos — títulos propostos, aguardando validação
+### Casos — 12 procedimentos publicados em 23/11/2026
 
-Esta seção já existe na navegação e na edição, mas ainda não contém capítulos publicados. As situações abaixo são candidatas para tutoriais de resolução; passos, permissões e decisões de cada uma exigem validação da BIB/FAUFBA antes da redação operacional.
+A seção reúne roteiros de triagem baseados nas tarefas já documentadas, com links para os procedimentos detalhados. Não estabelece novos critérios institucionais. As capturas com dados fictícios continuam reservadas para a equipe; a conferência assistida dos fluxos permanece no inventário editorial.
 
 Os capítulos de casos podem incorporar capítulos inteiros ou tópicos publicados de outras seções em caixas expansíveis. O link da caixa abre a origem diretamente; a caixa lê a versão publicada atual da origem e não guarda uma cópia independente do texto. A incorporação respeita a visibilidade do capítulo de origem.
 
-1. Solicitação parada porque ninguém assumiu o atendimento.
-2. Estudante reenviou campos corrigidos e a equipe precisa retomar a conferência.
-3. Link do trabalho não abre para a Biblioteca ou aponta para versão diferente.
-4. Dados da ficha mudaram depois da validação da referência.
-5. Homologação impedida por assunto, CDU, Cutter ou outro campo obrigatório pendente.
-6. Assunto necessário ainda não existe, está inativo ou parece duplicado.
-7. Importação de autoridade apresenta correspondência ambígua ou nova versão de registro existente.
-8. Nada Consta foi devolvido, substituído ou ainda impede a liberação da ficha.
-9. Ficha homologada não aparece como liberada para o estudante.
-10. Atendimento precisa mudar de responsável ou ser devolvido à fila.
-11. Autodepósito foi declarado, mas a publicação no RI/UFBA ainda não foi conferida.
-12. Acesso de integrante da equipe foi bloqueado ou uma permissão esperada não aparece.
+1. [Solicitação parada porque ninguém assumiu o atendimento.](https://prontobib.vercel.app/guia-equipe/caso-solicitacao-sem-responsavel)
+2. [Estudante reenviou campos corrigidos e a equipe precisa retomar a conferência.](https://prontobib.vercel.app/guia-equipe/caso-correcao-reenviada)
+3. [Link do trabalho não abre para a Biblioteca ou aponta para versão diferente.](https://prontobib.vercel.app/guia-equipe/caso-link-trabalho-inacessivel)
+4. [Dados da ficha mudaram depois da validação da referência.](https://prontobib.vercel.app/guia-equipe/caso-dados-mudaram-apos-referencia)
+5. [Homologação impedida por assunto, CDU, Cutter ou outro campo obrigatório pendente.](https://prontobib.vercel.app/guia-equipe/caso-homologacao-bloqueada)
+6. [Assunto necessário ainda não existe, está inativo ou parece duplicado.](https://prontobib.vercel.app/guia-equipe/caso-assunto-ausente-inativo-duplicado)
+7. [Importação de autoridade apresenta correspondência ambígua ou nova versão de registro existente.](https://prontobib.vercel.app/guia-equipe/caso-importacao-autoridade-ambigua)
+8. [Nada Consta foi devolvido, substituído ou ainda impede a liberação da ficha.](https://prontobib.vercel.app/guia-equipe/caso-nada-consta-devolvido)
+9. [Ficha homologada não aparece como liberada para o estudante.](https://prontobib.vercel.app/guia-equipe/caso-ficha-homologada-nao-liberada)
+10. [Atendimento precisa mudar de responsável ou ser devolvido à fila.](https://prontobib.vercel.app/guia-equipe/caso-trocar-responsavel-atendimento)
+11. [Autodepósito foi declarado, mas a publicação no RI/UFBA ainda não foi conferida.](https://prontobib.vercel.app/guia-equipe/caso-autodeposito-sem-publicacao)
+12. [Acesso de integrante da equipe foi bloqueado ou uma permissão esperada não aparece.](https://prontobib.vercel.app/guia-equipe/caso-acesso-equipe-bloqueado)
 
-Cada capítulo terá capturas da versão correspondente do Pronto!, dados fictícios plausíveis, rótulos exatos dos campos, passos, resultado esperado e casos em que uma ação fica indisponível. O capítulo geral deve ser o primeiro a abrir; os demais podem ser acessados pela tarefa ou pelo contexto da tela.
+Cada capítulo indica a captura que a equipe deve inserir. Mudanças futuras de tela, campo, permissão ou fluxo exigem revisão do caso e do procedimento relacionado na mesma entrega.
 
 ### Desdobramento do capítulo 12 — Assuntos e autoridades
 

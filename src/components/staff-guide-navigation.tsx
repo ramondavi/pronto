@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppIcon } from "./app-icon";
-import { staffGuideSections } from "@/lib/staff-guide-sections";
+import { staffGuideVisibleSections } from "@/lib/staff-guide-sections";
 import { staffGuideTopics, type StaffGuideTopic } from "@/lib/staff-guide-topics";
 
 export type GuideNavigationPage = { published_slug: string; published_section: string; published_title: string; published_position: number; published_html: string };
 type Topic = StaffGuideTopic;
-const sections = staffGuideSections;
+const sections = staffGuideVisibleSections;
 
 function topicsFromHeadings(headings: HTMLHeadingElement[]): Topic[] {
   return staffGuideTopics(headings.map((heading) => ({ title: heading.textContent?.trim() ?? "", level: heading.tagName === "H3" ? 3 : 2 })));
@@ -66,7 +66,7 @@ export function StaffGuideNavigation({ pages }: { pages: GuideNavigationPage[] }
     <Link href="/guia-equipe" className={`staff-docs__nav-home${pathname === "/guia-equipe" ? " is-active" : ""}`} aria-current={pathname === "/guia-equipe" ? "page" : undefined}><AppIcon name="home" />Início do guia</Link>
     {sections.map(([key, label]) => {
       const items = pages.filter((page) => page.published_section === key);
-      return items.length || key === "casos" ? <div className="staff-docs__nav-group" key={key}><h2>{label}</h2>{items.map((page) => {
+      return items.length ? <div className="staff-docs__nav-group" key={key}><h2>{label}</h2>{items.map((page) => {
         const isActive = activeSlug === page.published_slug;
         const topics = allTopics[page.published_slug] ?? [];
         const isExpanded = expanded.includes(page.published_slug);

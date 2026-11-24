@@ -6,6 +6,12 @@ A partir de agora, cada pull request deve acrescentar uma nota datada à seção
 
 ## Em preparação
 
+- 23/11/2026: redistribui os 61 capítulos do Guia da Equipe em dez seções menores por tarefa, preservando textos, links, público e datas de publicação. O editor e a busca contextual passam a reconhecer as novas seções.
+
+- 23/11/2026: publica 12 casos de resolução no Guia da Equipe e um procedimento para retirar aviso do mural, distinguindo despublicação de exclusão. O guia passa a 61 capítulos publicados; as capturas continuam indicadas para inserção pela equipe.
+
+- 23/11/2026: publica no Guia da Equipe os procedimentos de conferência inicial do atendimento e exclusão de assunto sem uso, com indicação das capturas a inserir pela equipe. A conferência evitou duplicar três capítulos que já estavam publicados.
+
 - 16/11/2026: atualiza o inventário editorial para os 46 capítulos publicados no Guia da Equipe e distingue procedimentos disponíveis das capturas e conferências de cobertura ainda pendentes.
 
 - 16/11/2026: permite à Biblioteca concluir um protocolo retrospectivo com o Handle conferido no RI/UFBA sem depender da URL sugerida pela secretaria. A sugestão permanece opcional e histórica. Amplia as referências aos controles de fila, metadados e Nada Consta para novos capítulos do guia. Atualiza o inventário editorial, prepara o roteiro de aceite assistido e registra a causa das falhas recentes da rotina agendada de backup e a cópia manual concluída após a correção.
